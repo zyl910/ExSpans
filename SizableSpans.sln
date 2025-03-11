@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35825.156 d17.13
+VisualStudioVersion = 17.13.35825.156
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SizableSpans.Sample", "samples\SizableSpans.Sample\SizableSpans.Sample.csproj", "{B9CDFAE2-38F2-49E3-B9C4-7A25122D27FF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SizableSpans", "src\SizableSpans\SizableSpans.csproj", "{5BF6B505-8296-4F84-B2E1-B0C6E89248AE}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SizableSpans.InfoInc", "src\SizableSpans.InfoInc\SizableSpans.InfoInc.shproj", "{3B871363-CD08-475B-903B-0CC1CA148F22}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,8 +36,13 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{B9CDFAE2-38F2-49E3-B9C4-7A25122D27FF} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{5BF6B505-8296-4F84-B2E1-B0C6E89248AE} = {41E49851-1226-48E8-A5D9-87671E9AF0E7}
+		{3B871363-CD08-475B-903B-0CC1CA148F22} = {41E49851-1226-48E8-A5D9-87671E9AF0E7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DF448437-BDEC-4C3B-9CEB-3D5D0B946D88}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		src\SizableSpans.InfoInc\SizableSpans.InfoInc.projitems*{3b871363-cd08-475b-903b-0cc1ca148f22}*SharedItemsImports = 13
+		src\SizableSpans.InfoInc\SizableSpans.InfoInc.projitems*{b9cdfae2-38f2-49e3-b9c4-7a25122d27ff}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal
