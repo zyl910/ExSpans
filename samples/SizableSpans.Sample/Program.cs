@@ -1,4 +1,6 @@
-﻿namespace SizableSpans.Sample {
+﻿using System;
+
+namespace Zyl.SizableSpans.Sample {
     internal class Program {
         static void Main(string[] args) {
             Console.WriteLine("SizableSpans.Sample");

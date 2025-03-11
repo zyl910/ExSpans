@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SizableSpans {
+namespace Zyl.SizableSpans {
     partial class SizableSpanHelpers {
 
         /// <summary>
@@ -14,7 +14,7 @@ namespace SizableSpans {
         /// </summary>
         /// <seealso cref="Span{T}.Length"/>
         /// <seealso cref="Array.MaxLength"/>
-        public static readonly TSize SpanMaxLengthSafe = 1024 * 1024 * 1024; // 1G
+        public static readonly TSize SpanMaxLengthSafe = (TSize)(1024 * 1024 * 1024); // 1G
 
     }
 }

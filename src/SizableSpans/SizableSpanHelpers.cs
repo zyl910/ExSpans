@@ -1,4 +1,6 @@
-﻿namespace SizableSpans {
+﻿using System;
+
+namespace Zyl.SizableSpans {
     /// <summary>
     /// Helper methods of SizableSpan (SizableSpan 的帮助方法).
     /// </summary>
