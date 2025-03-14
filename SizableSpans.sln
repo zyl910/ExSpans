@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SizableSpans", "src\Sizable
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SizableSpans.InfoInc", "src\SizableSpans.InfoInc\SizableSpans.InfoInc.shproj", "{3B871363-CD08-475B-903B-0CC1CA148F22}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Compatible.System", "src\Compatible.System\Compatible.System.shproj", "{4F69DCA3-39B4-4247-AC71-FE9A69B7A124}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,12 +39,15 @@ Global
 		{B9CDFAE2-38F2-49E3-B9C4-7A25122D27FF} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{5BF6B505-8296-4F84-B2E1-B0C6E89248AE} = {41E49851-1226-48E8-A5D9-87671E9AF0E7}
 		{3B871363-CD08-475B-903B-0CC1CA148F22} = {41E49851-1226-48E8-A5D9-87671E9AF0E7}
+		{4F69DCA3-39B4-4247-AC71-FE9A69B7A124} = {41E49851-1226-48E8-A5D9-87671E9AF0E7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DF448437-BDEC-4C3B-9CEB-3D5D0B946D88}
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		src\SizableSpans.InfoInc\SizableSpans.InfoInc.projitems*{3b871363-cd08-475b-903b-0cc1ca148f22}*SharedItemsImports = 13
+		src\Compatible.System\Compatible.System.projitems*{4f69dca3-39b4-4247-ac71-fe9a69b7a124}*SharedItemsImports = 13
+		src\Compatible.System\Compatible.System.projitems*{5bf6b505-8296-4f84-b2e1-b0c6e89248ae}*SharedItemsImports = 5
 		src\SizableSpans.InfoInc\SizableSpans.InfoInc.projitems*{b9cdfae2-38f2-49e3-b9c4-7a25122d27ff}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal

@@ -128,7 +128,7 @@ namespace Zyl.SizableSpans {
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown when the specified <paramref name="length"/> is negative.
         /// </exception>
-        [CLSCompliant(false)]
+        //[CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe SizableSpan(void* pointer, int length) {
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_0_OR_GREATER
