@@ -9,7 +9,7 @@ namespace Zyl.SizableSpans.Sample {
             EnvironmentOutput.OutputEnvironment(writer);
             writer.WriteLine();
 
-            writer.WriteLine("SpanMaxLengthSafe:\t{0} // 0x{0:X}", SizableSpanHelpers.SpanMaxLengthSafe);
+            writer.WriteLine("ArrayMaxLengthSafe:\t{0} // 0x{0:X}", SizableSpanHelpers.ArrayMaxLengthSafe);
         }
     }
 }

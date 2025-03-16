@@ -9,11 +9,11 @@ namespace Zyl.SizableSpans {
     partial class SizableSpanHelpers {
 
         /// <summary>
-        /// The safe maximum length of <see cref="Span{T}"/> (<see cref="Span{T}"/> 安全的最大长度.).
+        /// The safe maximum length of array (安全的数组最大长度.).
         /// </summary>
-        /// <seealso cref="Span{T}.Length"/>
         /// <seealso cref="Array.MaxLength"/>
-        public static readonly TSize SpanMaxLengthSafe = (TSize)(1024 * 1024 * 1024); // 1G
+        /// <seealso cref="Span{T}.Length"/>
+        public static readonly TSize ArrayMaxLengthSafe = (TSize)(1024 * 1024 * 1024); // 1G
 
         /// <summary>
         /// Gets a value that indicates whether the current process is a 64-bit process (获取一个值，该值指示当前进程是否为 64 位进程).
