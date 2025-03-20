@@ -16,9 +16,9 @@ using EditorBrowsableState = System.ComponentModel.EditorBrowsableState;
 
 namespace Zyl.SizableSpans {
     /// <summary>
-    /// ReadOnlySizableSpan represents a contiguous region of arbitrary memory. Unlike arrays, it can point to either managed
-    /// or native memory, or to memory allocated on the stack. It is type-safe and memory-safe.
+    /// Provides a type-safe and memory-safe read-only representation of a contiguous region of arbitrary memory. It can be regarded as the <see cref="ReadOnlySpan{T}"/> of <see cref="UIntPtr"/> index range (提供任意内存连续区域的类型安全且内存安全的只读表示形式. . 它可以被视为 UIntPtr 索引范围的 <see cref="ReadOnlySpan{T}"/>).
     /// </summary>
+    /// <typeparam name="T">The element type (元素的类型).</typeparam>
     //[DebuggerTypeProxy(typeof(SizableSpanDebugView<>))]
     [DebuggerDisplay("{ToString(),raw}")]
     //[NativeMarshalling(typeof(ReadOnlySizableSpanMarshaller<,>))]
@@ -28,23 +28,23 @@ namespace Zyl.SizableSpans {
             where T : struct
 #endif
             {
-        /// <summary>The number of elements this ReadOnlySizableSpan contains.</summary>
-        private readonly int _length;
+        /// <summary>The number of elements this ReadOnlySizableSpan contains (只读跨度中的项数).</summary>
+        private readonly TSize _length;
 #if STRUCT_REF_FIELD
-        /// <summary>A byref or a native ptr.</summary>
+        /// <summary>A byref or a native ptr (引用或原生指针).</summary>
         internal readonly ref T _reference;
 #else
-        /// <summary>A byte offse of referenceSpan or a native ptr.</summary>
+        /// <summary>A byte offse of _referenceSpan or a native ptr (_referenceSpan 的偏移, 或是原生指针).</summary>
         internal readonly TSize _byteOffse;
-        /// <summary>A span of reference. It is Empty on native ptr.</summary>
+        /// <summary>A span of reference. It is Empty on native ptr (引用的跨度. 原生指针时它为空).</summary>
         internal readonly ReadOnlySpan<T> _referenceSpan;
 #endif
 
         /// <summary>
-        /// Creates a new read-only SizableSpan over the entirety of the target array.
+        /// Creates a new read-only sizable span over the entirety of the target array (在整个指定数组中创建新的 <see cref="ReadOnlySizableSpan{T}"/>).
         /// </summary>
-        /// <param name="array">The target array.</param>
-        /// <remarks>Returns default when <paramref name="array"/> is null.</remarks>
+        /// <param name="array">The target array (指定数组).</param>
+        /// <remarks>Returns default when <paramref name="array"/> is null (当 array 为 null 时返回默认值).</remarks>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ReadOnlySizableSpan(T[]? array) {
             if (array == null) {
@@ -52,7 +52,7 @@ namespace Zyl.SizableSpans {
                 return; // returns default
             }
 
-            _length = array.Length;
+            _length = (TSize)array.Length;
 #if STRUCT_REF_FIELD
             _reference = ref SizableMemoryMarshal.GetArrayDataReference(array);
 #else
@@ -62,65 +62,56 @@ namespace Zyl.SizableSpans {
         }
 
         /// <summary>
-        /// Creates a new read-only SizableSpan over the portion of the target array beginning
-        /// at 'start' index and ending at 'end' index (exclusive).
+        /// Creates a new read-only sizable span over the portion of the target array beginning at 'start' index and ending at 'end' index (exclusive) (创建一个新的 <see cref="ReadOnlySizableSpan{T}"/>，其中包含从指定索引开始的数组的指定数量的元素).
         /// </summary>
-        /// <param name="array">The target array.</param>
-        /// <param name="start">The zero-based index at which to begin the read-only SizableSpan.</param>
-        /// <param name="length">The number of items in the read-only SizableSpan.</param>
-        /// <remarks>Returns default when <paramref name="array"/> is null.</remarks>
+        /// <param name="array">The target array (指定数组).</param>
+        /// <param name="start">The zero-based index at which to begin the read-only sizable span (从零开始的只读大范围跨度的索引).</param>
+        /// <param name="length">The number of items in the read-only sizable span (只读大范围跨度的项数).</param>
+        /// <remarks>Returns default when <paramref name="array"/> is null (当 array 为 null 时返回默认值).</remarks>
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown when the specified <paramref name="start"/> or end index is not in the range (&lt;0 or &gt;Length).
         /// </exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ReadOnlySizableSpan(T[]? array, int start, int length) {
+        public ReadOnlySizableSpan(T[]? array, TSize start, TSize length) {
             if (array == null) {
-                if (start != 0 || length != 0)
+                if (start != TSize.Zero || length != TSize.Zero)
                     ThrowHelper.ThrowArgumentOutOfRangeException();
                 this = default;
                 return; // returns default
             }
-            if (SizableSpanHelpers.Is64BitProcess) {
-                // See comment in SizableSpan<T>.Slice for how this works.
-                if ((ulong)(uint)start + (ulong)(uint)length > (ulong)(uint)array.Length)
-                    ThrowHelper.ThrowArgumentOutOfRangeException();
-            } else {
-                if ((uint)start > (uint)array.Length || (uint)length > (uint)(array.Length - start))
-                    ThrowHelper.ThrowArgumentOutOfRangeException();
+            if (IntPtrs.GreaterThan(start, (uint)array.Length) || IntPtrs.GreaterThan(IntPtrs.Add(start, length), (uint)array.Length)) {
+                ThrowHelper.ThrowArgumentOutOfRangeException();
             }
 
             _length = length;
 #if STRUCT_REF_FIELD
-            _reference = ref Unsafe.Add(ref SizableMemoryMarshal.GetArrayDataReference(array), (nint)(uint)start /* force zero-extension */);
+            _reference = ref Unsafe.Add(ref SizableMemoryMarshal.GetArrayDataReference(array), start);
 #else
-            _byteOffse = SizableUnsafe.GetByteSize<T>((TSize)start);
+            _byteOffse = SizableUnsafe.GetByteSize<T>(start);
             _referenceSpan = new ReadOnlySpan<T>(array);
 #endif
         }
 
         /// <summary>
-        /// Creates a new read-only SizableSpan over the target unmanaged buffer.  Clearly this
-        /// is quite dangerous, because we are creating arbitrarily typed T's
-        /// out of a void*-typed block of memory.  And the length is not checked.
-        /// But if this creation is correct, then all subsequent uses are correct.
+        /// Creates a new read-only sizable span over the target unmanaged buffer (在目标非托管缓冲区上创建新的只读大范围跨度).
         /// </summary>
-        /// <param name="pointer">An unmanaged pointer to memory.</param>
-        /// <param name="length">The number of <typeparamref name="T"/> elements the memory contains.</param>
+        /// <param name="pointer">An unmanaged pointer to memory (指向内存的非托管指针).</param>
+        /// <param name="length">The number of <typeparamref name="T"/> elements the memory contains (内存中包含的 <typeparamref name="T"/> 元素数量).</param>
         /// <exception cref="ArgumentException">
         /// Thrown when <typeparamref name="T"/> is reference type or contains pointers and hence cannot be stored in unmanaged memory.
         /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// Thrown when the specified <paramref name="length"/> is negative.
-        /// </exception>
+        // /// <exception cref="ArgumentOutOfRangeException">
+        // /// Thrown when the specified <paramref name="length"/> is negative.
+        // /// </exception>
         //[CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe ReadOnlySizableSpan(void* pointer, int length) {
+        public unsafe ReadOnlySizableSpan(void* pointer, TSize length) {
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_0_OR_GREATER
             if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
                 ThrowHelper.ThrowInvalidTypeWithPointersNotSupported(typeof(T));
 #endif
-            if (length < 0)
-                ThrowHelper.ThrowArgumentOutOfRangeException();
+            //if (length < 0)
+            //    ThrowHelper.ThrowArgumentOutOfRangeException();
 
             _length = length;
 #if STRUCT_REF_FIELD
@@ -132,11 +123,11 @@ namespace Zyl.SizableSpans {
         }
 
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
-        /// <summary>Creates a new <see cref="ReadOnlySizableSpan{T}"/> of length 1 around the specified reference.</summary>
-        /// <param name="reference">A reference to data.</param>
+        /// <summary>Creates a new <see cref="ReadOnlySizableSpan{T}"/> of length 1 around the specified reference (在指定的引用周围创建长度为 1 的新 <see cref="ReadOnlySizableSpan{T}"/>).</summary>
+        /// <param name="reference">A reference to data (数据的引用).</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ReadOnlySizableSpan(ref readonly T reference) {
-            _length = 1;
+            _length = (TSize)1;
 #if STRUCT_REF_FIELD
             _reference = ref Unsafe.AsRef(in reference);
 #else
@@ -147,15 +138,15 @@ namespace Zyl.SizableSpans {
 
         // Constructor for internal use only. It is not safe to expose publicly, and is instead exposed via the unsafe MemoryMarshal.CreateReadOnlySizableSpan.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ReadOnlySizableSpan(ref T reference, int length) {
-            Debug.Assert(length >= 0);
+        internal ReadOnlySizableSpan(ref T reference, TSize length) {
+            //Debug.Assert(length >= 0);
 
             _length = length;
 #if STRUCT_REF_FIELD
             _reference = ref Unsafe.AsRef(in reference);
 #else
             _byteOffse = TSize.Zero;
-            _referenceSpan = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.AsRef(in reference), length); // Need NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
+            _referenceSpan = MemoryMarshalHelper.CreateReadOnlySpanSaturating(ref Unsafe.AsRef(in reference), length); // Need NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
 #endif
         }
 #endif // NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
@@ -163,7 +154,7 @@ namespace Zyl.SizableSpans {
 #if STRUCT_REF_FIELD
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ReadOnlySizableSpan(ReadOnlySpan<T> referenceSpan, TSize byteOffse, int length) {
+        internal ReadOnlySizableSpan(ReadOnlySpan<T> referenceSpan, TSize byteOffse, TSize length) {
             _length = length;
             _byteOffse = byteOffse;
             _referenceSpan = referenceSpan;
@@ -171,26 +162,25 @@ namespace Zyl.SizableSpans {
 #endif
 
         /// <summary>
-        /// Returns the specified element of the read-only SizableSpan.
+        /// Returns the specified element of the read-only sizable span (从只读大范围跨度中返回指定项).
         /// </summary>
-        /// <param name="index">The zero-based index.</param>
-        /// <returns></returns>
+        /// <param name="index">The zero-based index (从零开始的索引).</param>
+        /// <returns>Returns the specified element (返回指定项).</returns>
         /// <exception cref="IndexOutOfRangeException">
         /// Thrown when index less than 0 or index greater than or equal to Length
         /// </exception>
-        public ref readonly T this[int index] {
+        public ref readonly T this[TSize index] {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get {
-                if ((uint)index >= (uint)_length)
-                    ThrowHelper.ThrowIndexOutOfRangeException();
+                if (IntPtrs.GreaterThanOrEqual(index, _length)) ThrowHelper.ThrowIndexOutOfRangeException();
 #if STRUCT_REF_FIELD
-                return ref Unsafe.Add(ref _reference, (nint)(uint)index /* force zero-extension */);
+                return ref Unsafe.Add(ref _reference, index);
 #else
                 unsafe {
                     if (_referenceSpan.IsEmpty) {
-                        return ref Unsafe.Add(ref Unsafe.AsRef<T>((void*)_byteOffse), index);
+                        return ref SizableUnsafe.Add(ref Unsafe.AsRef<T>((void*)_byteOffse), index);
                     } else {
-                        return ref Unsafe.Add(ref Unsafe.AddByteOffset(ref Unsafe.AsRef(_referenceSpan.GetPinnableReference()), SizableUnsafe.ToIntPtr(_byteOffse)), (nint)(uint)index);
+                        return ref SizableUnsafe.Add(ref Unsafe.AddByteOffset(ref Unsafe.AsRef(_referenceSpan.GetPinnableReference()), IntPtrs.ToIntPtr(_byteOffse)), index);
                     }
                 }
 #endif
@@ -198,25 +188,24 @@ namespace Zyl.SizableSpans {
         }
 
         /// <summary>
-        /// The number of items in the read-only SizableSpan.
+        /// The number of items in the read-only sizable span (只读大范围跨度中的项数).
         /// </summary>
-        public int Length {
+        public TSize Length {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => _length;
         }
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="ReadOnlySizableSpan{T}"/> is empty.
+        /// Gets a value indicating whether this <see cref="ReadOnlySizableSpan{T}"/> is empty (返回一个值，该值指示当前只读大范围跨度为空).
         /// </summary>
-        /// <value><see langword="true"/> if this SizableSpan is empty; otherwise, <see langword="false"/>.</value>
+        /// <value><see langword="true"/> if this sizable span is empty; otherwise, <see langword="false"/> (当前跨度为空时为 <see langword="true"/>; 否则为 <see langword="false"/>).</value>
         public bool IsEmpty {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => _length == 0;
+            get => _length == (TSize)0;
         }
 
         /// <summary>
-        /// Returns false if left and right point at the same memory and have the same length.  Note that
-        /// this does *not* check to see if the *contents* are equal.
+        /// Returns a value that indicates whether two <see cref="ReadOnlySpan{T}"/> instances are not equal (返回一个值，该值指示两个 <see cref="ReadOnlySpan{T}"/> 实例是否不相等).
         /// </summary>
         public static bool operator !=(ReadOnlySizableSpan<T> left, ReadOnlySizableSpan<T> right) => !(left == right);
 
@@ -243,18 +232,18 @@ namespace Zyl.SizableSpans {
             throw new NotSupportedException(SR.NotSupported_CannotCallGetHashCodeOnSizableSpan);
 
         /// <summary>
-        /// Defines an implicit conversion of an array to a <see cref="ReadOnlySizableSpan{T}"/>
+        /// Defines an implicit conversion of an array to a <see cref="ReadOnlySizableSpan{T}"/> (定义数组到 <see cref="ReadOnlySizableSpan{T}"/> 的隐式转换)
         /// </summary>
         public static implicit operator ReadOnlySizableSpan<T>(T[]? array) => new ReadOnlySizableSpan<T>(array);
 
         /// <summary>
-        /// Defines an implicit conversion of a <see cref="ArraySegment{T}"/> to a <see cref="ReadOnlySizableSpan{T}"/>
+        /// Defines an implicit conversion of a <see cref="ArraySegment{T}"/> to a <see cref="ReadOnlySizableSpan{T}"/> (定义 <see cref="ArraySegment{T}"/> 到 <see cref="ReadOnlySizableSpan{T}"/> 的隐式转换)
         /// </summary>
         public static implicit operator ReadOnlySizableSpan<T>(ArraySegment<T> segment)
-            => new ReadOnlySizableSpan<T>(segment.Array, segment.Offset, segment.Count);
+            => new ReadOnlySizableSpan<T>(segment.Array, (TSize)segment.Offset, (TSize)segment.Count);
 
         /// <summary>
-        /// Returns a 0-length read-only SizableSpan whose base is the null pointer.
+        /// Returns a 0-length read-only sizable span whose base is the null pointer (返回一个值，该值指示当前只读大范围跨度为空).
         /// </summary>
         public static ReadOnlySizableSpan<T> Empty => default;
 
@@ -271,29 +260,29 @@ namespace Zyl.SizableSpans {
         }
 #endif
 
-        /// <summary>Gets an enumerator for this SizableSpan.</summary>
+        /// <summary>Gets an enumerator for this span (返回此跨度的枚举器).</summary>
         public Enumerator GetEnumerator() => new Enumerator(this);
 
-        /// <summary>Enumerates the elements of a <see cref="ReadOnlySizableSpan{T}"/>.</summary>
+        /// <summary>Enumerates the elements of a <see cref="ReadOnlySizableSpan{T}"/> (为 <see cref="ReadOnlySizableSpan{T}"/> 的元素提供枚举器).</summary>
         public ref struct Enumerator {
-            /// <summary>The SizableSpan being enumerated.</summary>
-            private readonly ReadOnlySizableSpan<T> _SizableSpan;
+            /// <summary>The span being enumerated.</summary>
+            private readonly ReadOnlySizableSpan<T> _span;
             /// <summary>The next index to yield.</summary>
-            private int _index;
+            private TSize _index;
 
             /// <summary>Initialize the enumerator.</summary>
-            /// <param name="SizableSpan">The SizableSpan to enumerate.</param>
+            /// <param name="span">The span to enumerate.</param>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal Enumerator(ReadOnlySizableSpan<T> SizableSpan) {
-                _SizableSpan = SizableSpan;
-                _index = -1;
+            internal Enumerator(ReadOnlySizableSpan<T> span) {
+                _span = span;
+                _index = TSize.Zero - 1;
             }
 
-            /// <summary>Advances the enumerator to the next element of the SizableSpan.</summary>
+            /// <summary>Advances the enumerator to the next element of the span (将枚举器推进到跨度的下一元素).</summary>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public bool MoveNext() {
-                int index = _index + 1;
-                if (index < _SizableSpan.Length) {
+                TSize index = _index + 1;
+                if (IntPtrs.LessThan(index, _span.Length)) {
                     _index = index;
                     return true;
                 }
@@ -301,23 +290,23 @@ namespace Zyl.SizableSpans {
                 return false;
             }
 
-            /// <summary>Gets the element at the current position of the enumerator.</summary>
-            public ref readonly T Current {
+            /// <summary>Gets the element at the current position of the enumerator (获取对枚举器当前位置的元素的引用).</summary>
+            public readonly ref readonly T Current {
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                get => ref _SizableSpan[_index];
+                get => ref _span[_index];
             }
         }
 
         /// <summary>
-        /// Returns a reference to the 0th element of the SizableSpan. If the SizableSpan is empty, returns null reference.
-        /// It can be used for pinning and is required to support the use of SizableSpan within a fixed statement.
+        /// Returns a reference to the 0th element of the span. If the span is empty, returns null reference.
+        /// It can be used for pinning and is required to support the use of span within a fixed statement (返回对跨度的第0个元素的引用。如果跨度为空，则返回null引用. 它可用于固定，并且需要支持在 fixed 语句中使用跨度).
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ref readonly T GetPinnableReference() {
             // Ensure that the native code has just one forward branch that is predicted-not-taken.
             ref T ret = ref Unsafe.NullRef<T>();
-            if (_length != 0) {
+            if (_length != TSize.Zero) {
 #if STRUCT_REF_FIELD
                 ret = ref _reference;
 #else
@@ -325,7 +314,7 @@ namespace Zyl.SizableSpans {
                     if (_referenceSpan.IsEmpty) {
                         return ref Unsafe.AsRef<T>((void*)_byteOffse);
                     } else {
-                        return ref Unsafe.AddByteOffset(ref Unsafe.AsRef(_referenceSpan.GetPinnableReference()), SizableUnsafe.ToIntPtr(_byteOffse));
+                        return ref Unsafe.AddByteOffset(ref Unsafe.AsRef(_referenceSpan.GetPinnableReference()), IntPtrs.ToIntPtr(_byteOffse));
                     }
                 }
 #endif
@@ -373,82 +362,80 @@ namespace Zyl.SizableSpans {
         }
         */
         /// <summary>
-        /// Returns true if left and right point at the same memory and have the same length.  Note that
-        /// this does *not* check to see if the *contents* are equal.
+        /// Returns a value that indicates whether two <see cref="ReadOnlySpan{T}"/> instances are equal (返回一个值，该值指示两个 <see cref="ReadOnlySpan{T}"/> 实例是否相等).
         /// </summary>
         public static bool operator ==(ReadOnlySizableSpan<T> left, ReadOnlySizableSpan<T> right) =>
             left._length == right._length &&
 #if STRUCT_REF_FIELD
-            Unsafe.AreSame(ref left._reference, ref right._reference)
+                Unsafe.AreSame(ref left._reference, ref right._reference)
 #else
-            left._byteOffse == right._byteOffse &&
-            left._referenceSpan == right._referenceSpan
+                left._byteOffse == right._byteOffse &&
+                left._referenceSpan == right._referenceSpan
 #endif
             ;
 
         /// <summary>
-        /// For <see cref="ReadOnlySizableSpan{Char}"/>, returns a new instance of string that represents the characters pointed to by the SizableSpan.
-        /// Otherwise, returns a <see cref="string"/> with the name of the type and the number of elements.
+        /// Returns the string representation of this <see cref="ReadOnlySizableSpan{Char}"/> (返回此 <see cref="ReadOnlySizableSpan{Char}"/> 的字符串表示形式).
         /// </summary>
-        public override string ToString() {
+        public override unsafe string ToString() {
             //if (typeof(T) == typeof(char)) {
             //    return new string(new ReadOnlySpan<char>(ref Unsafe.As<T, char>(ref _reference), _length));
             //}
-            return $"System.ReadOnlySizableSpan<{typeof(T).Name}>[{_length}]";
+            nint ptr = (nint)Unsafe.AsPointer(ref Unsafe.AsRef(in GetPinnableReference()));
+            return $"System.ReadOnlySizableSpan<{typeof(T).Name}>[{_length}, ptr=0x{ptr:X}]";
         }
 
         /// <summary>
-        /// Forms a slice out of the given read-only SizableSpan, beginning at 'start'.
+        /// Forms a slice out of the given read-only sizable span, beginning at 'start' (从指定索引处开始的只读大范围跨度形成切片).
         /// </summary>
-        /// <param name="start">The zero-based index at which to begin this slice.</param>
+        /// <param name="start">The zero-based index at which to begin this slice (从零开始切片的索引).</param>
+        /// <returns>Returns the new read-only sizable span (返回新的只读大范围跨度).</returns>
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown when the specified <paramref name="start"/> index is not in range (&lt;0 or &gt;Length).
         /// </exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ReadOnlySizableSpan<T> Slice(int start) {
-            if ((uint)start > (uint)_length)
+        public ReadOnlySizableSpan<T> Slice(TSize start) {
+            if (IntPtrs.GreaterThan(start, _length))
                 ThrowHelper.ThrowArgumentOutOfRangeException();
 
+            TSize len = IntPtrs.Subtract(_length, start);
 #if STRUCT_REF_FIELD
-            return new ReadOnlySizableSpan<T>(ref Unsafe.Add(ref _reference, (nint)(uint)start /* force zero-extension */), _length - start);
+            return new ReadOnlySizableSpan<T>(ref Unsafe.Add(ref _reference, start), len);
 #else
             unsafe {
                 if (_referenceSpan.IsEmpty) {
-                    return new ReadOnlySizableSpan<T>((void*)SizableUnsafe.AddPointer<T>(_byteOffse, (TSize)(uint)start /* force zero-extension */), _length - start);
+                    return new ReadOnlySizableSpan<T>((void*)SizableUnsafe.AddPointer<T>(_byteOffse, start), len);
                 } else {
-                    return new ReadOnlySizableSpan<T>(_referenceSpan, SizableUnsafe.AddPointer<T>(_byteOffse, (TSize)(uint)start /* force zero-extension */), _length - start);
+                    return new ReadOnlySizableSpan<T>(_referenceSpan, SizableUnsafe.AddPointer<T>(_byteOffse, start), len);
                 }
             }
 #endif
         }
 
         /// <summary>
-        /// Forms a slice out of the given read-only SizableSpan, beginning at 'start', of given length
+        /// Forms a slice out of the given read-only sizable span, beginning at 'start', of given length (从指定长度的指定索引处开始的当前只读大范围跨度形成切片)
         /// </summary>
-        /// <param name="start">The zero-based index at which to begin this slice.</param>
-        /// <param name="length">The desired length for the slice (exclusive).</param>
+        /// <param name="start">The zero-based index at which to begin this slice (从零开始切片的索引).</param>
+        /// <param name="length">The desired length for the slice (exclusive) (切片所需的长度).</param>
+        /// <returns>Returns the new read-only sizable span (返回新的只读大范围跨度).</returns>
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown when the specified <paramref name="start"/> or end index is not in range (&lt;0 or &gt;Length).
         /// </exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ReadOnlySizableSpan<T> Slice(int start, int length) {
-            if (SizableSpanHelpers.Is64BitProcess) {
-                // See comment in SizableSpan<T>.Slice for how this works.
-                if ((ulong)(uint)start + (ulong)(uint)length > (ulong)(uint)_length)
-                    ThrowHelper.ThrowArgumentOutOfRangeException();
-            } else {
-                if ((uint)start > (uint)_length || (uint)length > (uint)(_length - start))
-                    ThrowHelper.ThrowArgumentOutOfRangeException();
-            }
+        public ReadOnlySizableSpan<T> Slice(TSize start, TSize length) {
+            if (IntPtrs.GreaterThan(IntPtrs.Add(start, length), _length))
+                ThrowHelper.ThrowArgumentOutOfRangeException();
+            if (IntPtrs.GreaterThan(start, _length))
+                ThrowHelper.ThrowArgumentOutOfRangeException();
 
 #if STRUCT_REF_FIELD
-            return new ReadOnlySizableSpan<T>(ref Unsafe.Add(ref _reference, (nint)(uint)start /* force zero-extension */), length);
+            return new ReadOnlySizableSpan<T>(ref Unsafe.Add(ref _reference, start), length);
 #else
             unsafe {
                 if (_referenceSpan.IsEmpty) {
-                    return new ReadOnlySizableSpan<T>((void*)SizableUnsafe.AddPointer<T>(_byteOffse, (TSize)(uint)start /* force zero-extension */), length);
+                    return new ReadOnlySizableSpan<T>((void*)SizableUnsafe.AddPointer<T>(_byteOffse, start), length);
                 } else {
-                    return new ReadOnlySizableSpan<T>(_referenceSpan, SizableUnsafe.AddPointer<T>(_byteOffse, (TSize)(uint)start /* force zero-extension */), length);
+                    return new ReadOnlySizableSpan<T>(_referenceSpan, SizableUnsafe.AddPointer<T>(_byteOffse, start), length);
                 }
             }
 #endif

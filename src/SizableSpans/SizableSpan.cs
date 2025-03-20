@@ -21,6 +21,7 @@ namespace Zyl.SizableSpans {
     /// SizableSpan represents a contiguous region of arbitrary memory. Unlike arrays, it can point to either managed
     /// or native memory, or to memory allocated on the stack. It is type-safe and memory-safe.
     /// </summary>
+    /// <typeparam name="T">The element type (元素的类型).</typeparam>
     //[DebuggerTypeProxy(typeof(SizableSpanDebugView<>))]
     [DebuggerDisplay("{ToString(),raw}")]
     //[NativeMarshalling(typeof(SizableSpanMarshaller<,>))]
@@ -206,7 +207,7 @@ namespace Zyl.SizableSpans {
                     if (_referenceSpan.IsEmpty) {
                         return ref Unsafe.Add(ref Unsafe.AsRef<T>((void*)_byteOffse), index);
                     } else {
-                        return ref Unsafe.Add(ref Unsafe.AddByteOffset(ref _referenceSpan.GetPinnableReference(), SizableUnsafe.ToIntPtr(_byteOffse)), (nint)(uint)index);
+                        return ref Unsafe.Add(ref Unsafe.AddByteOffset(ref _referenceSpan.GetPinnableReference(), IntPtrs.ToIntPtr(_byteOffse)), (nint)(uint)index);
                     }
                 }
 #endif
@@ -328,7 +329,7 @@ namespace Zyl.SizableSpans {
                     if (_referenceSpan.IsEmpty) {
                         return ref Unsafe.AsRef<T>((void*)_byteOffse);
                     } else {
-                        return ref Unsafe.AddByteOffset(ref _referenceSpan.GetPinnableReference(), SizableUnsafe.ToIntPtr(_byteOffse));
+                        return ref Unsafe.AddByteOffset(ref _referenceSpan.GetPinnableReference(), IntPtrs.ToIntPtr(_byteOffse));
                     }
                 }
 #endif
@@ -414,9 +415,9 @@ namespace Zyl.SizableSpans {
         /// </summary>
         public static implicit operator ReadOnlySizableSpan<T>(SizableSpan<T> span) {
 #if STRUCT_REF_FIELD
-            return new ReadOnlySizableSpan<T>(ref span._reference, span._length);
+            return new ReadOnlySizableSpan<T>(ref span._reference, (TSize)(uint)span._length);
 #else
-            return new ReadOnlySizableSpan<T>(span._referenceSpan, span._byteOffse, span._length);
+            return new ReadOnlySizableSpan<T>(span._referenceSpan, span._byteOffse, (TSize)(uint)span._length);
 #endif
         }
 
