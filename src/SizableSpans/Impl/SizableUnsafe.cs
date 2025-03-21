@@ -79,6 +79,18 @@ namespace Zyl.SizableSpans.Impl {
         }
 
         /// <summary>
+        /// Returns a pointer integer to the given by-ref parameter (返回所给引用的指针整数值).
+        /// </summary>
+        /// <typeparam name="T">The type of object (对象类型).</typeparam>
+        /// <param name="value">The object whose pointer is obtained (指针被获取的对象).</param>
+        /// <returns>A pointer integer to the given value (所给引用的指针整数值).</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe static IntPtr AsPointerInt<T>(ref readonly T value) {
+            //return (IntPtr)Unsafe.AsPointer(ref value);
+            return (IntPtr)Unsafe.AsPointer(ref Unsafe.AsRef(in value));
+        }
+
+        /// <summary>
         /// Subtracts an element offset to the given managed pointer.
         /// </summary>
         /// <typeparam name="T">The elemental type of the managed pointer.</typeparam>

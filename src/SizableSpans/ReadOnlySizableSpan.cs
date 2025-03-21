@@ -16,7 +16,7 @@ using EditorBrowsableState = System.ComponentModel.EditorBrowsableState;
 
 namespace Zyl.SizableSpans {
     /// <summary>
-    /// Provides a type-safe and memory-safe read-only representation of a contiguous region of arbitrary memory. It can be regarded as the <see cref="ReadOnlySpan{T}"/> of <see cref="UIntPtr"/> index range (提供任意内存连续区域的类型安全且内存安全的只读表示形式. . 它可以被视为 UIntPtr 索引范围的 <see cref="ReadOnlySpan{T}"/>).
+    /// Provides a type-safe and memory-safe read-only representation of a contiguous region of arbitrary memory. It can be regarded as the <see cref="ReadOnlySpan{T}"/> of <see cref="UIntPtr"/> index range (提供任意内存连续区域的类型安全且内存安全的只读表示形式. 它可以被视为 UIntPtr 索引范围的 <see cref="ReadOnlySpan{T}"/>).
     /// </summary>
     /// <typeparam name="T">The element type (元素的类型).</typeparam>
     //[DebuggerTypeProxy(typeof(SizableSpanDebugView<>))]
@@ -28,7 +28,7 @@ namespace Zyl.SizableSpans {
             where T : struct
 #endif
             {
-        /// <summary>The number of elements this ReadOnlySizableSpan contains (只读跨度中的项数).</summary>
+        /// <summary>The number of elements this span contains (跨度中的项数).</summary>
         private readonly TSize _length;
 #if STRUCT_REF_FIELD
         /// <summary>A byref or a native ptr (引用或原生指针).</summary>
@@ -41,7 +41,7 @@ namespace Zyl.SizableSpans {
 #endif
 
         /// <summary>
-        /// Creates a new read-only sizable span over the entirety of the target array (在整个指定数组中创建新的 <see cref="ReadOnlySizableSpan{T}"/>).
+        /// Creates a new <see cref="ReadOnlySizableSpan{T}"/> over the entirety of the target array (在整个指定数组中创建新的 <see cref="ReadOnlySizableSpan{T}"/>).
         /// </summary>
         /// <param name="array">The target array (指定数组).</param>
         /// <remarks>Returns default when <paramref name="array"/> is null (当 array 为 null 时返回默认值).</remarks>
@@ -62,11 +62,11 @@ namespace Zyl.SizableSpans {
         }
 
         /// <summary>
-        /// Creates a new read-only sizable span over the portion of the target array beginning at 'start' index and ending at 'end' index (exclusive) (创建一个新的 <see cref="ReadOnlySizableSpan{T}"/>，其中包含从指定索引开始的数组的指定数量的元素).
+        /// Creates a new <see cref="ReadOnlySizableSpan{T}"/> over the portion of the target array beginning at 'start' index and ending at 'end' index (exclusive) (创建一个新的 <see cref="ReadOnlySizableSpan{T}"/>，其中包含从指定索引开始的数组的指定数量的元素).
         /// </summary>
         /// <param name="array">The target array (指定数组).</param>
-        /// <param name="start">The zero-based index at which to begin the read-only sizable span (从零开始的只读大范围跨度的索引).</param>
-        /// <param name="length">The number of items in the read-only sizable span (只读大范围跨度的项数).</param>
+        /// <param name="start">The zero-based index at which to begin the span (从零开始的跨度索引).</param>
+        /// <param name="length">The number of items in the span (跨度的项数).</param>
         /// <remarks>Returns default when <paramref name="array"/> is null (当 array 为 null 时返回默认值).</remarks>
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown when the specified <paramref name="start"/> or end index is not in the range (&lt;0 or &gt;Length).
@@ -93,7 +93,7 @@ namespace Zyl.SizableSpans {
         }
 
         /// <summary>
-        /// Creates a new read-only sizable span over the target unmanaged buffer (在目标非托管缓冲区上创建新的只读大范围跨度).
+        /// Creates a new <see cref="ReadOnlySizableSpan{T}"/> over the target unmanaged buffer (在目标非托管缓冲区上创建新 <see cref="ReadOnlySizableSpan{T}"/>).
         /// </summary>
         /// <param name="pointer">An unmanaged pointer to memory (指向内存的非托管指针).</param>
         /// <param name="length">The number of <typeparamref name="T"/> elements the memory contains (内存中包含的 <typeparamref name="T"/> 元素数量).</param>
@@ -172,7 +172,8 @@ namespace Zyl.SizableSpans {
         public ref readonly T this[TSize index] {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get {
-                if (IntPtrs.GreaterThanOrEqual(index, _length)) ThrowHelper.ThrowIndexOutOfRangeException();
+                if (IntPtrs.GreaterThanOrEqual(index, _length))
+                    ThrowHelper.ThrowIndexOutOfRangeException();
 #if STRUCT_REF_FIELD
                 return ref Unsafe.Add(ref _reference, index);
 #else
@@ -205,12 +206,12 @@ namespace Zyl.SizableSpans {
         }
 
         /// <summary>
-        /// Returns a value that indicates whether two <see cref="ReadOnlySpan{T}"/> instances are not equal (返回一个值，该值指示两个 <see cref="ReadOnlySpan{T}"/> 实例是否不相等).
+        /// Returns a value that indicates whether two <see cref="ReadOnlySizableSpan{T}"/> instances are not equal (返回一个值，该值指示两个 <see cref="ReadOnlySizableSpan{T}"/> 实例是否不相等).
         /// </summary>
         public static bool operator !=(ReadOnlySizableSpan<T> left, ReadOnlySizableSpan<T> right) => !(left == right);
 
         /// <summary>
-        /// This method is not supported as SizableSpans cannot be boxed. To compare two SizableSpans, use operator==.
+        /// This method is not supported as ReadOnlySizableSpan cannot be boxed. To compare two ReadOnlySizableSpan, use operator==.
         /// </summary>
         /// <exception cref="NotSupportedException">
         /// Always thrown by this method.
@@ -221,7 +222,7 @@ namespace Zyl.SizableSpans {
             throw new NotSupportedException(SR.NotSupported_CannotCallEqualsOnSizableSpan);
 
         /// <summary>
-        /// This method is not supported as SizableSpans cannot be boxed.
+        /// This method is not supported as ReadOnlySizableSpan cannot be boxed.
         /// </summary>
         /// <exception cref="NotSupportedException">
         /// Always thrown by this method.
@@ -377,11 +378,11 @@ namespace Zyl.SizableSpans {
         /// <summary>
         /// Returns the string representation of this <see cref="ReadOnlySizableSpan{Char}"/> (返回此 <see cref="ReadOnlySizableSpan{Char}"/> 的字符串表示形式).
         /// </summary>
-        public override unsafe string ToString() {
+        public override string ToString() {
             //if (typeof(T) == typeof(char)) {
             //    return new string(new ReadOnlySpan<char>(ref Unsafe.As<T, char>(ref _reference), _length));
             //}
-            nint ptr = (nint)Unsafe.AsPointer(ref Unsafe.AsRef(in GetPinnableReference()));
+            nint ptr = SizableUnsafe.AsPointerInt(in GetPinnableReference());
             return $"System.ReadOnlySizableSpan<{typeof(T).Name}>[{_length}, ptr=0x{ptr:X}]";
         }
 

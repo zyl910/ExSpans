@@ -9,7 +9,7 @@ using System.Text;
 
 namespace Zyl.SizableSpans.Impl {
     /// <summary>
-    /// <see cref="IntPtrs"/> utils (IntPtr 的工具方法).
+    /// <see cref="IntPtr"/> utils (IntPtr 的工具方法).
     /// </summary>
     public static class IntPtrs {
 
