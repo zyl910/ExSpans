@@ -1,6 +1,6 @@
 using NUnit.Framework;
 
-namespace SizableSpans.Tests {
+namespace Zyl.SizableSpans.Tests {
     public class UnitTest1 {
         [SetUp]
         public void Setup() {
