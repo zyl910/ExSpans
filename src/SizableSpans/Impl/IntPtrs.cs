@@ -125,10 +125,10 @@ namespace Zyl.SizableSpans.Impl {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool GreaterThanOrEqual(nint left, nint right) {
 #if GENERIC_MATH
-            return left > right;
+            return left >= right;
 #else
             unsafe {
-                return (void*)left > (void*)right;
+                return (void*)left >= (void*)right;
             }
 #endif
         }
@@ -142,10 +142,10 @@ namespace Zyl.SizableSpans.Impl {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool GreaterThanOrEqual(nuint left, nuint right) {
 #if GENERIC_MATH
-            return left > right;
+            return left >= right;
 #else
             unsafe {
-                return (void*)left > (void*)right;
+                return (void*)left >= (void*)right;
             }
 #endif
         }
@@ -183,6 +183,41 @@ namespace Zyl.SizableSpans.Impl {
             }
 #endif
         }
+
+        /// <summary>
+        /// Less or equal than (小于或等于).
+        /// </summary>
+        /// <param name="left">Left value (左值).</param>
+        /// <param name="right">Right value (右值).</param>
+        /// <returns><see langword="true"/> if less or equal; otherwise, <see langword="false"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool LessThanOrEqual(nint left, nint right) {
+#if GENERIC_MATH
+            return left <= right;
+#else
+            unsafe {
+                return (void*)left <= (void*)right;
+            }
+#endif
+        }
+
+        /// <summary>
+        /// Less or equal than (小于或等于).
+        /// </summary>
+        /// <param name="left">Left value (左值).</param>
+        /// <param name="right">Right value (右值).</param>
+        /// <returns><see langword="true"/> if less or equal; otherwise, <see langword="false"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool LessThanOrEqual(nuint left, nuint right) {
+#if GENERIC_MATH
+            return left <= right;
+#else
+            unsafe {
+                return (void*)left <= (void*)right;
+            }
+#endif
+        }
+
 
         /// <summary>
         /// Subtract (减法).

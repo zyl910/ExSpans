@@ -191,7 +191,7 @@ namespace Zyl.SizableSpans {
                 if (IntPtrs.GreaterThanOrEqual(index, _length))
                     ThrowHelper.ThrowIndexOutOfRangeException();
 #if STRUCT_REF_FIELD
-                return ref Unsafe.Add(ref _reference, (nint)(uint)index /* force zero-extension */);
+                return ref Unsafe.Add(ref _reference, index);
 #else
                 unsafe {
                     if (_referenceSpan.IsEmpty) {
@@ -345,15 +345,16 @@ namespace Zyl.SizableSpans {
         public void Fill(T value) {
             SizableSpanHelpers.Fill(ref _reference, (uint)_length, value);
         }
-
+        */
         /// <summary>
-        /// Copies the contents of this SizableSpan into destination SizableSpan. If the source
+        /// Copies the contents of this span into destination span. If the source
         /// and destinations overlap, this method behaves as if the original values in
-        /// a temporary location before the destination is overwritten.
+        /// a temporary location before the destination is overwritten
+        /// (将此跨度的内容复制到目标跨度. 如果源和目标重叠, 则此方法的行为就像覆盖目标之前临时位置中的原始值一样).
         /// </summary>
-        /// <param name="destination">The SizableSpan to copy items into.</param>
+        /// <param name="destination">The destination span (目标跨度).</param>
         /// <exception cref="ArgumentException">
-        /// Thrown when the destination SizableSpan is shorter than the source SizableSpan.
+        /// Thrown when the destination span is shorter than the source span.
         /// </exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void CopyTo(SizableSpan<T> destination) {
@@ -362,29 +363,29 @@ namespace Zyl.SizableSpans {
             // we can optimize by performing the check once ourselves then calling Memmove directly.
 
             if ((uint)_length <= (uint)destination.Length) {
-                Buffer.Memmove(ref destination._reference, ref _reference, (uint)_length);
+                BufferHelper.Memmove(ref destination.GetPinnableReference(), in GetPinnableReference(), _length);
             } else {
                 ThrowHelper.ThrowArgumentException_DestinationTooShort();
             }
         }
-        
+
         /// <summary>
-        /// Copies the contents of this SizableSpan into destination SizableSpan. If the source
+        /// Try copies the contents of this span into destination span. If the source
         /// and destinations overlap, this method behaves as if the original values in
-        /// a temporary location before the destination is overwritten.
+        /// a temporary location before the destination is overwritten
+        /// (尝试将此只读跨度的内容复制到目标跨度. 如果源和目标重叠, 则此方法的行为就像覆盖目标之前临时位置中的原始值一样).
         /// </summary>
-        /// <param name="destination">The SizableSpan to copy items into.</param>
-        /// <returns>If the destination SizableSpan is shorter than the source SizableSpan, this method
-        /// return false and no data is written to the destination.</returns>
+        /// <param name="destination">The destination span (目标跨度).</param>
+        /// <returns>true if the copy operation succeeded; otherwise, false (如果复制操作已成功，则为 true；否则，为 false).</returns>
         public bool TryCopyTo(SizableSpan<T> destination) {
             bool retVal = false;
             if ((uint)_length <= (uint)destination.Length) {
-                Buffer.Memmove(ref destination._reference, ref _reference, (uint)_length); // Buffer.Memmove need .NET Standard 1.3
+                BufferHelper.Memmove(ref destination.GetPinnableReference(), in GetPinnableReference(), _length);
                 retVal = true;
             }
             return retVal;
         }
-        */
+        
         /// <summary>
         /// Returns a value that indicates whether two <see cref="SizableSpan{T}"/> instances are equal (返回一个值，该值指示两个 <see cref="SizableSpan{T}"/> 实例是否相等).
         /// </summary>

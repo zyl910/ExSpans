@@ -12,6 +12,11 @@ namespace Zyl.SizableSpans {
     internal static class ThrowHelper {
 
         [DoesNotReturn]
+        internal static void ThrowArgumentException_DestinationTooShort() {
+            throw new ArgumentException(SR.Argument_DestinationTooShort, "destination");
+        }
+
+        [DoesNotReturn]
         internal static void ThrowArgumentOutOfRangeException() {
             throw new ArgumentOutOfRangeException();
         }

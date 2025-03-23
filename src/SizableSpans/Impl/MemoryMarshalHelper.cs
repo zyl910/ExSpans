@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Zyl.SizableSpans.Impl {
     /// <summary>
-    /// MemoryMarshal Helper.
+    /// <see cref="MemoryMarshal"/> Helper.
     /// </summary>
     public static class MemoryMarshalHelper {
 
