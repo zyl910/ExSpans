@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -65,7 +64,7 @@ namespace Zyl.SizableSpans.Impl {
         /// <param name="elementCount">Element count(元素数量).</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Memmove<T>(ref T destination, ref readonly T source, nuint elementCount) {
-            bool isBlittable = SizableUnsafe.IsBlittable<T>();
+            bool isBlittable = TypeHelper.IsBlittable<T>();
             if (isBlittable) {
                 // Blittable memmove
                 MemmoveBlittableUnsafe(ref destination, in source, elementCount);

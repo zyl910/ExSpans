@@ -68,27 +68,6 @@ namespace Zyl.SizableSpans.Impl {
         }
 
         /// <summary>
-        /// Is blittable type (是可直接按位复制的类型)
-        /// </summary>
-        /// <typeparam name="T">The element type (元素的类型).</typeparam>
-        /// <returns>true is blittable type; otherwise is false.</returns>
-        /// <remarks>
-        /// https://learn.microsoft.com/en-us/dotnet/framework/interop/blittable-and-non-blittable-types
-        /// </remarks>
-        /// <seealso cref="RuntimeHelpers.IsReferenceOrContainsReferences{T}"/>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsBlittable<T>() {
-#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_0_OR_GREATER
-            bool isBlittable = !RuntimeHelpers.IsReferenceOrContainsReferences<T>();
-#elif NETSTANDARD2_0_OR_GREATER || NET20_OR_GREATER
-            bool isBlittable = typeof(T).IsPrimitive;
-#else
-            bool isBlittable = typeof(T).GetTypeInfo().IsPrimitive;
-#endif
-            return isBlittable;
-        }
-
-        /// <summary>
         /// Get byte size (取得字节长度).
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>

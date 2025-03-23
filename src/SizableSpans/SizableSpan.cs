@@ -24,12 +24,7 @@ namespace Zyl.SizableSpans {
     //[DebuggerTypeProxy(typeof(SizableSpanDebugView<>))]
     [DebuggerDisplay("{ToString(),raw}")]
     //[NativeMarshalling(typeof(SizableSpanMarshaller<,>))]
-    public readonly ref struct SizableSpan<T>
-#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP3_0_OR_GREATER
-#else
-            where T : struct
-#endif
-            {
+    public readonly ref struct SizableSpan<T> {
         /// <summary>The number of elements this span contains (跨度中的项数).</summary>
         private readonly TSize _length;
 #if STRUCT_REF_FIELD
@@ -54,14 +49,8 @@ namespace Zyl.SizableSpans {
                 this = default;
                 return; // returns default
             }
-            //if (!typeof(T).IsValueType && array.GetType() != typeof(T[]))
-            //    ThrowHelper.ThrowArrayTypeMismatchException();
-            if (array.GetType() != typeof(T[])) ThrowHelper.ThrowArrayTypeMismatchException();
-#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP3_0_OR_GREATER
-            if (!typeof(T).IsValueType) ThrowHelper.ThrowArrayTypeMismatchException();
-#else
-            // where T : struct
-#endif
+            if (!TypeHelper.IsValueType<T>() && array.GetType() != typeof(T[]))
+                ThrowHelper.ThrowArrayTypeMismatchException();
 
             _length = (TSize)array.Length;
 #if STRUCT_REF_FIELD
@@ -91,10 +80,8 @@ namespace Zyl.SizableSpans {
                 this = default;
                 return; // returns default
             }
-            if (array.GetType() != typeof(T[])) ThrowHelper.ThrowArrayTypeMismatchException();
-#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP3_0_OR_GREATER
-            if (!typeof(T).IsValueType) ThrowHelper.ThrowArrayTypeMismatchException();
-#endif
+            if (!TypeHelper.IsValueType<T>() && array.GetType() != typeof(T[]))
+                ThrowHelper.ThrowArrayTypeMismatchException();
             if (IntPtrs.GreaterThan(start, (uint)array.Length) || IntPtrs.GreaterThan(IntPtrs.Add(start, length), (uint)array.Length)) {
                 ThrowHelper.ThrowArgumentOutOfRangeException();
             }
