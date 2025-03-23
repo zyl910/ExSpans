@@ -8,7 +8,7 @@
     </When>
     <When Condition=" '$(OS)' == 'Windows_NT' ">
       <PropertyGroup>
-        <TargetFrameworks>net9.0;net8.0;net7.0;net6.0;netcoreapp3.1;net45</TargetFrameworks>
+        <TargetFrameworks>net9.0;net8.0;net7.0;net6.0;netcoreapp3.1;net461;net452</TargetFrameworks>
       </PropertyGroup>
     </When>
     <Otherwise>
@@ -30,9 +30,13 @@
 
 
   <ItemGroup>
-      <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
-      <PackageReference Include="NUnit" Version="3.12.0" />
-      <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
+      <PackageReference Include="Microsoft.TestPlatform.TestHost" Version="17.3.3" />
+      <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.3" />
+      <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="xunit" Version="2.9.3" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">
