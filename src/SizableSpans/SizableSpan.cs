@@ -349,7 +349,7 @@ namespace Zyl.SizableSpans {
             // check, and one for the result of TryCopyTo. Since these checks are equivalent,
             // we can optimize by performing the check once ourselves then calling Memmove directly.
 
-            if ((uint)_length <= (uint)destination.Length) {
+            if (IntPtrs.LessThanOrEqual(_length, destination.Length)) {
                 BufferHelper.Memmove(ref destination.GetPinnableReference(), in GetPinnableReference(), _length);
             } else {
                 ThrowHelper.ThrowArgumentException_DestinationTooShort();
@@ -366,7 +366,7 @@ namespace Zyl.SizableSpans {
         /// <returns>true if the copy operation succeeded; otherwise, false (如果复制操作已成功，则为 true；否则，为 false).</returns>
         public bool TryCopyTo(SizableSpan<T> destination) {
             bool retVal = false;
-            if ((uint)_length <= (uint)destination.Length) {
+            if (IntPtrs.LessThanOrEqual(_length, destination.Length)) {
                 BufferHelper.Memmove(ref destination.GetPinnableReference(), in GetPinnableReference(), _length);
                 retVal = true;
             }

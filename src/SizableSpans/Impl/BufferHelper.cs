@@ -25,12 +25,12 @@ namespace Zyl.SizableSpans.Impl {
         /// <exception cref="ArgumentOutOfRangeException">sourceBytesToCopy is greater than destinationSizeInBytes.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void MemoryCopy(void* source, void* destination, long destinationSizeInBytes, long sourceBytesToCopy) {
-            if (sourceBytesToCopy > destinationSizeInBytes) {
-                throw new ArgumentOutOfRangeException(nameof(sourceBytesToCopy), SR.sourceBytesToCopy);
-            }
 #if NETSTANDARD1_3_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET46_OR_GREATER
             Buffer.MemoryCopy(destination, source, destinationSizeInBytes, sourceBytesToCopy);
 #else
+            if (sourceBytesToCopy > destinationSizeInBytes) {
+                throw new ArgumentOutOfRangeException(nameof(sourceBytesToCopy), SR.sourceBytesToCopy);
+            }
             Memmove(ref *(byte*)destination, ref *(byte*)source, checked((nuint)sourceBytesToCopy));
 #endif
         }
@@ -45,12 +45,12 @@ namespace Zyl.SizableSpans.Impl {
         /// <exception cref="ArgumentOutOfRangeException">sourceBytesToCopy is greater than destinationSizeInBytes.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void MemoryCopy(void* source, void* destination, ulong destinationSizeInBytes, ulong sourceBytesToCopy) {
-            if (sourceBytesToCopy > destinationSizeInBytes) {
-                throw new ArgumentOutOfRangeException(nameof(sourceBytesToCopy), SR.sourceBytesToCopy);
-            }
 #if NETSTANDARD1_3_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET46_OR_GREATER
             Buffer.MemoryCopy(destination, source, destinationSizeInBytes, sourceBytesToCopy);
 #else
+            if (sourceBytesToCopy > destinationSizeInBytes) {
+                throw new ArgumentOutOfRangeException(nameof(sourceBytesToCopy), SR.sourceBytesToCopy);
+            }
             Memmove(ref *(byte*)destination, ref *(byte*)source, checked((nuint)sourceBytesToCopy));
 #endif
         }
@@ -81,14 +81,17 @@ namespace Zyl.SizableSpans.Impl {
         /// <param name="destination">Destination address (目标地址).</param>
         /// <param name="source">Source address (源地址).</param>
         /// <param name="elementCount">Element count(元素数量).</param>
-        /// <seealso cref="SizableUnsafe.IsBlittable"/>
+        /// <seealso cref="TypeHelper.IsBlittable"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void MemmoveBlittableUnsafe<T>(ref T destination, ref readonly T source, nuint elementCount) {
             nuint sourceBytesToCopy = SizableUnsafe.GetByteSize<T>(elementCount);
             ref byte p0 = ref Unsafe.As<T, byte>(ref Unsafe.AsRef(in source));
 #if NETSTANDARD1_3_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET46_OR_GREATER
             unsafe {
-                Buffer.MemoryCopy(Unsafe.AsPointer(ref destination), Unsafe.AsPointer(ref p0), (ulong)sourceBytesToCopy, (ulong)sourceBytesToCopy);
+                void* psrc = Unsafe.AsPointer(ref p0);
+                void* pdst = Unsafe.AsPointer(ref destination);
+                ulong cnt = (ulong)sourceBytesToCopy;
+                Buffer.MemoryCopy(psrc, pdst, cnt, cnt);
             }
 #else
             const int MaxBlockSize = 1024 * 1024 * 1024; // 1G
@@ -116,6 +119,7 @@ namespace Zyl.SizableSpans.Impl {
             // Copy.
             if (blockSize <= Unsafe.SizeOf<T>()) {
                 MemmoveNonBlittable(ref destination, in source, elementCount);
+                return;
             }
             ulong count = (ulong)sourceBytesToCopy;
             if (needReverse) {
@@ -124,25 +128,25 @@ namespace Zyl.SizableSpans.Impl {
                 while (count >= blockSize) {
                     p = ref Unsafe.SubtractByteOffset(ref p, (nint)blockSize);
                     q = ref Unsafe.SubtractByteOffset(ref q, (nint)blockSize);
-                    Unsafe.CopyBlockUnaligned(ref p, ref q, blockSize);
+                    Unsafe.CopyBlockUnaligned(ref q, ref p, blockSize);
                     // Next.
                     count -= blockSize;
                 }
                 if (count > 0) {
-                    Unsafe.CopyBlockUnaligned(ref p0, ref q0, (uint)count);
+                    Unsafe.CopyBlockUnaligned(ref q0, ref p0, (uint)count);
                 }
             } else {
                 ref byte p = ref p0;
                 ref byte q = ref q0;
                 while (count >= blockSize) {
-                    Unsafe.CopyBlockUnaligned(ref p, ref q, blockSize);
+                    Unsafe.CopyBlockUnaligned(ref q, ref p, blockSize);
                     // Next.
                     count -= blockSize;
                     p = ref Unsafe.AddByteOffset(ref p, (nint)blockSize);
                     q = ref Unsafe.AddByteOffset(ref q, (nint)blockSize);
                 }
                 if (count > 0) {
-                    Unsafe.CopyBlockUnaligned(ref p, ref q, (uint)count);
+                    Unsafe.CopyBlockUnaligned(ref q, ref p, (uint)count);
                 }
             }
 #endif
@@ -180,7 +184,7 @@ namespace Zyl.SizableSpans.Impl {
                     ref T pStartAlign = ref SizableUnsafe.Subtract(ref pEnd, alignCount);
                     ref T p = ref pEnd;
                     ref T q = ref qEnd;
-                    do {
+                    while (!Unsafe.AreSame(ref p, ref pStartAlign)) {
                         p = ref Unsafe.Subtract(ref p, UnrollingSize);
                         q = ref Unsafe.Subtract(ref q, UnrollingSize);
                         Unsafe.Add(ref q, 7) = Unsafe.Add(ref p, 7);
@@ -191,7 +195,7 @@ namespace Zyl.SizableSpans.Impl {
                         Unsafe.Add(ref q, 2) = Unsafe.Add(ref p, 2);
                         Unsafe.Add(ref q, 1) = Unsafe.Add(ref p, 1);
                         q = p;
-                    } while (!Unsafe.AreSame(ref p, ref pStartAlign));
+                    };
                     p = ref p0;
                     q = ref q0;
                     switch (rem) {
@@ -207,7 +211,7 @@ namespace Zyl.SizableSpans.Impl {
                     ref T pEndAlign = ref SizableUnsafe.Add(ref p0, alignCount);
                     ref T p = ref p0;
                     ref T q = ref q0;
-                    do {
+                    while (!Unsafe.AreSame(ref p, ref pEndAlign)) {
                         q = p;
                         Unsafe.Add(ref q, 1) = Unsafe.Add(ref p, 1);
                         Unsafe.Add(ref q, 2) = Unsafe.Add(ref p, 2);
@@ -218,7 +222,7 @@ namespace Zyl.SizableSpans.Impl {
                         Unsafe.Add(ref q, 7) = Unsafe.Add(ref p, 7);
                         p = ref Unsafe.Add(ref p, UnrollingSize);
                         q = ref Unsafe.Add(ref q, UnrollingSize);
-                    } while (!Unsafe.AreSame(ref p, ref pEndAlign));
+                    };
                     int remInt = (int)rem;
                     for (int i = 0; i < remInt; ++i) {
                         Unsafe.Add(ref q, i) = Unsafe.Add(ref p, i);
@@ -226,25 +230,24 @@ namespace Zyl.SizableSpans.Impl {
                 }
                 return;
             }
-#else
+#endif // USE_LOOP_UNROLLING
             if (needReverse) {
                 ref T p = ref pEnd;
                 ref T q = ref qEnd;
-                do {
+                while (!Unsafe.AreSame(ref p, ref p0)) {
                     p = ref Unsafe.Subtract(ref p, 1);
                     q = ref Unsafe.Subtract(ref q, 1);
                     q = p;
-                } while (!Unsafe.AreSame(ref p, ref p0));
+                };
             } else {
                 ref T p = ref p0;
                 ref T q = ref q0;
-                do {
+                while (!Unsafe.AreSame(ref p, ref pEnd)) {
                     q = p;
                     p = ref Unsafe.Add(ref p, 1);
                     q = ref Unsafe.Add(ref q, 1);
-                } while (!Unsafe.AreSame(ref p, ref pEnd));
+                };
             }
-#endif // USE_LOOP_UNROLLING
         }
 
     }

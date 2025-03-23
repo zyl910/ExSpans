@@ -40,4 +40,12 @@
       <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="5.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\SizableSpans\SizableSpans.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="AReadOnlySizableSpan\" />
+  </ItemGroup>
+
 </Project>
