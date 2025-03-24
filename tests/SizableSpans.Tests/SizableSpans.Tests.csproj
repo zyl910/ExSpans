@@ -48,8 +48,4 @@
     <ProjectReference Include="..\..\src\SizableSpans\SizableSpans.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="AReadOnlySizableSpan\" />
-  </ItemGroup>
-
 </Project>

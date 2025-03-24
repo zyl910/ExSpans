@@ -22,5 +22,17 @@ namespace Zyl.SizableSpans.Tests {
             }
         }
 
+        public delegate void AssertThrowsActionReadOnly<T>(ReadOnlySizableSpan<T> span);
+
+        // Cannot use standard Assert.Throws() when testing SizableSpan - SizableSpan and closures don't get along.
+        public static void AssertThrows<E, T>(ReadOnlySizableSpan<T> span, AssertThrowsActionReadOnly<T> action) where E : Exception {
+            try {
+                action(span);
+                Assert.Fail($"Expected exception: {typeof(E)}");
+            } catch (Exception ex) {
+                Assert.True(ex is E, $"Wrong exception thrown. Expected: {typeof(E)} Actual: {ex.GetType()}");
+            }
+        }
+
     }
 }
