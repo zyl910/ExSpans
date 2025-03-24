@@ -463,20 +463,31 @@ namespace Zyl.SizableSpans {
             }
 #endif
         }
-        /*
-        /// <summary>
-        /// Copies the contents of this SizableSpan into a new array.  This heap
-        /// allocates, so should generally be avoided, however it is sometimes
-        /// necessary to bridge the gap with APIs written in terms of arrays.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public T[] ToArray() {
-            if (_length == 0)
-                return Array.Empty<T>();
 
-            var destination = new T[_length];
-            Buffer.Memmove(ref MemoryMarshal.GetArrayDataReference(destination), ref _reference, (uint)_length);
+        /// <summary>
+        /// Copies the contents of this span into a new array. The maxLength parameter uses the value of <see cref="SizableSpanHelpers.ArrayMaxLengthSafe"/> (将此范围的内容复制到新建数组中. maxLength 参数使用 <see cref="SizableSpanHelpers.ArrayMaxLengthSafe"/> 的值).
+        /// </summary>
+        /// <returns>An array containing the data in the current span (包含当前跨度中数据的数组).</returns>
+        public T[] ToArray() {
+            return ToArray(SizableSpanHelpers.ArrayMaxLengthSafe);
+        }
+
+        /// <summary>
+        /// Copies the contents of this span into a new array. It has a maxLength parameters (将此跨度的内容复制到新建数组中. 它具有 maxLength 参数).
+        /// </summary>
+        /// <param name="maxLength">The max length of array (数组的最大长度).</param>
+        /// <returns>An array containing the data in the current span (包含当前跨度中数据的数组).</returns>
+        /// <exception cref="ArgumentOutOfRangeException">The <paramref name="maxLength"/> parameter must be greater than 0</exception>
+        public T[] ToArray(int maxLength) {
+            if (maxLength <= 0) throw new ArgumentOutOfRangeException(nameof(maxLength), "The maxLength parameter must be greater than 0!");
+            if (_length == TSize.Zero)
+                return ArrayHelper.Empty<T>();
+
+            int len = (IntPtrs.LessThan(_length, (TSize)maxLength)) ? (int)_length : maxLength;
+            var destination = new T[len];
+            BufferHelper.Memmove(ref SizableMemoryMarshal.GetArrayDataReference(destination), in GetPinnableReference(), (uint)len);
             return destination;
-        }*/
+        }
+
     }
 }
