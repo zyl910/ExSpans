@@ -67,7 +67,7 @@ namespace Zyl.SizableSpans.Impl {
             bool isBlittable = TypeHelper.IsBlittable<T>();
             if (isBlittable) {
                 // Blittable memmove
-                MemmoveBlittableUnsafe(ref destination, in source, elementCount);
+                MemmoveBlittable(ref destination, in source, elementCount);
             } else {
                 // Non-blittable memmove
                 MemmoveNonBlittable(ref destination, in source, elementCount);
@@ -75,7 +75,7 @@ namespace Zyl.SizableSpans.Impl {
         }
 
         /// <summary>
-        /// Unsafe memory move only available for Blittable type. If some regions of the source area and the destination overlap, the function ensures that the original source bytes in the overlapping region are copied before being overwritten (仅Blittable类型能用的非安全内存复制. 如果源区域的某些区域与目标区域重叠，函数可确保在覆盖之前复制重叠区域中的原始源字节).
+        /// Memory move only available for Blittable type. If some regions of the source area and the destination overlap, the function ensures that the original source bytes in the overlapping region are copied before being overwritten (仅Blittable类型能用的非安全内存复制. 如果源区域的某些区域与目标区域重叠，函数可确保在覆盖之前复制重叠区域中的原始源字节).
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <param name="destination">Destination address (目标地址).</param>
@@ -83,7 +83,7 @@ namespace Zyl.SizableSpans.Impl {
         /// <param name="elementCount">Element count(元素数量).</param>
         /// <seealso cref="TypeHelper.IsBlittable"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void MemmoveBlittableUnsafe<T>(ref T destination, ref readonly T source, nuint elementCount) {
+        internal static void MemmoveBlittable<T>(ref T destination, ref readonly T source, nuint elementCount) {
             nuint sourceBytesToCopy = SizableUnsafe.GetByteSize<T>(elementCount);
             ref byte p0 = ref Unsafe.As<T, byte>(ref Unsafe.AsRef(in source));
 #if NETSTANDARD1_3_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET46_OR_GREATER
