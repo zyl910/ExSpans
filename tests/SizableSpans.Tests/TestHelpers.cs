@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -32,6 +33,20 @@ namespace Zyl.SizableSpans.Tests {
             } catch (Exception ex) {
                 Assert.True(ex is E, $"Wrong exception thrown. Expected: {typeof(E)} Actual: {ex.GetType()}");
             }
+        }
+
+        public enum TestEnum {
+            E0,
+            E1,
+            E2,
+            E3,
+            E4,
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct TestValueTypeWithReference {
+            public int I;
+            public string S;
         }
 
     }

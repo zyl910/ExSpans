@@ -11,9 +11,33 @@ namespace Zyl.SizableSpans.Impl {
     /// </summary>
     public static class BufferHelper {
 
+        private const int MaxBlockSize = 1024 * 1024 * 1024; // 1G
+
 #if USE_LOOP_UNROLLING
         private const int UnrollingSize = 8;
 #endif // USE_LOOP_UNROLLING
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void _ZeroMemory(ref byte b, nuint byteLength) {
+            //fixed (byte* bytePointer = &b) {
+            //    __ZeroMemory(bytePointer, byteLength);
+            //}
+            const byte byteValue = 0;
+            ref byte p0 = ref b;
+            ref byte pEnd = ref SizableUnsafe.Add(ref p0, byteLength);
+            uint blockSize = MaxBlockSize;
+            ulong count = (ulong)byteLength;
+            ref byte p = ref p0;
+            while (count >= blockSize) {
+                Unsafe.InitBlockUnaligned(ref p, byteValue, blockSize);
+                // Next.
+                count -= blockSize;
+                p = ref Unsafe.AddByteOffset(ref p, (nint)blockSize);
+            }
+            if (count > 0) {
+                Unsafe.InitBlockUnaligned(ref p, byteValue, (uint)count);
+            }
+        }
 
         /// <summary>
         /// Copies a number of bytes specified as a long integer value from one address in memory to another. .If some regions of the source area and the destination overlap, the function ensures that the original source bytes in the overlapping region are copied before being overwritten (将指定为长整型值的一些字节从内存中的一个地址复制到另一个地址. 如果源区域的某些区域与目标区域重叠, 函数可确保在覆盖之前复制重叠区域中的原始源字节).
@@ -94,7 +118,6 @@ namespace Zyl.SizableSpans.Impl {
                 Buffer.MemoryCopy(psrc, pdst, cnt, cnt);
             }
 #else
-            const int MaxBlockSize = 1024 * 1024 * 1024; // 1G
             ref byte q0 = ref Unsafe.As<T, byte>(ref destination);
             ref byte pEnd = ref SizableUnsafe.Add(ref p0, sourceBytesToCopy);
             ref byte qEnd = ref SizableUnsafe.Add(ref q0, sourceBytesToCopy);

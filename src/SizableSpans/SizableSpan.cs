@@ -52,7 +52,7 @@ namespace Zyl.SizableSpans {
             if (!TypeHelper.IsValueType<T>() && array.GetType() != typeof(T[]))
                 ThrowHelper.ThrowArrayTypeMismatchException();
 
-            _length = (TSize)array.Length;
+            _length = array.NULength();
 #if STRUCT_REF_FIELD
             _reference = ref SizableMemoryMarshal.GetArrayDataReference(array);
 #else
@@ -82,7 +82,7 @@ namespace Zyl.SizableSpans {
             }
             if (!TypeHelper.IsValueType<T>() && array.GetType() != typeof(T[]))
                 ThrowHelper.ThrowArrayTypeMismatchException();
-            if (IntPtrs.GreaterThan(start, (uint)array.Length) || IntPtrs.GreaterThan(IntPtrs.Add(start, length), (uint)array.Length)) {
+            if (IntPtrs.GreaterThan(start, array.NULength()) || IntPtrs.GreaterThan(IntPtrs.Add(start, length), array.NULength())) {
                 ThrowHelper.ThrowArgumentOutOfRangeException();
             }
 
@@ -312,27 +312,27 @@ namespace Zyl.SizableSpans {
             }
             return ref ret;
         }
-        /*
+        
         /// <summary>
         /// Clears the contents of this SizableSpan.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe void Clear() {
-            if (RuntimeHelpers.IsReferenceOrContainsReferences<T>()) {
-                SizableSpanHelpers.ClearWithReferences(ref Unsafe.As<T, IntPtr>(ref _reference), (uint)_length * (nuint)(sizeof(T) / sizeof(nuint)));
+            if (!TypeHelper.IsBlittable<T>() && Unsafe.SizeOf<T>() >= sizeof(nuint)) {
+                SizableSpanHelpers.ClearWithReferences(ref Unsafe.As<T, IntPtr>(ref GetPinnableReference()), _length * (nuint)(Unsafe.SizeOf<T>() / sizeof(nuint)));
             } else {
-                SizableSpanHelpers.ClearWithoutReferences(ref Unsafe.As<T, byte>(ref _reference), (uint)_length * (nuint)sizeof(T));
+                SizableSpanHelpers.ClearWithoutReferences(ref Unsafe.As<T, byte>(ref GetPinnableReference()), _length * (nuint)Unsafe.SizeOf<T>());
             }
         }
-
+        
         /// <summary>
         /// Fills the contents of this SizableSpan with the given value.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Fill(T value) {
-            SizableSpanHelpers.Fill(ref _reference, (uint)_length, value);
+            SizableSpanHelpers.Fill(ref GetPinnableReference(), _length, value);
         }
-        */
+        
         /// <summary>
         /// Copies the contents of this span into destination span. If the source
         /// and destinations overlap, this method behaves as if the original values in
