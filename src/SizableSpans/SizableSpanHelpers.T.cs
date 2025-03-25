@@ -8,6 +8,7 @@ using System.Runtime.Intrinsics;
 #endif // NETCOREAPP3_0_OR_GREATER
 using System.Text;
 using Zyl.SizableSpans.Impl;
+using Zyl.VectorTraits.Extensions;
 
 namespace Zyl.SizableSpans {
     partial class SizableSpanHelpers {
@@ -87,7 +88,8 @@ namespace Zyl.SizableSpans {
                     vector = Unsafe.As<T, Vector<byte>>(ref tmp);
 #endif // NETCOREAPP3_0_OR_GREATER
                 } else {
-                    DebugHelper.Fail("Vector<T> is greater than 512 bits in size?");
+                    DebugHelper.Fail(string.Format("Vector<{0}> is greater than 512 bits in size?", typeof(T).FullName));
+                    //Debug.WriteLine(string.Format("Vector<{0}> is greater than 512 bits in size?", typeof(T).FullName));
                     goto CannotVectorize;
                 }
 
