@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
+using Zyl.SizableSpans.Extensions;
 using Zyl.SizableSpans.Impl;
 
 using EditorBrowsableAttribute = System.ComponentModel.EditorBrowsableAttribute;

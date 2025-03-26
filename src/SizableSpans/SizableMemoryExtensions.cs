@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
+using Zyl.SizableSpans.Extensions;
 using Zyl.SizableSpans.Impl;
 
 namespace Zyl.SizableSpans {

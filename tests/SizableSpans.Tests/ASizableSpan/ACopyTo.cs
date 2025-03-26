@@ -234,7 +234,7 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
                 }
             }
         }
-
+        
         [Fact]
         public static void CopyToVaryingSizes() {
             const int MaxLength = 2048;
