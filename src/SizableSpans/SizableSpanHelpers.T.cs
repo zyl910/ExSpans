@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 #if NETCOREAPP3_0_OR_GREATER
 using System.Runtime.Intrinsics;
 #endif // NETCOREAPP3_0_OR_GREATER
 using System.Text;
 using Zyl.SizableSpans.Impl;
+using Zyl.VectorTraits;
 using Zyl.VectorTraits.Extensions;
 using Zyl.VectorTraits.Numerics;
 
@@ -88,6 +90,11 @@ namespace Zyl.SizableSpans {
                 } else if (Unsafe.SizeOf<T>() == Vector<byte>.Count) {
                     vector = Unsafe.As<T, Vector<byte>>(ref tmp);
 #endif // NETCOREAPP3_0_OR_GREATER
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
+                } else if (Unsafe.SizeOf<T>() <= Vector<byte>.Count) {
+                    ReadOnlySpan<byte> spanTmp = MemoryMarshal.CreateReadOnlySpan<byte>(ref Unsafe.As<T, byte>(ref tmp), Unsafe.SizeOf<T>());
+                    vector = Vectors.CreateRotate(spanTmp);
+#endif // NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
                 } else {
                     DebugHelper.Fail(string.Format("Vector<{0}> is greater than 512 bits in size?", typeof(T).FullName));
                     //Debug.WriteLine(string.Format("Vector<{0}> is greater than 512 bits in size?", typeof(T).FullName));
