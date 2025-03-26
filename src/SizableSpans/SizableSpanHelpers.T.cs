@@ -9,6 +9,7 @@ using System.Runtime.Intrinsics;
 using System.Text;
 using Zyl.SizableSpans.Impl;
 using Zyl.VectorTraits.Extensions;
+using Zyl.VectorTraits.Numerics;
 
 namespace Zyl.SizableSpans {
     partial class SizableSpanHelpers {
@@ -24,7 +25,7 @@ namespace Zyl.SizableSpans {
             if (!TypeHelper.IsBlittable<T>()) { goto CannotVectorize; }
             if (!Vector.IsHardwareAccelerated) { goto CannotVectorize; }
             if (Unsafe.SizeOf<T>() > Vector<byte>.Count) { goto CannotVectorize; }
-            if (!BitOperationsHelper.IsPow2(Unsafe.SizeOf<T>())) { goto CannotVectorize; }
+            if (!MathBitOperations.IsPow2(Unsafe.SizeOf<T>())) { goto CannotVectorize; }
 
             if (numElements >= (uint)(Vector<byte>.Count / Unsafe.SizeOf<T>())) {
                 // We have enough data for at least one vectorized write.
