@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
+using Zyl.SizableSpans.Extensions;
 
 namespace Zyl.SizableSpans.Impl {
     /// <summary>
@@ -44,7 +45,7 @@ namespace Zyl.SizableSpans.Impl {
 #if NET6_0_OR_GREATER
             return ref Unsafe.Add(ref source, elementOffset);
 #else
-            return ref Unsafe.Add(ref source, IntPtrs.ToIntPtr(elementOffset));
+            return ref Unsafe.Add(ref source, IntPtrExtensions.ToIntPtr(elementOffset));
 #endif // NET6_0_OR_GREATER
         }
 
@@ -83,7 +84,7 @@ namespace Zyl.SizableSpans.Impl {
 #if NET6_0_OR_GREATER
             return ref Unsafe.AddByteOffset(ref source, byteOffset);
 #else
-            return ref AddByteOffset(ref source, IntPtrs.ToIntPtr(byteOffset));
+            return ref AddByteOffset(ref source, IntPtrExtensions.ToIntPtr(byteOffset));
 #endif
         }
 
@@ -187,7 +188,7 @@ namespace Zyl.SizableSpans.Impl {
 #if NET6_0_OR_GREATER
             return ref Unsafe.Subtract(ref source, elementOffset);
 #else
-            return ref Unsafe.Subtract(ref source, IntPtrs.ToIntPtr(elementOffset));
+            return ref Unsafe.Subtract(ref source, IntPtrExtensions.ToIntPtr(elementOffset));
 #endif // NET6_0_OR_GREATER
         }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using Zyl.SizableSpans.Extensions;
 
 namespace Zyl.SizableSpans.Impl {
     /// <summary>
@@ -22,7 +23,7 @@ namespace Zyl.SizableSpans.Impl {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadOnlySpan<T> CreateReadOnlySpanSaturating<T>(ref T reference, TSize length) {
             int len = int.MaxValue;
-            if (IntPtrs.LessThan(length, (uint)len)) {
+            if (IntPtrExtensions.LessThan(length, (uint)len)) {
                 len = (int)length;
             }
             return MemoryMarshal.CreateReadOnlySpan(ref reference, len);
@@ -38,7 +39,7 @@ namespace Zyl.SizableSpans.Impl {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Span<T> CreateSpanSaturating<T>(ref T reference, TSize length) {
             int len = int.MaxValue;
-            if (IntPtrs.LessThan(length, (uint)len)) {
+            if (IntPtrExtensions.LessThan(length, (uint)len)) {
                 len = (int)length;
             }
             return MemoryMarshal.CreateSpan(ref reference, len);

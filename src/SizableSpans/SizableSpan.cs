@@ -83,7 +83,7 @@ namespace Zyl.SizableSpans {
             }
             if (!TypeHelper.IsValueType<T>() && array.GetType() != typeof(T[]))
                 ThrowHelper.ThrowArrayTypeMismatchException();
-            if (IntPtrs.GreaterThan(start, array.NULength()) || IntPtrs.GreaterThan(IntPtrs.Add(start, length), array.NULength())) {
+            if (IntPtrExtensions.GreaterThan(start, array.NULength()) || IntPtrExtensions.GreaterThan(IntPtrExtensions.Add(start, length), array.NULength())) {
                 ThrowHelper.ThrowArgumentOutOfRangeException();
             }
 
@@ -176,7 +176,7 @@ namespace Zyl.SizableSpans {
         public ref T this[TSize index] {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get {
-                if (IntPtrs.GreaterThanOrEqual(index, _length))
+                if (IntPtrExtensions.GreaterThanOrEqual(index, _length))
                     ThrowHelper.ThrowIndexOutOfRangeException();
 #if STRUCT_REF_FIELD
                 return ref Unsafe.Add(ref _reference, index);
@@ -185,7 +185,7 @@ namespace Zyl.SizableSpans {
                     if (_referenceSpan.IsEmpty) {
                         return ref SizableUnsafe.Add(ref Unsafe.AsRef<T>((void*)_byteOffse), index);
                     } else {
-                        return ref SizableUnsafe.Add(ref Unsafe.AddByteOffset(ref _referenceSpan.GetPinnableReference(), IntPtrs.ToIntPtr(_byteOffse)), index);
+                        return ref SizableUnsafe.Add(ref Unsafe.AddByteOffset(ref _referenceSpan.GetPinnableReference(), IntPtrExtensions.ToIntPtr(_byteOffse)), index);
                     }
                 }
 #endif
@@ -274,7 +274,7 @@ namespace Zyl.SizableSpans {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public bool MoveNext() {
                 TSize index = _index + 1;
-                if (IntPtrs.LessThan(index, _span.Length)) {
+                if (IntPtrExtensions.LessThan(index, _span.Length)) {
                     _index = index;
                     return true;
                 }
@@ -306,7 +306,7 @@ namespace Zyl.SizableSpans {
                     if (_referenceSpan.IsEmpty) {
                         return ref Unsafe.AsRef<T>((void*)_byteOffse);
                     } else {
-                        return ref Unsafe.AddByteOffset(ref _referenceSpan.GetPinnableReference(), IntPtrs.ToIntPtr(_byteOffse));
+                        return ref Unsafe.AddByteOffset(ref _referenceSpan.GetPinnableReference(), IntPtrExtensions.ToIntPtr(_byteOffse));
                     }
                 }
 #endif
@@ -350,7 +350,7 @@ namespace Zyl.SizableSpans {
             // check, and one for the result of TryCopyTo. Since these checks are equivalent,
             // we can optimize by performing the check once ourselves then calling Memmove directly.
 
-            if (IntPtrs.LessThanOrEqual(_length, destination.Length)) {
+            if (IntPtrExtensions.LessThanOrEqual(_length, destination.Length)) {
                 BufferHelper.Memmove(ref destination.GetPinnableReference(), in GetPinnableReference(), _length);
             } else {
                 ThrowHelper.ThrowArgumentException_DestinationTooShort();
@@ -367,7 +367,7 @@ namespace Zyl.SizableSpans {
         /// <returns>true if the copy operation succeeded; otherwise, false (如果复制操作已成功，则为 true；否则，为 false).</returns>
         public bool TryCopyTo(SizableSpan<T> destination) {
             bool retVal = false;
-            if (IntPtrs.LessThanOrEqual(_length, destination.Length)) {
+            if (IntPtrExtensions.LessThanOrEqual(_length, destination.Length)) {
                 BufferHelper.Memmove(ref destination.GetPinnableReference(), in GetPinnableReference(), _length);
                 retVal = true;
             }
@@ -419,10 +419,10 @@ namespace Zyl.SizableSpans {
         /// </exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public SizableSpan<T> Slice(TSize start) {
-            if (IntPtrs.GreaterThan(start, _length))
+            if (IntPtrExtensions.GreaterThan(start, _length))
                 ThrowHelper.ThrowArgumentOutOfRangeException();
 
-            TSize len = IntPtrs.Subtract(_length, start);
+            TSize len = IntPtrExtensions.Subtract(_length, start);
 #if STRUCT_REF_FIELD
             return new SizableSpan<T>(ref Unsafe.Add(ref _reference, start), len);
 #else
@@ -447,9 +447,9 @@ namespace Zyl.SizableSpans {
         /// </exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public SizableSpan<T> Slice(TSize start, TSize length) {
-            if (IntPtrs.GreaterThan(IntPtrs.Add(start, length), _length))
+            if (IntPtrExtensions.GreaterThan(IntPtrExtensions.Add(start, length), _length))
                 ThrowHelper.ThrowArgumentOutOfRangeException();
-            if (IntPtrs.GreaterThan(start, _length))
+            if (IntPtrExtensions.GreaterThan(start, _length))
                 ThrowHelper.ThrowArgumentOutOfRangeException();
 
 #if STRUCT_REF_FIELD
@@ -484,7 +484,7 @@ namespace Zyl.SizableSpans {
             if (_length == TSize.Zero)
                 return ArrayHelper.Empty<T>();
 
-            int len = (IntPtrs.LessThan(_length, (TSize)maxLength)) ? (int)_length : maxLength;
+            int len = (IntPtrExtensions.LessThan(_length, (TSize)maxLength)) ? (int)_length : maxLength;
             var destination = new T[len];
             BufferHelper.Memmove(ref SizableMemoryMarshal.GetArrayDataReference(destination), in GetPinnableReference(), (uint)len);
             return destination;

@@ -6,12 +6,13 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
+using Zyl.SizableSpans.Impl;
 
-namespace Zyl.SizableSpans.Impl {
+namespace Zyl.SizableSpans.Extensions {
     /// <summary>
-    /// <see cref="IntPtr"/> utils (IntPtr 的工具方法).
+    /// Extensions of <see cref="IntPtr"/> classes (<see cref="IntPtr"/> 类型的扩展)
     /// </summary>
-    public static class IntPtrs {
+    public static class IntPtrExtensions {
 
         /// <summary>
         /// Add (加法).
@@ -20,7 +21,7 @@ namespace Zyl.SizableSpans.Impl {
         /// <param name="right">Right value (右值).</param>
         /// <returns>The sum of left and right (左值与右值的和).</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static nint Add(nint left, nint right) {
+        public static nint Add(this nint left, nint right) {
 #if GENERIC_MATH
             return left + right;
 #else
@@ -38,7 +39,7 @@ namespace Zyl.SizableSpans.Impl {
         /// <param name="right">Right value (右值).</param>
         /// <returns>The sum of left and right (左值与右值的和).</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static nuint Add(nuint left, nuint right) {
+        public static nuint Add(this nuint left, nuint right) {
 #if GENERIC_MATH
             return left + right;
 #else
@@ -55,12 +56,12 @@ namespace Zyl.SizableSpans.Impl {
 //        /// <param name="right">Right value (右值).</param>
 //        /// <returns><see langword="true"/> if equal; otherwise, <see langword="false"/></returns>
 //        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-//        public static bool Equals(nint left, nint right) {
+//        public static bool Equals(this nint left, nint right) {
 //#if GENERIC_MATH
-//            return left < right;
+//            return left == right;
 //#else
 //            unsafe {
-//                return (void*)left < (void*)right;
+//                return (void*)left == (void*)right;
 //            }
 //#endif
 //        }
@@ -72,12 +73,12 @@ namespace Zyl.SizableSpans.Impl {
 //        /// <param name="right">Right value (右值).</param>
 //        /// <returns><see langword="true"/> if equal; otherwise, <see langword="false"/></returns>
 //        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-//        public static bool Equals(nuint left, nuint right) {
+//        public static bool Equals(this nuint left, nuint right) {
 //#if GENERIC_MATH
-//            return left < right;
+//            return left == right;
 //#else
 //            unsafe {
-//                return (void*)left < (void*)right;
+//                return (void*)left == (void*)right;
 //            }
 //#endif
 //        }
@@ -89,7 +90,7 @@ namespace Zyl.SizableSpans.Impl {
         /// <param name="right">Right value (右值).</param>
         /// <returns><see langword="true"/> if greater; otherwise, <see langword="false"/></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool GreaterThan(nint left, nint right) {
+        public static bool GreaterThan(this nint left, nint right) {
 #if GENERIC_MATH
             return left > right;
 #else
@@ -106,7 +107,7 @@ namespace Zyl.SizableSpans.Impl {
         /// <param name="right">Right value (右值).</param>
         /// <returns><see langword="true"/> if greater; otherwise, <see langword="false"/></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool GreaterThan(nuint left, nuint right) {
+        public static bool GreaterThan(this nuint left, nuint right) {
 #if GENERIC_MATH
             return left > right;
 #else
@@ -123,7 +124,7 @@ namespace Zyl.SizableSpans.Impl {
         /// <param name="right">Right value (右值).</param>
         /// <returns><see langword="true"/> if greater or equal; otherwise, <see langword="false"/></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool GreaterThanOrEqual(nint left, nint right) {
+        public static bool GreaterThanOrEqual(this nint left, nint right) {
 #if GENERIC_MATH
             return left >= right;
 #else
@@ -140,7 +141,7 @@ namespace Zyl.SizableSpans.Impl {
         /// <param name="right">Right value (右值).</param>
         /// <returns><see langword="true"/> if greater or equal; otherwise, <see langword="false"/></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool GreaterThanOrEqual(nuint left, nuint right) {
+        public static bool GreaterThanOrEqual(this nuint left, nuint right) {
 #if GENERIC_MATH
             return left >= right;
 #else
@@ -157,7 +158,7 @@ namespace Zyl.SizableSpans.Impl {
         /// <param name="right">Right value (右值).</param>
         /// <returns><see langword="true"/> if less; otherwise, <see langword="false"/></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool LessThan(nint left, nint right) {
+        public static bool LessThan(this nint left, nint right) {
 #if GENERIC_MATH
             return left < right;
 #else
@@ -174,7 +175,7 @@ namespace Zyl.SizableSpans.Impl {
         /// <param name="right">Right value (右值).</param>
         /// <returns><see langword="true"/> if less; otherwise, <see langword="false"/></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool LessThan(nuint left, nuint right) {
+        public static bool LessThan(this nuint left, nuint right) {
 #if GENERIC_MATH
             return left < right;
 #else
@@ -191,7 +192,7 @@ namespace Zyl.SizableSpans.Impl {
         /// <param name="right">Right value (右值).</param>
         /// <returns><see langword="true"/> if less or equal; otherwise, <see langword="false"/></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool LessThanOrEqual(nint left, nint right) {
+        public static bool LessThanOrEqual(this nint left, nint right) {
 #if GENERIC_MATH
             return left <= right;
 #else
@@ -208,7 +209,7 @@ namespace Zyl.SizableSpans.Impl {
         /// <param name="right">Right value (右值).</param>
         /// <returns><see langword="true"/> if less or equal; otherwise, <see langword="false"/></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool LessThanOrEqual(nuint left, nuint right) {
+        public static bool LessThanOrEqual(this nuint left, nuint right) {
 #if GENERIC_MATH
             return left <= right;
 #else
@@ -226,7 +227,7 @@ namespace Zyl.SizableSpans.Impl {
         /// <param name="right">Right value (右值).</param>
         /// <returns>The difference of left and right (左值与右值的差).</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static nint Subtract(nint left, nint right) {
+        public static nint Subtract(this nint left, nint right) {
 #if GENERIC_MATH
             return left - right;
 #else
@@ -244,7 +245,7 @@ namespace Zyl.SizableSpans.Impl {
         /// <param name="right">Right value (右值).</param>
         /// <returns>The difference of left and right (左值与右值的差).</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static nuint Subtract(nuint left, nuint right) {
+        public static nuint Subtract(this nuint left, nuint right) {
 #if GENERIC_MATH
             return left - right;
 #else
@@ -260,7 +261,7 @@ namespace Zyl.SizableSpans.Impl {
         /// <param name="source">The source (源).</param>
         /// <returns><see cref="IntPtr"/> value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static nint ToIntPtr(nuint source) {
+        public static nint ToIntPtr(this nuint source) {
 #if NET7_0_OR_GREATER
             return (nint)source;
 #else
@@ -275,7 +276,7 @@ namespace Zyl.SizableSpans.Impl {
         /// <param name="source">The source (源).</param>
         /// <returns><see cref="UIntPtr"/> value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static nuint ToUIntPtr(nint source) {
+        public static nuint ToUIntPtr(this nint source) {
 #if NET7_0_OR_GREATER
             return (nuint)source;
 #else
