@@ -22,5 +22,45 @@ namespace Zyl.SizableSpans.Extensions {
 #endif
         }
 
+        /// <summary>
+        /// Gets a native unsigned integer that represents the total number of elements in <see cref="ArraySegment{T}"/> (获取一个本机无符号整数，该整数表示 <see cref="ArraySegment{T}"/> 的元素总数).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="source">Source array (源数组).</param>
+        /// <returns>A native unsigned integer that represents the total number of elements in <see cref="ArraySegment{T}"/> (一个本机无符号整数，表示 <see cref="ArraySegment{T}"/> 的元素总数)</returns>
+        public static TSize NULength<T>(this ArraySegment<T> source) {
+            return (TSize)source.Count;
+        }
+
+        /// <summary>
+        /// Gets a native unsigned integer that represents the total number of elements in <see cref="ReadOnlySpan{T}"/> (获取一个本机无符号整数，该整数表示 <see cref="ReadOnlySpan{T}"/> 的元素总数).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="source">Source array (源数组).</param>
+        /// <returns>A native unsigned integer that represents the total number of elements in <see cref="ReadOnlySpan{T}"/> (一个本机无符号整数，表示 <see cref="ReadOnlySpan{T}"/> 的元素总数)</returns>
+        public static TSize NULength<T>(this ReadOnlySpan<T> source) {
+            return (TSize)source.Length;
+        }
+
+        /// <summary>
+        /// Gets a native unsigned integer that represents the total number of elements in <see cref="Span{T}"/> (获取一个本机无符号整数，该整数表示 <see cref="Span{T}"/> 的元素总数).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="source">Source array (源数组).</param>
+        /// <returns>A native unsigned integer that represents the total number of elements in <see cref="Span{T}"/> (一个本机无符号整数，表示 <see cref="Span{T}"/> 的元素总数)</returns>
+        public static TSize NULength<T>(this Span<T> source) {
+            return (TSize)source.Length;
+        }
+
+        /// <summary>
+        /// Gets a native unsigned integer that represents the total number of elements in String (获取一个本机无符号整数，该整数表示 String 的元素总数).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="source">Source array (源数组).</param>
+        /// <returns>A native unsigned integer that represents the total number of elements in String (一个本机无符号整数，表示 String 的元素总数)</returns>
+        public static TSize NULength<T>(this string source) {
+            return (TSize)source.Length;
+        }
+
     }
 }
