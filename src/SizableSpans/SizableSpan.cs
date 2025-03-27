@@ -25,7 +25,7 @@ namespace Zyl.SizableSpans {
     //[DebuggerTypeProxy(typeof(SizableSpanDebugView<>))]
     [DebuggerDisplay("{ToString(),raw}")]
     //[NativeMarshalling(typeof(SizableSpanMarshaller<,>))]
-    public readonly ref struct SizableSpan<T> {
+    public readonly ref partial struct SizableSpan<T> {
         /// <summary>The number of elements this span contains (跨度中的项数).</summary>
         private readonly TSize _length;
 #if STRUCT_REF_FIELD
@@ -388,13 +388,14 @@ namespace Zyl.SizableSpans {
             ;
 
         /// <summary>
-        /// Returns the string representation of this <see cref="ReadOnlySizableSpan{Char}"/> (返回此 <see cref="ReadOnlySizableSpan{Char}"/> 的字符串表示形式).
+        /// Defines an implicit conversion of a <see cref="SizableSpan{T}"/> to a <see cref="ReadOnlySizableSpan{T}"/> (定义 <see cref="SizableSpan{T}"/> 到 <see cref="ReadOnlySizableSpan{T}"/> 的隐式转换).
         /// </summary>
+        /// <param name="span">The object to convert (要转换的对象).</param>
         public static implicit operator ReadOnlySizableSpan<T>(SizableSpan<T> span) {
 #if STRUCT_REF_FIELD
-            return new ReadOnlySizableSpan<T>(ref span._reference, (TSize)(uint)span._length);
+            return new ReadOnlySizableSpan<T>(ref span._reference, span._length);
 #else
-            return new ReadOnlySizableSpan<T>(span._referenceSpan, span._byteOffse, (TSize)(uint)span._length);                     
+            return new ReadOnlySizableSpan<T>(span._referenceSpan, span._byteOffse, span._length);                     
 #endif
         }
 

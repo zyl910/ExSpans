@@ -23,7 +23,7 @@ namespace Zyl.SizableSpans {
     //[DebuggerTypeProxy(typeof(SizableSpanDebugView<>))]
     [DebuggerDisplay("{ToString(),raw}")]
     //[NativeMarshalling(typeof(ReadOnlySizableSpanMarshaller<,>))]
-    public readonly ref struct ReadOnlySizableSpan<T> {
+    public readonly ref partial struct ReadOnlySizableSpan<T> {
         /// <summary>The number of elements this span contains (跨度中的项数).</summary>
         private readonly TSize _length;
 #if STRUCT_REF_FIELD
