@@ -17,6 +17,7 @@ namespace Zyl.SizableSpans {
         /// Defines an implicit conversion of a <see cref="Span{T}"/> to a <see cref="SizableSpan{T}"/> (定义 <see cref="Span{T}"/> 到 <see cref="SizableSpan{T}"/> 的隐式转换).
         /// </summary>
         /// <param name="span">The object to convert (要转换的对象).</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator SizableSpan<T>(Span<T> span) {
 #if STRUCT_REF_FIELD
             return new SizableSpan<T>(ref span.GetPinnableReference(), span.NULength());
@@ -30,6 +31,7 @@ namespace Zyl.SizableSpans {
         /// </summary>
         /// <param name="span">The object to convert (要转换的对象).</param>
         /// <seealso cref="MemoryMarshalHelper.GetSpanSaturatingLength"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static explicit operator Span<T>(SizableSpan<T> span) {
             if (TSize.Zero == span.Length) return Span<T>.Empty;
             int len = MemoryMarshalHelper.GetSpanSaturatingLength(span.Length);
