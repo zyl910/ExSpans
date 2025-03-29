@@ -9,10 +9,8 @@
     <Import_RootNamespace>Zyl.SizableSpans.Benchmarks</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)ASizableSpan\" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AloneTestUtil.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ASizableSpan\SumBenchmark_Int32.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BenchmarkMain.cs" />
   </ItemGroup>
 </Project>

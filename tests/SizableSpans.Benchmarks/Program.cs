@@ -6,6 +6,7 @@ using BenchmarkDotNet.Toolchains.InProcess.Emit;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using Zyl.SizableSpans.Benchmarks.ASizableSpan;
 
 namespace Zyl.SizableSpans.Benchmarks {
     internal class Program {
@@ -39,11 +40,10 @@ namespace Zyl.SizableSpans.Benchmarks {
                     .WithToolchain(InProcessEmitToolchain.Instance)
                     .WithId("InProcess"));
                 if (benchmarkMode >= 2) {
-                    // TODO: Change ShiftLeftBenchmark_Int16
-                    //var summary = BenchmarkRunner.Run<ShiftLeftBenchmark_Int16>(config);
-                    //writer.WriteLine(summary);
+                    var summary = BenchmarkRunner.Run<SumBenchmark_Int32>(config);
+                    writer.WriteLine(summary);
                 } else {
-                    var summary = BenchmarkRunner.Run(typeof(AloneTestUtil).Assembly, config);
+                    var summary = BenchmarkRunner.Run(typeof(SumBenchmark_Int32).Assembly, config);
                     writer.WriteLine("Length={0}, {1}", summary.Length, summary);
                 }
             } else {

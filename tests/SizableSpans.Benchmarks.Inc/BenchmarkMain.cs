@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Zyl.SizableSpans.Benchmarks.ASizableSpan;
 using Zyl.VectorTraits.Impl;
 
 namespace Zyl.SizableSpans.Benchmarks
@@ -50,6 +51,7 @@ namespace Zyl.SizableSpans.Benchmarks
             _inited = true;
             WrappedType[] types = {
                 // ABitMath
+                typeof(SumBenchmark_Int32),
             };
             WrappedTypePool.Shared.RegisterAll(types);
         }
