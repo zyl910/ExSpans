@@ -26,7 +26,7 @@ namespace Zyl.SizableSpans.Benchmarks.ASizableSpan {
     public class SumBenchmark_Int32 : AbstractSharedBenchmark_Int32 {
 
         /// <summary>
-        /// Sum for array.
+        /// Summation using index access to arrays (使用索引访问数组实现求和).
         /// </summary>
         /// <param name="src">Source array.</param>
         /// <param name="srcCount">Source count</param>
@@ -50,6 +50,7 @@ namespace Zyl.SizableSpans.Benchmarks.ASizableSpan {
         }
 
         /// <summary>
+        /// Summation using native pointer access to arrays (使用原生指针访问数组实现求和).
         /// Sum for pointer.
         /// </summary>
         /// <param name="src">Source array.</param>
@@ -58,7 +59,7 @@ namespace Zyl.SizableSpans.Benchmarks.ASizableSpan {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe TMy StaticSumForPtr(TMy[] src, int srcCount) {
             TMy rt = 0; // Result.
-            fixed(TMy* p0 = &src[0]) {
+            fixed (TMy* p0 = &src[0]) {
                 TMy* pEnd = p0 + srcCount;
                 TMy* p = p0;
                 for (; p < pEnd; ++p) {
@@ -75,6 +76,7 @@ namespace Zyl.SizableSpans.Benchmarks.ASizableSpan {
         }
 
         /// <summary>
+        /// Summation using index access to Span (使用索引访问 Span 实现求和).
         /// Sum for Span.
         /// </summary>
         /// <param name="src">Source array.</param>
@@ -101,7 +103,7 @@ namespace Zyl.SizableSpans.Benchmarks.ASizableSpan {
         }
 
         /// <summary>
-        /// Sum for SizableSpan.
+        /// Summation using index access to SizableSpan (使用索引访问 SizableSpan 实现求和).
         /// </summary>
         /// <param name="src">Source array.</param>
         /// <param name="srcCount">Source count</param>
@@ -111,7 +113,7 @@ namespace Zyl.SizableSpans.Benchmarks.ASizableSpan {
             TMy rt = 0; // Result.
             nuint srcCountU = (nuint)srcCount;
             SizableSpan<TMy> span = new SizableSpan<TMy>(src, (nuint)0, srcCountU);
-            for (nuint i = (nuint)0; i.LessThan(srcCountU); i+=1) {
+            for (nuint i = (nuint)0; i.LessThan(srcCountU); i += 1) {
                 rt += span[i];
             }
             return rt;
@@ -128,6 +130,7 @@ namespace Zyl.SizableSpans.Benchmarks.ASizableSpan {
         }
 
         /// <summary>
+        /// Summation using index access to SizableSpan created by pointer (使用索引访问 指针创建的SizableSpan 实现求和).
         /// Sum for SizableSpan by pointer constructor.
         /// </summary>
         /// <param name="src">Source array.</param>
@@ -150,6 +153,60 @@ namespace Zyl.SizableSpans.Benchmarks.ASizableSpan {
         public void SumForSizableSpanByPtr() {
             dstTMy = StaticSumForSizableSpanByPtr(srcArray, srcArray.Length);
             CheckResult("SumForSizableSpanByPtr");
+        }
+
+        /// <summary>
+        /// Summation using native pointer access to SizableSpan (使用原生指针访问 SizableSpan 实现求和).
+        /// Sum for SizableSpan use pointer.
+        /// </summary>
+        /// <param name="src">Source array.</param>
+        /// <param name="srcCount">Source count</param>
+        /// <returns>Returns the sum.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe TMy StaticSumForSizableSpanUsePtr(TMy[] src, int srcCount) {
+            TMy rt = 0; // Result.
+            nuint srcCountU = (nuint)srcCount;
+            SizableSpan<TMy> span = new SizableSpan<TMy>(src, (nuint)0, srcCountU);
+            fixed (TMy* p0 = &span[(nuint)0]) {
+                TMy* pEnd = p0 + srcCount;
+                TMy* p = p0;
+                for (; p < pEnd; ++p) {
+                    rt += *p;
+                }
+            }
+            return rt;
+        }
+
+        [Benchmark]
+        public void SumForSizableSpanUsePtr() {
+            dstTMy = StaticSumForSizableSpanUsePtr(srcArray, srcArray.Length);
+            CheckResult("SumForSizableSpanUsePtr");
+        }
+
+        /// <summary>
+        /// Summation using managed pointer(ref) access to SizableSpan (使用 托管指针(ref) 访问 SizableSpan 实现求和).
+        /// </summary>
+        /// <param name="src">Source array.</param>
+        /// <param name="srcCount">Source count</param>
+        /// <returns>Returns the sum.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static TMy StaticSumForSizableSpanUseRef(TMy[] src, int srcCount) {
+            TMy rt = 0; // Result.
+            nuint srcCountU = (nuint)srcCount;
+            SizableSpan<TMy> span = new SizableSpan<TMy>(src, (nuint)0, srcCountU);
+            ref TMy p0 = ref span.GetPinnableReference(); // Or `ref TMy p0 = ref span[(nuint)0]`.
+            ref TMy pEnd = ref Unsafe.Add(ref p0, srcCount);
+            ref TMy p = ref p0;
+            for (; Unsafe.IsAddressLessThan(ref p, ref pEnd); p = ref Unsafe.Add(ref p, 1)) {
+                rt += p;
+            }
+            return rt;
+        }
+
+        [Benchmark]
+        public void SumForSizableSpanUseRef() {
+            dstTMy = StaticSumForSizableSpanUseRef(srcArray, srcArray.Length);
+            CheckResult("SumForSizableSpanUseRef");
         }
 
     }
