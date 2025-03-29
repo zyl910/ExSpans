@@ -25,6 +25,8 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SizableSpans.Benchmarks.Cor
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SizableSpans.Benchmarks.Inc", "tests\SizableSpans.Benchmarks.Inc\SizableSpans.Benchmarks.Inc.shproj", "{D58EECA3-5B3C-44BA-9993-F0D54CD923B1}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "BenchmarkDotNet.Mock", "tests\BenchmarkDotNet.Mock\BenchmarkDotNet.Mock.shproj", "{FE742124-F9F3-463D-83D2-2FA9E33E0505}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,6 +62,7 @@ Global
 		{1603F4F1-AEA2-4BAB-9BA7-9FC9E3C2F82D} = {77671548-D96F-418B-8BD7-088287CC9B01}
 		{A45697E8-F604-4178-921A-B412C7AC3C93} = {77671548-D96F-418B-8BD7-088287CC9B01}
 		{D58EECA3-5B3C-44BA-9993-F0D54CD923B1} = {77671548-D96F-418B-8BD7-088287CC9B01}
+		{FE742124-F9F3-463D-83D2-2FA9E33E0505} = {77671548-D96F-418B-8BD7-088287CC9B01}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DF448437-BDEC-4C3B-9CEB-3D5D0B946D88}
@@ -74,5 +77,6 @@ Global
 		tests\SizableSpans.Benchmarks.Core.Inc\SizableSpans.Benchmarks.Core.Inc.projitems*{a45697e8-f604-4178-921a-b412c7ac3c93}*SharedItemsImports = 13
 		src\SizableSpans.InfoInc\SizableSpans.InfoInc.projitems*{b9cdfae2-38f2-49e3-b9c4-7a25122d27ff}*SharedItemsImports = 5
 		tests\SizableSpans.Benchmarks.Inc\SizableSpans.Benchmarks.Inc.projitems*{d58eeca3-5b3c-44ba-9993-f0d54cd923b1}*SharedItemsImports = 13
+		tests\BenchmarkDotNet.Mock\BenchmarkDotNet.Mock.projitems*{fe742124-f9f3-463d-83d2-2fa9e33e0505}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal
