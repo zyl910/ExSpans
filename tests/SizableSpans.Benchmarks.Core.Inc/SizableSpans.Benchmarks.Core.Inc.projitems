@@ -9,5 +9,25 @@
     <Import_RootNamespace>Zyl.SizableSpans.Benchmarks</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AbstractBenchmark.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AbstractBenchmarkWriter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AbstractSharedBenchmark.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AbstractSharedBenchmark_Byte.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AbstractSharedBenchmark_Double.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AbstractSharedBenchmark_Int16.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AbstractSharedBenchmark_Int32.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AbstractSharedBenchmark_Int64.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AbstractSharedBenchmark_SByte.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AbstractSharedBenchmark_Single.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AbstractSharedBenchmark_UInt16.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AbstractSharedBenchmark_UInt32.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AbstractSharedBenchmark_UInt64.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BenchmarkUtil.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DisableBenchmarkAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FakeBenchmarkAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IBenchmarkWriter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ILoopCountGetter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SimpleBenchmarkWriter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TabBenchmarkWriter.cs" />
   </ItemGroup>
 </Project>
