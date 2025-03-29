@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Zyl.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\SizableSpans\SizableSpans.csproj" />
+  </ItemGroup>
+
+  <Import Project="..\..\src\SizableSpans.InfoInc\SizableSpans.InfoInc.projitems" Label="Shared" />
+
+  <Import Project="..\SizableSpans.Benchmarks.Core.Inc\SizableSpans.Benchmarks.Core.Inc.projitems" Label="Shared" />
+
+  <Import Project="..\SizableSpans.Benchmarks.Inc\SizableSpans.Benchmarks.Inc.projitems" Label="Shared" />
+
+</Project>

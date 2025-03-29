@@ -19,6 +19,12 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Compatible.System", "src\Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SizableSpans.Tests", "tests\SizableSpans.Tests\SizableSpans.Tests.csproj", "{9DC94933-5987-40DF-90FD-5B789F9ED2A7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SizableSpans.Benchmarks", "tests\SizableSpans.Benchmarks\SizableSpans.Benchmarks.csproj", "{1603F4F1-AEA2-4BAB-9BA7-9FC9E3C2F82D}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SizableSpans.Benchmarks.Core.Inc", "tests\SizableSpans.Benchmarks.Core.Inc\SizableSpans.Benchmarks.Core.Inc.shproj", "{A45697E8-F604-4178-921A-B412C7AC3C93}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SizableSpans.Benchmarks.Inc", "tests\SizableSpans.Benchmarks.Inc\SizableSpans.Benchmarks.Inc.shproj", "{D58EECA3-5B3C-44BA-9993-F0D54CD923B1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +43,10 @@ Global
 		{9DC94933-5987-40DF-90FD-5B789F9ED2A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9DC94933-5987-40DF-90FD-5B789F9ED2A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9DC94933-5987-40DF-90FD-5B789F9ED2A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1603F4F1-AEA2-4BAB-9BA7-9FC9E3C2F82D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1603F4F1-AEA2-4BAB-9BA7-9FC9E3C2F82D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1603F4F1-AEA2-4BAB-9BA7-9FC9E3C2F82D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1603F4F1-AEA2-4BAB-9BA7-9FC9E3C2F82D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -47,14 +57,22 @@ Global
 		{3B871363-CD08-475B-903B-0CC1CA148F22} = {41E49851-1226-48E8-A5D9-87671E9AF0E7}
 		{4F69DCA3-39B4-4247-AC71-FE9A69B7A124} = {41E49851-1226-48E8-A5D9-87671E9AF0E7}
 		{9DC94933-5987-40DF-90FD-5B789F9ED2A7} = {77671548-D96F-418B-8BD7-088287CC9B01}
+		{1603F4F1-AEA2-4BAB-9BA7-9FC9E3C2F82D} = {77671548-D96F-418B-8BD7-088287CC9B01}
+		{A45697E8-F604-4178-921A-B412C7AC3C93} = {77671548-D96F-418B-8BD7-088287CC9B01}
+		{D58EECA3-5B3C-44BA-9993-F0D54CD923B1} = {77671548-D96F-418B-8BD7-088287CC9B01}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DF448437-BDEC-4C3B-9CEB-3D5D0B946D88}
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		src\SizableSpans.InfoInc\SizableSpans.InfoInc.projitems*{1603f4f1-aea2-4bab-9ba7-9fc9e3c2f82d}*SharedItemsImports = 5
+		tests\SizableSpans.Benchmarks.Core.Inc\SizableSpans.Benchmarks.Core.Inc.projitems*{1603f4f1-aea2-4bab-9ba7-9fc9e3c2f82d}*SharedItemsImports = 5
+		tests\SizableSpans.Benchmarks.Inc\SizableSpans.Benchmarks.Inc.projitems*{1603f4f1-aea2-4bab-9ba7-9fc9e3c2f82d}*SharedItemsImports = 5
 		src\SizableSpans.InfoInc\SizableSpans.InfoInc.projitems*{3b871363-cd08-475b-903b-0cc1ca148f22}*SharedItemsImports = 13
 		src\Compatible.System\Compatible.System.projitems*{4f69dca3-39b4-4247-ac71-fe9a69b7a124}*SharedItemsImports = 13
 		src\Compatible.System\Compatible.System.projitems*{5bf6b505-8296-4f84-b2e1-b0c6e89248ae}*SharedItemsImports = 5
+		tests\SizableSpans.Benchmarks.Core.Inc\SizableSpans.Benchmarks.Core.Inc.projitems*{a45697e8-f604-4178-921a-b412c7ac3c93}*SharedItemsImports = 13
 		src\SizableSpans.InfoInc\SizableSpans.InfoInc.projitems*{b9cdfae2-38f2-49e3-b9c4-7a25122d27ff}*SharedItemsImports = 5
+		tests\SizableSpans.Benchmarks.Inc\SizableSpans.Benchmarks.Inc.projitems*{d58eeca3-5b3c-44ba-9993-f0d54cd923b1}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal
