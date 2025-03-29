@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SizableSpans.Benchmarks": {
+      "commandName": "Project",
+      "commandLineArgs": "1"
+    }
+  }
+}

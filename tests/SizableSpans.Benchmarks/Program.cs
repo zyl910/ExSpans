@@ -36,9 +36,9 @@ namespace Zyl.SizableSpans.Benchmarks {
                     // Message: Arm64 is not supported (Iced library limitation)
                 }
                 config = config.AddJob(Job.MediumRun
-                    .WithLaunchCount(1)
-                    .WithToolchain(InProcessEmitToolchain.Instance)
-                    .WithId("InProcess"));
+                    //.WithToolchain(InProcessEmitToolchain.Instance)
+                    //.WithId("InProcess")
+                    );
                 if (benchmarkMode >= 2) {
                     var summary = BenchmarkRunner.Run<SumBenchmark_Int32>(config);
                     writer.WriteLine(summary);
