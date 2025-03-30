@@ -12,7 +12,7 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
         [Fact]
         public static void FillEmpty() {
             var span = SizableSpan<byte>.Empty;
-            span.Fill(1);
+            span.Fill((byte)1);
         }
 
         [Fact]

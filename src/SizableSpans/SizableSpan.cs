@@ -327,14 +327,6 @@ namespace Zyl.SizableSpans {
         }
         
         /// <summary>
-        /// Fills the contents of this SizableSpan with the given value.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Fill(T value) {
-            SizableSpanHelpers.Fill(ref GetPinnableReference(), _length, value);
-        }
-        
-        /// <summary>
         /// Copies the contents of this span into destination span. If the source
         /// and destinations overlap, this method behaves as if the original values in
         /// a temporary location before the destination is overwritten
