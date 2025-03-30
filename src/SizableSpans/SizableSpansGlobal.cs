@@ -1,2 +1,15 @@
 ﻿global using TSize = System.UIntPtr;
 
+using System.Runtime.CompilerServices;
+using Zyl.SizableSpans;
+using Zyl.SizableSpans.Extensions;
+
+// -- Zyl.SizableSpans
+[assembly: TypeForwardedToAttribute(typeof(ReadOnlySizableSpan<>))]
+[assembly: TypeForwardedToAttribute(typeof(SizableMemoryMarshal))]
+[assembly: TypeForwardedToAttribute(typeof(SizableSpan<>))]
+[assembly: TypeForwardedToAttribute(typeof(SizableSpanExtensions))]
+
+// -- Zyl.SizableSpans.Extensions
+[assembly: TypeForwardedToAttribute(typeof(IntPtrExtensions))]
+[assembly: TypeForwardedToAttribute(typeof(NULengthExtensions))]

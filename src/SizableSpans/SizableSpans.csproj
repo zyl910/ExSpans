@@ -44,7 +44,7 @@
     <AssemblyVersion>$(VersionPrefix).0</AssemblyVersion>
     <FileVersion>$(VersionPrefix).0</FileVersion>
     <CurrentYear>$([System.DateTime]::Now.ToString(yyyy))</CurrentYear>
-    <Copyright>Copyright (c) 2022~$(CurrentYear) zyl910</Copyright>
+    <Copyright>Copyright (c) 2025~$(CurrentYear) zyl910</Copyright>
     <Description>Spans of sizable range (大范围的跨度).</Description>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <RepositoryUrl>https://github.com/zyl910/SizableSpans</RepositoryUrl>
@@ -78,6 +78,10 @@
 
     <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.0' ">
         <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="5.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\SizableSpans.Core\SizableSpans.Core.csproj" />
     </ItemGroup>
 
     <Import Project="..\Compatible.System\Compatible.System.projitems" Label="Shared" />

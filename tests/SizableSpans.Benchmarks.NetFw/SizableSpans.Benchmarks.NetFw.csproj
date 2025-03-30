@@ -177,6 +177,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\SizableSpans.Core\SizableSpans.Core.csproj">
+      <Project>{fc79112e-c852-4a8f-9f7e-77ab7b67303b}</Project>
+      <Name>SizableSpans.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\SizableSpans\SizableSpans.csproj">
       <Project>{5bf6b505-8296-4f84-b2e1-b0c6e89248ae}</Project>
       <Name>SizableSpans</Name>
