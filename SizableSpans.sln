@@ -29,6 +29,8 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "BenchmarkDotNet.Mock", "tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SizableSpans.Benchmarks.NetFw", "tests\SizableSpans.Benchmarks.NetFw\SizableSpans.Benchmarks.NetFw.csproj", "{DDCFF4FC-12C0-42F3-A598-99AE5E85CED5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SizableSpans.Core", "src\SizableSpans.Core\SizableSpans.Core.csproj", "{FC79112E-C852-4A8F-9F7E-77AB7B67303B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,10 @@ Global
 		{DDCFF4FC-12C0-42F3-A598-99AE5E85CED5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DDCFF4FC-12C0-42F3-A598-99AE5E85CED5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DDCFF4FC-12C0-42F3-A598-99AE5E85CED5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC79112E-C852-4A8F-9F7E-77AB7B67303B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC79112E-C852-4A8F-9F7E-77AB7B67303B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC79112E-C852-4A8F-9F7E-77AB7B67303B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC79112E-C852-4A8F-9F7E-77AB7B67303B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -70,6 +76,7 @@ Global
 		{D58EECA3-5B3C-44BA-9993-F0D54CD923B1} = {77671548-D96F-418B-8BD7-088287CC9B01}
 		{FE742124-F9F3-463D-83D2-2FA9E33E0505} = {77671548-D96F-418B-8BD7-088287CC9B01}
 		{DDCFF4FC-12C0-42F3-A598-99AE5E85CED5} = {77671548-D96F-418B-8BD7-088287CC9B01}
+		{FC79112E-C852-4A8F-9F7E-77AB7B67303B} = {41E49851-1226-48E8-A5D9-87671E9AF0E7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DF448437-BDEC-4C3B-9CEB-3D5D0B946D88}
