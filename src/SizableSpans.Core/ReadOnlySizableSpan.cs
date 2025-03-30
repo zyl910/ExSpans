@@ -28,7 +28,7 @@ namespace Zyl.SizableSpans {
     //[NativeMarshalling(typeof(ReadOnlySizableSpanMarshaller<,>))]
     public readonly ref partial struct ReadOnlySizableSpan<T>
 #if STRUCT_REF_INTERFACE
-                : ISizableLength
+                : ISizableLength, IReadOnlySizableSpanBase<T>
 #endif // STRUCT_REF_INTERFACE
                 {
         /// <summary>The number of elements this span contains (跨度中的项数).</summary>
@@ -302,8 +302,8 @@ namespace Zyl.SizableSpans {
         }
 
         /// <summary>
-        /// Returns a reference to the 0th element of the span. If the span is empty, returns null reference.
-        /// It can be used for pinning and is required to support the use of span within a fixed statement (返回对跨度的第0个元素的引用。如果跨度为空，则返回null引用. 它可用于固定，并且需要支持在 fixed 语句中使用跨度).
+        /// Returns a read only reference to the 0th element of the span. If the span is empty, returns null reference.
+        /// It can be used for pinning and is required to support the use of span within a fixed statement (返回对只读跨度的第0个元素的引用。如果跨度为空，则返回null引用. 它可用于固定，并且需要支持在 fixed 语句中使用跨度).
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -325,6 +325,14 @@ namespace Zyl.SizableSpans {
             }
             return ref ret;
         }
+
+        /// <inheritdoc/>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ref readonly T GetReadOnlyPinnableReference() {
+            return ref GetPinnableReference();
+        }
+        // ref readonly T IReadOnlySizableSpanBase<T>.GetReadOnlyPinnableReference() => ref GetPinnableReference(); // CS0540 containing type does not implement interface
 
         /// <summary>
         /// Copies the contents of this read-only span into destination span. If the source

@@ -30,7 +30,7 @@ namespace Zyl.SizableSpans {
     //[NativeMarshalling(typeof(SizableSpanMarshaller<,>))]
     public readonly ref partial struct SizableSpan<T>
 #if STRUCT_REF_INTERFACE
-                : ISizableLength
+                : ISizableLength, IReadOnlySizableSpanBase<T>, ISizableSpanBase<T>
 #endif // STRUCT_REF_INTERFACE
                 {
         /// <summary>The number of elements this span contains (跨度中的项数).</summary>
@@ -320,7 +320,14 @@ namespace Zyl.SizableSpans {
             }
             return ref ret;
         }
-        
+
+        /// <inheritdoc/>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ref readonly T GetReadOnlyPinnableReference() {
+            return ref GetPinnableReference();
+        }
+
         /// <summary>
         /// Clears the contents of this SizableSpan.
         /// </summary>
