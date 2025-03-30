@@ -328,7 +328,7 @@ namespace Zyl.SizableSpans {
         /// <inheritdoc/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref readonly T GetReadOnlyPinnableReference() {
+        public ref readonly T GetPinnableReadOnlyReference() {
             return ref GetPinnableReference();
         }
 

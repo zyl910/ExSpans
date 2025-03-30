@@ -333,10 +333,10 @@ namespace Zyl.SizableSpans {
         /// <inheritdoc/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref readonly T GetReadOnlyPinnableReference() {
+        public ref readonly T GetPinnableReadOnlyReference() {
             return ref GetPinnableReference();
         }
-        // ref readonly T IReadOnlySizableSpanBase<T>.GetReadOnlyPinnableReference() => ref GetPinnableReference(); // CS0540 containing type does not implement interface
+        // ref readonly T IReadOnlySizableSpanBase<T>.GetPinnableReadOnlyReference() => ref GetPinnableReference(); // CS0540 containing type does not implement interface
 
         /// <summary>
         /// Copies the contents of this read-only span into destination span. If the source
