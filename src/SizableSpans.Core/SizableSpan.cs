@@ -123,6 +123,10 @@ namespace Zyl.SizableSpans {
 #endif
             //if (length < 0)
             //    ThrowHelper.ThrowArgumentOutOfRangeException();
+            if (length.Equals((TSize)0)) {
+                this = default;
+                return; // returns default
+            }
 
             _length = length;
 #if STRUCT_REF_FIELD
@@ -303,12 +307,12 @@ namespace Zyl.SizableSpans {
         [EditorBrowsable(EditorBrowsableState.Never)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ref T GetPinnableReference() {
+#if STRUCT_REF_FIELD
+            return ref _reference;
+#else
             // Ensure that the native code has just one forward branch that is predicted-not-taken.
             ref T ret = ref Unsafe.NullRef<T>();
             if (_length != TSize.Zero) {
-#if STRUCT_REF_FIELD
-                ret = ref _reference;
-#else
                 unsafe {
                     if (_referenceSpan.IsEmpty) {
                         return ref Unsafe.AsRef<T>((void*)_byteOffse);
@@ -316,9 +320,9 @@ namespace Zyl.SizableSpans {
                         return ref Unsafe.AddByteOffset(ref _referenceSpan.GetPinnableReference(), IntPtrExtensions.ToIntPtr(_byteOffse));
                     }
                 }
-#endif
             }
             return ref ret;
+#endif
         }
 
         /// <inheritdoc/>
