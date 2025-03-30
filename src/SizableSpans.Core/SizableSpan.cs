@@ -1,6 +1,9 @@
 ﻿#if NET7_0_OR_GREATER
 #define STRUCT_REF_FIELD // C# 11 - ref fields and ref scoped variables. https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/ref-struct#ref-fields
 #endif // NET7_0_OR_GREATER
+#if NET9_0_OR_GREATER
+#define STRUCT_REF_INTERFACE // C# 13 - ref struct interface; allows ref struct. https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-13#ref-struct-interfaces
+#endif // NET9_0_OR_GREATER
 
 using System;
 using System.Collections.Generic;
@@ -25,7 +28,11 @@ namespace Zyl.SizableSpans {
     //[DebuggerTypeProxy(typeof(SizableSpanDebugView<>))]
     [DebuggerDisplay("{ToString(),raw}")]
     //[NativeMarshalling(typeof(SizableSpanMarshaller<,>))]
-    public readonly ref partial struct SizableSpan<T> {
+    public readonly ref partial struct SizableSpan<T>
+#if STRUCT_REF_INTERFACE
+                : ISizableLength
+#endif // STRUCT_REF_INTERFACE
+                {
         /// <summary>The number of elements this span contains (跨度中的项数).</summary>
         private readonly TSize _length;
 #if STRUCT_REF_FIELD

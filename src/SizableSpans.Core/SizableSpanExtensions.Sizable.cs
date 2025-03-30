@@ -52,5 +52,15 @@ namespace Zyl.SizableSpans {
             return (Span<T>)span;
         }
 
+        /// <summary>
+        /// Gets a value indicating whether this object is empty (返回一个值，该值指示当前源对象为空).
+        /// </summary>
+        /// <param name="source">Source object (源对象).</param>
+        /// <returns><see langword="true"/> if this object is empty; otherwise, <see langword="false"/> (当前对象为空时为 <see langword="true"/>; 否则为 <see langword="false"/>).</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsEmpty(this ISizableLength source) {
+            return (TSize)0 == source.Length;
+        }
+
     }
 }
