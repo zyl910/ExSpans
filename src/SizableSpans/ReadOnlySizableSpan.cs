@@ -440,11 +440,11 @@ namespace Zyl.SizableSpans {
         }
 
         /// <summary>
-        /// Copies the contents of this span into a new array. The maxLength parameter uses the value of <see cref="SizableSpanHelpers.ArrayMaxLengthSafe"/> (将此范围的内容复制到新建数组中. maxLength 参数使用 <see cref="SizableSpanHelpers.ArrayMaxLengthSafe"/> 的值).
+        /// Copies the contents of this span into a new array. The maxLength parameter uses the value of <see cref="SizableMemoryMarshal.ArrayMaxLengthSafe"/> (将此范围的内容复制到新建数组中. maxLength 参数使用 <see cref="SizableMemoryMarshal.ArrayMaxLengthSafe"/> 的值).
         /// </summary>
         /// <returns>An array containing the data in the current span (包含当前跨度中数据的数组).</returns>
         public T[] ToArray() {
-            return ToArray(SizableSpanHelpers.ArrayMaxLengthSafe);
+            return ToArray(SizableMemoryMarshal.ArrayMaxLengthSafe);
         }
 
         /// <summary>

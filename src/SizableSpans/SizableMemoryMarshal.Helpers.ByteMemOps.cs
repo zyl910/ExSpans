@@ -6,7 +6,7 @@ using System.Text;
 using Zyl.SizableSpans.Impl;
 
 namespace Zyl.SizableSpans {
-    partial class SizableSpanHelpers {
+    partial class SizableMemoryMarshal {
 
         private const nuint ZeroMemoryNativeThreshold = 1024;
 

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Zyl.SizableSpans {
-    partial class SizableSpanHelpers {
+    partial class SizableMemoryMarshal {
 
         /// <summary>
         /// The safe maximum length of array (安全的数组最大长度).
