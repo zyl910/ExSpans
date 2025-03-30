@@ -84,6 +84,9 @@ Global
 		tests\SizableSpans.Benchmarks.Core.Inc\SizableSpans.Benchmarks.Core.Inc.projitems*{a45697e8-f604-4178-921a-b412c7ac3c93}*SharedItemsImports = 13
 		src\SizableSpans.InfoInc\SizableSpans.InfoInc.projitems*{b9cdfae2-38f2-49e3-b9c4-7a25122d27ff}*SharedItemsImports = 5
 		tests\SizableSpans.Benchmarks.Inc\SizableSpans.Benchmarks.Inc.projitems*{d58eeca3-5b3c-44ba-9993-f0d54cd923b1}*SharedItemsImports = 13
+		src\SizableSpans.InfoInc\SizableSpans.InfoInc.projitems*{ddcff4fc-12c0-42f3-a598-99ae5e85ced5}*SharedItemsImports = 4
+		tests\SizableSpans.Benchmarks.Core.Inc\SizableSpans.Benchmarks.Core.Inc.projitems*{ddcff4fc-12c0-42f3-a598-99ae5e85ced5}*SharedItemsImports = 4
+		tests\SizableSpans.Benchmarks.Inc\SizableSpans.Benchmarks.Inc.projitems*{ddcff4fc-12c0-42f3-a598-99ae5e85ced5}*SharedItemsImports = 4
 		tests\BenchmarkDotNet.Mock\BenchmarkDotNet.Mock.projitems*{fe742124-f9f3-463d-83d2-2fa9e33e0505}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal
