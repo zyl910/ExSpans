@@ -7,7 +7,7 @@ using Zyl.SizableSpans.Extensions;
 
 namespace Zyl.SizableSpans.Impl {
     /// <summary>
-    /// <see cref="MemoryMarshal"/> Helper.
+    /// <see cref="MemoryMarshal"/> helper.
     /// </summary>
     public static class MemoryMarshalHelper {
 
@@ -20,6 +20,21 @@ namespace Zyl.SizableSpans.Impl {
             int len = int.MaxValue;
             if (length.LessThan((uint)len)) {
                 len = (int)length;
+            }
+            return len;
+        }
+
+        /// <summary>
+        /// Get the saturating length of the <see cref="UInt64"/> (取得 <see cref="UInt64"/> 的饱和长度).
+        /// </summary>
+        /// <param name="length">The length of the <see cref="UInt64"/> (<see cref="UInt64"/>的长度)</param>
+        /// <returns>The saturating length (饱和长度).</returns>
+        public static TSize GetSaturatingLengthByUInt64(ulong length) {
+            TSize len;
+            if (SizableMemoryMarshal.Is64BitProcess) {
+                len = (TSize)length;
+            } else {
+                len = (TSize)((length <= uint.MaxValue) ? length : uint.MaxValue);
             }
             return len;
         }
