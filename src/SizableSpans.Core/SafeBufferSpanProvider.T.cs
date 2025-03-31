@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using Zyl.SizableSpans.Extensions;
 using Zyl.SizableSpans.Impl;
 
 namespace Zyl.SizableSpans {
@@ -45,14 +46,14 @@ namespace Zyl.SizableSpans {
 
         /// <inheritdoc/>
         public ReadOnlySizableSpan<TTo> CreateReadOnlySizableSpan<TTo>() {
-            nuint len = MemoryMarshalHelper.GetSaturatingLengthByUInt64(_source.ByteLength / (ulong)Unsafe.SizeOf<TTo>());
+            nuint len = (_source.ByteLength / (ulong)Unsafe.SizeOf<TTo>()).SaturatingToUIntPtr();
             return new ReadOnlySizableSpan<TTo>(_pointer, len);
         }
 
         /// <inheritdoc/>
         public SizableSpan<TTo> CreateSizableSpan<TTo>() {
             if (null == _source) return SizableSpan<TTo>.Empty;
-            nuint len = MemoryMarshalHelper.GetSaturatingLengthByUInt64(_source.ByteLength / (ulong)Unsafe.SizeOf<TTo>());
+            nuint len = (_source.ByteLength / (ulong)Unsafe.SizeOf<TTo>()).SaturatingToUIntPtr();
             return new SizableSpan<TTo>(_pointer, len);
         }
 
@@ -64,7 +65,7 @@ namespace Zyl.SizableSpans {
         /// <inheritdoc/>
         public TSize Length {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => MemoryMarshalHelper.GetSaturatingLengthByUInt64(_source?.ByteLength ?? 0);
+            get => (_source?.ByteLength ?? 0).SaturatingToUIntPtr();
         }
 
     }

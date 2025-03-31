@@ -10,7 +10,7 @@ using Zyl.SizableSpans.Impl;
 
 namespace Zyl.SizableSpans.Extensions {
     /// <summary>
-    /// Extensions of <see cref="IntPtr"/> classes (<see cref="IntPtr"/> 类型的扩展)
+    /// Extensions of <see cref="IntPtr"/> types (<see cref="IntPtr"/> 类型的扩展)
     /// </summary>
     public static class IntPtrExtensions {
 
@@ -253,6 +253,34 @@ namespace Zyl.SizableSpans.Extensions {
                 return (nuint)Unsafe.AsPointer(ref SizableUnsafe.Subtract(ref Unsafe.AsRef<byte>((void*)left), right));
             }
 #endif
+        }
+
+        /// <summary>
+        /// Convert <see cref="UIntPtr"/> saturating to <see cref="Int32"/> (将 <see cref="UIntPtr"/> 饱和转换为 <see cref="Int32"/>).
+        /// </summary>
+        /// <param name="source">Source value (源值).</param>
+        /// <returns>A value after saturating convert (饱和转换后的值).</returns>
+        public static int SaturatingToInt32(this nuint source) {
+            int dst = int.MaxValue;
+            if (source.LessThan((uint)dst)) {
+                dst = (int)source;
+            }
+            return dst;
+        }
+
+        /// <summary>
+        /// Convert <see cref="UInt64"/> saturating to <see cref="UIntPtr"/> (将 <see cref="UInt64"/> 饱和转换为 <see cref="UIntPtr"/>).
+        /// </summary>
+        /// <param name="source">Source value (源值).</param>
+        /// <returns>A value after saturating convert (饱和转换后的值).</returns>
+        public static nuint SaturatingToUIntPtr(this ulong source) {
+            nuint dst;
+            if (SizableMemoryMarshal.Is64BitProcess) {
+                dst = (nuint)source;
+            } else {
+                dst = (nuint)((source < uint.MaxValue) ? source : uint.MaxValue);
+            }
+            return dst;
         }
 
         /// <summary>
