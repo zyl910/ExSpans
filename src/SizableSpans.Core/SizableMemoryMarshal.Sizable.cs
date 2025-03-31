@@ -16,6 +16,12 @@ namespace Zyl.SizableSpans {
         public static readonly int ArrayMaxLengthSafe = 1024 * 1024 * 1024; // 1G
 
         /// <summary>
+        /// The length of the view span (查看跨度的长度).
+        /// </summary>
+        /// <seealso cref="Span{T}.Length"/>
+        public static readonly int SpanViewLength = 1024; // 1K
+
+        /// <summary>
         /// Gets a value that indicates whether the current process is a 64-bit process (获取一个值，该值指示当前进程是否为 64 位进程).
         /// </summary>
         /// <value>true if the process is 64-bit; otherwise, false (如果进程为 64 位进程，则为 true；否则为 false).</value>

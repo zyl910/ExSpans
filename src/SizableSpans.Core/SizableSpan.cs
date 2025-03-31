@@ -25,7 +25,7 @@ namespace Zyl.SizableSpans {
     /// Provides a type-safe and memory-safe representation of a contiguous region of arbitrary memory. It can be regarded as the <see cref="Span{T}"/> of <see cref="UIntPtr"/> index range (提供任意内存的连续区域的类型安全和内存安全表示形式. 它可以被视为 UIntPtr 索引范围的 <see cref="Span{T}"/>).
     /// </summary>
     /// <typeparam name="T">The element type (元素的类型).</typeparam>
-    //[DebuggerTypeProxy(typeof(SizableSpanDebugView<>))]
+    [DebuggerTypeProxy(typeof(SizableSpanDebugView<>))]
     [DebuggerDisplay("{ToString(),raw}")]
     //[NativeMarshalling(typeof(SizableSpanMarshaller<,>))]
     public readonly ref partial struct SizableSpan<T>
@@ -416,8 +416,7 @@ namespace Zyl.SizableSpans {
             //if (typeof(T) == typeof(char)) {
             //    return new string(new ReadOnlySpan<char>(ref Unsafe.As<T, char>(ref _reference), _length));
             //}
-            nint ptr = SizableUnsafe.AsPointerInt(in GetPinnableReference());
-            return $"System.SizableSpan<{typeof(T).Name}>[{_length}, ptr=0x{ptr:X}]";
+            return $"Zyl.SizableSpans.SizableSpan<{typeof(T).Name}>[{_length}]";
         }
 
         /// <summary>
