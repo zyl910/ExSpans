@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
+using Zyl.SizableSpans.Impl;
 
 namespace Zyl.SizableSpans {
     partial class SizableSpanExtensions {
@@ -30,6 +31,34 @@ namespace Zyl.SizableSpans {
         }
 
         /// <summary>
+        /// An conversion of a <see cref="ReadOnlySizableSpan{T}"/> to a <see cref="ReadOnlySpan{T}"/>, beginning at 'start'. The length will saturating limited to the maximum length it supports (<see cref="ReadOnlySizableSpan{T}"/> 到 <see cref="ReadOnlySpan{T}"/> 的转换, 从指定索引处开始. 长度会饱和限制为它所支持的最大长度).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="span">The object to convert (要转换的对象).</param>
+        /// <param name="start">The zero-based index at which to begin this slice (从零开始切片的索引).</param>
+        /// <returns>a <see cref="ReadOnlySpan{T}"/></returns>
+        /// <seealso cref="MemoryMarshalHelper.GetSpanSaturatingLength"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlySpan<T> AsReadOnlySpan<T>(this ReadOnlySizableSpan<T> span, TSize start) {
+            return (ReadOnlySpan<T>)span.Slice(start);
+        }
+
+        /// <summary>
+        /// An conversion of a <see cref="ReadOnlySizableSpan{T}"/> to a <see cref="ReadOnlySpan{T}"/>, beginning at 'start', of given length (<see cref="ReadOnlySizableSpan{T}"/> 到 <see cref="ReadOnlySpan{T}"/> 的转换, 从指定索引处开始, 且使用指定长度).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="span">The object to convert (要转换的对象).</param>
+        /// <param name="start">The zero-based index at which to begin this slice (从零开始切片的索引).</param>
+        /// <param name="length"></param>
+        /// <returns>a <see cref="ReadOnlySpan{T}"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlySpan<T> AsReadOnlySpan<T>(this ReadOnlySizableSpan<T> span, TSize start, int length) {
+            if (length < 0)
+                ThrowHelper.ThrowArgumentOutOfRangeException();
+            return (ReadOnlySpan<T>)span.Slice(start, (nuint)(uint)length);
+        }
+
+        /// <summary>
         /// An conversion of a <see cref="Span{T}"/> to a <see cref="SizableSpan{T}"/> (<see cref="Span{T}"/> 到 <see cref="SizableSpan{T}"/> 的转换).
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
@@ -50,6 +79,34 @@ namespace Zyl.SizableSpans {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Span<T> AsSpan<T>(this SizableSpan<T> span) {
             return (Span<T>)span;
+        }
+
+        /// <summary>
+        /// An conversion of a <see cref="SizableSpan{T}"/> to a <see cref="Span{T}"/>, beginning at 'start'. The length will saturating limited to the maximum length it supports (<see cref="SizableSpan{T}"/> 到 <see cref="Span{T}"/> 的转换, 从指定索引处开始. 长度会饱和限制为它所支持的最大长度).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="span">The object to convert (要转换的对象).</param>
+        /// <param name="start">The zero-based index at which to begin this slice (从零开始切片的索引).</param>
+        /// <returns>a <see cref="Span{T}"/></returns>
+        /// <seealso cref="MemoryMarshalHelper.GetSpanSaturatingLength"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Span<T> AsSpan<T>(this SizableSpan<T> span, TSize start) {
+            return (Span<T>)span.Slice(start);
+        }
+
+        /// <summary>
+        /// An conversion of a <see cref="SizableSpan{T}"/> to a <see cref="Span{T}"/>, beginning at 'start', of given length (<see cref="SizableSpan{T}"/> 到 <see cref="Span{T}"/> 的转换, 从指定索引处开始, 且使用指定长度).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="span">The object to convert (要转换的对象).</param>
+        /// <param name="start">The zero-based index at which to begin this slice (从零开始切片的索引).</param>
+        /// <param name="length"></param>
+        /// <returns>a <see cref="Span{T}"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Span<T> AsSpan<T>(this SizableSpan<T> span, TSize start, int length) {
+            if (length < 0)
+                ThrowHelper.ThrowArgumentOutOfRangeException();
+            return (Span<T>)span.Slice(start, (nuint)(uint)length);
         }
 
         /// <summary>
