@@ -44,6 +44,7 @@ namespace Zyl.SizableSpans {
                 _itemsFooterStart = default;
             } else {
                 _itemsFooterStart = _length.Subtract((TSize)spanViewLength);
+                if (_itemsFooterStart.LessThan((uint)spanViewLength)) _itemsFooterStart = (TSize)spanViewLength;
                 _itemsFooter = span.Slice(_itemsFooterStart).ToArray(spanViewLength);
             }
             _stringHeader = string.Empty;

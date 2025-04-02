@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
+using Zyl.SizableSpans.Extensions;
 using Zyl.SizableSpans.Impl;
 
 namespace Zyl.SizableSpans {
@@ -139,10 +140,12 @@ namespace Zyl.SizableSpans {
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <param name="source">The source data (源数据).</param>
+        /// <param name="itemFormater">The formater of each item (各项的格式化器). Default value is <see cref="ItemFormaters.Default">ItemFormaters.Default</see>. Prototype is `string func(TSize index, T value)`.</param>
         /// <param name="noPrintType">Is no print type name (不打印类型名称).</param>
         /// <returns>A formatted string (格式化后的字符串).</returns>
-        public static string ItemsToString<T>(this ReadOnlySizableSpan<T> source, bool noPrintType = false) {
-            return ItemsToString(source, (TSize)SizableMemoryMarshal.SpanViewLength, default, noPrintType);
+        /// <seealso cref="ItemFormaters"/>
+        public static string ItemsToString<T>(this ReadOnlySizableSpan<T> source, Func<TSize, T, string>? itemFormater = null, bool noPrintType = false) {
+            return ItemsToString(source, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, noPrintType);
         }
 
         /// <summary>
@@ -152,47 +155,57 @@ namespace Zyl.SizableSpans {
         /// <param name="source">The source data (源数据).</param>
         /// <param name="headerLength">The max length of header data (头部的最大长度).</param>
         /// <param name="footerLength">The max length of footer data (尾部的最大长度).</param>
+        /// <param name="itemFormater">The formater of each item (各项的格式化器). Default value is <see cref="ItemFormaters.Default">ItemFormaters.Default</see>. Prototype is `string func(TSize index, T value)`.</param>
         /// <param name="noPrintType">Is no print type name (不打印类型名称).</param>
         /// <returns>A formatted string (格式化后的字符串).</returns>
-        public static string ItemsToString<T>(this ReadOnlySizableSpan<T> source, TSize headerLength, TSize footerLength = default, bool noPrintType = false) {
-            return ItemsToStringUnsafe(in source.GetPinnableReference(), source.Length, "Zyl.SizableSpans.ReadOnlySizableSpan", headerLength, footerLength, noPrintType);
+        /// <seealso cref="ItemFormaters"/>
+        public static string ItemsToString<T>(this ReadOnlySizableSpan<T> source, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, bool noPrintType = false) {
+            return ItemsToStringUnsafe(in source.GetPinnableReference(), source.Length, "Zyl.SizableSpans.ReadOnlySizableSpan", headerLength, footerLength, itemFormater, noPrintType);
         }
 
-        /// <inheritdoc cref="ItemsToString{T}(ReadOnlySizableSpan{T}, bool)"/>
-        public static string ItemsToString<T>(this SizableSpan<T> source, bool noPrintType = false) {
-            return ItemsToString(source, (TSize)SizableMemoryMarshal.SpanViewLength, default, noPrintType);
+        /// <inheritdoc cref="ItemsToString{T}(ReadOnlySizableSpan{T}, Func{nuint, T, string}?, bool)"/>
+        public static string ItemsToString<T>(this SizableSpan<T> source, Func<TSize, T, string>? itemFormater = null, bool noPrintType = false) {
+            return ItemsToString(source, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, noPrintType);
         }
 
-        /// <inheritdoc cref="ItemsToString{T}(ReadOnlySizableSpan{T}, nuint, nuint, bool)"/>
-        public static string ItemsToString<T>(this SizableSpan<T> source, TSize headerLength, TSize footerLength = default, bool noPrintType = false) {
-            return ItemsToStringUnsafe(ref source.GetPinnableReference(), source.Length, "Zyl.SizableSpans.SizableSpan", headerLength, footerLength, noPrintType);
+        /// <inheritdoc cref="ItemsToString{T}(ReadOnlySizableSpan{T}, nuint, nuint, Func{nuint, T, string}?, bool)"/>
+        public static string ItemsToString<T>(this SizableSpan<T> source, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, bool noPrintType = false) {
+            return ItemsToStringUnsafe(ref source.GetPinnableReference(), source.Length, "Zyl.SizableSpans.SizableSpan", headerLength, footerLength, itemFormater, noPrintType);
         }
 
 #if STRUCT_REF_INTERFACE
 
-        //Output.WriteLine("TSpan without typeSample: {0}", span.ItemsToString()); // CS0411 The type arguments for method 'SizableSpanExtensions.ItemsToString<T, TSpan>(TSpan, bool)' cannot be inferred from the usage. Try specifying the type arguments explicitly.
-        //Output.WriteLine("TSpan without typeSample: {0}", span.ItemsToString<int, SizableSpan<int>>()); // OK. But the code is too long. So it was decided to disable it.
+        // Output.WriteLine("TSpan without typeSample: {0}", span.ItemsToString()); // CS0411 The type arguments for method 'SizableSpanExtensions.ItemsToString<T, TSpan>(TSpan, bool)' cannot be inferred from the usage. Try specifying the type arguments explicitly.
+        // Output.WriteLine("TSpan without typeSample: {0}", span.ItemsToString<int, SizableSpan<int>>()); // OK. But the code is too long. So it was decided to disable it.
         //public static string ItemsToString<T, TSpan>(this TSpan span, bool noPrintType = false)
         //        where TSpan : IReadOnlySizableSpanBase<T>, allows ref struct {
-        //    return ItemsToString(span, span.GetPinnableReadOnlyReference(), noPrintType);
+        //    return ItemsToString(span, span.GetPinnableReadOnlyReference(), null, noPrintType);
+        //}
+
+        //Output.WriteLine("TSpan use itemFormater: {0}", span.ItemsToString(ItemFormaters.Hex)); // CS0411 The type arguments for method 'SizableSpanExtensions.ItemsToString<T, TSpan>(TSpan, Func<nuint, T, string>?, bool)' cannot be inferred from the usage. Try specifying the type arguments explicitly.
+        //public static string ItemsToString<T, TSpan>(this TSpan source, Func<TSize, T, string>? itemFormater = null, bool noPrintType = false)
+        //        where TSpan : IReadOnlySizableSpanBase<T>, allows ref struct {
+        //    return ItemsToString(source, source.GetPinnableReadOnlyReference(), (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, noPrintType);
         //}
 
         /// <summary>
-        /// Convert items data into string. The headerLength parameter uses the value of <see cref="SizableMemoryMarshal.SpanViewLength"/> (将各项数据转为字符串. headerLength 参数使用 <see cref="SizableMemoryMarshal.SpanViewLength"/> 的值).
+        /// Convert items data into string. It has the <paramref name="typeSample"/> parameter. The headerLength parameter uses the value of <see cref="SizableMemoryMarshal.SpanViewLength"/> (将各项数据转为字符串. 它具有 <paramref name="typeSample"/> 参数. headerLength 参数使用 <see cref="SizableMemoryMarshal.SpanViewLength"/> 的值).
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <typeparam name="TSpan">The type of span (跨度的类型).</typeparam>
         /// <param name="source">The source data (源数据).</param>
         /// <param name="typeSample">Sample of type. Only its type is referenced, not its data. (类型的样例. 仅参考它的类型，不使用它的数据).</param>
+        /// <param name="itemFormater">The formater of each item (各项的格式化器). Default value is <see cref="ItemFormaters.Default">ItemFormaters.Default</see>. Prototype is `string func(TSize index, T value)`.</param>
         /// <param name="noPrintType">Is no print type name (不打印类型名称).</param>
         /// <returns>A formatted string (格式化后的字符串).</returns>
-        public static string ItemsToString<T, TSpan>(this TSpan source, in T typeSample, bool noPrintType = false)
+        /// <seealso cref="ItemFormaters"/>
+        public static string ItemsToString<T, TSpan>(this TSpan source, in T typeSample, Func<TSize, T, string>? itemFormater = null, bool noPrintType = false)
                 where TSpan : IReadOnlySizableSpanBase<T>, allows ref struct {
-            return ItemsToString(source, in typeSample, (TSize)SizableMemoryMarshal.SpanViewLength, default, noPrintType);
+            return ItemsToString(source, in typeSample, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, noPrintType);
         }
 
         /// <summary>
-        /// Convert items data into string. It has the <paramref name="headerLength"/>, <paramref name="footerLength"/> parameter (将各项数据转为字符串. 它具有 <paramref name="headerLength"/>, <paramref name="footerLength"/> 参数).
+        /// Convert items data into string. It has the <paramref name="typeSample"/>, <paramref name="headerLength"/>, <paramref name="footerLength"/> parameter (将各项数据转为字符串. 它具有 <paramref name="typeSample"/>, <paramref name="headerLength"/>, <paramref name="footerLength"/> 参数).
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <typeparam name="TSpan">The type of span (跨度的类型).</typeparam>
@@ -200,13 +213,15 @@ namespace Zyl.SizableSpans {
         /// <param name="typeSample">Sample of type. Only its type is referenced, not its data. (类型的样例. 仅参考它的类型，不使用它的数据).</param>
         /// <param name="headerLength">The max length of header data (头部的最大长度).</param>
         /// <param name="footerLength">The max length of footer data (尾部的最大长度).</param>
+        /// <param name="itemFormater">The formater of each item (各项的格式化器). Default value is <see cref="ItemFormaters.Default">ItemFormaters.Default</see>. Prototype is `string func(TSize index, T value)`.</param>
         /// <param name="noPrintType">Is no print type name (不打印类型名称).</param>
         /// <returns>A formatted string (格式化后的字符串).</returns>
-        public static string ItemsToString<T, TSpan>(this TSpan source, in T typeSample, TSize headerLength, TSize footerLength = default, bool noPrintType = false)
+        /// <seealso cref="ItemFormaters"/>
+        public static string ItemsToString<T, TSpan>(this TSpan source, in T typeSample, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, bool noPrintType = false)
                 where TSpan : IReadOnlySizableSpanBase<T>, allows ref struct {
             _ = typeSample;
-            string typeName = "Zyl.SizableSpans.SizableSpan";
-            return ItemsToStringUnsafe(in source.GetPinnableReadOnlyReference(), source.Length, typeName, headerLength, footerLength, noPrintType);
+            string typeName = TypeHelper.GetFullBaseName(typeof(TSpan));
+            return ItemsToStringUnsafe(in source.GetPinnableReadOnlyReference(), source.Length, typeName, headerLength, footerLength, itemFormater, noPrintType);
         }
 
 #endif // STRUCT_REF_INTERFACE
@@ -218,10 +233,12 @@ namespace Zyl.SizableSpans {
         /// <param name="source">The reference to source data (源数据的引用).</param>
         /// <param name="length">The length of source data (源数据的长度).</param>
         /// <param name="typeName">The type name (类型名称).</param>
+        /// <param name="itemFormater">The formater of each item (各项的格式化器). Default value is <see cref="ItemFormaters.Default">ItemFormaters.Default</see>. Prototype is `string func(TSize index, T value)`.</param>
         /// <param name="noPrintType">Is no print type name (不打印类型名称).</param>
         /// <returns>A formatted string (格式化后的字符串).</returns>
-        internal static string ItemsToStringUnsafe<T>(ref readonly T source, TSize length, string typeName, bool noPrintType = false) {
-            return ItemsToStringUnsafe(in source, length, typeName, (TSize)SizableMemoryMarshal.SpanViewLength, default, noPrintType);
+        /// <seealso cref="ItemFormaters"/>
+        internal static string ItemsToStringUnsafe<T>(ref readonly T source, TSize length, string typeName, Func<TSize, T, string>? itemFormater = null, bool noPrintType = false) {
+            return ItemsToStringUnsafe(in source, length, typeName, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, noPrintType);
         }
 
         /// <summary>
@@ -233,33 +250,45 @@ namespace Zyl.SizableSpans {
         /// <param name="typeName">The type name (类型名称).</param>
         /// <param name="headerLength">The max length of header data (头部的最大长度).</param>
         /// <param name="footerLength">The max length of footer data (尾部的最大长度).</param>
+        /// <param name="itemFormater">The formater of each item (各项的格式化器). Default value is <see cref="ItemFormaters.Default">ItemFormaters.Default</see>. Prototype is `string func(TSize index, T value)`.</param>
         /// <param name="noPrintType">Is no print type name (不打印类型名称).</param>
         /// <returns>A formatted string (格式化后的字符串).</returns>
-        internal static string ItemsToStringUnsafe<T>(ref readonly T source, TSize length, string typeName, TSize headerLength, TSize footerLength = default, bool noPrintType = false) {
-            return ItemsToStringUnsafe_NoItems(in source, length, typeName, noPrintType);
+        /// <seealso cref="ItemFormaters"/>
+        internal static string ItemsToStringUnsafe<T>(ref readonly T source, TSize length, string typeName, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, bool noPrintType = false) {
+            bool isNoItems = ((TSize)0 == length) || (((TSize)0 == headerLength) && ((TSize)0 == footerLength));
+            //bool isNoItems = true; // [Debug]
+            if (isNoItems) {
+                return ItemsToStringUnsafe_NoItems(in source, length, typeName, noPrintType);
+            } else {
+                StringBuilder stringBuilder = new StringBuilder();
+                ItemsAppendStringUnsafe(in source, length, typeName, stringBuilder, headerLength, footerLength, itemFormater, noPrintType);
+                return stringBuilder.ToString();
+            }
         }
 
         private static string ItemsToStringUnsafe_NoItems<T>(ref readonly T source, TSize length, string typeName, bool noPrintType = false) {
             string rt;
             if (noPrintType) {
-                rt = $"{typeName}<{typeof(T).Name}>[{length}]";
-            } else {
                 rt = $"[{length}]";
+            } else {
+                rt = $"{typeName}<{typeof(T).Name}>[{length}]";
             }
             return rt;
         }
 
         /// <summary>
-        /// Unsafe convert items data append to  string. The headerLength parameter uses the value of <see cref="SizableMemoryMarshal.SpanViewLength"/> (非安全的将各项数据转追加字符串. headerLength 参数使用 <see cref="SizableMemoryMarshal.SpanViewLength"/> 的值).
+        /// Unsafe convert items data append to string. The headerLength parameter uses the value of <see cref="SizableMemoryMarshal.SpanViewLength"/> (非安全的将各项数据转追加字符串. headerLength 参数使用 <see cref="SizableMemoryMarshal.SpanViewLength"/> 的值).
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <param name="source">The reference to source data (源数据的引用).</param>
         /// <param name="length">The length of source data (源数据的长度).</param>
         /// <param name="typeName">The type name (类型名称).</param>
         /// <param name="outputBuilder">The output <see cref="StringBuilder"/> (输出的 <see cref="StringBuilder"/>).</param>
+        /// <param name="itemFormater">The formater of each item (各项的格式化器). Default value is <see cref="ItemFormaters.Default">ItemFormaters.Default</see>. Prototype is `string func(TSize index, T value)`.</param>
         /// <param name="noPrintType">Is no print type name (不打印类型名称).</param>
-        internal static void ItemsAppendStringUnsafe<T>(ref readonly T source, TSize length, string typeName, StringBuilder outputBuilder, bool noPrintType = false) {
-            ItemsAppendStringUnsafe(in source, length, typeName, outputBuilder, (TSize)SizableMemoryMarshal.SpanViewLength, default, noPrintType);
+        /// <seealso cref="ItemFormaters"/>
+        internal static void ItemsAppendStringUnsafe<T>(ref readonly T source, TSize length, string typeName, StringBuilder outputBuilder, Func<TSize, T, string>? itemFormater = null, bool noPrintType = false) {
+            ItemsAppendStringUnsafe(in source, length, typeName, outputBuilder, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, noPrintType);
         }
 
         /// <summary>
@@ -272,10 +301,68 @@ namespace Zyl.SizableSpans {
         /// <param name="outputBuilder">The output <see cref="StringBuilder"/> (输出的 <see cref="StringBuilder"/>).</param>
         /// <param name="headerLength">The max length of header data (头部的最大长度).</param>
         /// <param name="footerLength">The max length of footer data (尾部的最大长度).</param>
+        /// <param name="itemFormater">The formater of each item (各项的格式化器). Default value is <see cref="ItemFormaters.Default">ItemFormaters.Default</see>. Prototype is `string func(TSize index, T value)`.</param>
         /// <param name="noPrintType">Is no print type name (不打印类型名称).</param>
-        internal static void ItemsAppendStringUnsafe<T>(ref readonly T source, TSize length, string typeName, StringBuilder outputBuilder, TSize headerLength, TSize footerLength = default, bool noPrintType = false) {
+        /// <seealso cref="ItemFormaters"/>
+        internal static void ItemsAppendStringUnsafe<T>(ref readonly T source, TSize length, string typeName, StringBuilder outputBuilder, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, bool noPrintType = false) {
+            const string separator = ", ";
+            outputBuilder.Append(ItemsToStringUnsafe_NoItems(in source, length, typeName, noPrintType));
+            bool isNoItems = ((TSize)0 == length) || (((TSize)0 == headerLength) && ((TSize)0 == footerLength));
+            if (isNoItems) {
+                return;
+            }
+            itemFormater ??= ItemFormaters.Default;
+            TSize zero = default;
+            TSize headerCount = default;
+            TSize footerCount = default;
+            TSize footerStart = default;
+            if (length.LessThanOrEqual(headerLength)) {
+                headerCount = length;
+            } else {
+                headerCount = headerLength;
+                footerStart = length.Subtract(footerLength);
+                if (footerStart.LessThan(headerCount)) footerStart = headerCount;
+                footerCount = length.Subtract(footerStart);
+            }
+            // Output before.
+            outputBuilder.Append('{');
+            // Output header.
+            ref T p0 = ref Unsafe.AsRef(in source);
+            ref T p = ref p0;
+            for (TSize i = zero; i.LessThan(headerCount); i += 1) {
+                if (i.GreaterThan(zero)) {
+                    outputBuilder.Append(separator);
+                }
+                T value = p;
+                string str = itemFormater(i, value);
+                outputBuilder.Append(str);
+                // Next.
+                p = ref Unsafe.Add(ref p, 1);
+            }
+            // Output ellipsis.
+            if (headerCount.LessThan(length) && headerCount != footerStart) {
+                outputBuilder.Append(separator);
+                outputBuilder.Append("...");
+            }
+            // Output footer.
+            if (footerCount.GreaterThan(zero)) {
+                outputBuilder.Append(separator);
+                // Output.
+                p = ref SizableUnsafe.Add(ref p0, footerStart);
+                for (TSize i = zero; i.LessThan(footerCount); i += 1) {
+                    if (i.GreaterThan(zero)) {
+                        outputBuilder.Append(separator);
+                    }
+                    T value = p;
+                    string str = itemFormater(i, value);
+                    outputBuilder.Append(str);
+                    // Next.
+                    p = ref Unsafe.Add(ref p, 1);
+                }
+            }
+            // Output after.
+            outputBuilder.Append('}');
         }
-
 
     }
 }

@@ -11,6 +11,45 @@ namespace Zyl.SizableSpans.Impl {
     public static class TypeHelper {
 
         /// <summary>
+        /// Get the base name of the type (取得类型的基本名).
+        /// </summary>
+        /// <typeparam name="T">The type (类型).</typeparam>
+        /// <returns>The base name (基本名).</returns>
+        public static string GetBaseName<T>() {
+            return GetBaseName(typeof(T));
+        }
+
+        /// <summary>
+        /// Get the base name of the type (取得类型的基本名).
+        /// </summary>
+        /// <param name="atype">The type (类型).</param>
+        /// <returns>Full base name (返回完整基本名).</returns>
+        public static string GetBaseName(Type atype) {
+            string name = atype.Name;
+            int m = name.IndexOf('`');
+            if (m >= 0) name = name.Substring(0, m);
+            return name;
+        }
+
+        /// <summary>
+        /// Get the namespace and base name of the type (取得类型的名称空间与基本名).
+        /// </summary>
+        /// <typeparam name="T">The type (类型).</typeparam>
+        /// <returns>The full base name (完整基本名).</returns>
+        public static string GetFullBaseName<T>() {
+            return GetFullBaseName(typeof(T));
+        }
+
+        /// <summary>
+        /// Get the namespace and base name of the type (取得类型的名称空间与基本名).
+        /// </summary>
+        /// <param name="atype">The type (类型).</param>
+        /// <returns>The full base name (完整基本名).</returns>
+        public static string GetFullBaseName(Type atype) {
+            return atype.Namespace + "." + GetBaseName(atype);
+        }
+
+        /// <summary>
         /// Is blittable types (是可直接按位复制的类型)
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>

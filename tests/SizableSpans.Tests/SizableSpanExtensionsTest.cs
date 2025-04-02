@@ -33,37 +33,54 @@ namespace Zyl.SizableSpans.Tests {
             span[span.Length - 2] = 2;
 
             // Output - span.
-            TestItem(span);
+            CallSizableSpan(span);
 
             // Output - Empty.
-            TestItem(SizableSpan<long>.Empty);
+            CallSizableSpan(SizableSpan<long>.Empty);
 
             // Output - TSpan.
 #if STRUCT_REF_INTERFACE
-            // Try without typeSample.
-            //Output.WriteLine("TSpan without typeSample: {0}", span.ItemsToString()); // CS0411 The type arguments for method 'SizableSpanExtensions.ItemsToString<T, TSpan>(TSpan, bool)' cannot be inferred from the usage. Try specifying the type arguments explicitly.
-            //Output.WriteLine("TSpan without typeSample: {0}", span.ItemsToString<int, SizableSpan<int>>()); // OK. But the code is too long. So it was decided to disable it.
-            // OK.
-            Output.WriteLine("TSpan with typeSample: {0}", span.ItemsToString(span.GetPinnableReference()));
-            Output.WriteLine("TSpan with typeSample and noPrintType: {0}", span.ItemsToString(span.GetPinnableReference(), headerLength, footerLength, false));
-            Output.WriteLine("TSpan with footerLength: {0}", span.ItemsToString(span.GetPinnableReference(), headerLength, footerLength));
-            Output.WriteLine("TSpan with footerLength and noPrintType: {0}", span.ItemsToString(span.GetPinnableReference(), headerLength, footerLength, false));
+            CallTSpan(span, span.GetPinnableReference());
+            Output.WriteLine("TSpan-SizableSpan with typeSample: {0}", span.ItemsToString(span.GetPinnableReference()));
+            Output.WriteLine("TSpan-SizableSpan with typeSample and noPrintType: {0}", span.ItemsToString(span.GetPinnableReference(), headerLength, footerLength, null, true));
+            Output.WriteLine("TSpan-SizableSpan with footerLength: {0}", span.ItemsToString(span.GetPinnableReference(), headerLength, footerLength));
+            Output.WriteLine("TSpan-SizableSpan with footerLength and noPrintType: {0}", span.ItemsToString(span.GetPinnableReference(), headerLength, footerLength, null, true));
+            Output.WriteLine("TSpan-SizableSpan with footerLength and itemFormater: {0}", span.ItemsToString(span.GetPinnableReference(), headerLength, footerLength, ItemFormaters.Hex));
+            Output.WriteLine("TSpan-SizableSpan with headerLength and footerLength less: {0}", span.ItemsToString(span.GetPinnableReference(), 5, 10));
+            Output.WriteLine("TSpan-SizableSpan with headerLength and footerLength equal: {0}", span.ItemsToString(span.GetPinnableReference(), 5, 11));
+            Output.WriteLine("TSpan-SizableSpan with headerLength and footerLength greater: {0}", span.ItemsToString(span.GetPinnableReference(), 5, 12));
 #endif // STRUCT_REF_INTERFACE
 
-            void TestItem<T>(SizableSpan<T> span) {
+            void CallSizableSpan<T>(SizableSpan<T> span) {
                 // Output - SizableSpan.
-                Output.WriteLine("SizableSpan with typeSample: {0}", span.ItemsToString());
-                Output.WriteLine("SizableSpan with typeSample and noPrintType: {0}", span.ItemsToString(headerLength, footerLength, false));
+                Output.WriteLine("SizableSpan: {0}", span.ItemsToString());
+                Output.WriteLine("SizableSpan with noPrintType: {0}", span.ItemsToString(headerLength, footerLength, null, true));
                 Output.WriteLine("SizableSpan with footerLength: {0}", span.ItemsToString(headerLength, footerLength));
-                Output.WriteLine("SizableSpan with footerLength and noPrintType: {0}", span.ItemsToString(headerLength, footerLength, false));
+                Output.WriteLine("SizableSpan with footerLength and noPrintType: {0}", span.ItemsToString(headerLength, footerLength, null, true));
 
                 // Output - ReadOnlySizableSpan.
                 ReadOnlySizableSpan<T> spanReadOnly = span;
-                Output.WriteLine("ReadOnlySizableSpan with typeSample: {0}", spanReadOnly.ItemsToString());
-                Output.WriteLine("ReadOnlySizableSpan with typeSample and noPrintType: {0}", spanReadOnly.ItemsToString(headerLength, footerLength, false));
+                Output.WriteLine("ReadOnlySizableSpan: {0}", spanReadOnly.ItemsToString());
+                Output.WriteLine("ReadOnlySizableSpan with noPrintType: {0}", spanReadOnly.ItemsToString(headerLength, footerLength, null, true));
                 Output.WriteLine("ReadOnlySizableSpan with footerLength: {0}", spanReadOnly.ItemsToString(headerLength, footerLength));
-                Output.WriteLine("ReadOnlySizableSpan with footerLength and noPrintType: {0}", spanReadOnly.ItemsToString(headerLength, footerLength, false));
+                Output.WriteLine("ReadOnlySizableSpan with footerLength and noPrintType: {0}", spanReadOnly.ItemsToString(headerLength, footerLength, null, true));
             }
+
+#if STRUCT_REF_INTERFACE
+            void CallTSpan<T, TSpan>(TSpan span, in T typeSample)
+                    where TSpan : IReadOnlySizableSpanBase<T>, allows ref struct {
+                // Try without typeSample.
+                //Output.WriteLine("TSpan without typeSample: {0}", span.ItemsToString()); // CS0411 The type arguments for method 'SizableSpanExtensions.ItemsToString<T, TSpan>(TSpan, bool)' cannot be inferred from the usage. Try specifying the type arguments explicitly.
+                //Output.WriteLine("TSpan without typeSample: {0}", span.ItemsToString<int, SizableSpan<int>>()); // OK. But the code is too long. So it was decided to disable it.
+                //Output.WriteLine("TSpan use itemFormater: {0}", span.ItemsToString(ItemFormaters.Hex)); // CS0411 The type arguments for method 'SizableSpanExtensions.ItemsToString<T, TSpan>(TSpan, Func<nuint, T, string>?, bool)' cannot be inferred from the usage. Try specifying the type arguments explicitly.
+                // OK.
+                Output.WriteLine("TSpan with typeSample: {0}", span.ItemsToString(in span.GetPinnableReadOnlyReference())); // Can work with GetInnableReadOnlyReference without use typeSample parameter.
+                Output.WriteLine("TSpan with typeSample and noPrintType: {0}", span.ItemsToString(in typeSample, headerLength, footerLength, null, true));
+                Output.WriteLine("TSpan with headerLength: {0}", span.ItemsToString(typeSample, headerLength)); // It can omit the in keyword.
+                Output.WriteLine("TSpan with footerLength: {0}", span.ItemsToString(typeSample, headerLength, footerLength));
+                Output.WriteLine("TSpan with footerLength and noPrintType: {0}", span.ItemsToString(typeSample, headerLength, footerLength, null, true));
+            }
+#endif // STRUCT_REF_INTERFACE
         }
 
     }
