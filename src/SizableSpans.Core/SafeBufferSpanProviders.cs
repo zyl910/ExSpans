@@ -7,7 +7,7 @@ namespace Zyl.SizableSpans {
     /// <summary>
     /// Helper methods of <see cref="SafeBufferSpanProvider{TSafeBuffer}"/> (<see cref="SafeBufferSpanProvider{TSafeBuffer}"/> 的辅助方法).
     /// </summary>
-    public static class SafeBufferSpanProvider {
+    public static class SafeBufferSpanProviders {
         /// <summary>
         /// Create span provider (创建跨距提供者).
         /// </summary>

@@ -11,6 +11,37 @@ namespace Zyl.SizableSpans {
     /// The span provider that manages the pointer acquire for <see cref="SafeBuffer"/> (管理 <see cref="SafeBuffer"/> 的指针获取的跨距提供者). For example, it can provide span access for memory mapped files (例如它可以为内存映射文件提供跨度访问器).
     /// </summary>
     /// <typeparam name="TSafeBuffer">The type of <see cref="SafeBuffer"/>(<see cref="SafeBuffer"/> 的类型).</typeparam>
+    /// <remarks>
+    /// <para>Example:</para>
+    /// <code>
+    /// static void TestMemoryMappedFile(TextWriter writer) {
+    ///     try {
+    ///         const string MemoryMappedFileMapName = "SizableSpans.Sample.tmp";
+    ///         const string MemoryMappedFilePath = MemoryMappedFileMapName;
+    ///         const long MemoryMappedFileSize = 1 * 1024 * 1024; // 1MB
+    ///         using MemoryMappedFile mappedFile = MemoryMappedFile.CreateFromFile(MemoryMappedFilePath, FileMode.Create, MemoryMappedFileMapName, MemoryMappedFileSize);
+    ///         using MemoryMappedViewAccessor accessor = mappedFile.CreateViewAccessor();
+    ///         using SafeBufferSpanProvider&lt;SafeMemoryMappedViewHandle&gt; spanProvider = accessor.SafeMemoryMappedViewHandle.CreateSpanProvider();
+    ///         // Write.
+    ///         writer.WriteLine("[TestMemoryMappedFile]");
+    ///         SizableSpan&lt;int&gt; spanInt = spanProvider.CreateSizableSpan&lt;int&gt;();
+    ///         spanInt.Fill(0x01020304);
+    ///         spanInt[(nuint)0] = 0x12345678;
+    ///         // Read.
+    ///         writer.WriteLine(string.Format("Data[0]: {0} // 0x{0:X}", spanInt[(nuint)0]));
+    ///         writer.WriteLine(string.Format("Data[1]: {0} // 0x{0:X}", spanInt[(nuint)1]));
+    ///         // done.
+    ///         writer.WriteLine();
+    ///     } catch (Exception ex) {
+    ///         writer.WriteLine(string.Format("Run TestMemoryMappedFile fail! {0}", ex.ToString()));
+    ///     }
+    ///     // Output:
+    ///     // [TestMemoryMappedFile]
+    ///     // Data[0]: 305419896 // 0x12345678
+    ///     // Data[1]: 16909060 // 0x1020304
+    /// }
+    /// </code>
+    /// </remarks>
     public unsafe readonly ref struct SafeBufferSpanProvider<TSafeBuffer> : IDisposable, ISizableLength, IReadOnlySizableSpanProvider<byte>, ISizableSpanProvider<byte>
                 where TSafeBuffer : SafeBuffer {
         private readonly TSafeBuffer _source;
