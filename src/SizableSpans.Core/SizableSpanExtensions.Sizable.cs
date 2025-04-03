@@ -136,6 +136,129 @@ namespace Zyl.SizableSpans {
         }
 
         /// <summary>
+        /// Unsafe convert items data append string. The headerLength parameter uses the value of <see cref="SizableMemoryMarshal.SpanViewLength"/> (非安全的将各项数据转追加字符串. headerLength 参数使用 <see cref="SizableMemoryMarshal.SpanViewLength"/> 的值).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="source">The reference to source data (源数据的引用).</param>
+        /// <param name="length">The length of source data (源数据的长度).</param>
+        /// <param name="typeName">The type name (类型名称).</param>
+        /// <param name="output">The output <see cref="StringBuilder"/> (输出的 <see cref="StringBuilder"/>).</param>
+        /// <param name="itemFormater">The formater of each item (各项的格式化器). Default value is <see cref="ItemFormaters.Default">ItemFormaters.Default</see>. Prototype is `string func(TSize index, T value)`.</param>
+        /// <param name="noPrintType">Is no print type name (不打印类型名称).</param>
+        /// <seealso cref="ItemFormaters"/>
+        internal static void ItemsAppendStringUnsafe<T>(ref readonly T source, TSize length, string typeName, StringBuilder output, Func<TSize, T, string>? itemFormater = null, bool noPrintType = false) {
+            ItemsAppendStringUnsafe(in source, length, typeName, output, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, noPrintType);
+        }
+
+        /// <summary>
+        /// Unsafe convert items data append string. It has the <paramref name="headerLength"/>, <paramref name="footerLength"/> parameter (非安全的将各项数据追加字符串. 它具有 <paramref name="headerLength"/>, <paramref name="footerLength"/> 参数).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="source">The reference to source data (源数据的引用).</param>
+        /// <param name="length">The length of source data (源数据的长度).</param>
+        /// <param name="typeName">The type name (类型名称).</param>
+        /// <param name="output">The output <see cref="StringBuilder"/> (输出的 <see cref="StringBuilder"/>).</param>
+        /// <param name="headerLength">The max length of header data (头部的最大长度).</param>
+        /// <param name="footerLength">The max length of footer data (尾部的最大长度).</param>
+        /// <param name="itemFormater">The formater of each item (各项的格式化器). Default value is <see cref="ItemFormaters.Default">ItemFormaters.Default</see>. Prototype is `string func(TSize index, T value)`.</param>
+        /// <param name="noPrintType">Is no print type name (不打印类型名称).</param>
+        /// <seealso cref="ItemFormaters"/>
+        internal static void ItemsAppendStringUnsafe<T>(ref readonly T source, TSize length, string typeName, StringBuilder output, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, bool noPrintType = false) {
+            //ItemsAppendStringToUnsafe(in source, length, typeName, (str) => output.Append(str), headerLength, footerLength, itemFormater, noPrintType);
+            ItemsAppendStringToUnsafe(in source, length, typeName, delegate (string str) {
+                output.Append(str);
+            }, headerLength, footerLength, itemFormater, noPrintType);
+        }
+
+        /// <summary>
+        /// Unsafe convert items data append string to action. The headerLength parameter uses the value of <see cref="SizableMemoryMarshal.SpanViewLength"/> (非安全的将各项数据转追加字符串到动作. headerLength 参数使用 <see cref="SizableMemoryMarshal.SpanViewLength"/> 的值).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="source">The reference to source data (源数据的引用).</param>
+        /// <param name="length">The length of source data (源数据的长度).</param>
+        /// <param name="typeName">The type name (类型名称).</param>
+        /// <param name="output">The output action (输出动作).</param>
+        /// <param name="itemFormater">The formater of each item (各项的格式化器). Default value is <see cref="ItemFormaters.Default">ItemFormaters.Default</see>. Prototype is `string func(TSize index, T value)`.</param>
+        /// <param name="noPrintType">Is no print type name (不打印类型名称).</param>
+        /// <seealso cref="ItemFormaters"/>
+        internal static void ItemsAppendStringToUnsafe<T>(ref readonly T source, TSize length, string typeName, Action<string> output, Func<TSize, T, string>? itemFormater = null, bool noPrintType = false) {
+            ItemsAppendStringToUnsafe(in source, length, typeName, output, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, noPrintType);
+        }
+
+        /// <summary>
+        /// Unsafe convert items data append string to action. It has the <paramref name="headerLength"/>, <paramref name="footerLength"/> parameter (非安全的将各项数据追加字符串. 它具有 <paramref name="headerLength"/>, <paramref name="footerLength"/> 参数).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="source">The reference to source data (源数据的引用).</param>
+        /// <param name="length">The length of source data (源数据的长度).</param>
+        /// <param name="typeName">The type name (类型名称).</param>
+        /// <param name="output">The output action (输出动作).</param>
+        /// <param name="headerLength">The max length of header data (头部的最大长度).</param>
+        /// <param name="footerLength">The max length of footer data (尾部的最大长度).</param>
+        /// <param name="itemFormater">The formater of each item (各项的格式化器). Default value is <see cref="ItemFormaters.Default">ItemFormaters.Default</see>. Prototype is `string func(TSize index, T value)`.</param>
+        /// <param name="noPrintType">Is no print type name (不打印类型名称).</param>
+        /// <seealso cref="ItemFormaters"/>
+        internal static void ItemsAppendStringToUnsafe<T>(ref readonly T source, TSize length, string typeName, Action<string> output, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, bool noPrintType = false) {
+            const string separator = ", ";
+            output(ItemsToStringUnsafe_NoItems(in source, length, typeName, noPrintType));
+            bool isNoItems = ((TSize)0 == length) || (((TSize)0 == headerLength) && ((TSize)0 == footerLength));
+            if (isNoItems) {
+                return;
+            }
+            itemFormater ??= ItemFormaters.Default;
+            TSize zero = default;
+            TSize headerCount = default;
+            TSize footerCount = default;
+            TSize footerStart = default;
+            if (length.LessThanOrEqual(headerLength)) {
+                headerCount = length;
+            } else {
+                headerCount = headerLength;
+                footerStart = length.Subtract(footerLength);
+                if (footerStart.LessThan(headerCount)) footerStart = headerCount;
+                footerCount = length.Subtract(footerStart);
+            }
+            // Output before.
+            output("{");
+            // Output header.
+            ref T p0 = ref Unsafe.AsRef(in source);
+            ref T p = ref p0;
+            for (TSize i = zero; i.LessThan(headerCount); i += 1) {
+                if (i.GreaterThan(zero)) {
+                    output(separator);
+                }
+                T value = p;
+                string str = itemFormater(i, value);
+                output(str);
+                // Next.
+                p = ref Unsafe.Add(ref p, 1);
+            }
+            // Output ellipsis.
+            if (headerCount.LessThan(length) && headerCount != footerStart) {
+                output(separator);
+                output("...");
+            }
+            // Output footer.
+            if (footerCount.GreaterThan(zero)) {
+                output(separator);
+                // Output.
+                p = ref SizableUnsafe.Add(ref p0, footerStart);
+                for (TSize i = zero; i.LessThan(footerCount); i += 1) {
+                    if (i.GreaterThan(zero)) {
+                        output(separator);
+                    }
+                    T value = p;
+                    string str = itemFormater(i, value);
+                    output(str);
+                    // Next.
+                    p = ref Unsafe.Add(ref p, 1);
+                }
+            }
+            // Output after.
+            output("}");
+        }
+
+        /// <summary>
         /// Convert items data into string. The headerLength parameter uses the value of <see cref="SizableMemoryMarshal.SpanViewLength"/> (将各项数据转为字符串. headerLength 参数使用 <see cref="SizableMemoryMarshal.SpanViewLength"/> 的值).
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
@@ -274,94 +397,6 @@ namespace Zyl.SizableSpans {
                 rt = $"{typeName}<{typeof(T).Name}>[{length}]";
             }
             return rt;
-        }
-
-        /// <summary>
-        /// Unsafe convert items data append to string. The headerLength parameter uses the value of <see cref="SizableMemoryMarshal.SpanViewLength"/> (非安全的将各项数据转追加字符串. headerLength 参数使用 <see cref="SizableMemoryMarshal.SpanViewLength"/> 的值).
-        /// </summary>
-        /// <typeparam name="T">The element type (元素的类型).</typeparam>
-        /// <param name="source">The reference to source data (源数据的引用).</param>
-        /// <param name="length">The length of source data (源数据的长度).</param>
-        /// <param name="typeName">The type name (类型名称).</param>
-        /// <param name="outputBuilder">The output <see cref="StringBuilder"/> (输出的 <see cref="StringBuilder"/>).</param>
-        /// <param name="itemFormater">The formater of each item (各项的格式化器). Default value is <see cref="ItemFormaters.Default">ItemFormaters.Default</see>. Prototype is `string func(TSize index, T value)`.</param>
-        /// <param name="noPrintType">Is no print type name (不打印类型名称).</param>
-        /// <seealso cref="ItemFormaters"/>
-        internal static void ItemsAppendStringUnsafe<T>(ref readonly T source, TSize length, string typeName, StringBuilder outputBuilder, Func<TSize, T, string>? itemFormater = null, bool noPrintType = false) {
-            ItemsAppendStringUnsafe(in source, length, typeName, outputBuilder, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, noPrintType);
-        }
-
-        /// <summary>
-        /// Unsafe convert items data append to string. It has the <paramref name="headerLength"/>, <paramref name="footerLength"/> parameter (非安全的将各项数据追加字符串. 它具有 <paramref name="headerLength"/>, <paramref name="footerLength"/> 参数).
-        /// </summary>
-        /// <typeparam name="T">The element type (元素的类型).</typeparam>
-        /// <param name="source">The reference to source data (源数据的引用).</param>
-        /// <param name="length">The length of source data (源数据的长度).</param>
-        /// <param name="typeName">The type name (类型名称).</param>
-        /// <param name="outputBuilder">The output <see cref="StringBuilder"/> (输出的 <see cref="StringBuilder"/>).</param>
-        /// <param name="headerLength">The max length of header data (头部的最大长度).</param>
-        /// <param name="footerLength">The max length of footer data (尾部的最大长度).</param>
-        /// <param name="itemFormater">The formater of each item (各项的格式化器). Default value is <see cref="ItemFormaters.Default">ItemFormaters.Default</see>. Prototype is `string func(TSize index, T value)`.</param>
-        /// <param name="noPrintType">Is no print type name (不打印类型名称).</param>
-        /// <seealso cref="ItemFormaters"/>
-        internal static void ItemsAppendStringUnsafe<T>(ref readonly T source, TSize length, string typeName, StringBuilder outputBuilder, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, bool noPrintType = false) {
-            const string separator = ", ";
-            outputBuilder.Append(ItemsToStringUnsafe_NoItems(in source, length, typeName, noPrintType));
-            bool isNoItems = ((TSize)0 == length) || (((TSize)0 == headerLength) && ((TSize)0 == footerLength));
-            if (isNoItems) {
-                return;
-            }
-            itemFormater ??= ItemFormaters.Default;
-            TSize zero = default;
-            TSize headerCount = default;
-            TSize footerCount = default;
-            TSize footerStart = default;
-            if (length.LessThanOrEqual(headerLength)) {
-                headerCount = length;
-            } else {
-                headerCount = headerLength;
-                footerStart = length.Subtract(footerLength);
-                if (footerStart.LessThan(headerCount)) footerStart = headerCount;
-                footerCount = length.Subtract(footerStart);
-            }
-            // Output before.
-            outputBuilder.Append('{');
-            // Output header.
-            ref T p0 = ref Unsafe.AsRef(in source);
-            ref T p = ref p0;
-            for (TSize i = zero; i.LessThan(headerCount); i += 1) {
-                if (i.GreaterThan(zero)) {
-                    outputBuilder.Append(separator);
-                }
-                T value = p;
-                string str = itemFormater(i, value);
-                outputBuilder.Append(str);
-                // Next.
-                p = ref Unsafe.Add(ref p, 1);
-            }
-            // Output ellipsis.
-            if (headerCount.LessThan(length) && headerCount != footerStart) {
-                outputBuilder.Append(separator);
-                outputBuilder.Append("...");
-            }
-            // Output footer.
-            if (footerCount.GreaterThan(zero)) {
-                outputBuilder.Append(separator);
-                // Output.
-                p = ref SizableUnsafe.Add(ref p0, footerStart);
-                for (TSize i = zero; i.LessThan(footerCount); i += 1) {
-                    if (i.GreaterThan(zero)) {
-                        outputBuilder.Append(separator);
-                    }
-                    T value = p;
-                    string str = itemFormater(i, value);
-                    outputBuilder.Append(str);
-                    // Next.
-                    p = ref Unsafe.Add(ref p, 1);
-                }
-            }
-            // Output after.
-            outputBuilder.Append('}');
         }
 
     }
