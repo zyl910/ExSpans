@@ -349,7 +349,7 @@ namespace Zyl.SizableSpans {
 #endif // STRUCT_WHERE_ALLOWS_REF
                 {
             _ = typeSample;
-            string typeName = TypeHelper.GetFullBaseName(typeof(TSpan));
+            string typeName = TypeHelper.GetFullBaseName<TSpan>();
             return ItemsToStringUnsafe(in source.GetPinnableReadOnlyReference(), source.Length, typeName, headerLength, footerLength, itemFormater, noPrintType);
         }
 
