@@ -296,8 +296,6 @@ namespace Zyl.SizableSpans {
             return ItemsToStringUnsafe(ref source.GetPinnableReference(), source.Length, "Zyl.SizableSpans.SizableSpan", headerLength, footerLength, itemFormater, noPrintType);
         }
 
-#if STRUCT_REF_INTERFACE
-
         // Output.WriteLine("TSpan without typeSample: {0}", span.ItemsToString()); // CS0411 The type arguments for method 'SizableSpanExtensions.ItemsToString<T, TSpan>(TSpan, bool)' cannot be inferred from the usage. Try specifying the type arguments explicitly.
         // Output.WriteLine("TSpan without typeSample: {0}", span.ItemsToString<int, SizableSpan<int>>()); // OK. But the code is too long. So it was decided to disable it.
         //public static string ItemsToString<T, TSpan>(this TSpan span, bool noPrintType = false)
@@ -323,7 +321,11 @@ namespace Zyl.SizableSpans {
         /// <returns>A formatted string (格式化后的字符串).</returns>
         /// <seealso cref="ItemFormaters"/>
         public static string ItemsToString<T, TSpan>(this TSpan source, in T typeSample, Func<TSize, T, string>? itemFormater = null, bool noPrintType = false)
-                where TSpan : IReadOnlySizableSpanBase<T>, allows ref struct {
+                where TSpan : IReadOnlySizableSpanBase<T>
+#if STRUCT_REF_INTERFACE
+                , allows ref struct
+#endif // STRUCT_REF_INTERFACE
+                {
             return ItemsToString(source, in typeSample, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, noPrintType);
         }
 
@@ -341,13 +343,15 @@ namespace Zyl.SizableSpans {
         /// <returns>A formatted string (格式化后的字符串).</returns>
         /// <seealso cref="ItemFormaters"/>
         public static string ItemsToString<T, TSpan>(this TSpan source, in T typeSample, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, bool noPrintType = false)
-                where TSpan : IReadOnlySizableSpanBase<T>, allows ref struct {
+                where TSpan : IReadOnlySizableSpanBase<T>
+#if STRUCT_REF_INTERFACE
+                , allows ref struct
+#endif // STRUCT_REF_INTERFACE
+                {
             _ = typeSample;
             string typeName = TypeHelper.GetFullBaseName(typeof(TSpan));
             return ItemsToStringUnsafe(in source.GetPinnableReadOnlyReference(), source.Length, typeName, headerLength, footerLength, itemFormater, noPrintType);
         }
-
-#endif // STRUCT_REF_INTERFACE
 
         /// <summary>
         /// Unsafe convert items data into string. The headerLength parameter uses the value of <see cref="SizableMemoryMarshal.SpanViewLength"/> (非安全的将各项数据转为字符串. headerLength 参数使用 <see cref="SizableMemoryMarshal.SpanViewLength"/> 的值).

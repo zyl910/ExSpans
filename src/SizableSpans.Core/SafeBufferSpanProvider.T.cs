@@ -38,7 +38,7 @@ namespace Zyl.SizableSpans {
     /// }
     /// </code>
     /// </remarks>
-    public unsafe readonly ref struct SafeBufferSpanProvider<TSafeBuffer> : IDisposable, ISizableLength, IReadOnlySizableSpanProvider<byte>, ISizableSpanProvider<byte>
+    public unsafe readonly struct SafeBufferSpanProvider<TSafeBuffer> : IDisposable, ISizableLength, IReadOnlySizableSpanProvider<byte>, ISizableSpanProvider<byte>
                 where TSafeBuffer : SafeBuffer {
         private readonly TSafeBuffer _source;
         private readonly byte* _pointer;
