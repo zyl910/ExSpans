@@ -1,5 +1,5 @@
 ﻿#if NET9_0_OR_GREATER
-#define STRUCT_REF_INTERFACE // C# 13 - ref struct interface; allows ref struct. https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-13#ref-struct-interfaces
+#define STRUCT_WHERE_ALLOWS_REF // C# 13 - ref struct interface; allows ref struct. https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-13#ref-struct-interfaces
 #endif // NET9_0_OR_GREATER
 
 using System;
@@ -39,7 +39,7 @@ namespace Zyl.SizableSpans.Tests {
             CallSizableSpan(SizableSpan<long>.Empty);
 
             // Output - TSpan.
-#if STRUCT_REF_INTERFACE
+#if STRUCT_WHERE_ALLOWS_REF
             CallTSpan(span, span.GetPinnableReference());
             Output.WriteLine("TSpan-SizableSpan with typeSample: {0}", span.ItemsToString(span.GetPinnableReference()));
             Output.WriteLine("TSpan-SizableSpan with typeSample and noPrintType: {0}", span.ItemsToString(span.GetPinnableReference(), null, true));
@@ -49,7 +49,7 @@ namespace Zyl.SizableSpans.Tests {
             Output.WriteLine("TSpan-SizableSpan with headerLength and footerLength less: {0}", span.ItemsToString(span.GetPinnableReference(), 5, 10));
             Output.WriteLine("TSpan-SizableSpan with headerLength and footerLength equal: {0}", span.ItemsToString(span.GetPinnableReference(), 5, 11));
             Output.WriteLine("TSpan-SizableSpan with headerLength and footerLength greater: {0}", span.ItemsToString(span.GetPinnableReference(), 5, 12));
-#endif // STRUCT_REF_INTERFACE
+#endif // STRUCT_WHERE_ALLOWS_REF
 
             void CallSizableSpan<T>(SizableSpan<T> span) {
                 // Output - SizableSpan.
@@ -66,7 +66,7 @@ namespace Zyl.SizableSpans.Tests {
                 Output.WriteLine("ReadOnlySizableSpan with footerLength and noPrintType: {0}", spanReadOnly.ItemsToString(headerLength, footerLength, null, true));
             }
 
-#if STRUCT_REF_INTERFACE
+#if STRUCT_WHERE_ALLOWS_REF
             void CallTSpan<T, TSpan>(TSpan span, in T typeSample)
                     where TSpan : IReadOnlySizableSpanBase<T>, allows ref struct {
                 // Try without typeSample.
@@ -80,7 +80,7 @@ namespace Zyl.SizableSpans.Tests {
                 Output.WriteLine("TSpan with footerLength: {0}", span.ItemsToString(typeSample, headerLength, footerLength));
                 Output.WriteLine("TSpan with footerLength and noPrintType: {0}", span.ItemsToString(typeSample, headerLength, footerLength, null, true));
             }
-#endif // STRUCT_REF_INTERFACE
+#endif // STRUCT_WHERE_ALLOWS_REF
         }
 
     }
