@@ -1,5 +1,5 @@
 ﻿#if NET9_0_OR_GREATER
-#define STRUCT_WHERE_ALLOWS_REF // C# 13 - ref struct interface; allows ref struct. https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-13#ref-struct-interfaces
+#define ALLOWS_REF_STRUCT // C# 13 - ref struct interface; allows ref struct. https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-13#ref-struct-interfaces
 #endif // NET9_0_OR_GREATER
 
 using System;
@@ -20,9 +20,9 @@ namespace Zyl.SizableSpans.Impl {
         /// <typeparam name="T">The type (类型).</typeparam>
         /// <returns>The base name (基本名).</returns>
         public static string GetBaseName<T>()
-#if STRUCT_WHERE_ALLOWS_REF
+#if ALLOWS_REF_STRUCT
                 where T : allows ref struct
-#endif // STRUCT_WHERE_ALLOWS_REF
+#endif // ALLOWS_REF_STRUCT
                 {
             return GetBaseName(typeof(T));
         }
@@ -45,9 +45,9 @@ namespace Zyl.SizableSpans.Impl {
         /// <typeparam name="T">The type (类型).</typeparam>
         /// <returns>The full base name (完整基本名).</returns>
         public static string GetFullBaseName<T>()
-#if STRUCT_WHERE_ALLOWS_REF
+#if ALLOWS_REF_STRUCT
                 where T : allows ref struct
-#endif // STRUCT_WHERE_ALLOWS_REF
+#endif // ALLOWS_REF_STRUCT
                 {
             return GetFullBaseName(typeof(T));
         }
@@ -73,9 +73,9 @@ namespace Zyl.SizableSpans.Impl {
         /// <seealso cref="RuntimeHelpers.IsReferenceOrContainsReferences{T}"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsBlittable<T>()
-#if STRUCT_WHERE_ALLOWS_REF
+#if ALLOWS_REF_STRUCT
                 where T : allows ref struct
-#endif // STRUCT_WHERE_ALLOWS_REF
+#endif // ALLOWS_REF_STRUCT
                 {
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_0_OR_GREATER
             bool isBlittable = !RuntimeHelpers.IsReferenceOrContainsReferences<T>();
@@ -93,9 +93,9 @@ namespace Zyl.SizableSpans.Impl {
         /// <seealso cref="Type.IsPrimitive"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsPrimitive<T>()
-#if STRUCT_WHERE_ALLOWS_REF
+#if ALLOWS_REF_STRUCT
                 where T : allows ref struct
-#endif // STRUCT_WHERE_ALLOWS_REF
+#endif // ALLOWS_REF_STRUCT
                 {
             return IsPrimitive(typeof(T));
         }
@@ -123,9 +123,9 @@ namespace Zyl.SizableSpans.Impl {
         /// <seealso cref="Type.IsValueType"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsValueType<T>()
-#if STRUCT_WHERE_ALLOWS_REF
+#if ALLOWS_REF_STRUCT
                 where T : allows ref struct
-#endif // STRUCT_WHERE_ALLOWS_REF
+#endif // ALLOWS_REF_STRUCT
                 {
             return IsValueType(typeof(T));
         }

@@ -103,7 +103,7 @@ namespace Zyl.SizableSpans.Sample {
                 // Read.
                 writer.WriteLine(string.Format("Data[0]: {0} // 0x{0:X}", spanInt[(nuint)0]));
                 writer.WriteLine(string.Format("Data[1]: {0} // 0x{0:X}", spanInt[(nuint)1]));
-                // ItemsToString.
+                // Extension methods provided by SizableSpanExtensions.
                 writer.WriteLine(string.Format("ItemsToString: {0}", spanProvider.ItemsToString(spanProvider.GetPinnableReadOnlyReference(), (nuint)16)));
                 // done.
                 writer.WriteLine();

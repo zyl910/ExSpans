@@ -1,5 +1,5 @@
 ﻿#if NET9_0_OR_GREATER
-#define STRUCT_WHERE_ALLOWS_REF // C# 13 - ref struct interface; allows ref struct. https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-13#ref-struct-interfaces
+#define ALLOWS_REF_STRUCT // C# 13 - ref struct interface; allows ref struct. https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-13#ref-struct-interfaces
 #endif // NET9_0_OR_GREATER
 
 using System;
@@ -25,9 +25,9 @@ namespace Zyl.SizableSpans.Impl {
         //[CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ref T Add<T>(ref T source, nint elementOffset)
-#if STRUCT_WHERE_ALLOWS_REF
+#if ALLOWS_REF_STRUCT
                 where T : allows ref struct
-#endif // STRUCT_WHERE_ALLOWS_REF
+#endif // ALLOWS_REF_STRUCT
                 {
             return ref Unsafe.Add(ref source, elementOffset);
         }
@@ -42,9 +42,9 @@ namespace Zyl.SizableSpans.Impl {
         //[CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ref T Add<T>(ref T source, nuint elementOffset)
-#if STRUCT_WHERE_ALLOWS_REF
+#if ALLOWS_REF_STRUCT
                 where T : allows ref struct
-#endif // STRUCT_WHERE_ALLOWS_REF
+#endif // ALLOWS_REF_STRUCT
                 {
 #if NET6_0_OR_GREATER
             return ref Unsafe.Add(ref source, elementOffset);
@@ -61,9 +61,9 @@ namespace Zyl.SizableSpans.Impl {
         /// <param name="byteOffset">The offset to add.</param>
         /// <returns>A new managed pointer that reflects the addition of the specified byte offset to the source pointer.</returns>
         public static ref T AddByteOffset<T>(ref T source, nint byteOffset)
-#if STRUCT_WHERE_ALLOWS_REF
+#if ALLOWS_REF_STRUCT
                 where T : allows ref struct
-#endif // STRUCT_WHERE_ALLOWS_REF
+#endif // ALLOWS_REF_STRUCT
                 {
 #if NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_0_OR_GREATER || NET461_OR_GREATER
             return ref Unsafe.AddByteOffset(ref source, byteOffset);
@@ -81,9 +81,9 @@ namespace Zyl.SizableSpans.Impl {
         /// <returns>A new managed pointer that reflects the addition of the specified byte offset to the source pointer.</returns>
         //[CLSCompliant(false)]
         public static ref T AddByteOffset<T>(ref T source, nuint byteOffset)
-#if STRUCT_WHERE_ALLOWS_REF
+#if ALLOWS_REF_STRUCT
                 where T : allows ref struct
-#endif // STRUCT_WHERE_ALLOWS_REF
+#endif // ALLOWS_REF_STRUCT
                 {
 #if NET6_0_OR_GREATER
             return ref Unsafe.AddByteOffset(ref source, byteOffset);
@@ -101,9 +101,9 @@ namespace Zyl.SizableSpans.Impl {
         /// <returns>A new managed pointer that reflects the addition of the specified offset to the source pointer.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe static ref T AddAsRef<T>(TSize source, TSize elementOffset)
-#if STRUCT_WHERE_ALLOWS_REF
+#if ALLOWS_REF_STRUCT
                 where T : allows ref struct
-#endif // STRUCT_WHERE_ALLOWS_REF
+#endif // ALLOWS_REF_STRUCT
                 {
             //ulong num2 = (ulong)index * (ulong)Unsafe.SizeOf<T>();
             //return (TSize)(IntPtr)((byte*)(void*)start + num2);
@@ -119,9 +119,9 @@ namespace Zyl.SizableSpans.Impl {
         /// <returns>Returns added pointer (返回相加后的指针).</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe static TSize AddPointer<T>(TSize source, TSize elementOffset)
-#if STRUCT_WHERE_ALLOWS_REF
+#if ALLOWS_REF_STRUCT
                 where T : allows ref struct
-#endif // STRUCT_WHERE_ALLOWS_REF
+#endif // ALLOWS_REF_STRUCT
                 {
             ref T p = ref AddAsRef<T>(source, elementOffset);
             return (TSize)Unsafe.AsPointer(ref p);
@@ -135,9 +135,9 @@ namespace Zyl.SizableSpans.Impl {
         /// <returns>The byte length (字节长度).</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TSize GetByteSize<T>(TSize length)
-#if STRUCT_WHERE_ALLOWS_REF
+#if ALLOWS_REF_STRUCT
                 where T : allows ref struct
-#endif // STRUCT_WHERE_ALLOWS_REF
+#endif // ALLOWS_REF_STRUCT
                 {
             return AddPointer<T>(UIntPtr.Zero, length);
         }
@@ -150,9 +150,9 @@ namespace Zyl.SizableSpans.Impl {
         /// <returns>A pointer integer to the given value (所给引用的指针整数值).</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe static IntPtr AsPointerInt<T>(ref readonly T value)
-#if STRUCT_WHERE_ALLOWS_REF
+#if ALLOWS_REF_STRUCT
                 where T : allows ref struct
-#endif // STRUCT_WHERE_ALLOWS_REF
+#endif // ALLOWS_REF_STRUCT
                 {
             //return (IntPtr)Unsafe.AsPointer(ref value);
             return (IntPtr)Unsafe.AsPointer(ref Unsafe.AsRef(in value));
@@ -168,9 +168,9 @@ namespace Zyl.SizableSpans.Impl {
         //[CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ref T Subtract<T>(ref T source, nint elementOffset)
-#if STRUCT_WHERE_ALLOWS_REF
+#if ALLOWS_REF_STRUCT
                 where T : allows ref struct
-#endif // STRUCT_WHERE_ALLOWS_REF
+#endif // ALLOWS_REF_STRUCT
                 {
             return ref Unsafe.Subtract(ref source, elementOffset);
         }
@@ -185,9 +185,9 @@ namespace Zyl.SizableSpans.Impl {
         //[CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ref T Subtract<T>(ref T source, nuint elementOffset)
-#if STRUCT_WHERE_ALLOWS_REF
+#if ALLOWS_REF_STRUCT
                 where T : allows ref struct
-#endif // STRUCT_WHERE_ALLOWS_REF
+#endif // ALLOWS_REF_STRUCT
                 {
 #if NET6_0_OR_GREATER
             return ref Unsafe.Subtract(ref source, elementOffset);

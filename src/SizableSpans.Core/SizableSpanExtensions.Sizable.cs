@@ -1,5 +1,5 @@
 ﻿#if NET9_0_OR_GREATER
-#define STRUCT_WHERE_ALLOWS_REF // C# 13 - ref struct interface; allows ref struct. https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-13#ref-struct-interfaces
+#define ALLOWS_REF_STRUCT // C# 13 - ref struct interface; allows ref struct. https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-13#ref-struct-interfaces
 #endif // NET9_0_OR_GREATER
 
 using System;
@@ -322,9 +322,9 @@ namespace Zyl.SizableSpans {
         /// <seealso cref="ItemFormaters"/>
         public static string ItemsToString<T, TSpan>(this TSpan source, in T typeSample, Func<TSize, T, string>? itemFormater = null, bool noPrintType = false)
                 where TSpan : IReadOnlySizableSpanBase<T>
-#if STRUCT_WHERE_ALLOWS_REF
+#if ALLOWS_REF_STRUCT
                 , allows ref struct
-#endif // STRUCT_WHERE_ALLOWS_REF
+#endif // ALLOWS_REF_STRUCT
                 {
             return ItemsToString(source, in typeSample, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, noPrintType);
         }
@@ -344,9 +344,9 @@ namespace Zyl.SizableSpans {
         /// <seealso cref="ItemFormaters"/>
         public static string ItemsToString<T, TSpan>(this TSpan source, in T typeSample, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, bool noPrintType = false)
                 where TSpan : IReadOnlySizableSpanBase<T>
-#if STRUCT_WHERE_ALLOWS_REF
+#if ALLOWS_REF_STRUCT
                 , allows ref struct
-#endif // STRUCT_WHERE_ALLOWS_REF
+#endif // ALLOWS_REF_STRUCT
                 {
             _ = typeSample;
             string typeName = TypeHelper.GetFullBaseName<TSpan>();
