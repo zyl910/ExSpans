@@ -163,7 +163,7 @@ namespace Zyl.SizableSpans {
         /// <param name="stringFlags">Flags for convert items data into string (各项数据转字符串的标志). <see cref="ItemsToStringFlags.HideType">HideType</see> flag is invalid, please output the type name by yourself (<see cref="ItemsToStringFlags.HideType">HideType</see> 标志无效, 请自行输出类型名称). </param>
         /// <seealso cref="ItemFormaters"/>
         internal static void ItemsAppendStringUnsafe<T>(ref readonly T source, TSize length, StringBuilder output, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default) {
-            //ItemsAppendStringToUnsafe(in source, length, (str) => output.Append(str), headerLength, footerLength, itemFormater, stringFlags);
+            //ItemsAppendStringToUnsafe(in source, length, (str) => output.Append(str), headerLength, footerLength, itemFormater, stringFlags); // OK.
             ItemsAppendStringToUnsafe(in source, length, delegate (string str) {
                 output.Append(str);
             }, headerLength, footerLength, itemFormater, stringFlags);
