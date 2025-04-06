@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using Zyl.SizableSpans.Extensions;
 using Zyl.SizableSpans.Impl;
+using Zyl.SizableSpans.Reflection;
 
 namespace Zyl.SizableSpans {
     partial class SizableSpanExtensions {

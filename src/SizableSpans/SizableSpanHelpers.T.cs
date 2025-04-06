@@ -9,6 +9,7 @@ using System.Runtime.Intrinsics;
 #endif // NETCOREAPP3_0_OR_GREATER
 using System.Text;
 using Zyl.SizableSpans.Impl;
+using Zyl.SizableSpans.Reflection;
 using Zyl.VectorTraits;
 using Zyl.VectorTraits.Extensions;
 using Zyl.VectorTraits.Numerics;

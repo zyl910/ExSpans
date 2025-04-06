@@ -15,7 +15,7 @@ namespace Zyl.SizableSpans {
         HideType = 1 << 0, // 1
         /// <summary>Hide length (隐藏长度).</summary>
         HideLength = 1 << 1, // 2
-        /// <summary>Hide brace (隐藏大括号). The brace are `{` symbols.</summary>
+        /// <summary>Hide brace (隐藏大括号). The brace are `{` or `}` symbols.</summary>
         HideBrace = 1 << 2, // 4
     };
 
