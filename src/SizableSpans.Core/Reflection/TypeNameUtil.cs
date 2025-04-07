@@ -19,10 +19,12 @@ namespace Zyl.SizableSpans.Reflection {
         Raw = 1 << 0, // 1
         /// <summary>Do not use keyword type names. For example, instead of `long`, use `Int64` (不使用关键字类型名. 例如不使用 `long`, 而是使用 `Int64`).</summary>
         NoKeyword = 1 << 1, // 2
+        /// <summary>Show <see cref="Nullable{T}"/>. When false, it will be displayed as <c>T?</c> (显示 <see cref="Nullable{T}"/>. 为 false 时会显示成 <c>T?</c>).</summary>
+        ShowNullable = 1 << 2, // 4
         /// <summary>Show namespace (显示名称空间).</summary>
-        ShowNamespace = 1 << 2, // 4
+        ShowNamespace = 1 << 3, // 8
         /// <summary>Whether generic subtypes show namespaces (泛型子类型是否显示名称空间).</summary>
-        SubShowNamespace = 1 << 3, // 8
+        SubShowNamespace = 1 << 4, // 16
     };
 
     /// <summary>
@@ -111,6 +113,7 @@ namespace Zyl.SizableSpans.Reflection {
         public static void AppendNameTo(Action<string> output, Type atype, TypeNameFlags flags = TypeNameFlags.Default) {
             if (null == atype) return;
             bool noKeyword = flags.HasFlag(TypeNameFlags.NoKeyword);
+            bool showNullable = flags.HasFlag(TypeNameFlags.ShowNullable);
             bool showNamespace = flags.HasFlag(TypeNameFlags.ShowNamespace);
             if (flags.HasFlag(TypeNameFlags.Raw)) {
                 if (showNamespace) {
@@ -138,22 +141,28 @@ namespace Zyl.SizableSpans.Reflection {
 #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP2_0_OR_GREATER || NET20_OR_GREATER
             if (atype.IsGenericType) {
                 needShowName = false;
-                if (showNamespace) {
-                    output(TypeHelper.GetFullBaseName(atype));
-                } else {
-                    output(TypeHelper.GetBaseName(atype));
-                }
+                TypeNameFlags flagsSub = FromSub(flags);
                 Type[] typeArguments = atype.GetGenericArguments();
-                if (null != typeArguments && typeArguments.Length > 0) {
-                    TypeNameFlags flagsSub = FromSub(flags);
-                    output("<");
-                    for (int i = 0; i < typeArguments.Length; i++) {
-                        if (i > 0) {
-                            output(", ");
-                        }
-                        AppendNameTo(output, typeArguments[i], flagsSub);
+                bool simpleNullable = !showNullable && typeof(Nullable<>).Equals(atype.GetGenericTypeDefinition()) && typeArguments.Length > 0;
+                if (simpleNullable) {
+                    AppendNameTo(output, typeArguments[0], flagsSub);
+                    output("?");
+                } else {
+                    if (showNamespace) {
+                        output(TypeHelper.GetFullBaseName(atype));
+                    } else {
+                        output(TypeHelper.GetBaseName(atype));
                     }
-                    output(">");
+                    if (null != typeArguments && typeArguments.Length > 0) {
+                        output("<");
+                        for (int i = 0; i < typeArguments.Length; i++) {
+                            if (i > 0) {
+                                output(", ");
+                            }
+                            AppendNameTo(output, typeArguments[i], flagsSub);
+                        }
+                        output(">");
+                    }
                 }
             }
 #endif

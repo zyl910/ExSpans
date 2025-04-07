@@ -27,12 +27,13 @@ namespace Zyl.SizableSpans.Tests.Reflection {
             TypeNameFlags.Default,
             TypeNameFlags.Raw,
             TypeNameFlags.Raw | TypeNameFlags.ShowNamespace,
-            TypeNameFlags.SubShowNamespace,
-            TypeNameFlags.SubShowNamespace | TypeNameFlags.SubShowNamespace,
+            TypeNameFlags.ShowNamespace,
+            TypeNameFlags.ShowNamespace | TypeNameFlags.SubShowNamespace,
             TypeNameFlags.NoKeyword,
             TypeNameFlags.NoKeyword | TypeNameFlags.SubShowNamespace,
             TypeNameFlags.NoKeyword | TypeNameFlags.ShowNamespace,
             TypeNameFlags.NoKeyword | TypeNameFlags.ShowNamespace | TypeNameFlags.SubShowNamespace,
+            TypeNameFlags.NoKeyword | TypeNameFlags.ShowNamespace | TypeNameFlags.SubShowNamespace | TypeNameFlags.ShowNullable,
         };
 
         [Fact]
@@ -41,14 +42,25 @@ namespace Zyl.SizableSpans.Tests.Reflection {
             CallItem<Tuple<int>>();
             CallItem<List<Tuple<int, string>>>();
             CallItem<List<Tuple<int?, string>[]>>();
+            //CallItem<Tuple<,>>(); // CS7003 Unexpected use of an unbound generic name
+            //CallItem1(typeof(Tuple<, >)); // OK. Same as the next line.
+            CallItem1(typeof(Tuple<int?, string>).GetGenericTypeDefinition());
 
             void CallItem<T>()
 #if ALLOWS_REF_STRUCT
                     where T : allows ref struct
 #endif // ALLOWS_REF_STRUCT
                     {
-                foreach(var flags in _flagsArray) {
+                foreach (var flags in _flagsArray) {
                     string name = TypeNameUtil.GetName<T>(flags);
+                    Output.WriteLine("{0}:\t{1}", flags, name);
+                }
+                Output.WriteLine("");
+            }
+
+            void CallItem1(Type atype) {
+                foreach (var flags in _flagsArray) {
+                    string name = TypeNameUtil.GetName(atype, flags);
                     Output.WriteLine("{0}:\t{1}", flags, name);
                 }
                 Output.WriteLine("");
