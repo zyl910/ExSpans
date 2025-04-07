@@ -86,6 +86,36 @@ namespace Zyl.SizableSpans.Reflection {
         }
 
         /// <summary>
+        /// Is generic types (是否为泛型类型).
+        /// </summary>
+        /// <typeparam name="T">The type (类型).</typeparam>
+        /// <returns>true if the Type is the generic types; otherwise, false (类型是泛型类型就返回 true; 否则返回 false).</returns>
+        /// <seealso cref="Type.IsGenericType"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsGenericType<T>()
+#if ALLOWS_REF_STRUCT
+                where T : allows ref struct
+#endif // ALLOWS_REF_STRUCT
+                {
+            return IsGenericType(typeof(T));
+        }
+
+        /// <summary>
+        /// Is generic types (是否为泛型类型).
+        /// </summary>
+        /// <param name="atype">The type (类型).</param>
+        /// <returns>true if the Type is the generic types; otherwise, false (类型是泛型类型就返回 true; 否则返回 false).</returns>
+        /// <seealso cref="Type.IsGenericType"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsGenericType(Type atype) {
+#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET20_OR_GREATER
+            return atype.IsGenericType;
+#else
+            return atype.GetTypeInfo().IsGenericType;
+#endif
+        }
+
+        /// <summary>
         /// Is primitive types (是否为基元类型).
         /// </summary>
         /// <typeparam name="T">The type (类型).</typeparam>

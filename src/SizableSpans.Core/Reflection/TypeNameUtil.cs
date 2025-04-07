@@ -66,7 +66,7 @@ namespace Zyl.SizableSpans.Reflection {
         /// <summary>
         /// Append type name (追加类型名)
         /// </summary>
-        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <typeparam name="T">The target type (目标类型).</typeparam>
         /// <param name="output">The output <see cref="StringBuilder"/> (输出的 <see cref="StringBuilder"/>).</param>
         /// <param name="flags">The flags (标志).</param>
         public static void AppendName<T>(StringBuilder output, TypeNameFlags flags = TypeNameFlags.Default)
@@ -81,19 +81,21 @@ namespace Zyl.SizableSpans.Reflection {
         /// Append type name (追加类型名)
         /// </summary>
         /// <param name="output">The output <see cref="StringBuilder"/> (输出的 <see cref="StringBuilder"/>).</param>
-        /// <param name="atype">The type (类型).</param>
+        /// <param name="atype">The target type (目标类型).</param>
         /// <param name="flags">The flags (标志).</param>
-        public static void AppendName(StringBuilder output, Type atype, TypeNameFlags flags = TypeNameFlags.Default) {
-            // AppendNameTo((str) => output.Append(str), atype, flags); // OK.
+        /// <param name="typeFallback">The fallback type (回退类型). Only used for .NET Standard 1.1, as it cannot obtain generic arguments, more information needs to be passed through this parameter (仅用于 .NET Standard 1.1，因它不能获取泛型参数, 于是需要借助该参数传递更多信息).</param>
+        /// <param name="typeArguments">The type arguments (类型参数列表). Only used for .NET Standard 1.1, as it cannot obtain generic arguments, more information needs to be passed through this parameter (仅用于 .NET Standard 1.1，因它不能获取泛型参数, 于是需要借助该参数传递更多信息).</param>
+        public static void AppendName(StringBuilder output, Type atype, TypeNameFlags flags = TypeNameFlags.Default, Type? typeFallback = null, params Type[] typeArguments) {
+            // AppendNameTo((str) => output.Append(str), atype, flags, typeFallback, typeArguments); // OK.
             AppendNameTo(delegate (string str) {
                 output.Append(str);
-            }, atype, flags);
+            }, atype, flags, typeFallback, typeArguments);
         }
 
         /// <summary>
         /// Append type name to action (将类型名追加到动作)
         /// </summary>
-        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <typeparam name="T">The target type (目标类型).</typeparam>
         /// <param name="output">The output action (输出动作).</param>
         /// <param name="flags">The flags (标志).</param>
         public static void AppendNameTo<T>(Action<string> output, TypeNameFlags flags = TypeNameFlags.Default)
@@ -108,9 +110,11 @@ namespace Zyl.SizableSpans.Reflection {
         /// Append type name to action (将类型名追加到动作)
         /// </summary>
         /// <param name="output">The output action (输出动作).</param>
-        /// <param name="atype">The type (类型).</param>
+        /// <param name="atype">The target type (目标类型).</param>
         /// <param name="flags">The flags (标志).</param>
-        public static void AppendNameTo(Action<string> output, Type atype, TypeNameFlags flags = TypeNameFlags.Default) {
+        /// <param name="typeFallback">The fallback type (回退类型). Only used for .NET Standard 1.1, as it cannot obtain generic arguments, more information needs to be passed through this parameter (仅用于 .NET Standard 1.1，因它不能获取泛型参数, 于是需要借助该参数传递更多信息).</param>
+        /// <param name="typeArguments">The type arguments (类型参数列表). Only used for .NET Standard 1.1, as it cannot obtain generic arguments, more information needs to be passed through this parameter (仅用于 .NET Standard 1.1，因它不能获取泛型参数, 于是需要借助该参数传递更多信息).</param>
+        public static void AppendNameTo(Action<string> output, Type atype, TypeNameFlags flags = TypeNameFlags.Default, Type? typeFallback = null, params Type[] typeArguments) {
             if (null == atype) return;
             bool noKeyword = flags.HasFlag(TypeNameFlags.NoKeyword);
             bool showNullable = flags.HasFlag(TypeNameFlags.ShowNullable);
@@ -138,14 +142,16 @@ namespace Zyl.SizableSpans.Reflection {
             }
             // GenericType.
             bool needShowName = true;
-#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP2_0_OR_GREATER || NET20_OR_GREATER
-            if (atype.IsGenericType) {
+            if (TypeHelper.IsGenericType(atype)) {
                 needShowName = false;
                 TypeNameFlags flagsSub = FromSub(flags);
-                Type[] typeArguments = atype.GetGenericArguments();
-                bool simpleNullable = !showNullable && typeof(Nullable<>).Equals(atype.GetGenericTypeDefinition()) && typeArguments.Length > 0;
+#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP2_0_OR_GREATER || NET20_OR_GREATER
+                _ = typeFallback;
+                _ = typeArguments;
+                Type[] typeArgumentsCur = atype.GetGenericArguments();
+                bool simpleNullable = !showNullable && typeof(Nullable<>).Equals(atype.GetGenericTypeDefinition()) && typeArgumentsCur.Length > 0;
                 if (simpleNullable) {
-                    AppendNameTo(output, typeArguments[0], flagsSub);
+                    AppendNameTo(output, typeArgumentsCur[0], flagsSub);
                     output("?");
                 } else {
                     if (showNamespace) {
@@ -153,19 +159,36 @@ namespace Zyl.SizableSpans.Reflection {
                     } else {
                         output(TypeHelper.GetBaseName(atype));
                     }
-                    if (null != typeArguments && typeArguments.Length > 0) {
+                    if (null != typeArgumentsCur && typeArgumentsCur.Length > 0) {
                         output("<");
-                        for (int i = 0; i < typeArguments.Length; i++) {
+                        for (int i = 0; i < typeArgumentsCur.Length; i++) {
                             if (i > 0) {
                                 output(", ");
                             }
-                            AppendNameTo(output, typeArguments[i], flagsSub);
+                            AppendNameTo(output, typeArgumentsCur[i], flagsSub);
                         }
                         output(">");
                     }
                 }
-            }
+#else
+                var atype2 = typeFallback ?? atype;
+                if (showNamespace) {
+                    output(TypeHelper.GetFullBaseName(atype2));
+                } else {
+                    output(TypeHelper.GetBaseName(atype2));
+                }
+                if (null != typeArguments && typeArguments.Length > 0) {
+                    output("<");
+                    for (int i = 0; i < typeArguments.Length; i++) {
+                        if (i > 0) {
+                            output(", ");
+                        }
+                        AppendNameTo(output, typeArguments[i], flagsSub);
+                    }
+                    output(">");
+                }
 #endif
+            }
             // needShowName.
             if (needShowName) {
                 if (!noKeyword && _aliases.TryGetValue(atype.FullName ?? "", out string? alias)) {
@@ -183,7 +206,7 @@ namespace Zyl.SizableSpans.Reflection {
         /// <summary>
         /// Get type name (取得类型名).
         /// </summary>
-        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <typeparam name="T">The target type (目标类型).</typeparam>
         /// <param name="flags">The flags (标志).</param>
         /// <returns>The type name (类型名).</returns>
         public static string GetName<T>(TypeNameFlags flags = TypeNameFlags.Default)
@@ -197,12 +220,14 @@ namespace Zyl.SizableSpans.Reflection {
         /// <summary>
         /// Get type name (取得类型名).
         /// </summary>
-        /// <param name="atype">The type (类型).</param>
+        /// <param name="atype">The target type (目标类型).</param>
         /// <param name="flags">The flags (标志).</param>
+        /// <param name="typeFallback">The fallback type (回退类型). Only used for .NET Standard 1.1, as it cannot obtain generic arguments, more information needs to be passed through this parameter (仅用于 .NET Standard 1.1，因它不能获取泛型参数, 于是需要借助该参数传递更多信息).</param>
+        /// <param name="typeArguments">The type arguments (类型参数列表). Only used for .NET Standard 1.1, as it cannot obtain generic arguments, more information needs to be passed through this parameter (仅用于 .NET Standard 1.1，因它不能获取泛型参数, 于是需要借助该参数传递更多信息).</param>
         /// <returns>The type name (类型名).</returns>
-        public static string GetName(Type atype, TypeNameFlags flags = TypeNameFlags.Default) {
+        public static string GetName(Type atype, TypeNameFlags flags = TypeNameFlags.Default, Type? typeFallback = null, params Type[] typeArguments) {
             StringBuilder stringBuilder = new StringBuilder();
-            AppendName(stringBuilder, atype, flags);
+            AppendName(stringBuilder, atype, flags, typeFallback, typeArguments);
             return stringBuilder.ToString();
         }
 
