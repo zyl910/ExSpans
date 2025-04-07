@@ -94,7 +94,7 @@ namespace Zyl.SizableSpans.Sample {
                 const long MemoryMappedFileSize = 1 * 1024 * 1024; // 1MB
                 using MemoryMappedFile mappedFile = MemoryMappedFile.CreateFromFile(MemoryMappedFilePath, FileMode.Create, MemoryMappedFileMapName, MemoryMappedFileSize);
                 using MemoryMappedViewAccessor accessor = mappedFile.CreateViewAccessor();
-                using SafeBufferSpanProvider<SafeMemoryMappedViewHandle> spanProvider = accessor.SafeMemoryMappedViewHandle.CreateSpanProvider();
+                using SafeBufferSpanProvider spanProvider = accessor.SafeMemoryMappedViewHandle.CreateSpanProvider();
                 // Write.
                 writer.WriteLine("[TestMemoryMappedFile]");
                 SizableSpan<int> spanInt = spanProvider.CreateSizableSpan<int>();

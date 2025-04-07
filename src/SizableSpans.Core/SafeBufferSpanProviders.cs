@@ -11,11 +11,10 @@ namespace Zyl.SizableSpans {
         /// <summary>
         /// Create span provider (创建跨度提供者).
         /// </summary>
-        /// <typeparam name="TSafeBuffer">The type of <see cref="SafeBuffer"/>(<see cref="SafeBuffer"/> 的类型).</typeparam>
-        /// <param name="source"></param>
+        /// <param name="source">The source <see cref="SafeBuffer"/> (源 <see cref="SafeBuffer"/>)</param>
         /// <returns>Returns span provider (返回跨度提供者).</returns>
-        public static SafeBufferSpanProvider<TSafeBuffer> CreateSpanProvider<TSafeBuffer>(this TSafeBuffer source) where TSafeBuffer : SafeBuffer {
-            return new SafeBufferSpanProvider<TSafeBuffer>(source);
+        public static SafeBufferSpanProvider CreateSpanProvider<TSafeBuffer>(this TSafeBuffer source) where TSafeBuffer : SafeBuffer {
+            return new SafeBufferSpanProvider(source);
         }
     }
 }

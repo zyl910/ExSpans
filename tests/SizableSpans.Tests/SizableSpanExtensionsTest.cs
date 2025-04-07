@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using Zyl.SizableSpans.Reflection;
 
 namespace Zyl.SizableSpans.Tests {
     public class SizableSpanExtensionsTest {
@@ -25,6 +26,7 @@ namespace Zyl.SizableSpans.Tests {
         [Fact]
         public void ItemsToStringTest() {
             const ItemsToStringFlags stringFlags = ItemsToStringFlags.HideType;
+            const TypeNameFlags nameFlags = TypeNameFlags.ShowNamespace | TypeNameFlags.SubShowNamespace;
             const nuint headerLength = (nuint)3;
             const nuint footerLength = (nuint)4;
             Span<int> sourceSpan = stackalloc int[bufferSize];
@@ -44,6 +46,7 @@ namespace Zyl.SizableSpans.Tests {
             CallTSpan(span, span.GetPinnableReference());
             Output.WriteLine("TSpan-SizableSpan with typeSample: {0}", span.ItemsToString(span.GetPinnableReference()));
             Output.WriteLine("TSpan-SizableSpan with typeSample and stringFlags: {0}", span.ItemsToString(span.GetPinnableReference(), null, stringFlags));
+            Output.WriteLine("TSpan-SizableSpan with typeSample and nameFlags: {0}", span.ItemsToString(span.GetPinnableReference(), null, stringFlags, nameFlags));
             Output.WriteLine("TSpan-SizableSpan with footerLength: {0}", span.ItemsToString(span.GetPinnableReference(), headerLength, footerLength));
             Output.WriteLine("TSpan-SizableSpan with footerLength and stringFlags-HideType: {0}", span.ItemsToString(span.GetPinnableReference(), headerLength, footerLength, null, stringFlags));
             Output.WriteLine("TSpan-SizableSpan with footerLength and stringFlags-HideLength: {0}", span.ItemsToString(span.GetPinnableReference(), headerLength, footerLength, null, ItemsToStringFlags.HideLength));
@@ -66,6 +69,7 @@ namespace Zyl.SizableSpans.Tests {
                 ReadOnlySizableSpan<T> spanReadOnly = span;
                 Output.WriteLine("ReadOnlySizableSpan: {0}", spanReadOnly.ItemsToString());
                 Output.WriteLine("ReadOnlySizableSpan with stringFlags: {0}", spanReadOnly.ItemsToString(null, stringFlags));
+                Output.WriteLine("ReadOnlySizableSpan with nameFlags: {0}", spanReadOnly.ItemsToString(null, stringFlags, nameFlags));
                 Output.WriteLine("ReadOnlySizableSpan with footerLength: {0}", spanReadOnly.ItemsToString(headerLength, footerLength));
                 Output.WriteLine("ReadOnlySizableSpan with footerLength and stringFlags: {0}", spanReadOnly.ItemsToString(headerLength, footerLength, null, stringFlags));
             }

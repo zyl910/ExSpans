@@ -10,7 +10,6 @@ namespace Zyl.SizableSpans {
     /// <summary>
     /// The span provider that manages the pointer acquire for <see cref="SafeBuffer"/> (管理 <see cref="SafeBuffer"/> 指针获取的跨度提供者). For example, it can provide span access for memory mapped files (例如它可以为内存映射文件提供跨度访问器).
     /// </summary>
-    /// <typeparam name="TSafeBuffer">The type of <see cref="SafeBuffer"/>(<see cref="SafeBuffer"/> 的类型).</typeparam>
     /// <remarks>
     /// <para>Example:</para>
     /// <code>
@@ -21,7 +20,7 @@ namespace Zyl.SizableSpans {
     ///         const long MemoryMappedFileSize = 1 * 1024 * 1024; // 1MB
     ///         using MemoryMappedFile mappedFile = MemoryMappedFile.CreateFromFile(MemoryMappedFilePath, FileMode.Create, MemoryMappedFileMapName, MemoryMappedFileSize);
     ///         using MemoryMappedViewAccessor accessor = mappedFile.CreateViewAccessor();
-    ///         using SafeBufferSpanProvider&lt;SafeMemoryMappedViewHandle&gt; spanProvider = accessor.SafeMemoryMappedViewHandle.CreateSpanProvider();
+    ///         using SafeBufferSpanProvider spanProvider = accessor.SafeMemoryMappedViewHandle.CreateSpanProvider();
     ///         // Write.
     ///         SizableSpan&lt;int&gt; spanInt = spanProvider.CreateSizableSpan&lt;int&gt;();
     ///         spanInt.Fill(0x01020304);
@@ -38,16 +37,15 @@ namespace Zyl.SizableSpans {
     /// }
     /// </code>
     /// </remarks>
-    public unsafe readonly struct SafeBufferSpanProvider<TSafeBuffer> : IDisposable, ISizableLength, IReadOnlySizableSpanProvider<byte>, ISizableSpanProvider<byte>
-                where TSafeBuffer : SafeBuffer {
-        private readonly TSafeBuffer _source;
+    public unsafe readonly struct SafeBufferSpanProvider : IDisposable, ISizableLength, IReadOnlySizableSpanProvider<byte>, ISizableSpanProvider<byte> {
+        private readonly SafeBuffer _source;
         private readonly byte* _pointer;
 
         /// <summary>
         /// Create SafeBufferSpanProvider (创建 SafeBufferSpanProvider).
         /// </summary>
         /// <param name="source"></param>
-        public SafeBufferSpanProvider(TSafeBuffer source) {
+        public SafeBufferSpanProvider(SafeBuffer source) {
             _source = source;
             if (null != source) {
                 source.AcquirePointer(ref _pointer);
@@ -85,9 +83,9 @@ namespace Zyl.SizableSpans {
         }
 
         /// <summary>
-        /// Get source SafeBuffer.
+        /// Get source <see cref="SafeBuffer"/> (取得源 <see cref="SafeBuffer"/>).
         /// </summary>
-        public TSafeBuffer Source { get { return _source; } }
+        public SafeBuffer Source { get { return _source; } }
 
         /// <inheritdoc/>
         public TSize Length {

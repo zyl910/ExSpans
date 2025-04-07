@@ -50,7 +50,7 @@ namespace Zyl.SizableSpans.Tests.Reflection {
             atype = typeof(SizableSpan<byte>);
             CallItem1(atype);
             CallItem1(atype, null, typeof(byte));
-            atype = typeof(SafeBufferSpanProvider<SafeMemoryMappedViewHandle>);
+            atype = typeof(SafeBufferSpanProvider);
             CallItem1(atype);
             CallItem1(atype, typeof(IReadOnlySizableSpanBase<>), typeof(byte));
 
