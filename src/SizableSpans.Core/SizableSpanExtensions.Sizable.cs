@@ -137,6 +137,100 @@ namespace Zyl.SizableSpans {
         }
 
         /// <summary>
+        /// Convert items data append string. The headerLength parameter uses the value of <see cref="SizableMemoryMarshal.SpanViewLength"/> (将各项数据转追加字符串. headerLength 参数使用 <see cref="SizableMemoryMarshal.SpanViewLength"/> 的值).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="source">The source data (源数据).</param>
+        /// <param name="output">The output <see cref="StringBuilder"/> (输出的 <see cref="StringBuilder"/>).</param>
+        /// <param name="itemFormater">The formater of each item (各项的格式化器). Default value is <see cref="ItemFormaters.Default">ItemFormaters.Default</see>. Prototype is `string func(TSize index, T value)`.</param>
+        /// <param name="stringFlags">Flags for convert items data into string (各项数据转字符串的标志).</param>
+        /// <param name="nameFlags">Flags for type name (类型名的标志).</param>
+        /// <seealso cref="ItemFormaters"/>
+        public static void ItemsAppendString<T>(this ReadOnlySizableSpan<T> source, StringBuilder output, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
+            ItemsAppendString(source, output, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
+        }
+
+        /// <summary>
+        /// Convert items data append string. It has the <paramref name="headerLength"/>, <paramref name="footerLength"/> parameter (将各项数据追加字符串. 它具有 <paramref name="headerLength"/>, <paramref name="footerLength"/> 参数).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="source">The source data (源数据).</param>
+        /// <param name="output">The output <see cref="StringBuilder"/> (输出的 <see cref="StringBuilder"/>).</param>
+        /// <param name="headerLength">The max length of header data (头部的最大长度).</param>
+        /// <param name="footerLength">The max length of footer data (尾部的最大长度).</param>
+        /// <param name="itemFormater">The formater of each item (各项的格式化器). Default value is <see cref="ItemFormaters.Default">ItemFormaters.Default</see>. Prototype is `string func(TSize index, T value)`.</param>
+        /// <param name="stringFlags">Flags for convert items data into string (各项数据转字符串的标志).</param>
+        /// <param name="nameFlags">Flags for type name (类型名的标志).</param>
+        /// <seealso cref="ItemFormaters"/>
+        public static void ItemsAppendString<T>(this ReadOnlySizableSpan<T> source, StringBuilder output, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
+            if (!stringFlags.HasFlag(ItemsToStringFlags.HideType)) {
+                TypeNameUtil.AppendName(output, typeof(ReadOnlySizableSpan<T>), nameFlags, null, typeof(T));
+            }
+            ItemsAppendStringUnsafe(in source.GetPinnableReadOnlyReference(), source.Length, output, headerLength, footerLength, itemFormater, stringFlags);
+        }
+
+        /// <inheritdoc cref="ItemsAppendString{T}(ReadOnlySizableSpan{T}, Func{nuint, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
+        public static void ItemsAppendString<T>(this SizableSpan<T> source, StringBuilder output, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
+            ItemsAppendString(source, output, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
+        }
+
+        /// <inheritdoc cref="ItemsAppendString{T}(ReadOnlySizableSpan{T}, nuint, nuint, Func{nuint, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
+        public static void ItemsAppendString<T>(this SizableSpan<T> source, StringBuilder output, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
+            if (!stringFlags.HasFlag(ItemsToStringFlags.HideType)) {
+                TypeNameUtil.AppendName(output, typeof(SizableSpan<T>), nameFlags, null, typeof(T));
+            }
+            ItemsAppendStringUnsafe(in source.GetPinnableReadOnlyReference(), source.Length, output, headerLength, footerLength, itemFormater, stringFlags);
+        }
+
+        /// <summary>
+        /// Convert items data append string. The headerLength parameter uses the value of <see cref="SizableMemoryMarshal.SpanViewLength"/> (将各项数据转追加字符串. headerLength 参数使用 <see cref="SizableMemoryMarshal.SpanViewLength"/> 的值).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <typeparam name="TSpan">The type of span (跨度的类型).</typeparam>
+        /// <param name="source">The source data (源数据).</param>
+        /// <param name="typeSample">Sample of type. Only its type is referenced, not its data. (类型的样例. 仅参考它的类型，不使用它的数据).</param>
+        /// <param name="output">The output <see cref="StringBuilder"/> (输出的 <see cref="StringBuilder"/>).</param>
+        /// <param name="itemFormater">The formater of each item (各项的格式化器). Default value is <see cref="ItemFormaters.Default">ItemFormaters.Default</see>. Prototype is `string func(TSize index, T value)`.</param>
+        /// <param name="stringFlags">Flags for convert items data into string (各项数据转字符串的标志).</param>
+        /// <param name="nameFlags">Flags for type name (类型名的标志).</param>
+        /// <returns>A formatted string (格式化后的字符串).</returns>
+        public static void ItemsAppendString<T, TSpan>(this TSpan source, in T typeSample, StringBuilder output, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default)
+                where TSpan : IReadOnlySizableSpanBase<T>
+#if ALLOWS_REF_STRUCT
+                , allows ref struct
+#endif // ALLOWS_REF_STRUCT
+                {
+            ItemsAppendString(source, in typeSample, output, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
+        }
+
+        /// <summary>
+        /// Convert items data append string. It has the <paramref name="headerLength"/>, <paramref name="footerLength"/> parameter (将各项数据追加字符串. 它具有 <paramref name="headerLength"/>, <paramref name="footerLength"/> 参数).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <typeparam name="TSpan">The type of span (跨度的类型).</typeparam>
+        /// <param name="source">The source data (源数据).</param>
+        /// <param name="typeSample">Sample of type. Only its type is referenced, not its data. (类型的样例. 仅参考它的类型，不使用它的数据).</param>
+        /// <param name="output">The output <see cref="StringBuilder"/> (输出的 <see cref="StringBuilder"/>).</param>
+        /// <param name="headerLength">The max length of header data (头部的最大长度).</param>
+        /// <param name="footerLength">The max length of footer data (尾部的最大长度).</param>
+        /// <param name="itemFormater">The formater of each item (各项的格式化器). Default value is <see cref="ItemFormaters.Default">ItemFormaters.Default</see>. Prototype is `string func(TSize index, T value)`.</param>
+        /// <param name="stringFlags">Flags for convert items data into string (各项数据转字符串的标志).</param>
+        /// <param name="nameFlags">Flags for type name (类型名的标志).</param>
+        /// <seealso cref="ItemFormaters"/>
+        public static void ItemsAppendString<T, TSpan>(this TSpan source, in T typeSample, StringBuilder output, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default)
+                where TSpan : IReadOnlySizableSpanBase<T>
+#if ALLOWS_REF_STRUCT
+                , allows ref struct
+#endif // ALLOWS_REF_STRUCT
+                {
+            _ = typeSample;
+            if (!stringFlags.HasFlag(ItemsToStringFlags.HideType)) {
+                TypeNameUtil.AppendName(output, typeof(TSpan), nameFlags, typeof(IReadOnlySizableSpanBase<T>), typeof(T));
+            }
+            ItemsAppendStringUnsafe(in source.GetPinnableReadOnlyReference(), source.Length, output, headerLength, footerLength, itemFormater, stringFlags);
+        }
+
+        /// <summary>
         /// Unsafe convert items data append string. The headerLength parameter uses the value of <see cref="SizableMemoryMarshal.SpanViewLength"/> (非安全的将各项数据转追加字符串. headerLength 参数使用 <see cref="SizableMemoryMarshal.SpanViewLength"/> 的值).
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
@@ -299,8 +393,7 @@ namespace Zyl.SizableSpans {
         /// <seealso cref="ItemFormaters"/>
         public static string ItemsToString<T>(this ReadOnlySizableSpan<T> source, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
             StringBuilder stringBuilder = new StringBuilder();
-            TypeNameUtil.AppendName(stringBuilder, typeof(ReadOnlySizableSpan<T>), nameFlags, null, typeof(T));
-            ItemsAppendStringUnsafe(in source.GetPinnableReadOnlyReference(), source.Length, stringBuilder, headerLength, footerLength, itemFormater, stringFlags);
+            ItemsAppendString(source, stringBuilder, headerLength, footerLength, itemFormater, stringFlags);
             return stringBuilder.ToString();
         }
 
@@ -312,8 +405,7 @@ namespace Zyl.SizableSpans {
         /// <inheritdoc cref="ItemsToString{T}(ReadOnlySizableSpan{T}, nuint, nuint, Func{nuint, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
         public static string ItemsToString<T>(this SizableSpan<T> source, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
             StringBuilder stringBuilder = new StringBuilder();
-            TypeNameUtil.AppendName(stringBuilder, typeof(SizableSpan<T>), nameFlags, null, typeof(T));
-            ItemsAppendStringUnsafe(in source.GetPinnableReadOnlyReference(), source.Length, stringBuilder, headerLength, footerLength, itemFormater, stringFlags);
+            ItemsAppendString(source, stringBuilder, headerLength, footerLength, itemFormater, stringFlags);
             return stringBuilder.ToString();
         }
 
@@ -373,8 +465,7 @@ namespace Zyl.SizableSpans {
                 {
             _ = typeSample;
             StringBuilder stringBuilder = new StringBuilder();
-            TypeNameUtil.AppendName(stringBuilder, typeof(TSpan), nameFlags, typeof(IReadOnlySizableSpanBase<T>), typeof(T));
-            ItemsAppendStringUnsafe(in source.GetPinnableReadOnlyReference(), source.Length, stringBuilder, headerLength, footerLength, itemFormater, stringFlags);
+            ItemsAppendString(source, in typeSample, stringBuilder, headerLength, footerLength, itemFormater, stringFlags);
             return stringBuilder.ToString();
         }
 

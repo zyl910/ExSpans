@@ -24,6 +24,73 @@ namespace Zyl.SizableSpans.Tests {
         private ITestOutputHelper Output => _output;
 
         [Fact]
+        public void ItemsAppendStringTest() {
+            const ItemsToStringFlags stringFlags = ItemsToStringFlags.HideType;
+            const TypeNameFlags nameFlags = TypeNameFlags.ShowNamespace | TypeNameFlags.SubShowNamespace;
+            const nuint headerLength = (nuint)3;
+            const nuint footerLength = (nuint)4;
+            StringBuilder output = new StringBuilder();
+            Span<int> sourceSpan = stackalloc int[bufferSize];
+            SizableSpan<int> span = sourceSpan; // Implicit conversion Span to SizableSpan.
+            span.Fill(1);
+            span[(nuint)0] = 0;
+            span[span.Length - 2] = 2;
+
+            // Output - Span.
+            CallSizableSpan(output, span);
+
+            // Output - Empty.
+            CallSizableSpan(output, SizableSpan<long>.Empty);
+
+            // Output - TSpan.
+#if ALLOWS_REF_STRUCT
+            CallTSpan(output, span, span.GetPinnableReference());
+            output.Append("TSpan-SizableSpan with typeSample: "); span.ItemsAppendString(span.GetPinnableReference(), output); output.AppendLine();
+            output.Append("TSpan-SizableSpan with typeSample and stringFlags: "); span.ItemsAppendString(span.GetPinnableReference(), output, null, stringFlags); output.AppendLine();
+            output.Append("TSpan-SizableSpan with typeSample and nameFlags: "); span.ItemsAppendString(span.GetPinnableReference(), output, null, stringFlags, nameFlags); output.AppendLine();
+            output.Append("TSpan-SizableSpan with footerLength: "); span.ItemsAppendString(span.GetPinnableReference(), output, headerLength, footerLength); output.AppendLine();
+            output.Append("TSpan-SizableSpan with footerLength and stringFlags-HideType: "); span.ItemsAppendString(span.GetPinnableReference(), output, headerLength, footerLength, null, stringFlags); output.AppendLine();
+            output.Append("TSpan-SizableSpan with footerLength and stringFlags-HideLength: "); span.ItemsAppendString(span.GetPinnableReference(), output, headerLength, footerLength, null, ItemsToStringFlags.HideLength); output.AppendLine();
+            output.Append("TSpan-SizableSpan with footerLength and stringFlags-HideBrace: "); span.ItemsAppendString(span.GetPinnableReference(), output, headerLength, footerLength, null, ItemsToStringFlags.HideBrace); output.AppendLine();
+            output.Append("TSpan-SizableSpan with footerLength and stringFlags-All: "); span.ItemsAppendString(span.GetPinnableReference(), output, headerLength, footerLength, null, ItemsToStringFlagsUtil.All); output.AppendLine();
+            output.Append("TSpan-SizableSpan with footerLength and itemFormater: "); span.ItemsAppendString(span.GetPinnableReference(), output, headerLength, footerLength, ItemFormaters.Hex); output.AppendLine();
+            output.Append("TSpan-SizableSpan with headerLength and footerLength less: "); span.ItemsAppendString(span.GetPinnableReference(), output, 5, 10); output.AppendLine();
+            output.Append("TSpan-SizableSpan with headerLength and footerLength equal: "); span.ItemsAppendString(span.GetPinnableReference(), output, 5, 11); output.AppendLine();
+            output.Append("TSpan-SizableSpan with headerLength and footerLength greater: "); span.ItemsAppendString(span.GetPinnableReference(), output, 5, 12); output.AppendLine();
+#endif // ALLOWS_REF_STRUCT
+
+            // done.
+            Output.WriteLine(output.ToString());
+
+            static void CallSizableSpan<T>(StringBuilder output, SizableSpan<T> span) {
+                // Output - SizableSpan.
+                output.Append("SizableSpan: "); span.ItemsAppendString(output); output.AppendLine();
+                output.Append("SizableSpan with stringFlags: "); span.ItemsAppendString(output, null, stringFlags); output.AppendLine();
+                output.Append("SizableSpan with footerLength: "); span.ItemsAppendString(output, headerLength, footerLength); output.AppendLine();
+                output.Append("SizableSpan with footerLength and stringFlags: "); span.ItemsAppendString(output, headerLength, footerLength, null, stringFlags); output.AppendLine();
+
+                // Output - ReadOnlySizableSpan.
+                ReadOnlySizableSpan<T> spanReadOnly = span;
+                output.Append("ReadOnlySizableSpan: "); spanReadOnly.ItemsAppendString(output); output.AppendLine();
+                output.Append("ReadOnlySizableSpan with stringFlags: "); spanReadOnly.ItemsAppendString(output, null, stringFlags); output.AppendLine();
+                output.Append("ReadOnlySizableSpan with nameFlags: "); spanReadOnly.ItemsAppendString(output, null, stringFlags, nameFlags); output.AppendLine();
+                output.Append("ReadOnlySizableSpan with footerLength: "); spanReadOnly.ItemsAppendString(output, headerLength, footerLength); output.AppendLine();
+                output.Append("ReadOnlySizableSpan with footerLength and stringFlags: "); spanReadOnly.ItemsAppendString(output, headerLength, footerLength, null, stringFlags); output.AppendLine();
+            }
+
+#if ALLOWS_REF_STRUCT
+            static void CallTSpan<T, TSpan>(StringBuilder output, TSpan span, in T typeSample)
+                    where TSpan : IReadOnlySizableSpanBase<T>, allows ref struct {
+                output.Append("TSpan with typeSample: "); span.ItemsAppendString(in span.GetPinnableReadOnlyReference(), output); output.AppendLine(); // Can work with GetPinnableReadOnlyReference without use typeSample parameter.
+                output.Append("TSpan with typeSample and stringFlags: "); span.ItemsAppendString(in typeSample, output, null, stringFlags); output.AppendLine();
+                output.Append("TSpan with headerLength: "); span.ItemsAppendString(typeSample, output, headerLength); output.AppendLine(); // It can omit the in keyword.
+                output.Append("TSpan with footerLength: "); span.ItemsAppendString(typeSample, output, headerLength, footerLength); output.AppendLine();
+                output.Append("TSpan with footerLength and stringFlags: "); span.ItemsAppendString(typeSample, output, headerLength, footerLength, null, stringFlags); output.AppendLine();
+            }
+#endif // ALLOWS_REF_STRUCT
+        }
+
+        [Fact]
         public void ItemsToStringTest() {
             const ItemsToStringFlags stringFlags = ItemsToStringFlags.HideType;
             const TypeNameFlags nameFlags = TypeNameFlags.ShowNamespace | TypeNameFlags.SubShowNamespace;
@@ -35,7 +102,7 @@ namespace Zyl.SizableSpans.Tests {
             span[(nuint)0] = 0;
             span[span.Length - 2] = 2;
 
-            // Output - span.
+            // Output - Span.
             CallSizableSpan(span);
 
             // Output - Empty.
@@ -82,7 +149,7 @@ namespace Zyl.SizableSpans.Tests {
                 //Output.WriteLine("TSpan without typeSample: {0}", span.ItemsToString<int, SizableSpan<int>>()); // OK. But the code is too long. So it was decided to disable it.
                 //Output.WriteLine("TSpan use itemFormater: {0}", span.ItemsToString(ItemFormaters.Hex)); // CS0411 The type arguments for method 'SizableSpanExtensions.ItemsToString<T, TSpan>(TSpan, Func<nuint, T, string>?, bool)' cannot be inferred from the usage. Try specifying the type arguments explicitly.
                 // OK.
-                Output.WriteLine("TSpan with typeSample: {0}", span.ItemsToString(in span.GetPinnableReadOnlyReference())); // Can work with GetInnableReadOnlyReference without use typeSample parameter.
+                Output.WriteLine("TSpan with typeSample: {0}", span.ItemsToString(in span.GetPinnableReadOnlyReference())); // Can work with GetPinnableReadOnlyReference without use typeSample parameter.
                 Output.WriteLine("TSpan with typeSample and stringFlags: {0}", span.ItemsToString(in typeSample, null, stringFlags));
                 Output.WriteLine("TSpan with headerLength: {0}", span.ItemsToString(typeSample, headerLength)); // It can omit the in keyword.
                 Output.WriteLine("TSpan with footerLength: {0}", span.ItemsToString(typeSample, headerLength, footerLength));
