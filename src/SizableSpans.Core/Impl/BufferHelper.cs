@@ -48,6 +48,7 @@ namespace Zyl.SizableSpans.Impl {
         /// <param name="destinationSizeInBytes">The number of bytes available in the destination memory block (目标内存块中可用的字节数).</param>
         /// <param name="sourceBytesToCopy">The number of bytes to copy (要复制的字节数).</param>
         /// <exception cref="ArgumentOutOfRangeException">sourceBytesToCopy is greater than destinationSizeInBytes.</exception>
+        [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void MemoryCopy(void* source, void* destination, long destinationSizeInBytes, long sourceBytesToCopy) {
 #if NETSTANDARD1_3_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET46_OR_GREATER
@@ -68,6 +69,7 @@ namespace Zyl.SizableSpans.Impl {
         /// <param name="destinationSizeInBytes">The number of bytes available in the destination memory block (目标内存块中可用的字节数).</param>
         /// <param name="sourceBytesToCopy">The number of bytes to copy (要复制的字节数).</param>
         /// <exception cref="ArgumentOutOfRangeException">sourceBytesToCopy is greater than destinationSizeInBytes.</exception>
+        [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void MemoryCopy(void* source, void* destination, ulong destinationSizeInBytes, ulong sourceBytesToCopy) {
 #if NETSTANDARD1_3_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET46_OR_GREATER
@@ -87,6 +89,7 @@ namespace Zyl.SizableSpans.Impl {
         /// <param name="destination">Destination address (目标地址).</param>
         /// <param name="source">Source address (源地址).</param>
         /// <param name="elementCount">Element count(元素数量).</param>
+        [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Memmove<T>(ref T destination, ref readonly T source, nuint elementCount) {
             bool isBlittable = TypeHelper.IsBlittable<T>();

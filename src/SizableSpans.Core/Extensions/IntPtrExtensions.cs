@@ -38,6 +38,7 @@ namespace Zyl.SizableSpans.Extensions {
         /// <param name="left">Left value (左值).</param>
         /// <param name="right">Right value (右值).</param>
         /// <returns>The sum of left and right (左值与右值的和).</returns>
+        [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static nuint Add(this nuint left, nuint right) {
 #if GENERIC_MATH
@@ -106,6 +107,7 @@ namespace Zyl.SizableSpans.Extensions {
         /// <param name="left">Left value (左值).</param>
         /// <param name="right">Right value (右值).</param>
         /// <returns><see langword="true"/> if greater; otherwise, <see langword="false"/></returns>
+        [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool GreaterThan(this nuint left, nuint right) {
 #if GENERIC_MATH
@@ -140,6 +142,7 @@ namespace Zyl.SizableSpans.Extensions {
         /// <param name="left">Left value (左值).</param>
         /// <param name="right">Right value (右值).</param>
         /// <returns><see langword="true"/> if greater or equal; otherwise, <see langword="false"/></returns>
+        [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool GreaterThanOrEqual(this nuint left, nuint right) {
 #if GENERIC_MATH
@@ -174,6 +177,7 @@ namespace Zyl.SizableSpans.Extensions {
         /// <param name="left">Left value (左值).</param>
         /// <param name="right">Right value (右值).</param>
         /// <returns><see langword="true"/> if less; otherwise, <see langword="false"/></returns>
+        [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool LessThan(this nuint left, nuint right) {
 #if GENERIC_MATH
@@ -208,6 +212,7 @@ namespace Zyl.SizableSpans.Extensions {
         /// <param name="left">Left value (左值).</param>
         /// <param name="right">Right value (右值).</param>
         /// <returns><see langword="true"/> if less or equal; otherwise, <see langword="false"/></returns>
+        [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool LessThanOrEqual(this nuint left, nuint right) {
 #if GENERIC_MATH
@@ -244,6 +249,7 @@ namespace Zyl.SizableSpans.Extensions {
         /// <param name="left">Left value (左值).</param>
         /// <param name="right">Right value (右值).</param>
         /// <returns>The difference of left and right (左值与右值的差).</returns>
+        [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static nuint Subtract(this nuint left, nuint right) {
 #if GENERIC_MATH
@@ -260,6 +266,8 @@ namespace Zyl.SizableSpans.Extensions {
         /// </summary>
         /// <param name="source">Source value (源值).</param>
         /// <returns>A value after saturating convert (饱和转换后的值).</returns>
+        [CLSCompliant(false)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int SaturatingToInt32(this nuint source) {
             int dst = int.MaxValue;
             if (source.LessThan((uint)dst)) {
@@ -273,6 +281,8 @@ namespace Zyl.SizableSpans.Extensions {
         /// </summary>
         /// <param name="source">Source value (源值).</param>
         /// <returns>A value after saturating convert (饱和转换后的值).</returns>
+        [CLSCompliant(false)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static nuint SaturatingToUIntPtr(this ulong source) {
             nuint dst;
             if (SizableMemoryMarshal.Is64BitProcess) {
@@ -288,6 +298,7 @@ namespace Zyl.SizableSpans.Extensions {
         /// </summary>
         /// <param name="source">The source (源).</param>
         /// <returns><see cref="IntPtr"/> value.</returns>
+        [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static nint ToIntPtr(this nuint source) {
 #if NET7_0_OR_GREATER
@@ -303,6 +314,7 @@ namespace Zyl.SizableSpans.Extensions {
         /// </summary>
         /// <param name="source">The source (源).</param>
         /// <returns><see cref="UIntPtr"/> value.</returns>
+        [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static nuint ToUIntPtr(this nint source) {
 #if NET7_0_OR_GREATER

@@ -36,6 +36,7 @@ namespace Zyl.SizableSpans {
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown when the specified <paramref name="start"/> or end index is not in the range (&lt;0 or &gt;Length).
         /// </exception>
+        [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static SizableSpan<T> AsSizableSpan<T>(this T[]? array, TSize start, TSize length) {
             return new SizableSpan<T>(array, start, length);
@@ -48,6 +49,7 @@ namespace Zyl.SizableSpans {
         /// <param name="array">The target array (目标数组).</param>
         /// <param name="start">The index at which to begin the span (开始跨度处的索引).</param>
         /// <returns>The span representation of the array (数组的跨度表示形式).</returns>
+        [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static SizableSpan<T> AsSizableSpan<T>(this T[]? array, TSize start) {
             if (array == null) {

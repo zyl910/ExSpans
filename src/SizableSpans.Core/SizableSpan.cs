@@ -73,6 +73,7 @@ namespace Zyl.SizableSpans {
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown when the specified <paramref name="start"/> or end index is not in the range (&lt;0 or &gt;Length).
         /// </exception>
+        [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public SizableSpan(T[]? array, TSize start, TSize length) {
             if (array == null || array.Length <= 0) {
@@ -107,7 +108,7 @@ namespace Zyl.SizableSpans {
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown when the specified <paramref name="length"/> is negative.
         /// </exception>
-        //[CLSCompliant(false)]
+        [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe SizableSpan(void* pointer, TSize length) {
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_0_OR_GREATER
@@ -177,6 +178,7 @@ namespace Zyl.SizableSpans {
         /// <exception cref="IndexOutOfRangeException">
         /// Thrown when index less than 0 or index greater than or equal to Length
         /// </exception>
+        [CLSCompliant(false)]
         public ref T this[TSize index] {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get {
@@ -199,6 +201,7 @@ namespace Zyl.SizableSpans {
         /// <summary>
         /// The number of items in the sizable span (大范围跨度中的项数).
         /// </summary>
+        [CLSCompliant(false)]
         public TSize Length {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => _length;
@@ -420,6 +423,7 @@ namespace Zyl.SizableSpans {
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown when the specified <paramref name="start"/> index is not in range (&lt;0 or &gt;Length).
         /// </exception>
+        [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public SizableSpan<T> Slice(TSize start) {
             if (IntPtrExtensions.GreaterThan(start, _length))
@@ -448,6 +452,7 @@ namespace Zyl.SizableSpans {
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown when the specified <paramref name="start"/> or end index is not in range (&lt;0 or &gt;Length).
         /// </exception>
+        [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public SizableSpan<T> Slice(TSize start, TSize length) {
             if (IntPtrExtensions.GreaterThan(IntPtrExtensions.Add(start, length), _length))
