@@ -24,6 +24,7 @@
     <LangVersion>10.0</LangVersion>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <InvariantGlobalization>true</InvariantGlobalization>
     <RootNamespace>Zyl.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
   </PropertyGroup>

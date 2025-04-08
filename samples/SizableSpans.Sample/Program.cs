@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.IO.MemoryMappedFiles;
+using System.Runtime.InteropServices;
 using Zyl.SizableSpans.Extensions;
 
 namespace Zyl.SizableSpans.Sample {
@@ -14,6 +15,7 @@ namespace Zyl.SizableSpans.Sample {
 
             // Test some.
             TestSimple(writer);
+            Test2GB(writer);
             TestMemoryMappedFile(writer);
         }
 
@@ -81,6 +83,31 @@ namespace Zyl.SizableSpans.Sample {
                 rt += span[i];
             }
             return rt;
+        }
+
+        /// <summary>
+        /// Test 2GB data (测试2GB数据).
+        /// </summary>
+        /// <param name="writer">The <see cref="TextWriter"/>.</param>
+        static unsafe void Test2GB(TextWriter writer) {
+#if NET6_0_OR_GREATER
+            const nuint byteSize = 2U * 1024 * 1024 * 1024; // 2GB
+            const nuint bufferSize = byteSize / sizeof(int);
+            // Create SizableSpan by Pointer.
+            try {
+                void* buffer = NativeMemory.Alloc(byteSize);
+                try {
+                    SizableSpan<int> sizableSpan = new SizableSpan<int>(buffer, bufferSize);
+                    TestSizableSpan(writer, "2GB", sizableSpan);
+                    writer.WriteLine(string.Format("ItemsToString: {0}", sizableSpan.ItemsToString((nuint)16)));
+                    writer.WriteLine();
+                } finally {
+                    NativeMemory.Free(buffer);
+                }
+            } catch (Exception ex) {
+                writer.WriteLine(string.Format("Run Test2GB fail! {0}", ex.ToString()));
+            }
+#endif // NET6_0_OR_GREATER
         }
 
         /// <summary>
