@@ -1,8 +1,11 @@
 ﻿global using TSize = System.UIntPtr;
 
+using System;
 using System.Runtime.CompilerServices;
 using Zyl.SizableSpans;
 using Zyl.SizableSpans.Extensions;
+
+[assembly: CLSCompliant(true)]
 
 // -- Zyl.SizableSpans
 [assembly: TypeForwardedToAttribute(typeof(ReadOnlySizableSpan<>))]
