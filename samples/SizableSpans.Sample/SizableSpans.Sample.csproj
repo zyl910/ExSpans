@@ -27,9 +27,18 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <InvariantGlobalization>true</InvariantGlobalization>
     <RootNamespace>Zyl.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+
+      <!--
+      <PlatformTarget>ARM32</PlatformTarget>
+      <PlatformTarget>x86</PlatformTarget>
+      -->
   </PropertyGroup>
 
-  <ItemGroup>
+    <ItemGroup Condition=" '$(PlatformTarget)' == 'x86' ">
+        <PackageReference Include="dotnetCampus.LargeAddressAware" Version="1.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
     <ProjectReference Include="..\..\src\SizableSpans\SizableSpans.csproj" />
   </ItemGroup>
 
