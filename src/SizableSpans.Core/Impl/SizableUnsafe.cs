@@ -100,7 +100,7 @@ namespace Zyl.SizableSpans.Impl {
         /// <param name="source">The managed pointer to add the offset to.</param>
         /// <param name="elementOffset">The offset to add.</param>
         /// <returns>A new managed pointer that reflects the addition of the specified offset to the source pointer.</returns>
-        [CLSCompliant(false)]
+        [MyCLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe static ref T AddAsRef<T>(TSize source, TSize elementOffset)
 #if ALLOWS_REF_STRUCT
@@ -119,7 +119,7 @@ namespace Zyl.SizableSpans.Impl {
         /// <param name="source">The managed pointer to add the offset to.</param>
         /// <param name="elementOffset">The offset to add.</param>
         /// <returns>Returns added pointer (返回相加后的指针).</returns>
-        [CLSCompliant(false)]
+        [MyCLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe static TSize AddPointer<T>(TSize source, TSize elementOffset)
 #if ALLOWS_REF_STRUCT
@@ -136,7 +136,7 @@ namespace Zyl.SizableSpans.Impl {
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <param name="length">The length (长度).</param>
         /// <returns>The byte length (字节长度).</returns>
-        [CLSCompliant(false)]
+        [MyCLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TSize GetByteSize<T>(TSize length)
 #if ALLOWS_REF_STRUCT
@@ -169,7 +169,6 @@ namespace Zyl.SizableSpans.Impl {
         /// <param name="source">The managed pointer to subtract the offset to.</param>
         /// <param name="elementOffset">The offset to subtract.</param>
         /// <returns>A new managed pointer that reflects the subtractition of the specified offset to the source pointer.</returns>
-        [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ref T Subtract<T>(ref T source, nint elementOffset)
 #if ALLOWS_REF_STRUCT

@@ -9,7 +9,7 @@ namespace Zyl.SizableSpans {
     /// The base interface of sizable range span (大范围跨度的基本接口).
     /// </summary>
     /// <typeparam name="T">The element type (元素的类型).</typeparam>
-    [CLSCompliant(false)]
+    [MyCLSCompliant(false)]
     public interface ISizableSpanBase<T> : ISizableLength, IReadOnlySizableSpanBase<T> {
 
         /// <summary>

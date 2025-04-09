@@ -88,7 +88,7 @@ namespace Zyl.SizableSpans {
         public SafeBuffer Source { get { return _source; } }
 
         /// <inheritdoc/>
-        [CLSCompliant(false)]
+        [MyCLSCompliant(false)]
         public TSize Length {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => (_source?.ByteLength ?? 0).SaturatingToUIntPtr();

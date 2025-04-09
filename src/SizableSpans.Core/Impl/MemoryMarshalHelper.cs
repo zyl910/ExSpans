@@ -16,7 +16,7 @@ namespace Zyl.SizableSpans.Impl {
         /// </summary>
         /// <param name="length">The length of the span (跨度的长度)</param>
         /// <returns>The saturating length of the span (跨度的饱和长度).</returns>
-        [CLSCompliant(false)]
+        [MyCLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int GetSpanSaturatingLength(TSize length) {
             int len = length.SaturatingToInt32();
@@ -32,7 +32,7 @@ namespace Zyl.SizableSpans.Impl {
         /// <param name="reference">A reference to data.</param>
         /// <param name="length">The number of T elements that reference contains.</param>
         /// <returns>A read-only span.</returns>
-        [CLSCompliant(false)]
+        [MyCLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadOnlySpan<T> CreateReadOnlySpanSaturating<T>(ref T reference, TSize length) {
             int len = GetSpanSaturatingLength(length);
@@ -46,7 +46,7 @@ namespace Zyl.SizableSpans.Impl {
         /// <param name="reference">A reference to data.</param>
         /// <param name="length">The number of T elements that reference contains.</param>
         /// <returns>A span.</returns>
-        [CLSCompliant(false)]
+        [MyCLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Span<T> CreateSpanSaturating<T>(ref T reference, TSize length) {
             int len = GetSpanSaturatingLength(length);

@@ -20,7 +20,7 @@ namespace Zyl.SizableSpans.Extensions.ApplySpans {
         /// <param name="stringFlags">Flags for convert items data into string (各项数据转字符串的标志).</param>
         /// <param name="nameFlags">Flags for type name (类型名的标志).</param>
         /// <seealso cref="ItemFormaters"/>
-        [CLSCompliant(false)]
+        [MyCLSCompliant(false)]
         public static void ItemsAppendString<T>(this ReadOnlySpan<T> source, StringBuilder output, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
             ItemsAppendString(source, output, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
         }
@@ -37,7 +37,7 @@ namespace Zyl.SizableSpans.Extensions.ApplySpans {
         /// <param name="stringFlags">Flags for convert items data into string (各项数据转字符串的标志).</param>
         /// <param name="nameFlags">Flags for type name (类型名的标志).</param>
         /// <seealso cref="ItemFormaters"/>
-        [CLSCompliant(false)]
+        [MyCLSCompliant(false)]
         public static void ItemsAppendString<T>(this ReadOnlySpan<T> source, StringBuilder output, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
             if (!stringFlags.HasFlag(ItemsToStringFlags.HideType)) {
                 TypeNameUtil.AppendName(output, typeof(ReadOnlySpan<T>), nameFlags, null, typeof(T));
@@ -46,13 +46,13 @@ namespace Zyl.SizableSpans.Extensions.ApplySpans {
         }
 
         /// <inheritdoc cref="ItemsAppendString{T}(ReadOnlySpan{T}, Func{nuint, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
-        [CLSCompliant(false)]
+        [MyCLSCompliant(false)]
         public static void ItemsAppendString<T>(this Span<T> source, StringBuilder output, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
             ItemsAppendString(source, output, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
         }
 
         /// <inheritdoc cref="ItemsAppendString{T}(ReadOnlySpan{T}, nuint, nuint, Func{nuint, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
-        [CLSCompliant(false)]
+        [MyCLSCompliant(false)]
         public static void ItemsAppendString<T>(this Span<T> source, StringBuilder output, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
             if (!stringFlags.HasFlag(ItemsToStringFlags.HideType)) {
                 TypeNameUtil.AppendName(output, typeof(Span<T>), nameFlags, null, typeof(T));
@@ -71,7 +71,7 @@ namespace Zyl.SizableSpans.Extensions.ApplySpans {
         /// <param name="stringFlags">Flags for convert items data into string (各项数据转字符串的标志).</param>
         /// <param name="nameFlags">Flags for type name (类型名的标志).</param>
         /// <seealso cref="ItemFormaters"/>
-        [CLSCompliant(false)]
+        [MyCLSCompliant(false)]
         public static void ItemsAppendStringTo<T>(this ReadOnlySpan<T> source, Action<string> output, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
             ItemsAppendStringTo(source, output, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
         }
@@ -88,7 +88,7 @@ namespace Zyl.SizableSpans.Extensions.ApplySpans {
         /// <param name="stringFlags">Flags for convert items data into string (各项数据转字符串的标志).</param>
         /// <param name="nameFlags">Flags for type name (类型名的标志).</param>
         /// <seealso cref="ItemFormaters"/>
-        [CLSCompliant(false)]
+        [MyCLSCompliant(false)]
         public static void ItemsAppendStringTo<T>(this ReadOnlySpan<T> source, Action<string> output, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
             if (!stringFlags.HasFlag(ItemsToStringFlags.HideType)) {
                 TypeNameUtil.AppendNameTo(output, typeof(ReadOnlySpan<T>), nameFlags, null, typeof(T));
@@ -97,13 +97,13 @@ namespace Zyl.SizableSpans.Extensions.ApplySpans {
         }
 
         /// <inheritdoc cref="ItemsAppendStringTo{T}(ReadOnlySpan{T}, Func{nuint, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
-        [CLSCompliant(false)]
+        [MyCLSCompliant(false)]
         public static void ItemsAppendStringTo<T>(this Span<T> source, Action<string> output, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
             ItemsAppendStringTo(source, output, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
         }
 
         /// <inheritdoc cref="ItemsAppendStringTo{T}(ReadOnlySpan{T}, nuint, nuint, Func{nuint, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
-        [CLSCompliant(false)]
+        [MyCLSCompliant(false)]
         public static void ItemsAppendStringTo<T>(this Span<T> source, Action<string> output, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
             if (!stringFlags.HasFlag(ItemsToStringFlags.HideType)) {
                 TypeNameUtil.AppendNameTo(output, typeof(Span<T>), nameFlags, null, typeof(T));
@@ -121,7 +121,7 @@ namespace Zyl.SizableSpans.Extensions.ApplySpans {
         /// <param name="nameFlags">Flags for type name (类型名的标志).</param>
         /// <returns>A formatted string (格式化后的字符串).</returns>
         /// <seealso cref="ItemFormaters"/>
-        [CLSCompliant(false)]
+        [MyCLSCompliant(false)]
         public static string ItemsToString<T>(this ReadOnlySpan<T> source, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
             return ItemsToString(source, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
         }
@@ -138,7 +138,7 @@ namespace Zyl.SizableSpans.Extensions.ApplySpans {
         /// <param name="nameFlags">Flags for type name (类型名的标志).</param>
         /// <returns>A formatted string (格式化后的字符串).</returns>
         /// <seealso cref="ItemFormaters"/>
-        [CLSCompliant(false)]
+        [MyCLSCompliant(false)]
         public static string ItemsToString<T>(this ReadOnlySpan<T> source, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
             StringBuilder stringBuilder = new StringBuilder();
             ItemsAppendString(source, stringBuilder, headerLength, footerLength, itemFormater, stringFlags);
@@ -146,13 +146,13 @@ namespace Zyl.SizableSpans.Extensions.ApplySpans {
         }
 
         /// <inheritdoc cref="ItemsToString{T}(ReadOnlySpan{T}, Func{nuint, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
-        [CLSCompliant(false)]
+        [MyCLSCompliant(false)]
         public static string ItemsToString<T>(this Span<T> source, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
             return ItemsToString(source, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
         }
 
         /// <inheritdoc cref="ItemsToString{T}(ReadOnlySpan{T}, nuint, nuint, Func{nuint, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
-        [CLSCompliant(false)]
+        [MyCLSCompliant(false)]
         public static string ItemsToString<T>(this Span<T> source, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
             StringBuilder stringBuilder = new StringBuilder();
             ItemsAppendString(source, stringBuilder, headerLength, footerLength, itemFormater, stringFlags);

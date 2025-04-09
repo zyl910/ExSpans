@@ -16,7 +16,7 @@ namespace Zyl.SizableSpans {
         /// <param name="index">Item index (项的索引).</param>
         /// <param name="value">Item value (项的值).</param>
         /// <returns>A formatted string (格式化后的字符串).</returns>
-        [CLSCompliant(false)]
+        [MyCLSCompliant(false)]
         public static string Default<T>(TSize index, T value) {
             _ = index;
             return value?.ToString() ?? "";
@@ -30,7 +30,7 @@ namespace Zyl.SizableSpans {
         /// <param name="index">Item index (项的索引).</param>
         /// <param name="value">Item value (项的值).</param>
         /// <returns>A formatted string (格式化后的字符串).</returns>
-        [CLSCompliant(false)]
+        [MyCLSCompliant(false)]
         public static string Hex<T>(TSize index, T value) {
             _ = index;
             return string.Format("0x{0:X}", value);
