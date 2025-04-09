@@ -74,7 +74,7 @@ namespace Zyl.SizableSpans {
         public static ReadOnlySpan<T> AsReadOnlySpan<T>(this ReadOnlySizableSpan<T> span, TSize start, int length) {
             if (length < 0)
                 ThrowHelper.ThrowArgumentOutOfRangeException();
-            return (ReadOnlySpan<T>)span.Slice(start, (nuint)(uint)length);
+            return (ReadOnlySpan<T>)span.Slice(start, (TSize)(uint)length);
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace Zyl.SizableSpans {
         public static Span<T> AsSpan<T>(this SizableSpan<T> span, TSize start, int length) {
             if (length < 0)
                 ThrowHelper.ThrowArgumentOutOfRangeException();
-            return (Span<T>)span.Slice(start, (nuint)(uint)length);
+            return (Span<T>)span.Slice(start, (TSize)(uint)length);
         }
 
         /// <summary>
@@ -176,13 +176,13 @@ namespace Zyl.SizableSpans {
             ItemsAppendStringUnsafe(in source.GetPinnableReadOnlyReference(), source.Length, output, headerLength, footerLength, itemFormater, stringFlags);
         }
 
-        /// <inheritdoc cref="ItemsAppendString{T}(ReadOnlySizableSpan{T}, Func{nuint, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
+        /// <inheritdoc cref="ItemsAppendString{T}(ReadOnlySizableSpan{T}, StringBuilder, Func{TSize, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
         [MyCLSCompliant(false)]
         public static void ItemsAppendString<T>(this SizableSpan<T> source, StringBuilder output, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
             ItemsAppendString(source, output, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
         }
 
-        /// <inheritdoc cref="ItemsAppendString{T}(ReadOnlySizableSpan{T}, nuint, nuint, Func{nuint, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
+        /// <inheritdoc cref="ItemsAppendString{T}(ReadOnlySizableSpan{T}, StringBuilder, TSize, TSize, Func{TSize, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
         [MyCLSCompliant(false)]
         public static void ItemsAppendString<T>(this SizableSpan<T> source, StringBuilder output, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
             if (!stringFlags.HasFlag(ItemsToStringFlags.HideType)) {
@@ -309,13 +309,13 @@ namespace Zyl.SizableSpans {
             ItemsAppendStringToUnsafe(in source.GetPinnableReadOnlyReference(), source.Length, output, headerLength, footerLength, itemFormater, stringFlags);
         }
 
-        /// <inheritdoc cref="ItemsAppendStringTo{T}(ReadOnlySizableSpan{T}, Func{nuint, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
+        /// <inheritdoc cref="ItemsAppendStringTo{T}(ReadOnlySizableSpan{T}, Action{string}, Func{TSize, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
         [MyCLSCompliant(false)]
         public static void ItemsAppendStringTo<T>(this SizableSpan<T> source, Action<string> output, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
             ItemsAppendStringTo(source, output, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
         }
 
-        /// <inheritdoc cref="ItemsAppendStringTo{T}(ReadOnlySizableSpan{T}, nuint, nuint, Func{nuint, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
+        /// <inheritdoc cref="ItemsAppendStringTo{T}(ReadOnlySizableSpan{T}, Action{string}, TSize, TSize, Func{TSize, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
         [MyCLSCompliant(false)]
         public static void ItemsAppendStringTo<T>(this SizableSpan<T> source, Action<string> output, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
             if (!stringFlags.HasFlag(ItemsToStringFlags.HideType)) {
@@ -510,13 +510,13 @@ namespace Zyl.SizableSpans {
             return stringBuilder.ToString();
         }
 
-        /// <inheritdoc cref="ItemsToString{T}(ReadOnlySizableSpan{T}, Func{nuint, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
+        /// <inheritdoc cref="ItemsToString{T}(ReadOnlySizableSpan{T}, Func{TSize, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
         [MyCLSCompliant(false)]
         public static string ItemsToString<T>(this SizableSpan<T> source, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
             return ItemsToString(source, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
         }
 
-        /// <inheritdoc cref="ItemsToString{T}(ReadOnlySizableSpan{T}, nuint, nuint, Func{nuint, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
+        /// <inheritdoc cref="ItemsToString{T}(ReadOnlySizableSpan{T}, TSize, TSize, Func{TSize, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
         [MyCLSCompliant(false)]
         public static string ItemsToString<T>(this SizableSpan<T> source, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
             StringBuilder stringBuilder = new StringBuilder();
@@ -531,7 +531,7 @@ namespace Zyl.SizableSpans {
         //    return ItemsToString(span, span.GetPinnableReadOnlyReference(), null, stringFlags);
         //}
 
-        //Output.WriteLine("TSpan use itemFormater: {0}", span.ItemsToString(ItemFormaters.Hex)); // CS0411 The type arguments for method 'SizableSpanExtensions.ItemsToString<T, TSpan>(TSpan, Func<nuint, T, string>?, bool)' cannot be inferred from the usage. Try specifying the type arguments explicitly.
+        //Output.WriteLine("TSpan use itemFormater: {0}", span.ItemsToString(ItemFormaters.Hex)); // CS0411 The type arguments for method 'SizableSpanExtensions.ItemsToString<T, TSpan>(TSpan, Func<TSize, T, string>?, bool)' cannot be inferred from the usage. Try specifying the type arguments explicitly.
         //public static string ItemsToString<T, TSpan>(this TSpan source, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default)
         //        where TSpan : IReadOnlySizableSpanBase<T>, allows ref struct {
         //    return ItemsToString(source, source.GetPinnableReadOnlyReference(), (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags);

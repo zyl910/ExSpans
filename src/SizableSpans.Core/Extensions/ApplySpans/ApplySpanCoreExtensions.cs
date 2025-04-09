@@ -45,13 +45,13 @@ namespace Zyl.SizableSpans.Extensions.ApplySpans {
             SizableSpanExtensions.ItemsAppendStringUnsafe(in source.GetPinnableReference(), (TSize)source.Length, output, headerLength, footerLength, itemFormater, stringFlags);
         }
 
-        /// <inheritdoc cref="ItemsAppendString{T}(ReadOnlySpan{T}, Func{nuint, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
+        /// <inheritdoc cref="ItemsAppendString{T}(ReadOnlySpan{T}, StringBuilder, Func{TSize, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
         [MyCLSCompliant(false)]
         public static void ItemsAppendString<T>(this Span<T> source, StringBuilder output, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
             ItemsAppendString(source, output, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
         }
 
-        /// <inheritdoc cref="ItemsAppendString{T}(ReadOnlySpan{T}, nuint, nuint, Func{nuint, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
+        /// <inheritdoc cref="ItemsAppendString{T}(ReadOnlySpan{T}, StringBuilder, TSize, TSize, Func{TSize, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
         [MyCLSCompliant(false)]
         public static void ItemsAppendString<T>(this Span<T> source, StringBuilder output, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
             if (!stringFlags.HasFlag(ItemsToStringFlags.HideType)) {
@@ -96,13 +96,13 @@ namespace Zyl.SizableSpans.Extensions.ApplySpans {
             SizableSpanExtensions.ItemsAppendStringToUnsafe(in source.GetPinnableReference(), (TSize)source.Length, output, headerLength, footerLength, itemFormater, stringFlags);
         }
 
-        /// <inheritdoc cref="ItemsAppendStringTo{T}(ReadOnlySpan{T}, Func{nuint, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
+        /// <inheritdoc cref="ItemsAppendStringTo{T}(ReadOnlySpan{T}, Action{string}, Func{TSize, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
         [MyCLSCompliant(false)]
         public static void ItemsAppendStringTo<T>(this Span<T> source, Action<string> output, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
             ItemsAppendStringTo(source, output, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
         }
 
-        /// <inheritdoc cref="ItemsAppendStringTo{T}(ReadOnlySpan{T}, nuint, nuint, Func{nuint, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
+        /// <inheritdoc cref="ItemsAppendStringTo{T}(ReadOnlySpan{T}, Action{string}, TSize, TSize, Func{TSize, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
         [MyCLSCompliant(false)]
         public static void ItemsAppendStringTo<T>(this Span<T> source, Action<string> output, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
             if (!stringFlags.HasFlag(ItemsToStringFlags.HideType)) {
@@ -145,13 +145,13 @@ namespace Zyl.SizableSpans.Extensions.ApplySpans {
             return stringBuilder.ToString();
         }
 
-        /// <inheritdoc cref="ItemsToString{T}(ReadOnlySpan{T}, Func{nuint, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
+        /// <inheritdoc cref="ItemsToString{T}(ReadOnlySpan{T}, Func{TSize, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
         [MyCLSCompliant(false)]
         public static string ItemsToString<T>(this Span<T> source, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
             return ItemsToString(source, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
         }
 
-        /// <inheritdoc cref="ItemsToString{T}(ReadOnlySpan{T}, nuint, nuint, Func{nuint, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
+        /// <inheritdoc cref="ItemsToString{T}(ReadOnlySpan{T}, TSize, TSize, Func{TSize, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
         [MyCLSCompliant(false)]
         public static string ItemsToString<T>(this Span<T> source, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
             StringBuilder stringBuilder = new StringBuilder();
