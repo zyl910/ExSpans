@@ -55,7 +55,7 @@ namespace Zyl.SizableSpans {
         /// <param name="start">The zero-based index at which to begin this slice (从零开始切片的索引).</param>
         /// <returns>a <see cref="ReadOnlySpan{T}"/></returns>
         /// <seealso cref="MemoryMarshalHelper.GetSpanSaturatingLength"/>
-        [CLSCompliant(false)]
+        [MyCLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadOnlySpan<T> AsReadOnlySpan<T>(this ReadOnlySizableSpan<T> span, TSize start) {
             return (ReadOnlySpan<T>)span.Slice(start);
