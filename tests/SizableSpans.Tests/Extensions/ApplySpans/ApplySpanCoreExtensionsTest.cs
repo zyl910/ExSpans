@@ -25,8 +25,8 @@ namespace Zyl.SizableSpans.Tests.Extensions.ApplySpans {
             const ItemsToStringFlags stringFlagsDefault = ItemsToStringFlags.Default;
             const ItemsToStringFlags stringFlags = ItemsToStringFlags.HideType;
             const TypeNameFlags nameFlags = TypeNameFlags.ShowNamespace | TypeNameFlags.SubShowNamespace;
-            const nuint headerLength = (nuint)3;
-            const nuint footerLength = (nuint)4;
+            TSize headerLength = (TSize)3;
+            TSize footerLength = (TSize)4;
             string newLine = Environment.NewLine;
             StringBuilder stringBuilder = new StringBuilder();
             Action<string> output = delegate (string str) {
@@ -68,8 +68,8 @@ namespace Zyl.SizableSpans.Tests.Extensions.ApplySpans {
             const ItemsToStringFlags stringFlagsDefault = ItemsToStringFlags.Default;
             const ItemsToStringFlags stringFlags = ItemsToStringFlags.HideType;
             const TypeNameFlags nameFlags = TypeNameFlags.ShowNamespace | TypeNameFlags.SubShowNamespace;
-            const nuint headerLength = (nuint)3;
-            const nuint footerLength = (nuint)4;
+            TSize headerLength = (TSize)3;
+            TSize footerLength = (TSize)4;
             StringBuilder output = new StringBuilder();
             Span<int> span = stackalloc int[bufferSize];
             span.Fill(1);
@@ -85,7 +85,7 @@ namespace Zyl.SizableSpans.Tests.Extensions.ApplySpans {
             // done.
             Output.WriteLine(output.ToString());
 
-            static void CallSpan<T>(StringBuilder output, Span<T> span) {
+            void CallSpan<T>(StringBuilder output, Span<T> span) {
                 // Output - Span.
                 output.Append("Span: "); span.ItemsAppendString(output); output.AppendLine();
                 output.Append("Span with stringFlags: "); span.ItemsAppendString(output, null, stringFlags); output.AppendLine();
@@ -107,8 +107,8 @@ namespace Zyl.SizableSpans.Tests.Extensions.ApplySpans {
             const ItemsToStringFlags stringFlagsDefault = ItemsToStringFlags.Default;
             const ItemsToStringFlags stringFlags = ItemsToStringFlags.HideType;
             const TypeNameFlags nameFlags = TypeNameFlags.ShowNamespace | TypeNameFlags.SubShowNamespace;
-            const nuint headerLength = (nuint)3;
-            const nuint footerLength = (nuint)4;
+            TSize headerLength = (TSize)3;
+            TSize footerLength = (TSize)4;
             Span<int> span = stackalloc int[bufferSize];
             span.Fill(1);
             span[0] = 0;

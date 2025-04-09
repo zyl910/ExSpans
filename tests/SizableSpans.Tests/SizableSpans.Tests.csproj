@@ -24,6 +24,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>13.0</LangVersion>
     <RootNamespace>Zyl.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+    <DefineConstants>$(DefineConstants);SIZE_UINTPTR</DefineConstants>
 
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>

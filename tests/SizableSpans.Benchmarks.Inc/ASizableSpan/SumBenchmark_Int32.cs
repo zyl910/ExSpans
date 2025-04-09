@@ -13,6 +13,12 @@ namespace Zyl.SizableSpans.Benchmarks.ASizableSpan {
     using BenchmarkAttribute = FakeBenchmarkAttribute;
 #else
 #endif // BENCHMARKS_OFF
+#if SIZE_UINTPTR
+    using TSize = UIntPtr;
+#else
+    using TSize = IntPtr;
+#endif // SIZE_UINTPTR
+
 
     // My type.
     using TMy = Int32;
@@ -111,9 +117,9 @@ namespace Zyl.SizableSpans.Benchmarks.ASizableSpan {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TMy StaticSumForSizableSpan(TMy[] src, int srcCount) {
             TMy rt = 0; // Result.
-            nuint srcCountU = (nuint)srcCount;
-            SizableSpan<TMy> span = new SizableSpan<TMy>(src, (nuint)0, srcCountU);
-            for (nuint i = (nuint)0; i.LessThan(srcCountU); i += 1) {
+            TSize srcCountU = (TSize)srcCount;
+            SizableSpan<TMy> span = new SizableSpan<TMy>(src, (TSize)0, srcCountU);
+            for (TSize i = (TSize)0; i.LessThan(srcCountU); i += 1) {
                 rt += span[i];
             }
             return rt;
@@ -139,10 +145,10 @@ namespace Zyl.SizableSpans.Benchmarks.ASizableSpan {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe TMy StaticSumForSizableSpanByPtr(TMy[] src, int srcCount) {
             TMy rt = 0; // Result.
-            nuint srcCountU = (nuint)srcCount;
+            TSize srcCountU = (TSize)srcCount;
             fixed (TMy* p0 = &src[0]) {
                 SizableSpan<TMy> span = new SizableSpan<TMy>(p0, srcCountU);
-                for (nuint i = (nuint)0; i.LessThan(srcCountU); i += 1) {
+                for (TSize i = (TSize)0; i.LessThan(srcCountU); i += 1) {
                     rt += span[i];
                 }
             }
@@ -165,9 +171,9 @@ namespace Zyl.SizableSpans.Benchmarks.ASizableSpan {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe TMy StaticSumForSizableSpanUsePtr(TMy[] src, int srcCount) {
             TMy rt = 0; // Result.
-            nuint srcCountU = (nuint)srcCount;
-            SizableSpan<TMy> span = new SizableSpan<TMy>(src, (nuint)0, srcCountU);
-            fixed (TMy* p0 = &span[(nuint)0]) {
+            TSize srcCountU = (TSize)srcCount;
+            SizableSpan<TMy> span = new SizableSpan<TMy>(src, (TSize)0, srcCountU);
+            fixed (TMy* p0 = &span[(TSize)0]) {
                 TMy* pEnd = p0 + srcCount;
                 TMy* p = p0;
                 for (; p < pEnd; ++p) {
@@ -192,9 +198,9 @@ namespace Zyl.SizableSpans.Benchmarks.ASizableSpan {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TMy StaticSumForSizableSpanUseRef(TMy[] src, int srcCount) {
             TMy rt = 0; // Result.
-            nuint srcCountU = (nuint)srcCount;
-            SizableSpan<TMy> span = new SizableSpan<TMy>(src, (nuint)0, srcCountU);
-            ref TMy p0 = ref span.GetPinnableReference(); // Or `ref TMy p0 = ref span[(nuint)0]`.
+            TSize srcCountU = (TSize)srcCount;
+            SizableSpan<TMy> span = new SizableSpan<TMy>(src, (TSize)0, srcCountU);
+            ref TMy p0 = ref span.GetPinnableReference(); // Or `ref TMy p0 = ref span[(TSize)0]`.
             ref TMy pEnd = ref Unsafe.Add(ref p0, srcCount);
             ref TMy p = ref p0;
             for (; Unsafe.IsAddressLessThan(ref p, ref pEnd); p = ref Unsafe.Add(ref p, 1)) {

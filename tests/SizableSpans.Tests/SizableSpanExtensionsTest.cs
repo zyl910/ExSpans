@@ -28,8 +28,8 @@ namespace Zyl.SizableSpans.Tests {
             const ItemsToStringFlags stringFlagsDefault = ItemsToStringFlags.Default;
             const ItemsToStringFlags stringFlags = ItemsToStringFlags.HideType;
             const TypeNameFlags nameFlags = TypeNameFlags.ShowNamespace | TypeNameFlags.SubShowNamespace;
-            const nuint headerLength = (nuint)3;
-            const nuint footerLength = (nuint)4;
+            TSize headerLength = (TSize)3;
+            TSize footerLength = (TSize)4;
             string newLine = Environment.NewLine;
             StringBuilder stringBuilder = new StringBuilder();
             Action<string> output = delegate (string str) {
@@ -38,7 +38,7 @@ namespace Zyl.SizableSpans.Tests {
             Span<int> sourceSpan = stackalloc int[bufferSize];
             SizableSpan<int> span = sourceSpan; // Implicit conversion Span to SizableSpan.
             span.Fill(1);
-            span[(nuint)0] = 0;
+            span[(TSize)0] = 0;
             span[span.Length - 2] = 2;
 
             // Output - Span.
@@ -100,13 +100,13 @@ namespace Zyl.SizableSpans.Tests {
             const ItemsToStringFlags stringFlagsDefault = ItemsToStringFlags.Default;
             const ItemsToStringFlags stringFlags = ItemsToStringFlags.HideType;
             const TypeNameFlags nameFlags = TypeNameFlags.ShowNamespace | TypeNameFlags.SubShowNamespace;
-            const nuint headerLength = (nuint)3;
-            const nuint footerLength = (nuint)4;
+            TSize headerLength = (TSize)3;
+            TSize footerLength = (TSize)4;
             StringBuilder output = new StringBuilder();
             Span<int> sourceSpan = stackalloc int[bufferSize];
             SizableSpan<int> span = sourceSpan; // Implicit conversion Span to SizableSpan.
             span.Fill(1);
-            span[(nuint)0] = 0;
+            span[(TSize)0] = 0;
             span[span.Length - 2] = 2;
 
             // Output - Span.
@@ -135,7 +135,7 @@ namespace Zyl.SizableSpans.Tests {
             // done.
             Output.WriteLine(output.ToString());
 
-            static void CallSizableSpan<T>(StringBuilder output, SizableSpan<T> span) {
+            void CallSizableSpan<T>(StringBuilder output, SizableSpan<T> span) {
                 // Output - SizableSpan.
                 output.Append("SizableSpan: "); span.ItemsAppendString(output); output.AppendLine();
                 output.Append("SizableSpan with stringFlags: "); span.ItemsAppendString(output, null, stringFlags); output.AppendLine();
@@ -152,7 +152,7 @@ namespace Zyl.SizableSpans.Tests {
             }
 
 #if ALLOWS_REF_STRUCT
-            static void CallTSpan<T, TSpan>(StringBuilder output, TSpan span, in T typeSample)
+            void CallTSpan<T, TSpan>(StringBuilder output, TSpan span, in T typeSample)
                     where TSpan : IReadOnlySizableSpanBase<T>, allows ref struct {
                 output.Append("TSpan with typeSample: "); span.ItemsAppendString(in span.GetPinnableReadOnlyReference(), output); output.AppendLine(); // Can work with GetPinnableReadOnlyReference without use typeSample parameter.
                 output.Append("TSpan with typeSample and stringFlags: "); span.ItemsAppendString(in typeSample, output, null, stringFlags); output.AppendLine();
@@ -168,12 +168,12 @@ namespace Zyl.SizableSpans.Tests {
             const ItemsToStringFlags stringFlagsDefault = ItemsToStringFlags.Default;
             const ItemsToStringFlags stringFlags = ItemsToStringFlags.HideType;
             const TypeNameFlags nameFlags = TypeNameFlags.ShowNamespace | TypeNameFlags.SubShowNamespace;
-            const nuint headerLength = (nuint)3;
-            const nuint footerLength = (nuint)4;
+            TSize headerLength = (TSize)3;
+            TSize footerLength = (TSize)4;
             Span<int> sourceSpan = stackalloc int[bufferSize];
             SizableSpan<int> span = sourceSpan; // Implicit conversion Span to SizableSpan.
             span.Fill(1);
-            span[(nuint)0] = 0;
+            span[(TSize)0] = 0;
             span[span.Length - 2] = 2;
 
             // Output - Span.
@@ -221,7 +221,7 @@ namespace Zyl.SizableSpans.Tests {
                 // Try without typeSample.
                 //Output.WriteLine("TSpan without typeSample: {0}", span.ItemsToString()); // CS0411 The type arguments for method 'SizableSpanExtensions.ItemsToString<T, TSpan>(TSpan, bool)' cannot be inferred from the usage. Try specifying the type arguments explicitly.
                 //Output.WriteLine("TSpan without typeSample: {0}", span.ItemsToString<int, SizableSpan<int>>()); // OK. But the code is too long. So it was decided to disable it.
-                //Output.WriteLine("TSpan use itemFormater: {0}", span.ItemsToString(ItemFormaters.Hex)); // CS0411 The type arguments for method 'SizableSpanExtensions.ItemsToString<T, TSpan>(TSpan, Func<nuint, T, string>?, bool)' cannot be inferred from the usage. Try specifying the type arguments explicitly.
+                //Output.WriteLine("TSpan use itemFormater: {0}", span.ItemsToString(ItemFormaters.Hex)); // CS0411 The type arguments for method 'SizableSpanExtensions.ItemsToString<T, TSpan>(TSpan, Func<TSize, T, string>?, bool)' cannot be inferred from the usage. Try specifying the type arguments explicitly.
                 // OK.
                 Output.WriteLine("TSpan with typeSample: {0}", span.ItemsToString(in span.GetPinnableReadOnlyReference())); // Can work with GetPinnableReadOnlyReference without use typeSample parameter.
                 Output.WriteLine("TSpan with typeSample and stringFlags: {0}", span.ItemsToString(in typeSample, null, stringFlags));

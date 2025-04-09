@@ -6,6 +6,12 @@ using System.Runtime.InteropServices;
 using Zyl.SizableSpans.Extensions;
 
 namespace Zyl.SizableSpans.Sample {
+#if SIZE_UINTPTR
+    using TSize = UIntPtr;
+#else
+    using TSize = IntPtr;
+#endif // SIZE_UINTPTR
+
     internal class Program {
         static void Main(string[] args) {
             TextWriter writer = Console.Out;
@@ -68,10 +74,10 @@ namespace Zyl.SizableSpans.Sample {
                 // Write.
                 writer.WriteLine($"[TestSizableSpan-{title}]");
                 span.Fill(0x01020304);
-                span[(nuint)0] = 0x12345678;
+                span[(TSize)0] = 0x12345678;
                 // Read.
-                writer.WriteLine(string.Format("Data[0]: {0} // 0x{0:X}", span[(nuint)0]));
-                writer.WriteLine(string.Format("Data[1]: {0} // 0x{0:X}", span[(nuint)1]));
+                writer.WriteLine(string.Format("Data[0]: {0} // 0x{0:X}", span[(TSize)0]));
+                writer.WriteLine(string.Format("Data[1]: {0} // 0x{0:X}", span[(TSize)1]));
             } catch (Exception ex) {
                 writer.WriteLine(string.Format("Run TestMemoryMappedFile fail! {0}", ex.ToString()));
             }
@@ -79,7 +85,7 @@ namespace Zyl.SizableSpans.Sample {
 
         private static int SumSizableSpan(ReadOnlySizableSpan<int> span) {
             int rt = 0; // Result.
-            for (nuint i = (nuint)0; i.LessThan(span.Length); i += 1) { // The LessThan method is from `Zyl.SizableSpans.Extensions.IntPtrExtensions.LessThan`. Since .NET 7.0, the nuint type has only begin to support the less than operator.
+            for (TSize i = (TSize)0; i.LessThan(span.Length); i += 1) { // The LessThan method is from `Zyl.SizableSpans.Extensions.IntPtrExtensions.LessThan`. Since .NET 7.0, the TSize type has only begin to support the less than operator.
                 rt += span[i];
             }
             return rt;
@@ -91,15 +97,15 @@ namespace Zyl.SizableSpans.Sample {
         /// <param name="writer">The <see cref="TextWriter"/>.</param>
         static unsafe void Test2GB(TextWriter writer) {
 #if NET6_0_OR_GREATER
-            const nuint byteSize = 2U * 1024 * 1024 * 1024; // 2GB
-            const nuint bufferSize = byteSize / sizeof(int);
+            const uint byteSize = 2U * 1024 * 1024 * 1024; // 2GB
+            TSize bufferSize = (TSize)(byteSize / sizeof(int));
             // Create SizableSpan by Pointer.
             try {
                 void* buffer = NativeMemory.Alloc(byteSize);
                 try {
                     SizableSpan<int> sizableSpan = new SizableSpan<int>(buffer, bufferSize);
                     TestSizableSpan(writer, "2GB", sizableSpan);
-                    writer.WriteLine(string.Format("ItemsToString: {0}", sizableSpan.ItemsToString((nuint)16)));
+                    writer.WriteLine(string.Format("ItemsToString: {0}", sizableSpan.ItemsToString((TSize)16)));
                     writer.WriteLine();
                 } finally {
                     NativeMemory.Free(buffer);
@@ -126,12 +132,12 @@ namespace Zyl.SizableSpans.Sample {
                 writer.WriteLine("[TestMemoryMappedFile]");
                 SizableSpan<int> spanInt = spanProvider.CreateSizableSpan<int>();
                 spanInt.Fill(0x01020304);
-                spanInt[(nuint)0] = 0x12345678;
+                spanInt[(TSize)0] = 0x12345678;
                 // Read.
-                writer.WriteLine(string.Format("Data[0]: {0} // 0x{0:X}", spanInt[(nuint)0]));
-                writer.WriteLine(string.Format("Data[1]: {0} // 0x{0:X}", spanInt[(nuint)1]));
+                writer.WriteLine(string.Format("Data[0]: {0} // 0x{0:X}", spanInt[(TSize)0]));
+                writer.WriteLine(string.Format("Data[1]: {0} // 0x{0:X}", spanInt[(TSize)1]));
                 // Extension methods provided by SizableSpanExtensions.
-                writer.WriteLine(string.Format("ItemsToString: {0}", spanProvider.ItemsToString(spanProvider.GetPinnableReadOnlyReference(), (nuint)16)));
+                writer.WriteLine(string.Format("ItemsToString: {0}", spanProvider.ItemsToString(spanProvider.GetPinnableReadOnlyReference(), (TSize)16)));
                 // done.
                 writer.WriteLine();
             } catch (Exception ex) {

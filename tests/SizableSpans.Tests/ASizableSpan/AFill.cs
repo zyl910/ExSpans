@@ -143,7 +143,7 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
             RunTest<long>(0x0123456789abcdef);
             RunTest<ulong>(0x0123456789abcdef);
             RunTest<nint>(unchecked((nint)0x0123456789abcdef));
-            RunTest<nuint>(unchecked((nuint)0x0123456789abcdef));
+            RunTest<TSize>(unchecked((TSize)0x0123456789abcdef));
 #if NET5_0_OR_GREATER
             RunTest<Half>((Half)1.0);
 #endif // NET5_0_OR_GREATER
