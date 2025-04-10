@@ -17,7 +17,7 @@ using EditorBrowsableState = System.ComponentModel.EditorBrowsableState;
 
 namespace Zyl.SizableSpans {
     /// <summary>
-    /// Provides a type-safe and memory-safe read-only representation of a contiguous region of arbitrary memory. It can be regarded as the <see cref="ReadOnlySpan{T}"/> of <see cref="UIntPtr"/> index range (提供任意内存连续区域的类型安全且内存安全的只读表示形式. 它可以被视为 UIntPtr 索引范围的 <see cref="ReadOnlySpan{T}"/>).
+    /// Provides a type-safe and memory-safe read-only representation of a contiguous region of arbitrary memory. It can be regarded as the <see cref="ReadOnlySpan{T}"/> of <see cref="TSize"/> index range (提供任意内存连续区域的类型安全且内存安全的只读表示形式. 它可以被视为 <see cref="TSize"/> 索引范围的 <see cref="ReadOnlySpan{T}"/>).
     /// </summary>
     /// <typeparam name="T">The element type (元素的类型).</typeparam>
     [DebuggerTypeProxy(typeof(SizableSpanDebugView<>))]
