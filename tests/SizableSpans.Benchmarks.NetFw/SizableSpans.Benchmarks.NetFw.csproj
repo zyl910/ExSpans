@@ -42,7 +42,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <DefineConstants>$(DefineConstants);SIZE_UINTPTR;REDUCE_MEMORY_USAGE;DRY_JOB0;BENCHMARKS_OFF</DefineConstants>
+    <DefineConstants>$(DefineConstants);SIZE_UINTPTR0;REDUCE_MEMORY_USAGE;DRY_JOB0;BENCHMARKS_OFF</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BenchmarkDotNet, Version=0.14.0.0, Culture=neutral, PublicKeyToken=aa0ca2f9092cefc4, processorArchitecture=MSIL">

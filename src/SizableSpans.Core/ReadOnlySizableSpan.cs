@@ -100,7 +100,7 @@ namespace Zyl.SizableSpans {
         // /// <exception cref="ArgumentOutOfRangeException">
         // /// Thrown when the specified <paramref name="length"/> is negative.
         // /// </exception>
-        [MyCLSCompliant(false)]
+        [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe ReadOnlySizableSpan(void* pointer, TSize length) {
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_0_OR_GREATER
@@ -351,7 +351,7 @@ namespace Zyl.SizableSpans {
             // we can optimize by performing the check once ourselves then calling Memmove directly.
 
             if (IntPtrExtensions.LessThanOrEqual(_length, destination.Length)) {
-                BufferHelper.Memmove(ref destination.GetPinnableReference(), in GetPinnableReference(), _length);
+                BufferHelper.Memmove(ref destination.GetPinnableReference(), in GetPinnableReference(), _length.ToUIntPtr());
             } else {
                 ThrowHelper.ThrowArgumentException_DestinationTooShort();
             }
@@ -368,7 +368,7 @@ namespace Zyl.SizableSpans {
         public bool TryCopyTo(SizableSpan<T> destination) {
             bool retVal = false;
             if (IntPtrExtensions.LessThanOrEqual(_length, destination.Length)) {
-                BufferHelper.Memmove(ref destination.GetPinnableReference(), in GetPinnableReference(), _length);
+                BufferHelper.Memmove(ref destination.GetPinnableReference(), in GetPinnableReference(), _length.ToUIntPtr());
                 retVal = true;
             }
             return retVal;

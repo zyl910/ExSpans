@@ -266,12 +266,37 @@ namespace Zyl.SizableSpans.Extensions {
         /// </summary>
         /// <param name="source">Source value (源值).</param>
         /// <returns>A value after saturating convert (饱和转换后的值).</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int SaturatingToInt32(this nint source) {
+            int dst = source.LessThan(int.MinValue) ? int.MinValue : (source.LessThan(int.MaxValue) ? (int)source : int.MaxValue);
+            return dst;
+        }
+
+        /// <summary>
+        /// Convert <see cref="UIntPtr"/> saturating to <see cref="Int32"/> (将 <see cref="UIntPtr"/> 饱和转换为 <see cref="Int32"/>).
+        /// </summary>
+        /// <param name="source">Source value (源值).</param>
+        /// <returns>A value after saturating convert (饱和转换后的值).</returns>
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int SaturatingToInt32(this nuint source) {
-            int dst = int.MaxValue;
-            if (source.LessThan((uint)dst)) {
-                dst = (int)source;
+            int dst = source.LessThan((uint)int.MaxValue) ? (int)source : int.MaxValue;
+            return dst;
+        }
+
+        /// <summary>
+        /// Convert <see cref="UInt64"/> saturating to <see cref="IntPtr"/> (将 <see cref="UInt64"/> 饱和转换为 <see cref="IntPtr"/>).
+        /// </summary>
+        /// <param name="source">Source value (源值).</param>
+        /// <returns>A value after saturating convert (饱和转换后的值).</returns>
+        [CLSCompliant(false)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static nint SaturatingToIntPtr(this ulong source) {
+            nint dst;
+            if (SizableMemoryMarshal.Is64BitProcess) {
+                dst = (nint)((source < long.MaxValue) ? source : long.MaxValue);
+            } else {
+                dst = (nint)((source < int.MaxValue) ? source : int.MaxValue);
             }
             return dst;
         }
@@ -291,6 +316,31 @@ namespace Zyl.SizableSpans.Extensions {
                 dst = (nuint)((source < uint.MaxValue) ? source : uint.MaxValue);
             }
             return dst;
+        }
+
+        /// <summary>
+        /// Convert <see cref="UInt64"/> saturating to TSize (将 <see cref="UInt64"/> 饱和转换为 TSize).
+        /// </summary>
+        /// <param name="source">Source value (源值).</param>
+        /// <returns>A value after saturating convert (饱和转换后的值).</returns>
+        [CLSCompliant(false)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static TSize SaturatingToTSize(this ulong source) {
+#if SIZE_UINTPTR
+            return SaturatingToUIntPtr(source);
+#else
+            return SaturatingToIntPtr(source);
+#endif // SIZE_UINTPTR
+        }
+
+        /// <summary>
+        /// The <see cref="IntPtr"/> to <see cref="IntPtr"/>.
+        /// </summary>
+        /// <param name="source">The source (源).</param>
+        /// <returns><see cref="IntPtr"/> value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static nint ToIntPtr(this nint source) {
+            return source;
         }
 
         /// <summary>
@@ -323,6 +373,17 @@ namespace Zyl.SizableSpans.Extensions {
             //return (nuint)(void*)source;
             return Unsafe.As<nint, nuint>(ref source);
 #endif // NET7_0_OR_GREATER
+        }
+
+        /// <summary>
+        /// The <see cref="UIntPtr"/> to <see cref="UIntPtr"/>.
+        /// </summary>
+        /// <param name="source">The source (源).</param>
+        /// <returns><see cref="UIntPtr"/> value.</returns>
+        [CLSCompliant(false)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static nuint ToUIntPtr(this nuint source) {
+            return source;
         }
 
     }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
+using Zyl.SizableSpans.Extensions;
 
 namespace Zyl.SizableSpans {
     partial class SizableMemoryExtensions {
@@ -14,7 +15,7 @@ namespace Zyl.SizableSpans {
         /// <param name="value">The given value (指定的值).</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Fill<T>(this SizableSpan<T> span, T value) {
-            SizableSpanHelpers.Fill(ref span.GetPinnableReference(), span.Length, value);
+            SizableSpanHelpers.Fill(ref span.GetPinnableReference(), span.Length.ToUIntPtr(), value);
         }
 
     }

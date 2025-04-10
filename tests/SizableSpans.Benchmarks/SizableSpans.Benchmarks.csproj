@@ -29,7 +29,7 @@
     <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>$(DefineConstants);SIZE_UINTPTR;REDUCE_MEMORY_USAGE;DRY_JOB0;BENCHMARKS_OFF</DefineConstants>
+    <DefineConstants>$(DefineConstants);SIZE_UINTPTR0;REDUCE_MEMORY_USAGE;DRY_JOB0;BENCHMARKS_OFF</DefineConstants>
     <IsAotCompatible Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net7.0'))">true</IsAotCompatible>
       <!--
     <PublishAot Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net7.0'))">true</PublishAot>

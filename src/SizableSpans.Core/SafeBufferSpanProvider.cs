@@ -71,14 +71,14 @@ namespace Zyl.SizableSpans {
 
         /// <inheritdoc/>
         public ReadOnlySizableSpan<TTo> CreateReadOnlySizableSpan<TTo>() {
-            nuint len = (_source.ByteLength / (ulong)Unsafe.SizeOf<TTo>()).SaturatingToUIntPtr();
+            TSize len = (_source.ByteLength / (ulong)Unsafe.SizeOf<TTo>()).SaturatingToTSize();
             return new ReadOnlySizableSpan<TTo>(_pointer, len);
         }
 
         /// <inheritdoc/>
         public SizableSpan<TTo> CreateSizableSpan<TTo>() {
             if (null == _source) return SizableSpan<TTo>.Empty;
-            nuint len = (_source.ByteLength / (ulong)Unsafe.SizeOf<TTo>()).SaturatingToUIntPtr();
+            TSize len = (_source.ByteLength / (ulong)Unsafe.SizeOf<TTo>()).SaturatingToTSize();
             return new SizableSpan<TTo>(_pointer, len);
         }
 
@@ -91,7 +91,7 @@ namespace Zyl.SizableSpans {
         [MyCLSCompliant(false)]
         public TSize Length {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => (_source?.ByteLength ?? 0).SaturatingToUIntPtr();
+            get => (_source?.ByteLength ?? 0).SaturatingToTSize();
         }
 
     }
