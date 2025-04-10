@@ -79,7 +79,7 @@ namespace Zyl.SizableSpans.Sample {
                 writer.WriteLine(string.Format("Data[0]: {0} // 0x{0:X}", span[(TSize)0]));
                 writer.WriteLine(string.Format("Data[1]: {0} // 0x{0:X}", span[(TSize)1]));
             } catch (Exception ex) {
-                writer.WriteLine(string.Format("Run TestMemoryMappedFile fail! {0}", ex.ToString()));
+                writer.WriteLine(string.Format("Run TestSizableSpan fail! {0}", ex.ToString()));
             }
         }
 
