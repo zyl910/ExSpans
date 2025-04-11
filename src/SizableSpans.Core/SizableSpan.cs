@@ -408,6 +408,7 @@ namespace Zyl.SizableSpans {
         /// <summary>
         /// Returns the string representation of this <see cref="SizableSpan{Char}"/> (返回此 <see cref="SizableSpan{Char}"/> 的字符串表示形式).
         /// </summary>
+        /// <seealso cref="SizableSpanExtensions.ItemsToString{T}(SizableSpan{T}, Func{TSize, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
         public override string ToString() {
             //if (typeof(T) == typeof(char)) {
             //    return new string(new ReadOnlySpan<char>(ref Unsafe.As<T, char>(ref _reference), _length));

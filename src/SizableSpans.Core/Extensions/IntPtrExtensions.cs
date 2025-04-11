@@ -22,14 +22,7 @@ namespace Zyl.SizableSpans.Extensions {
         /// <returns>The sum of left and right (左值与右值的和).</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static nint Add(this nint left, nint right) {
-#if GENERIC_MATH
             return left + right;
-#else
-            unsafe {
-                //return (nint)((void*)left + (void*)right);
-                return (nint)Unsafe.AsPointer( ref SizableUnsafe.Add(ref Unsafe.AsRef<byte>((void*)left), right));
-            }
-#endif
         }
 
         /// <summary>
@@ -41,13 +34,7 @@ namespace Zyl.SizableSpans.Extensions {
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static nuint Add(this nuint left, nuint right) {
-#if GENERIC_MATH
             return left + right;
-#else
-            unsafe {
-                return (nuint)Unsafe.AsPointer(ref SizableUnsafe.Add(ref Unsafe.AsRef<byte>((void*)left), right));
-            }
-#endif
         }
 
 //        /// <summary>
@@ -92,13 +79,7 @@ namespace Zyl.SizableSpans.Extensions {
         /// <returns><see langword="true"/> if greater; otherwise, <see langword="false"/></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool GreaterThan(this nint left, nint right) {
-#if GENERIC_MATH
             return left > right;
-#else
-            unsafe {
-                return (void*)left > (void*)right;
-            }
-#endif
         }
 
         /// <summary>
@@ -110,13 +91,7 @@ namespace Zyl.SizableSpans.Extensions {
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool GreaterThan(this nuint left, nuint right) {
-#if GENERIC_MATH
             return left > right;
-#else
-            unsafe {
-                return (void*)left > (void*)right;
-            }
-#endif
         }
 
         /// <summary>
@@ -127,13 +102,7 @@ namespace Zyl.SizableSpans.Extensions {
         /// <returns><see langword="true"/> if greater or equal; otherwise, <see langword="false"/></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool GreaterThanOrEqual(this nint left, nint right) {
-#if GENERIC_MATH
             return left >= right;
-#else
-            unsafe {
-                return (void*)left >= (void*)right;
-            }
-#endif
         }
 
         /// <summary>
@@ -145,13 +114,7 @@ namespace Zyl.SizableSpans.Extensions {
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool GreaterThanOrEqual(this nuint left, nuint right) {
-#if GENERIC_MATH
             return left >= right;
-#else
-            unsafe {
-                return (void*)left >= (void*)right;
-            }
-#endif
         }
 
         /// <summary>
@@ -162,13 +125,7 @@ namespace Zyl.SizableSpans.Extensions {
         /// <returns><see langword="true"/> if less; otherwise, <see langword="false"/></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool LessThan(this nint left, nint right) {
-#if GENERIC_MATH
             return left < right;
-#else
-            unsafe {
-                return (void*)left < (void*)right;
-            }
-#endif
         }
 
         /// <summary>
@@ -180,13 +137,7 @@ namespace Zyl.SizableSpans.Extensions {
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool LessThan(this nuint left, nuint right) {
-#if GENERIC_MATH
             return left < right;
-#else
-            unsafe {
-                return (void*)left < (void*)right;
-            }
-#endif
         }
 
         /// <summary>
@@ -197,13 +148,7 @@ namespace Zyl.SizableSpans.Extensions {
         /// <returns><see langword="true"/> if less or equal; otherwise, <see langword="false"/></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool LessThanOrEqual(this nint left, nint right) {
-#if GENERIC_MATH
             return left <= right;
-#else
-            unsafe {
-                return (void*)left <= (void*)right;
-            }
-#endif
         }
 
         /// <summary>
@@ -215,13 +160,7 @@ namespace Zyl.SizableSpans.Extensions {
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool LessThanOrEqual(this nuint left, nuint right) {
-#if GENERIC_MATH
             return left <= right;
-#else
-            unsafe {
-                return (void*)left <= (void*)right;
-            }
-#endif
         }
 
         /// <summary>
@@ -278,14 +217,7 @@ namespace Zyl.SizableSpans.Extensions {
         /// <returns>The difference of left and right (左值与右值的差).</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static nint Subtract(this nint left, nint right) {
-#if GENERIC_MATH
             return left - right;
-#else
-            unsafe {
-                //return (nint)((void*)left + (void*)right);
-                return (nint)Unsafe.AsPointer(ref SizableUnsafe.Subtract(ref Unsafe.AsRef<byte>((void*)left), right));
-            }
-#endif
         }
 
         /// <summary>
@@ -297,13 +229,7 @@ namespace Zyl.SizableSpans.Extensions {
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static nuint Subtract(this nuint left, nuint right) {
-#if GENERIC_MATH
             return left - right;
-#else
-            unsafe {
-                return (nuint)Unsafe.AsPointer(ref SizableUnsafe.Subtract(ref Unsafe.AsRef<byte>((void*)left), right));
-            }
-#endif
         }
 
         /// <summary>
@@ -396,12 +322,12 @@ namespace Zyl.SizableSpans.Extensions {
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static nint ToIntPtr(this nuint source) {
-#if NET7_0_OR_GREATER
+#if GENERIC_MATH
             return (nint)source;
 #else
             //return (nint)(void*)source;
             return Unsafe.As<nuint, nint>(ref source);
-#endif // NET7_0_OR_GREATER
+#endif // GENERIC_MATH
         }
 
         /// <summary>
@@ -412,12 +338,12 @@ namespace Zyl.SizableSpans.Extensions {
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static nuint ToUIntPtr(this nint source) {
-#if NET7_0_OR_GREATER
+#if GENERIC_MATH
             return (nuint)source;
 #else
             //return (nuint)(void*)source;
             return Unsafe.As<nint, nuint>(ref source);
-#endif // NET7_0_OR_GREATER
+#endif // GENERIC_MATH
         }
 
         /// <summary>

@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using Zyl.SizableSpans.Extensions;
 using Zyl.SizableSpans.Impl;
-
+using Zyl.SizableSpans.Reflection;
 using EditorBrowsableAttribute = System.ComponentModel.EditorBrowsableAttribute;
 using EditorBrowsableState = System.ComponentModel.EditorBrowsableState;
 
@@ -390,6 +390,7 @@ namespace Zyl.SizableSpans {
         /// <summary>
         /// Returns the string representation of this <see cref="ReadOnlySizableSpan{Char}"/> (返回此 <see cref="ReadOnlySizableSpan{Char}"/> 的字符串表示形式).
         /// </summary>
+        /// <seealso cref="SizableSpanExtensions.ItemsToString{T}(ReadOnlySizableSpan{T}, Func{TSize, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
         public override string ToString() {
             //if (typeof(T) == typeof(char)) {
             //    return new string(new ReadOnlySpan<char>(ref Unsafe.As<T, char>(ref _reference), _length));
