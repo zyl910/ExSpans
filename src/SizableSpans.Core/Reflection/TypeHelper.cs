@@ -146,6 +146,28 @@ namespace Zyl.SizableSpans.Reflection {
         }
 
         /// <summary>
+        /// Returns a value that indicates whether the specified type is a reference type or a value type that contains references or by-refs (返回一个值，该值指示指定的类型是引用类型还是包含引用或 by-refs 的值类型).
+        /// </summary>
+        /// <typeparam name="T">The type (类型).</typeparam>
+        /// <returns>true if the given type is a reference type or a value type that contains references or by-refs; otherwise, false (类型是是引用类型还是包含引用或 by-refs 的值类型就返回 true; 否则返回 false).</returns>
+        /// <remarks>
+        /// <para>In .NET Standard 1.1~2.0, due to the inability to accurately determine, we rolled back to call the <see cref="IsPrimitive{T}()"/> method (在 .NET Standard 1.1~2.0 时, 因无法准确判断, 于是回退为调用 IsPrimitive 方法)</para>
+        /// </remarks>
+        /// <seealso cref="RuntimeHelpers.IsReferenceOrContainsReferences{T}"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsReferenceOrContainsReferences<T>()
+#if ALLOWS_REF_STRUCT
+                where T : allows ref struct
+#endif // ALLOWS_REF_STRUCT
+                {
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_0_OR_GREATER
+            return RuntimeHelpers.IsReferenceOrContainsReferences<T>();
+#else
+            return !IsPrimitive<T>();
+#endif
+        }
+
+        /// <summary>
         /// Is value types (是否为值类型).
         /// </summary>
         /// <typeparam name="T">The type (类型).</typeparam>
