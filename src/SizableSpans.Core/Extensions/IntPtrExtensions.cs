@@ -15,7 +15,7 @@ namespace Zyl.SizableSpans.Extensions {
     public static class IntPtrExtensions {
 
         /// <summary>
-        /// Add (加法).
+        /// Add (加法). <c>left + right</c>.
         /// </summary>
         /// <param name="left">Left value (左值).</param>
         /// <param name="right">Right value (右值).</param>
@@ -33,7 +33,7 @@ namespace Zyl.SizableSpans.Extensions {
         }
 
         /// <summary>
-        /// Add (加法).
+        /// Add (加法). <c>left + right</c>.
         /// </summary>
         /// <param name="left">Left value (左值).</param>
         /// <param name="right">Right value (右值).</param>
@@ -85,7 +85,7 @@ namespace Zyl.SizableSpans.Extensions {
 //        }
 
         /// <summary>
-        /// Greater than (大于比较).
+        /// Greater than (大于比较). <c>left &gt; right</c>.
         /// </summary>
         /// <param name="left">Left value (左值).</param>
         /// <param name="right">Right value (右值).</param>
@@ -102,7 +102,7 @@ namespace Zyl.SizableSpans.Extensions {
         }
 
         /// <summary>
-        /// Greater than (大于比较).
+        /// Greater than (大于比较). <c>left &gt; right</c>.
         /// </summary>
         /// <param name="left">Left value (左值).</param>
         /// <param name="right">Right value (右值).</param>
@@ -120,7 +120,7 @@ namespace Zyl.SizableSpans.Extensions {
         }
 
         /// <summary>
-        /// Greater or equal than (大于或等于).
+        /// Greater or equal than (大于或等于). <c>left &gt;= right</c>.
         /// </summary>
         /// <param name="left">Left value (左值).</param>
         /// <param name="right">Right value (右值).</param>
@@ -137,7 +137,7 @@ namespace Zyl.SizableSpans.Extensions {
         }
 
         /// <summary>
-        /// Greater or equal than (大于或等于).
+        /// Greater or equal than (大于或等于). <c>left &gt;= right</c>.
         /// </summary>
         /// <param name="left">Left value (左值).</param>
         /// <param name="right">Right value (右值).</param>
@@ -155,7 +155,7 @@ namespace Zyl.SizableSpans.Extensions {
         }
 
         /// <summary>
-        /// Less than (小于比较).
+        /// Less than (小于比较). <c>left &lt; right</c>.
         /// </summary>
         /// <param name="left">Left value (左值).</param>
         /// <param name="right">Right value (右值).</param>
@@ -172,7 +172,7 @@ namespace Zyl.SizableSpans.Extensions {
         }
 
         /// <summary>
-        /// Less than (小于比较).
+        /// Less than (小于比较). <c>left &lt; right</c>.
         /// </summary>
         /// <param name="left">Left value (左值).</param>
         /// <param name="right">Right value (右值).</param>
@@ -190,7 +190,7 @@ namespace Zyl.SizableSpans.Extensions {
         }
 
         /// <summary>
-        /// Less or equal than (小于或等于).
+        /// Less or equal than (小于或等于). <c>left &lt;= right</c>.
         /// </summary>
         /// <param name="left">Left value (左值).</param>
         /// <param name="right">Right value (右值).</param>
@@ -207,7 +207,7 @@ namespace Zyl.SizableSpans.Extensions {
         }
 
         /// <summary>
-        /// Less or equal than (小于或等于).
+        /// Less or equal than (小于或等于). <c>left &lt;= right</c>.
         /// </summary>
         /// <param name="left">Left value (左值).</param>
         /// <param name="right">Right value (右值).</param>
@@ -224,9 +224,54 @@ namespace Zyl.SizableSpans.Extensions {
 #endif
         }
 
+        /// <summary>
+        /// Multiply (乘法). <c>left * right</c>.
+        /// </summary>
+        /// <param name="left">Left value (左值).</param>
+        /// <param name="right">Right value (右值).</param>
+        /// <returns>The product of left and right (左值与右值的积).</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static nint Multiply(this nint left, nint right) {
+            return (nint)(left * right);
+        }
 
         /// <summary>
-        /// Subtract (减法).
+        /// Multiply (乘法). <c>left * right</c>.
+        /// </summary>
+        /// <param name="left">Left value (左值).</param>
+        /// <param name="right">Right value (右值).</param>
+        /// <returns>The product of left and right (左值与右值的积).</returns>
+        [CLSCompliant(false)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static nuint Multiply(this nuint left, nuint right) {
+            return (nuint)(left * right);
+        }
+
+        /// <summary>
+        /// Multiply - Checked(乘法 - 检查). <c>checked(left * right)</c>.
+        /// </summary>
+        /// <param name="left">Left value (左值).</param>
+        /// <param name="right">Right value (右值).</param>
+        /// <returns>The product of left and right (左值与右值的积).</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static nint MultiplyChecked(this nint left, nint right) {
+            return checked((nint)(left * right));
+        }
+
+        /// <summary>
+        /// Multiply - Checked(乘法 - 检查). <c>checked(left * right)</c>.
+        /// </summary>
+        /// <param name="left">Left value (左值).</param>
+        /// <param name="right">Right value (右值).</param>
+        /// <returns>The product of left and right (左值与右值的积).</returns>
+        [CLSCompliant(false)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static nuint MultiplyChecked(this nuint left, nuint right) {
+            return checked((nuint)(left * right));
+        }
+
+        /// <summary>
+        /// Subtract (减法). <c>left - right</c>.
         /// </summary>
         /// <param name="left">Left value (左值).</param>
         /// <param name="right">Right value (右值).</param>
@@ -244,7 +289,7 @@ namespace Zyl.SizableSpans.Extensions {
         }
 
         /// <summary>
-        /// Subtract (减法).
+        /// Subtract (减法). <c>left - right</c>.
         /// </summary>
         /// <param name="left">Left value (左值).</param>
         /// <param name="right">Right value (右值).</param>
