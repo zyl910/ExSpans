@@ -11,7 +11,8 @@ namespace Zyl.SizableSpans {
     /// The span provider that manages the pointer acquire for <see cref="SafeBuffer"/> (管理 <see cref="SafeBuffer"/> 指针获取的跨度提供者). For example, it can provide span access for memory mapped files (例如它可以为内存映射文件提供跨度访问器).
     /// </summary>
     /// <remarks>
-    /// <para>Example:</para>
+    /// <example>
+    /// For example:
     /// <code>
     /// static void TestMemoryMappedFile(TextWriter writer) {
     ///     try {
@@ -24,10 +25,10 @@ namespace Zyl.SizableSpans {
     ///         // Write.
     ///         SizableSpan&lt;int&gt; spanInt = spanProvider.CreateSizableSpan&lt;int&gt;();
     ///         spanInt.Fill(0x01020304);
-    ///         spanInt[(nuint)0] = 0x12345678;
+    ///         spanInt[(nint)0] = 0x12345678;
     ///         // Read.
-    ///         writer.WriteLine(string.Format("Data[0]: {0} // 0x{0:X}", spanInt[(nuint)0]));
-    ///         writer.WriteLine(string.Format("Data[1]: {0} // 0x{0:X}", spanInt[(nuint)1]));
+    ///         writer.WriteLine(string.Format("Data[0]: {0} // 0x{0:X}", spanInt[(nint)0]));
+    ///         writer.WriteLine(string.Format("Data[1]: {0} // 0x{0:X}", spanInt[(nint)1]));
     ///     } catch (Exception ex) {
     ///         writer.WriteLine(string.Format("Run TestMemoryMappedFile fail! {0}", ex.ToString()));
     ///     }
@@ -36,6 +37,7 @@ namespace Zyl.SizableSpans {
     ///     // Data[1]: 16909060 // 0x1020304
     /// }
     /// </code>
+    /// </example>
     /// </remarks>
     public unsafe readonly struct SafeBufferSpanProvider : IDisposable, ISizableLength, IReadOnlySizableSpanProvider<byte>, ISizableSpanProvider<byte> {
         private readonly SafeBuffer _source;

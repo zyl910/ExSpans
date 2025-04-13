@@ -17,9 +17,12 @@ namespace Zyl.SizableSpans {
     public static partial class SizableMemoryMarshal {
         /// <summary>
         /// Casts a SizableSpan of one primitive type <typeparamref name="T"/> to SizableSpan of bytes.
-        /// That type may not contain pointers or references. This is checked at runtime in order to preserve type safety.
+        /// That type may not contain pointers or references. This is checked at runtime in order to preserve type safety
+        /// (将一个基元类型<typeparamref name="T"/>的SizableSpan 转换为字节的SizableSpan. 该类型不能包含指针或引用. 它会在运行时检查这一点, 以保护类型安全).
         /// </summary>
-        /// <param name="span">The source slice, of type <typeparamref name="T"/>.</param>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="span">The source slice, of type <typeparamref name="T"/> (<typeparamref name="T"/> 类型的源切片).</param>
+        /// <returns>A SizableSpan of type <see cref="Byte"/> (<see cref="Byte"/> 类型的 SizableSpan).</returns>
         /// <exception cref="ArgumentException">
         /// Thrown when <typeparamref name="T"/> contains pointers.
         /// </exception>
@@ -42,8 +45,11 @@ namespace Zyl.SizableSpans {
         /// <summary>
         /// Casts a ReadOnlySizableSpan of one primitive type <typeparamref name="T"/> to ReadOnlySizableSpan of bytes.
         /// That type may not contain pointers or references. This is checked at runtime in order to preserve type safety.
+        /// (将一个基元类型<typeparamref name="T"/>的SizableSpan 转换为字节的ReadOnlySizableSpan. 该类型不能包含指针或引用. 它会在运行时检查这一点, 以保护类型安全).
         /// </summary>
-        /// <param name="span">The source slice, of type <typeparamref name="T"/>.</param>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="span">The source slice, of type <typeparamref name="T"/> (<typeparamref name="T"/> 类型的源切片).</param>
+        /// <returns>A ReadOnlySizableSpan of type <see cref="Byte"/> (<see cref="Byte"/> 类型的 ReadOnlySizableSpan).</returns>
         /// <exception cref="ArgumentException">
         /// Thrown when <typeparamref name="T"/> contains pointers.
         /// </exception>
@@ -65,21 +71,30 @@ namespace Zyl.SizableSpans {
         }
 
         /// <summary>
-        /// Returns a reference to the 0th element of the SizableSpan. If the SizableSpan is empty, returns a reference to the location where the 0th element
-        /// would have been stored. Such a reference may or may not be null. It can be used for pinning but must never be dereferenced.
+        /// Returns a reference to the 0th element of the SizableSpan. Such a reference may or may not be null. It can be used for pinning but must never be dereferenced
+        /// (返回 SizableSpan 中索引为 0 处元素的引用. 这样的引用可能为空, 也可能不为空. 它可以用于固定, 但绝不能解引用).
         /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="span">The source span (源跨度).</param>
+        /// <returns>a reference to the 0th element of the SizableSpan (SizableSpan 中索引为 0 处元素的引用).</returns>
         public static ref T GetReference<T>(SizableSpan<T> span) => ref span.GetPinnableReference();
 
         /// <summary>
-        /// Returns a reference to the 0th element of the ReadOnlySizableSpan. If the ReadOnlySizableSpan is empty, returns a reference to the location where the 0th element
-        /// would have been stored. Such a reference may or may not be null. It can be used for pinning but must never be dereferenced.
+        /// Returns a reference to the 0th element of the ReadOnlySizableSpan. Such a reference may or may not be null. It can be used for pinning but must never be dereferenced
+        /// (返回 ReadOnlySizableSpan 中索引为 0 处元素的引用. 这样的引用可能为空, 也可能不为空. 它可以用于固定, 但绝不能解引用).
         /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="span">The source span (源跨度).</param>
+        /// <returns>a reference to the 0th element of the ReadOnlySizableSpan (ReadOnlySizableSpan 中索引为 0 处元素的引用).</returns>
         public static ref T GetReference<T>(ReadOnlySizableSpan<T> span) => ref Unsafe.AsRef(in span.GetPinnableReference());
 
         /// <summary>
         /// Returns a reference to the 0th element of the SizableSpan. If the SizableSpan is empty, returns a reference to fake non-null pointer. Such a reference can be used
         /// for pinning but must never be dereferenced. This is useful for interop with methods that do not accept null pointers for zero-sized buffers.
         /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="span">The source span (源跨度).</param>
+        /// <returns>a reference to the 0th element of the SizableSpan (SizableSpan 中索引为 0 处元素的引用).</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static unsafe ref T GetNonNullPinnableReference<T>(SizableSpan<T> span) => ref (!span.IsEmpty) ? ref span.GetPinnableReference() : ref Unsafe.AsRef<T>((void*)1);
 
@@ -87,17 +102,24 @@ namespace Zyl.SizableSpans {
         /// Returns a reference to the 0th element of the ReadOnlySizableSpan. If the ReadOnlySizableSpan is empty, returns a reference to fake non-null pointer. Such a reference
         /// can be used for pinning but must never be dereferenced. This is useful for interop with methods that do not accept null pointers for zero-sized buffers.
         /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="span">The source span (源跨度).</param>
+        /// <returns>a reference to the 0th element of the ReadOnlySizableSpan (ReadOnlySizableSpan 中索引为 0 处元素的引用).</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static unsafe ref T GetNonNullPinnableReference<T>(ReadOnlySizableSpan<T> span) => ref (!span.IsEmpty) ? ref Unsafe.AsRef(in span.GetPinnableReference()) : ref Unsafe.AsRef<T>((void*)1);
 
         /// <summary>
         /// Casts a SizableSpan of one primitive type <typeparamref name="TFrom"/> to another primitive type <typeparamref name="TTo"/>.
         /// These types may not contain pointers or references. This is checked at runtime in order to preserve type safety.
+        /// (将一种基元类型 <typeparamref name="TFrom"/>的SizableSpan 转换为另一种基元类型 <typeparamref name="TTo"/>. 该类型不能包含指针或引用。它会在运行时检查这一点，以保护类型安全).
         /// </summary>
+        /// <typeparam name="TFrom">The element type of the source span (源跨度的元素类型).</typeparam>
+        /// <typeparam name="TTo">The element type of the target span (目标跨度的元素类型).</typeparam>
+        /// <param name="span">The source slice, of type <typeparamref name="TFrom"/> (<typeparamref name="TFrom"/> 类型的源切片).</param>
+        /// <returns>The converted span (转换后的跨度).</returns>
         /// <remarks>
-        /// Supported only for platforms that support misaligned memory access or when the memory block is aligned by other means.
+        /// Supported only for platforms that support misaligned memory access or when the memory block is aligned by other means (仅当支持未对齐内存访问的平台或内存块通过其他方式对齐时, 才支持此方法).
         /// </remarks>
-        /// <param name="span">The source slice, of type <typeparamref name="TFrom"/>.</param>
         /// <exception cref="ArgumentException">
         /// Thrown when <typeparamref name="TFrom"/> or <typeparamref name="TTo"/> contains pointers.
         /// </exception>
@@ -144,11 +166,15 @@ namespace Zyl.SizableSpans {
         /// <summary>
         /// Casts a ReadOnlySizableSpan of one primitive type <typeparamref name="TFrom"/> to another primitive type <typeparamref name="TTo"/>.
         /// These types may not contain pointers or references. This is checked at runtime in order to preserve type safety.
+        /// (将一种基元类型<typeparamref name="TFrom"/>的 ReadOnlySizableSpan 转换为另一种基元类型 <typeparamref name="TTo"/>. 该类型不能包含指针或引用。它会在运行时检查这一点，以保护类型安全).
         /// </summary>
+        /// <typeparam name="TFrom">The element type of the source span (源跨度的元素类型).</typeparam>
+        /// <typeparam name="TTo">The element type of the target span (目标跨度的元素类型).</typeparam>
+        /// <param name="span">The source slice, of type <typeparamref name="TFrom"/> (<typeparamref name="TFrom"/> 类型的源切片).</param>
+        /// <returns>The converted read-only span (转换后的只读跨度).</returns>
         /// <remarks>
-        /// Supported only for platforms that support misaligned memory access or when the memory block is aligned by other means.
+        /// Supported only for platforms that support misaligned memory access or when the memory block is aligned by other means (仅当支持未对齐内存访问的平台或内存块通过其他方式对齐时, 才支持此方法).
         /// </remarks>
-        /// <param name="span">The source slice, of type <typeparamref name="TFrom"/>.</param>
         /// <exception cref="ArgumentException">
         /// Thrown when <typeparamref name="TFrom"/> or <typeparamref name="TTo"/> contains pointers.
         /// </exception>
@@ -197,15 +223,18 @@ namespace Zyl.SizableSpans {
         /// <summary>
         /// Creates a new span over a portion of a regular managed object. This can be useful
         /// if part of a managed object represents a "fixed array." This is dangerous because the
-        /// <paramref name="length"/> is not checked.
+        /// <paramref name="length"/> is not checked
+        /// (根据常规托管对象的一部分来创建新的跨度. 如果托管对象的一部分表示了 “固定数组”, 这可能会很有用. 这很危险, 因为不会检查 <paramref name="length"/>).
         /// </summary>
-        /// <param name="reference">A reference to data.</param>
-        /// <param name="length">The number of <typeparamref name="T"/> elements the memory contains.</param>
-        /// <returns>A span representing the specified reference and length.</returns>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="reference">A reference to data (数据的引用).</param>
+        /// <param name="length">The number of <typeparamref name="T"/> elements the memory contains (存储里包含的 <typeparamref name="T"/> 元素的数量).</param>
+        /// <returns>A span representing the specified reference and length (表示了指定引用和长度的跨度).</returns>
         /// <remarks>
         /// This method should be used with caution. It is dangerous because the length argument is not checked.
         /// Even though the ref is annotated as scoped, it will be stored into the returned span, and the lifetime
-        /// of the returned span will not be validated for safety, even by span-aware languages.
+        /// of the returned span will not be validated for safety, even by span-aware languages
+        /// (该方法应谨慎使用. 这种方法很危险, 因为它不会检查长度参数. 即使 ref 被申明为 scoped, 它也会存储在返回的跨度中, 而且返回的跨度的生命周期将不会进行安全验证, 即使是具有跨度意识的语言也是如此).
         /// </remarks>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #if STRUCT_REF_FIELD
@@ -217,15 +246,18 @@ namespace Zyl.SizableSpans {
         /// <summary>
         /// Creates a new read-only span over a portion of a regular managed object. This can be useful
         /// if part of a managed object represents a "fixed array." This is dangerous because the
-        /// <paramref name="length"/> is not checked.
+        /// <paramref name="length"/> is not checked
+        /// (根据常规托管对象的一部分来创建新的只读跨度. 如果托管对象的一部分表示了 “固定数组”, 这可能会很有用. 这很危险, 因为不会检查 <paramref name="length"/>).
         /// </summary>
-        /// <param name="reference">A reference to data.</param>
-        /// <param name="length">The number of <typeparamref name="T"/> elements the memory contains.</param>
-        /// <returns>A read-only span representing the specified reference and length.</returns>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="reference">A reference to data (数据的引用).</param>
+        /// <param name="length">The number of <typeparamref name="T"/> elements the memory contains (存储里包含的 <typeparamref name="T"/> 元素的数量).</param>
+        /// <returns>A read-only span representing the specified reference and length (表示了指定引用和长度的只读跨度).</returns>
         /// <remarks>
         /// This method should be used with caution. It is dangerous because the length argument is not checked.
         /// Even though the ref is annotated as scoped, it will be stored into the returned span, and the lifetime
-        /// of the returned span will not be validated for safety, even by span-aware languages.
+        /// of the returned span will not be validated for safety, even by span-aware languages
+        /// (该方法应谨慎使用. 这种方法很危险, 因为它不会检查长度参数. 即使 ref 被申明为 scoped, 它也会存储在返回的跨度中, 而且返回的跨度的生命周期将不会进行安全验证, 即使是具有跨度意识的语言也是如此).
         /// </remarks>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #if STRUCT_REF_FIELD
@@ -238,10 +270,10 @@ namespace Zyl.SizableSpans {
 
 #if NET6_0_OR_GREATER
 
-        /// <summary>Creates a new read-only span for a null-terminated string.</summary>
-        /// <param name="value">The pointer to the null-terminated string of characters.</param>
-        /// <returns>A read-only span representing the specified null-terminated string, or an empty span if the pointer is null.</returns>
-        /// <remarks>The returned span does not include the null terminator.</remarks>
+        /// <summary>Creates a new read-only span for a null-terminated string (为 空终止字符串 创建新的只读跨度).</summary>
+        /// <param name="value">The pointer to the null-terminated string of characters (指向空终止字符串的字符指针).</param>
+        /// <returns>A read-only span representing the specified null-terminated string, or an empty span if the pointer is null (表示指定空终结字符串的只读跨度, 如果指针为null, 则为空跨度).</returns>
+        /// <remarks>The returned span does not include the null terminator (返回的跨度不包括空终止符).</remarks>
         /// <exception cref="ArgumentException">The string is longer than <see cref="int.MaxValue"/>.</exception>
         [CLSCompliant(false)]
         public static unsafe ReadOnlySizableSpan<char> CreateReadOnlySizableSpanFromNullTerminated(char* value) {
@@ -250,10 +282,10 @@ namespace Zyl.SizableSpans {
             return MemoryMarshal.CreateReadOnlySpanFromNullTerminated(value).AsReadOnlySizableSpan();
         }
 
-        /// <summary>Creates a new read-only span for a null-terminated UTF-8 string.</summary>
-        /// <param name="value">The pointer to the null-terminated string of bytes.</param>
-        /// <returns>A read-only span representing the specified null-terminated string, or an empty span if the pointer is null.</returns>
-        /// <remarks>The returned span does not include the null terminator, nor does it validate the well-formedness of the UTF-8 data.</remarks>
+        /// <summary>Creates a new read-only span for a null-terminated UTF-8 string (为 空终止UTF-8字符串 创建新的只读跨度).</summary>
+        /// <param name="value">The pointer to the null-terminated string of bytes (指向空终止字符串的字节指针).</param>
+        /// <returns>A read-only span representing the specified null-terminated string, or an empty span if the pointer is null (表示指定空终结字符串的只读跨度, 如果指针为null, 则为空跨度).</returns>
+        /// <remarks>The returned span does not include the null terminator, nor does it validate the well-formedness of the UTF-8 data (返回的跨度不包括空终止符, 也不验证UTF-8数据的格式正确性).</remarks>
         /// <exception cref="ArgumentException">The string is longer than <see cref="int.MaxValue"/>.</exception>
         [CLSCompliant(false)]
         public static unsafe ReadOnlySizableSpan<byte> CreateReadOnlySizableSpanFromNullTerminated(byte* value) {
@@ -272,8 +304,13 @@ namespace Zyl.SizableSpans {
         // public static bool TryGetString(ReadOnlyMemory<char> memory, [NotNullWhen(true)] out string? text, out int start, out int length);
 
         /// <summary>
-        /// Reads a structure of type T out of a read-only span of bytes.
+        /// Reads a structure of type <typeparamref name="T"/> out of a read-only span of bytes (从字节的只读跨度中读取的 <typeparamref name="T"/> 类型结构体).
         /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="source">The source span (源跨度).</param>
+        /// <returns>The structure retrieved from the read-only span (从只读跨度中读取的结构体).</returns>
+        /// <exception cref="ArgumentException">T contains managed object references.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">source is smaller than T's length in bytes.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T Read<T>(ReadOnlySizableSpan<byte> source)
             where T : struct {
@@ -288,9 +325,13 @@ namespace Zyl.SizableSpans {
         }
 
         /// <summary>
-        /// Reads a structure of type T out of a span of bytes.
+        /// Tries to read a structure of type <typeparamref name="T"/> from a read-only span of bytes (尝试从字节的只读跨度中读取 <typeparamref name="T"/> 类型结构体).
         /// </summary>
-        /// <returns>If the span is too small to contain the type T, return false.</returns>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="source">The source span (源跨度).</param>
+        /// <param name="value">When the method returns, an instance of <typeparamref name="T"/> (此方法返回时，为 <typeparamref name="T"/> 的实例).</param>
+        /// <returns>true if the method succeeds in retrieving an instance of the structure; otherwise, false (如果此方法成功检索到结构体的实例, 则为 true; 否则为 false).</returns>
+        /// <exception cref="ArgumentException">T contains managed object references.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryRead<T>(ReadOnlySizableSpan<byte> source, out T value)
             where T : struct {
@@ -307,8 +348,13 @@ namespace Zyl.SizableSpans {
         }
 
         /// <summary>
-        /// Writes a structure of type T into a span of bytes.
+        /// Writes a structure of type <typeparamref name="T"/> into a span of bytes (将 <typeparamref name="T"/> 类型的结构体写入字节跨度内).
         /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="destination">The destination span (目标跨度).</param>
+        /// <param name="value">The structure to be written to the span (要写入到范围的结构体).</param>
+        /// <exception cref="ArgumentException">T contains managed object references.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">destination is too small to contain value.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Write<T>(SizableSpan<byte> destination, in T value)
             where T : struct {
@@ -323,9 +369,13 @@ namespace Zyl.SizableSpans {
         }
 
         /// <summary>
-        /// Writes a structure of type T into a span of bytes.
+        /// Tries to write a structure of type <typeparamref name="T"/> into a span of bytes (尝试将类型为 <typeparamref name="T"/> 的结构体写入到字节的跨度中).
         /// </summary>
-        /// <returns>If the span is too small to contain the type T, return false.</returns>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="destination">The destination span (目标跨度).</param>
+        /// <param name="value">The structure to be written to the span (要写入到范围的结构体).</param>
+        /// <returns>true if the write operation succeeded; otherwise, false. The method returns false if the span is too small to contain <typeparamref name="T"/> (如果写入操作成功，则为 true；否则为 false。 如果跨度太小无法包含 <typeparamref name="T"/>，则此方法返回 false).</returns>
+        /// <exception cref="ArgumentException">T contains managed object references.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryWrite<T>(SizableSpan<byte> destination, in T value)
             where T : struct {
@@ -341,12 +391,17 @@ namespace Zyl.SizableSpans {
         }
 
         /// <summary>
-        /// Re-interprets a span of bytes as a reference to structure of type T.
+        /// Re-interprets a span of bytes as a reference to structure of type <typeparamref name="T"/>.
         /// The type may not contain pointers or references. This is checked at runtime in order to preserve type safety.
+        /// (将字节跨度重新解释为对 <typeparamref name="T"/> 类型结构体的引用. 该类型不能包含指针或引用. 它会在运行时检查这一点, 以保护类型安全).
         /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="span">The source span (源跨度).</param>
+        /// <returns>The reference to the structure of type <typeparamref name="T"/> (对 <typeparamref name="T"/> 类型结构的引用).</returns>
         /// <remarks>
-        /// Supported only for platforms that support misaligned memory access or when the memory block is aligned by other means.
+        /// Supported only for platforms that support misaligned memory access or when the memory block is aligned by other means (仅当支持未对齐内存访问的平台或内存块通过其他方式对齐时, 才支持此方法).
         /// </remarks>
+        /// <exception cref="ArgumentException">T contains managed object references.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ref T AsRef<T>(SizableSpan<byte> span)
             where T : struct {
@@ -361,12 +416,17 @@ namespace Zyl.SizableSpans {
         }
 
         /// <summary>
-        /// Re-interprets a span of bytes as a reference to structure of type T.
+        /// Re-interprets a read-only span of bytes as a reference to structure of type <typeparamref name="T"/>.
         /// The type may not contain pointers or references. This is checked at runtime in order to preserve type safety.
+        /// (将字节只读跨度重新解释为对 <typeparamref name="T"/> 类型结构体的引用. 该类型不能包含指针或引用. 它会在运行时检查这一点, 以保护类型安全).
         /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="span">The source span (源跨度).</param>
+        /// <returns>The reference to the structure of type <typeparamref name="T"/> (对 <typeparamref name="T"/> 类型结构的引用).</returns>
         /// <remarks>
-        /// Supported only for platforms that support misaligned memory access or when the memory block is aligned by other means.
+        /// Supported only for platforms that support misaligned memory access or when the memory block is aligned by other means (仅当支持未对齐内存访问的平台或内存块通过其他方式对齐时, 才支持此方法).
         /// </remarks>
+        /// <exception cref="ArgumentException">T contains managed object references.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ref readonly T AsRef<T>(ReadOnlySizableSpan<byte> span)
             where T : struct {
