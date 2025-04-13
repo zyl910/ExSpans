@@ -17,5 +17,12 @@ namespace Zyl.SizableSpans {
         /// <returns>a <see cref="ReadOnlySizableSpan{T}"/></returns>
         public ReadOnlySizableSpan<TTo> CreateReadOnlySizableSpan<TTo>();
 
+        /// <summary>
+        /// Create a <see cref="ReadOnlySizableSpan{T}"/> using the specified type with saturating (饱和的使用指定类型来创建 <see cref="ReadOnlySizableSpan{T}"/>).
+        /// </summary>
+        /// <typeparam name="TTo">The specified type (指定类型).</typeparam>
+        /// <returns>a <see cref="ReadOnlySizableSpan{T}"/></returns>
+        public ReadOnlySizableSpan<TTo> CreateReadOnlySizableSpanSaturating<TTo>();
+
     }
 }

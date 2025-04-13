@@ -73,12 +73,27 @@ namespace Zyl.SizableSpans {
 
         /// <inheritdoc/>
         public ReadOnlySizableSpan<TTo> CreateReadOnlySizableSpan<TTo>() {
+            if (null == _source) return SizableSpan<TTo>.Empty;
+            TSize len = checked((TSize)(_source.ByteLength / (ulong)Unsafe.SizeOf<TTo>()));
+            return new ReadOnlySizableSpan<TTo>(_pointer, len);
+        }
+
+        /// <inheritdoc/>
+        public ReadOnlySizableSpan<TTo> CreateReadOnlySizableSpanSaturating<TTo>() {
+            if (null == _source) return SizableSpan<TTo>.Empty;
             TSize len = (_source.ByteLength / (ulong)Unsafe.SizeOf<TTo>()).SaturatingToTSize();
             return new ReadOnlySizableSpan<TTo>(_pointer, len);
         }
 
         /// <inheritdoc/>
         public SizableSpan<TTo> CreateSizableSpan<TTo>() {
+            if (null == _source) return SizableSpan<TTo>.Empty;
+            TSize len = checked((TSize)(_source.ByteLength / (ulong)Unsafe.SizeOf<TTo>()));
+            return new SizableSpan<TTo>(_pointer, len);
+        }
+
+        /// <inheritdoc/>
+        public SizableSpan<TTo> CreateSizableSpanSaturating<TTo>() {
             if (null == _source) return SizableSpan<TTo>.Empty;
             TSize len = (_source.ByteLength / (ulong)Unsafe.SizeOf<TTo>()).SaturatingToTSize();
             return new SizableSpan<TTo>(_pointer, len);
