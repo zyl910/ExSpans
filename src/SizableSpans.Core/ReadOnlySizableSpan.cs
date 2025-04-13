@@ -30,8 +30,8 @@ namespace Zyl.SizableSpans {
         /// <summary>A byref or a native ptr (引用或原生指针).</summary>
         internal readonly ref T _reference;
 #else
-        /// <summary>A byte offse of _referenceSpan or a native ptr (_referenceSpan 的偏移, 或是原生指针).</summary>
-        internal readonly TSize _byteOffse;
+        /// <summary>A byte offset of _referenceSpan or a native ptr (_referenceSpan 的偏移, 或是原生指针).</summary>
+        internal readonly TSize _byteOffset;
         /// <summary>A span of reference. It is Empty on native ptr (引用的跨度. 原生指针时它为空).</summary>
         internal readonly ReadOnlySpan<T> _referenceSpan;
 #endif
@@ -52,7 +52,7 @@ namespace Zyl.SizableSpans {
 #if STRUCT_REF_FIELD
             _reference = ref SizableMemoryMarshal.GetArrayDataReference(array);
 #else
-            _byteOffse = TSize.Zero;
+            _byteOffset = TSize.Zero;
             _referenceSpan = new ReadOnlySpan<T>(array);
 #endif
         }
@@ -85,7 +85,7 @@ namespace Zyl.SizableSpans {
 #if STRUCT_REF_FIELD
             _reference = ref Unsafe.Add(ref SizableMemoryMarshal.GetArrayDataReference(array), start);
 #else
-            _byteOffse = SizableUnsafe.GetByteSize<T>(start);
+            _byteOffset = SizableUnsafe.GetByteSize<T>(start);
             _referenceSpan = new ReadOnlySpan<T>(array);
 #endif
         }
@@ -119,7 +119,7 @@ namespace Zyl.SizableSpans {
 #if STRUCT_REF_FIELD
             _reference = ref Unsafe.AsRef<T>(pointer); // *(T*)pointer;
 #else
-            _byteOffse = (TSize)pointer;
+            _byteOffset = (TSize)pointer;
             _referenceSpan = ReadOnlySpan<T>.Empty;
 #endif
         }
@@ -133,7 +133,7 @@ namespace Zyl.SizableSpans {
 #if STRUCT_REF_FIELD
             _reference = ref Unsafe.AsRef(in reference);
 #else
-            _byteOffse = TSize.Zero;
+            _byteOffset = TSize.Zero;
             _referenceSpan = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.AsRef(in reference), 1); // Need NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
 #endif
         }
@@ -147,7 +147,7 @@ namespace Zyl.SizableSpans {
 #if STRUCT_REF_FIELD
             _reference = ref Unsafe.AsRef(in reference);
 #else
-            _byteOffse = TSize.Zero;
+            _byteOffset = TSize.Zero;
             _referenceSpan = MemoryMarshalHelper.CreateReadOnlySpanSaturating(ref Unsafe.AsRef(in reference), length); // Need NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
 #endif
         }
@@ -158,7 +158,7 @@ namespace Zyl.SizableSpans {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal ReadOnlySizableSpan(ReadOnlySpan<T> referenceSpan, TSize byteOffse, TSize length) {
             _length = length;
-            _byteOffse = byteOffse;
+            _byteOffset = byteOffse;
             _referenceSpan = referenceSpan;
         }
 #endif
@@ -182,9 +182,9 @@ namespace Zyl.SizableSpans {
 #else
                 unsafe {
                     if (_referenceSpan.IsEmpty) {
-                        return ref SizableUnsafe.Add(ref Unsafe.AsRef<T>((void*)_byteOffse), index);
+                        return ref SizableUnsafe.Add(ref Unsafe.AsRef<T>((void*)_byteOffset), index);
                     } else {
-                        return ref SizableUnsafe.Add(ref Unsafe.AddByteOffset(ref Unsafe.AsRef(_referenceSpan.GetPinnableReference()), IntPtrExtensions.ToIntPtr(_byteOffse)), index);
+                        return ref SizableUnsafe.Add(ref Unsafe.AddByteOffset(ref Unsafe.AsRef(_referenceSpan.GetPinnableReference()), IntPtrExtensions.ToIntPtr(_byteOffset)), index);
                     }
                 }
 #endif
@@ -317,9 +317,9 @@ namespace Zyl.SizableSpans {
             if (_length != TSize.Zero) {
                 unsafe {
                     if (_referenceSpan.IsEmpty) {
-                        return ref Unsafe.AsRef<T>((void*)_byteOffse);
+                        return ref Unsafe.AsRef<T>((void*)_byteOffset);
                     } else {
-                        return ref Unsafe.AddByteOffset(ref Unsafe.AsRef(_referenceSpan.GetPinnableReference()), IntPtrExtensions.ToIntPtr(_byteOffse));
+                        return ref Unsafe.AddByteOffset(ref Unsafe.AsRef(_referenceSpan.GetPinnableReference()), IntPtrExtensions.ToIntPtr(_byteOffset));
                     }
                 }
             }
@@ -383,7 +383,7 @@ namespace Zyl.SizableSpans {
 #if STRUCT_REF_FIELD
                 Unsafe.AreSame(ref left._reference, ref right._reference)
 #else
-                left._byteOffse == right._byteOffse &&
+                left._byteOffset == right._byteOffset &&
                 left._referenceSpan == right._referenceSpan
 #endif
             ;
@@ -419,9 +419,9 @@ namespace Zyl.SizableSpans {
 #else
             unsafe {
                 if (_referenceSpan.IsEmpty) {
-                    return new ReadOnlySizableSpan<T>((void*)SizableUnsafe.AddPointer<T>(_byteOffse, start), len);
+                    return new ReadOnlySizableSpan<T>((void*)SizableUnsafe.AddPointer<T>(_byteOffset, start), len);
                 } else {
-                    return new ReadOnlySizableSpan<T>(_referenceSpan, SizableUnsafe.AddPointer<T>(_byteOffse, start), len);
+                    return new ReadOnlySizableSpan<T>(_referenceSpan, SizableUnsafe.AddPointer<T>(_byteOffset, start), len);
                 }
             }
 #endif
@@ -449,9 +449,9 @@ namespace Zyl.SizableSpans {
 #else
             unsafe {
                 if (_referenceSpan.IsEmpty) {
-                    return new ReadOnlySizableSpan<T>((void*)SizableUnsafe.AddPointer<T>(_byteOffse, start), length);
+                    return new ReadOnlySizableSpan<T>((void*)SizableUnsafe.AddPointer<T>(_byteOffset, start), length);
                 } else {
-                    return new ReadOnlySizableSpan<T>(_referenceSpan, SizableUnsafe.AddPointer<T>(_byteOffse, start), length);
+                    return new ReadOnlySizableSpan<T>(_referenceSpan, SizableUnsafe.AddPointer<T>(_byteOffset, start), length);
                 }
             }
 #endif

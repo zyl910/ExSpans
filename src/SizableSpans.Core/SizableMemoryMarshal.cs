@@ -38,7 +38,7 @@ namespace Zyl.SizableSpans {
 #if STRUCT_REF_FIELD
             return new SizableSpan<byte>(ref Unsafe.As<T, byte>(ref GetReference(span)), len);
 #else
-            return new SizableSpan<byte>(MemoryMarshal.AsBytes(span._referenceSpan), span._byteOffse, len);
+            return new SizableSpan<byte>(MemoryMarshal.AsBytes(span._referenceSpan), span._byteOffset, len);
 #endif // STRUCT_REF_FIELD
         }
 
@@ -66,7 +66,7 @@ namespace Zyl.SizableSpans {
 #if STRUCT_REF_FIELD
             return new ReadOnlySizableSpan<byte>(ref Unsafe.As<T, byte>(ref GetReference(span)), len);
 #else
-            return new ReadOnlySizableSpan<byte>(MemoryMarshal.AsBytes(span._referenceSpan), span._byteOffse, len);
+            return new ReadOnlySizableSpan<byte>(MemoryMarshal.AsBytes(span._referenceSpan), span._byteOffset, len);
 #endif // STRUCT_REF_FIELD
         }
 
@@ -159,7 +159,7 @@ namespace Zyl.SizableSpans {
 #if STRUCT_REF_FIELD
             return new SizableSpan<TTo>(ref Unsafe.As<TFrom, TTo>(ref GetReference(span)), toLength);
 #else
-            return new SizableSpan<TTo>(MemoryMarshal.Cast<TFrom, TTo>(span._referenceSpan), span._byteOffse, toLength);
+            return new SizableSpan<TTo>(MemoryMarshal.Cast<TFrom, TTo>(span._referenceSpan), span._byteOffset, toLength);
 #endif // STRUCT_REF_FIELD
         }
 
@@ -214,7 +214,7 @@ namespace Zyl.SizableSpans {
 #if STRUCT_REF_FIELD
             return new ReadOnlySizableSpan<TTo>(ref Unsafe.As<TFrom, TTo>(ref GetReference(span)), toLength);
 #else
-            return new ReadOnlySizableSpan<TTo>(MemoryMarshal.Cast<TFrom, TTo>(span._referenceSpan), span._byteOffse, toLength);
+            return new ReadOnlySizableSpan<TTo>(MemoryMarshal.Cast<TFrom, TTo>(span._referenceSpan), span._byteOffset, toLength);
 #endif // STRUCT_REF_FIELD
         }
 

@@ -40,12 +40,12 @@ namespace Zyl.SizableSpans {
 #else
             if (span._referenceSpan.IsEmpty) {
                 unsafe {
-                    return new Span<T>((void*)span._byteOffse, len);
+                    return new Span<T>((void*)span._byteOffset, len);
                 }
-            } else if (TSize.Zero == span._byteOffse) {
+            } else if (TSize.Zero == span._byteOffset) {
                 return span._referenceSpan;
             } else {
-                int start = (int)((ulong)span._byteOffse / (uint)Unsafe.SizeOf<T>());
+                int start = (int)((ulong)span._byteOffset / (uint)Unsafe.SizeOf<T>());
                 return span._referenceSpan.Slice(start);
             }
 #endif
