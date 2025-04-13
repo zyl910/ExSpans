@@ -48,7 +48,7 @@ namespace Zyl.SizableSpans {
                 return; // returns default
             }
 
-            _length = array.NULength();
+            _length = array.SizabledLength();
 #if STRUCT_REF_FIELD
             _reference = ref SizableMemoryMarshal.GetArrayDataReference(array);
 #else
@@ -76,7 +76,7 @@ namespace Zyl.SizableSpans {
                 this = default;
                 return; // returns default
             }
-            if (IntPtrExtensions.GreaterThan(start, array.NULength()) || IntPtrExtensions.GreaterThan(IntPtrExtensions.Add(start, length), array.NULength())) {
+            if (IntPtrExtensions.GreaterThan(start, array.SizabledLength()) || IntPtrExtensions.GreaterThan(IntPtrExtensions.Add(start, length), array.SizabledLength())) {
                 ThrowHelper.ThrowArgumentOutOfRangeException();
             }
 

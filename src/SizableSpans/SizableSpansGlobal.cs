@@ -24,4 +24,4 @@ using Zyl.SizableSpans.Extensions;
 
 // -- Zyl.SizableSpans.Extensions
 [assembly: TypeForwardedToAttribute(typeof(IntPtrExtensions))]
-[assembly: TypeForwardedToAttribute(typeof(NULengthExtensions))]
+[assembly: TypeForwardedToAttribute(typeof(SizabledLengthExtensions))]

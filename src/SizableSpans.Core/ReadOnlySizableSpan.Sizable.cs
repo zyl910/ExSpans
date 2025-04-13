@@ -20,9 +20,9 @@ namespace Zyl.SizableSpans {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator ReadOnlySizableSpan<T>(ReadOnlySpan<T> span) {
 #if STRUCT_REF_FIELD
-            return new ReadOnlySizableSpan<T>(ref Unsafe.AsRef(in span.GetPinnableReference()), span.NULength());
+            return new ReadOnlySizableSpan<T>(ref Unsafe.AsRef(in span.GetPinnableReference()), span.SizabledLength());
 #else
-            return new ReadOnlySizableSpan<T>(span, (TSize)0, span.NULength());
+            return new ReadOnlySizableSpan<T>(span, (TSize)0, span.SizabledLength());
 #endif
         }
 

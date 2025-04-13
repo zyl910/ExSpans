@@ -57,10 +57,10 @@ namespace Zyl.SizableSpans {
                     ThrowHelper.ThrowArgumentOutOfRangeException();
                 return default;
             }
-            if (IntPtrExtensions.GreaterThanOrEqual(start, array.NULength())) {
+            if (IntPtrExtensions.GreaterThanOrEqual(start, array.SizabledLength())) {
                 ThrowHelper.ThrowArgumentOutOfRangeException();
             }
-            return new SizableSpan<T>(array, start, IntPtrExtensions.Subtract(array.NULength(), start));
+            return new SizableSpan<T>(array, start, IntPtrExtensions.Subtract(array.SizabledLength(), start));
         }
 
 #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP3_0_OR_GREATER
@@ -84,7 +84,7 @@ namespace Zyl.SizableSpans {
             if (actualIndex < 0) {
                 ThrowHelper.ThrowArgumentOutOfRangeException();
             }
-            return new SizableSpan<T>(array, (TSize)actualIndex, IntPtrExtensions.Subtract(array.NULength(), (TSize)actualIndex));
+            return new SizableSpan<T>(array, (TSize)actualIndex, IntPtrExtensions.Subtract(array.SizabledLength(), (TSize)actualIndex));
         }
 
         /// <summary>
