@@ -76,7 +76,8 @@ namespace Zyl.SizableSpans {
                 this = default;
                 return; // returns default
             }
-            if (IntPtrExtensions.GreaterThan(start, array.SizabledLength()) || IntPtrExtensions.GreaterThan(IntPtrExtensions.Add(start, length), array.SizabledLength())) {
+            TUSize srcLength = array.SizabledLength().ToUIntPtr();
+            if (start.ToUIntPtr().GreaterThan(srcLength) || length.ToUIntPtr().GreaterThan(srcLength.Subtract(start.ToUIntPtr()))) {
                 ThrowHelper.ThrowArgumentOutOfRangeException();
             }
 
@@ -107,9 +108,9 @@ namespace Zyl.SizableSpans {
             if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
                 ThrowHelper.ThrowInvalidTypeWithPointersNotSupported(typeof(T));
 #endif
-            //if (length < 0)
-            //    ThrowHelper.ThrowArgumentOutOfRangeException();
-            if (length.Equals((TSize)0)) {
+            if (length.LessThan((TSize)0))
+                ThrowHelper.ThrowArgumentOutOfRangeException();
+            if (length == (TSize)0) {
                 this = default;
                 return; // returns default
             }
@@ -140,7 +141,7 @@ namespace Zyl.SizableSpans {
         // Constructor for internal use only. It is not safe to expose publicly, and is instead exposed via the unsafe MemoryMarshal.CreateReadOnlySizableSpan.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal ReadOnlySizableSpan(ref T reference, TSize length) {
-            //Debug.Assert(length >= 0);
+            Debug.Assert(length.GreaterThanOrEqual((TSize)0));
 
             _length = length;
 #if STRUCT_REF_FIELD
@@ -174,7 +175,7 @@ namespace Zyl.SizableSpans {
         public ref readonly T this[TSize index] {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get {
-                if (IntPtrExtensions.GreaterThanOrEqual(index, _length))
+                if (index.ToUIntPtr().GreaterThanOrEqual(_length.ToUIntPtr()))
                     ThrowHelper.ThrowIndexOutOfRangeException();
 #if STRUCT_REF_FIELD
                 return ref Unsafe.Add(ref _reference, index);
@@ -438,9 +439,9 @@ namespace Zyl.SizableSpans {
         [MyCLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ReadOnlySizableSpan<T> Slice(TSize start, TSize length) {
-            if (IntPtrExtensions.GreaterThan(IntPtrExtensions.Add(start, length), _length))
+            if (start.ToUIntPtr().GreaterThan(_length.ToUIntPtr()))
                 ThrowHelper.ThrowArgumentOutOfRangeException();
-            if (IntPtrExtensions.GreaterThan(start, _length))
+            if (length.ToUIntPtr().GreaterThan(_length.Subtract(start).ToUIntPtr()))
                 ThrowHelper.ThrowArgumentOutOfRangeException();
 
 #if STRUCT_REF_FIELD
