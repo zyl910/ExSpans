@@ -1,10 +1,17 @@
-﻿using System;
+﻿#if DEBUG
+#else
+#define RELEASE
+#endif // DEBUG
+
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using Zyl.SizableSpans.Tests.Fake.Attributes;
 
 namespace Zyl.SizableSpans.Tests.ASizableSpan {
     public static class ACopyTo {
@@ -177,12 +184,13 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
             src.CopyTo<object>(dst);
             Assert.Equal("Hello", dst[0]);
         }
-
+        */
         // This test case tests the SizableSpan.CopyTo method for large buffers of size 4GB or more. In the fast path,
         // the CopyTo method performs copy in chunks of size 4GB (uint.MaxValue) with final iteration copying
         // the residual chunk of size (bufferSize % 4GB). The inputs sizes to this method, 4GB and 4GB+256B,
         // test the two size selection paths in CoptyTo method - memory size that is multiple of 4GB or,
         // a multiple of 4GB + some more size.
+        [Conditional("RELEASE")]
         [ActiveIssue("https://github.com/dotnet/runtime/issues/24139")]
         [Theory]
         [OuterLoop]
@@ -190,6 +198,15 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
         [InlineData(4L * 1024L * 1024L * 1024L)]
         [InlineData((4L * 1024L * 1024L * 1024L) + 256)]
         public static void CopyToLargeSizeTest(long bufferSize) {
+#if NET5_0_OR_GREATER
+            if (OperatingSystem.IsWindows() || OperatingSystem.IsMacOS()
+#if NET6_0_OR_GREATER
+                    || OperatingSystem.IsMacCatalyst()
+#endif // NET6_0_OR_GREATER
+                    ) {
+                return;
+            }
+#endif // NET5_0_OR_GREATER
             // If this test is run in a 32-bit process, the large allocation will fail.
             if (Unsafe.SizeOf<IntPtr>() != sizeof(long)) {
                 return;
@@ -208,10 +225,10 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
 
                     if (allocatedFirst && allocatedSecond) {
                         ref Guid memoryFirst = ref Unsafe.AsRef<Guid>(memBlockFirst.ToPointer());
-                        var spanFirst = new SizableSpan<Guid>(memBlockFirst.ToPointer(), GuidCount);
+                        var spanFirst = new SizableSpan<Guid>(memBlockFirst.ToPointer(), (nint)GuidCount);
 
                         ref Guid memorySecond = ref Unsafe.AsRef<Guid>(memBlockSecond.ToPointer());
-                        var spanSecond = new SizableSpan<Guid>(memBlockSecond.ToPointer(), GuidCount);
+                        var spanSecond = new SizableSpan<Guid>(memBlockSecond.ToPointer(), (nint)GuidCount);
 
                         Guid theGuid = Guid.Parse("900DBAD9-00DB-AD90-00DB-AD900DBADBAD");
                         for (int count = 0; count < GuidCount; ++count) {
@@ -234,7 +251,7 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
                 }
             }
         }
-        
+        /*
         [Fact]
         public static void CopyToVaryingSizes() {
             const int MaxLength = 2048;
