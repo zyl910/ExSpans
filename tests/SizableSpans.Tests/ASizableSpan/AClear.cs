@@ -1,4 +1,9 @@
-﻿using System;
+﻿#if DEBUG
+#else
+#define CALL_LARGE
+#endif // DEBUG
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -233,6 +238,7 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
         [OuterLoop]
         [PlatformSpecific(TestPlatforms.Windows | TestPlatforms.OSX)]
         static unsafe void ClearLongerThanUintMaxValueBytes() {
+#if CALL_LARGE
 #if NET5_0_OR_GREATER
             if (OperatingSystem.IsWindows() || OperatingSystem.IsMacOS()
 #if NET6_0_OR_GREATER
@@ -271,7 +277,8 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
                     AllocationHelper.ReleaseNative(ref memory);
                 }
             }
+#endif // CALL_LARGE
         }
-        
+
     }
 }

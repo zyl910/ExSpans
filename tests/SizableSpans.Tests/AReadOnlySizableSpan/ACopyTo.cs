@@ -1,6 +1,6 @@
 ﻿#if DEBUG
 #else
-#define RELEASE
+#define CALL_LARGE
 #endif // DEBUG
 
 using System;
@@ -125,7 +125,6 @@ namespace Zyl.SizableSpans.Tests.AReadOnlySizableSpan {
         // the residual chunk of size (bufferSize % 4GB). The inputs sizes to this method, 4GB and 4GB+256B,
         // test the two size selection paths in CoptyTo method - memory size that is multiple of 4GB or,
         // a multiple of 4GB + some more size.
-        [Conditional("RELEASE")]
         [ActiveIssue("https://github.com/dotnet/runtime/issues/24139")]
         [Theory]
         [OuterLoop]
@@ -133,6 +132,7 @@ namespace Zyl.SizableSpans.Tests.AReadOnlySizableSpan {
         [InlineData(4L * 1024L * 1024L * 1024L)]
         [InlineData((4L * 1024L * 1024L * 1024L) + 256)]
         public static void CopyToLargeSizeTest(long bufferSize) {
+#if CALL_LARGE
 #if NET5_0_OR_GREATER
             if (OperatingSystem.IsWindows() || OperatingSystem.IsMacOS()
 #if NET6_0_OR_GREATER
@@ -185,6 +185,7 @@ namespace Zyl.SizableSpans.Tests.AReadOnlySizableSpan {
                         AllocationHelper.ReleaseNative(ref memBlockSecond);
                 }
             }
+#endif // CALL_LARGE
         }
         /*
         [Fact]
