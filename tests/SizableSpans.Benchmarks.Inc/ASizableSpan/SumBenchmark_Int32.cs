@@ -32,7 +32,6 @@ namespace Zyl.SizableSpans.Benchmarks.ASizableSpan {
         /// <param name="src">Source array.</param>
         /// <param name="srcCount">Source count</param>
         /// <returns>Returns the sum.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TMy StaticSumForArray(TMy[] src, int srcCount) {
             TMy rt = 0; // Result.
             for (int i = 0; i < srcCount; ++i) {
@@ -57,7 +56,6 @@ namespace Zyl.SizableSpans.Benchmarks.ASizableSpan {
         /// <param name="src">Source array.</param>
         /// <param name="srcCount">Source count</param>
         /// <returns>Returns the sum.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe TMy StaticSumForPtr(TMy[] src, int srcCount) {
             TMy rt = 0; // Result.
             fixed (TMy* p0 = &src[0]) {
@@ -83,7 +81,6 @@ namespace Zyl.SizableSpans.Benchmarks.ASizableSpan {
         /// <param name="src">Source array.</param>
         /// <param name="srcCount">Source count</param>
         /// <returns>Returns the sum.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TMy StaticSumForSpan(TMy[] src, int srcCount) {
             TMy rt = 0; // Result.
             Span<TMy> span = new Span<TMy>(src, 0, srcCount);
@@ -109,7 +106,6 @@ namespace Zyl.SizableSpans.Benchmarks.ASizableSpan {
         /// <param name="src">Source array.</param>
         /// <param name="srcCount">Source count</param>
         /// <returns>Returns the sum.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TMy StaticSumForSizableSpan(TMy[] src, int srcCount) {
             TMy rt = 0; // Result.
             nint srcCountCur = srcCount;
@@ -137,7 +133,6 @@ namespace Zyl.SizableSpans.Benchmarks.ASizableSpan {
         /// <param name="src">Source array.</param>
         /// <param name="srcCount">Source count</param>
         /// <returns>Returns the sum.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe TMy StaticSumForSizableSpanByPtr(TMy[] src, int srcCount) {
             TMy rt = 0; // Result.
             nint srcCountCur = srcCount;
@@ -163,7 +158,6 @@ namespace Zyl.SizableSpans.Benchmarks.ASizableSpan {
         /// <param name="src">Source array.</param>
         /// <param name="srcCount">Source count</param>
         /// <returns>Returns the sum.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe TMy StaticSumForSizableSpanUsePtr(TMy[] src, int srcCount) {
             TMy rt = 0; // Result.
             nint srcCountCur = srcCount;
@@ -190,7 +184,6 @@ namespace Zyl.SizableSpans.Benchmarks.ASizableSpan {
         /// <param name="src">Source array.</param>
         /// <param name="srcCount">Source count</param>
         /// <returns>Returns the sum.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TMy StaticSumForSizableSpanUseRef(TMy[] src, int srcCount) {
             TMy rt = 0; // Result.
             nint srcCountCur = srcCount;
