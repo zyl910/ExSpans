@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using Zyl.SizableSpans.Tests.Fake.Attributes;
 using static Zyl.SizableSpans.Tests.TestHelpers;
 
 namespace Zyl.SizableSpans.Tests.ASizableSpan {
@@ -222,15 +224,24 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
             span.Clear();
             Assert.Equal<TestValueTypeWithReference>(expected, actual);
         }
-        /*
+        
         // NOTE: ClearLongerThanUintMaxValueBytes test is constrained to run on Windows and MacOSX because it causes
         //       problems on Linux due to the way deferred memory allocation works. On Linux, the allocation can
         //       succeed even if there is not enough memory but then the test may get killed by the OOM killer at the
         //       time the memory is accessed which triggers the full memory allocation.
         [Fact]
-        //[OuterLoop]
+        [OuterLoop]
         [PlatformSpecific(TestPlatforms.Windows | TestPlatforms.OSX)]
         static unsafe void ClearLongerThanUintMaxValueBytes() {
+#if NET5_0_OR_GREATER
+            if (OperatingSystem.IsWindows() || OperatingSystem.IsMacOS()
+#if NET6_0_OR_GREATER
+                    || OperatingSystem.IsMacCatalyst()
+#endif // NET6_0_OR_GREATER
+                    ) {
+                return;
+            }
+#endif // NET5_0_OR_GREATER
             if (sizeof(IntPtr) == sizeof(long)) {
                 // Arrange
                 nint bytes = unchecked((nint)(((long)int.MaxValue) * sizeof(int)));
@@ -242,7 +253,7 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
                 }
 
                 try {
-                    Span<int> span = new Span<int>(memory.ToPointer(), length);
+                    SizableSpan<int> span = new SizableSpan<int>(memory.ToPointer(), (nint)length);
                     span.Fill(5);
 
                     // Act
@@ -261,6 +272,6 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
                 }
             }
         }
-        */
+        
     }
 }
