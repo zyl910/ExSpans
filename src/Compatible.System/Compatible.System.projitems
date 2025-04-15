@@ -10,5 +10,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Diagnostics\CodeAnalysis\DoesNotReturnAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Runtime\CompilerServices\OverloadResolutionPriorityAttribute.cs" />
   </ItemGroup>
 </Project>
