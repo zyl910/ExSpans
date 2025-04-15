@@ -121,7 +121,7 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
             int[] expected = { 90, 92, 93, 94, 95, 96, 97, 97 };
             Assert.Equal(expected, a);
         }
-        /*
+        
         [Fact]
         public static void CopyToArray() {
             int[] src = { 1, 2, 3 };
@@ -176,15 +176,17 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
             Assert.Equal(expected, dst);  // CopyTo() checks for sufficient space before doing any copying.
         }
 
+#if !NET7_0_OR_GREATER
         [Fact]
         public static void CopyToCovariantArray() {
             string[] src = new string[] { "Hello" };
             SizableSpan<object> dst = new object[] { "world" };
 
-            src.CopyTo<object>(dst);
-            Assert.Equal("Hello", dst[0]);
+            src.CopyTo<object>(dst); // .NET 7.0+ - System.ArrayTypeMismatchException : Attempted to access an element as a type incompatible with the array.
+            Assert.Equal("Hello", dst[(nint)0]);
         }
-        */
+#endif // !NET7_0_OR_GREATER
+
         // This test case tests the SizableSpan.CopyTo method for large buffers of size 4GB or more. In the fast path,
         // the CopyTo method performs copy in chunks of size 4GB (uint.MaxValue) with final iteration copying
         // the residual chunk of size (bufferSize % 4GB). The inputs sizes to this method, 4GB and 4GB+256B,
@@ -251,6 +253,8 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
                         AllocationHelper.ReleaseNative(ref memBlockSecond);
                 }
             }
+#else
+            _ = bufferSize;
 #endif // CALL_LARGE
         }
         /*

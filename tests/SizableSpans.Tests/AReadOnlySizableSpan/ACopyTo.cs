@@ -185,6 +185,8 @@ namespace Zyl.SizableSpans.Tests.AReadOnlySizableSpan {
                         AllocationHelper.ReleaseNative(ref memBlockSecond);
                 }
             }
+#else
+            _ = bufferSize;
 #endif // CALL_LARGE
         }
         /*

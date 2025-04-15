@@ -277,6 +277,7 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
                     AllocationHelper.ReleaseNative(ref memory);
                 }
             }
+#else
 #endif // CALL_LARGE
         }
 

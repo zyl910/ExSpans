@@ -110,5 +110,22 @@ namespace Zyl.SizableSpans {
 
 #endif // NETSTANDARD2_0_OR_GREATER || NETCOREAPP3_0_OR_GREATER
 
+        /// <summary>
+        /// Copies the contents of the array into the span. If the source
+        /// and destinations overlap, this method behaves as if the original values in
+        /// a temporary location before the destination is overwritten.
+        /// (将数组的内容复制到跨度中. 如果源和目标重叠, 则此方法的行为就像覆盖目标之前临时位置中的原始值一样).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="source">The array to copy items from (要从中复制项的数组).</param>
+        /// <param name="destination">The span to copy items into (要将项复制到的跨度).</param>
+        /// <exception cref="ArgumentException">
+        /// Thrown when the destination Span is shorter than the source array.
+        /// </exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void CopyTo<T>(this T[]? source, SizableSpan<T> destination) {
+            new ReadOnlySizableSpan<T>(source).CopyTo(destination);
+        }
+
     }
 }
