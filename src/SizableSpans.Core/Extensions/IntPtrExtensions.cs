@@ -37,6 +37,29 @@ namespace Zyl.SizableSpans.Extensions {
             return left + right;
         }
 
+        /// <summary>
+        /// Div (除法). <c>left / right</c>.
+        /// </summary>
+        /// <param name="left">Left value (左值).</param>
+        /// <param name="right">Right value (右值).</param>
+        /// <returns>The product of left and right (左值与右值的积).</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static nint Div(this nint left, nint right) {
+            return (nint)(left / right);
+        }
+
+        /// <summary>
+        /// Div (除法). <c>left / right</c>.
+        /// </summary>
+        /// <param name="left">Left value (左值).</param>
+        /// <param name="right">Right value (右值).</param>
+        /// <returns>The product of left and right (左值与右值的积).</returns>
+        [CLSCompliant(false)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static nuint Div(this nuint left, nuint right) {
+            return (nuint)(left / right);
+        }
+
 //        /// <summary>
 //        /// Indicates whether the current object is equal to another object of the same type (指示当前对象是否等于同一类型的另一个对象).
 //        /// </summary>
