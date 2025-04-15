@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -192,7 +193,6 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
         // the residual chunk of size (bufferSize % 4GB). The inputs sizes to this method, 4GB and 4GB+256B,
         // test the two size selection paths in CoptyTo method - memory size that is multiple of 4GB or,
         // a multiple of 4GB + some more size.
-        [Conditional("RELEASE")]
         [ActiveIssue("https://github.com/dotnet/runtime/issues/24139")]
         [Theory]
         [OuterLoop]
@@ -201,15 +201,9 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
         [InlineData((4L * 1024L * 1024L * 1024L) + 256)]
         public static void CopyToLargeSizeTest(long bufferSize) {
 #if CALL_LARGE
-#if NET5_0_OR_GREATER
-            if (OperatingSystem.IsWindows() || OperatingSystem.IsMacOS()
-#if NET6_0_OR_GREATER
-                    || OperatingSystem.IsMacCatalyst()
-#endif // NET6_0_OR_GREATER
-                    ) {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
                 return;
             }
-#endif // NET5_0_OR_GREATER
             // If this test is run in a 32-bit process, the large allocation will fail.
             if (Unsafe.SizeOf<IntPtr>() != sizeof(long)) {
                 return;

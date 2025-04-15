@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -239,15 +240,9 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
         [PlatformSpecific(TestPlatforms.Windows | TestPlatforms.OSX)]
         static unsafe void ClearLongerThanUintMaxValueBytes() {
 #if CALL_LARGE
-#if NET5_0_OR_GREATER
-            if (OperatingSystem.IsWindows() || OperatingSystem.IsMacOS()
-#if NET6_0_OR_GREATER
-                    || OperatingSystem.IsMacCatalyst()
-#endif // NET6_0_OR_GREATER
-                    ) {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
                 return;
             }
-#endif // NET5_0_OR_GREATER
             if (sizeof(IntPtr) == sizeof(long)) {
                 // Arrange
                 nint bytes = unchecked((nint)(((long)int.MaxValue) * sizeof(int)));
