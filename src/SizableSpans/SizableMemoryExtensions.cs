@@ -1,9 +1,14 @@
-﻿using System;
+﻿//#undef INVOKE_SPAN_METHOD
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using Zyl.SizableSpans.Extensions;
+using Zyl.SizableSpans.Impl;
+using Zyl.SizableSpans.Reflection;
 
 namespace Zyl.SizableSpans {
     /// <summary>
@@ -13,8 +18,6 @@ namespace Zyl.SizableSpans {
     /// <para>Commonly extension methods such as <see cref="SizableSpanExtensions.AsSizableSpan{T}(T[])">AsSizableSpan</see> are located in <see cref="SizableSpanExtensions"/> (AsSizableSpan 等常用扩展方法位于 SizableSpanExtensions).</para>
     /// </remarks>
     public static partial class SizableMemoryExtensions {
-
-#if NET6_0_OR_GREATER
 
         /// <summary>
         /// Determines whether two sequences are equal by comparing the elements using IEquatable{T}.Equals(T).
@@ -33,6 +36,7 @@ namespace Zyl.SizableSpans {
                 return false;
             }
             TSize length = span.Length;
+#if INVOKE_SPAN_METHOD && NET6_0_OR_GREATER
             int blockSize = SizableMemoryMarshal.ArrayMaxLengthSafe / Unsafe.SizeOf<T>();
             if (blockSize < 1) blockSize = 1;
             TSize blockSizeN = (TSize)blockSize;
@@ -59,6 +63,15 @@ namespace Zyl.SizableSpans {
                 index = indexNext;
             }
             return true;
+#else
+            if (TypeHelper.IsBitwiseEquatable<T>()) {
+                return SizableSpanHelpers.SequenceEqual(
+                        ref Unsafe.As<T, byte>(ref SizableMemoryMarshal.GetReference(span)),
+                        ref Unsafe.As<T, byte>(ref SizableMemoryMarshal.GetReference(other)),
+                        (nuint)((ulong)length * (ulong)Unsafe.SizeOf<T>()));  // // If this multiplication overflows, the Span we got overflows the entire address range. There's no happy outcome for this API in such a case so we choose not to take the overhead of checking.
+            }
+            return SizableSpanHelpers.SequenceEqual<T>(ref SizableMemoryMarshal.GetReference(span), ref SizableMemoryMarshal.GetReference(other), length.ToUIntPtr());
+#endif // INVOKE_SPAN_METHOD && NET6_0_OR_GREATER
         }
 
         /// <summary>
@@ -85,6 +98,7 @@ namespace Zyl.SizableSpans {
                 return false;
             }
             TSize length = span.Length;
+#if INVOKE_SPAN_METHOD && NET6_0_OR_GREATER
             int blockSize = SizableMemoryMarshal.ArrayMaxLengthSafe / Unsafe.SizeOf<T>();
             if (blockSize < 1) blockSize = 1;
             TSize blockSizeN = (TSize)blockSize;
@@ -107,9 +121,39 @@ namespace Zyl.SizableSpans {
                 index = indexNext;
             }
             return true;
-        }
+#else
+            if (TypeHelper.IsValueType(typeof(T))) {
+                if (comparer is null || comparer == EqualityComparer<T>.Default) {
+                    // If no comparer was supplied and the type is bitwise equatable, take the fast path doing a bitwise comparison.
+                    if (TypeHelper.IsBitwiseEquatable<T>()) {
+                        return SizableSpanHelpers.SequenceEqual(
+                            ref Unsafe.As<T, byte>(ref SizableMemoryMarshal.GetReference(span)),
+                            ref Unsafe.As<T, byte>(ref SizableMemoryMarshal.GetReference(other)),
+                            ((uint)span.Length) * (nuint)Unsafe.SizeOf<T>());  // If this multiplication overflows, the Span we got overflows the entire address range. There's no happy outcome for this API in such a case so we choose not to take the overhead of checking.
+                    }
 
-#endif // NET6_0_OR_GREATER
+                    // Otherwise, compare each element using EqualityComparer<T>.Default.Equals in a way that will enable it to devirtualize.
+                    for (TSize i = (TSize)0; i.LessThan(length); i+=1) {
+                        if (!EqualityComparer<T>.Default.Equals(span[i], other[i])) {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                }
+            }
+
+            // Use the comparer to compare each element.
+            comparer ??= EqualityComparer<T>.Default;
+            for (TSize i = (TSize)0; i.LessThan(length); i += 1) {
+                if (!comparer.Equals(span[i], other[i])) {
+                    return false;
+                }
+            }
+
+            return true;
+#endif // INVOKE_SPAN_METHOD && NET6_0_OR_GREATER
+        }
 
     }
 }

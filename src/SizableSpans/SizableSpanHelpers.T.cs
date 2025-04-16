@@ -17,6 +17,110 @@ using Zyl.VectorTraits.Numerics;
 namespace Zyl.SizableSpans {
     partial class SizableSpanHelpers {
 
+        public static bool SequenceEqual<T>(ref T first, ref T second, nuint length) where T : IEquatable<T>? {
+            Debug.Assert(length >= 0);
+
+            if (Unsafe.AreSame(ref first, ref second))
+                goto Equal;
+
+            nint index = 0; // Use nint for arithmetic to avoid unnecessary 64->32->64 truncations
+            T lookUp0;
+            T lookUp1;
+            while (length >= 8) {
+                length -= 8;
+
+                lookUp0 = Unsafe.Add(ref first, index);
+                lookUp1 = Unsafe.Add(ref second, index);
+                if (!(lookUp0?.Equals(lookUp1) ?? (object?)lookUp1 is null))
+                    goto NotEqual;
+                lookUp0 = Unsafe.Add(ref first, index + 1);
+                lookUp1 = Unsafe.Add(ref second, index + 1);
+                if (!(lookUp0?.Equals(lookUp1) ?? (object?)lookUp1 is null))
+                    goto NotEqual;
+                lookUp0 = Unsafe.Add(ref first, index + 2);
+                lookUp1 = Unsafe.Add(ref second, index + 2);
+                if (!(lookUp0?.Equals(lookUp1) ?? (object?)lookUp1 is null))
+                    goto NotEqual;
+                lookUp0 = Unsafe.Add(ref first, index + 3);
+                lookUp1 = Unsafe.Add(ref second, index + 3);
+                if (!(lookUp0?.Equals(lookUp1) ?? (object?)lookUp1 is null))
+                    goto NotEqual;
+                lookUp0 = Unsafe.Add(ref first, index + 4);
+                lookUp1 = Unsafe.Add(ref second, index + 4);
+                if (!(lookUp0?.Equals(lookUp1) ?? (object?)lookUp1 is null))
+                    goto NotEqual;
+                lookUp0 = Unsafe.Add(ref first, index + 5);
+                lookUp1 = Unsafe.Add(ref second, index + 5);
+                if (!(lookUp0?.Equals(lookUp1) ?? (object?)lookUp1 is null))
+                    goto NotEqual;
+                lookUp0 = Unsafe.Add(ref first, index + 6);
+                lookUp1 = Unsafe.Add(ref second, index + 6);
+                if (!(lookUp0?.Equals(lookUp1) ?? (object?)lookUp1 is null))
+                    goto NotEqual;
+                lookUp0 = Unsafe.Add(ref first, index + 7);
+                lookUp1 = Unsafe.Add(ref second, index + 7);
+                if (!(lookUp0?.Equals(lookUp1) ?? (object?)lookUp1 is null))
+                    goto NotEqual;
+
+                index += 8;
+            }
+
+            if (length >= 4) {
+                length -= 4;
+
+                lookUp0 = Unsafe.Add(ref first, index);
+                lookUp1 = Unsafe.Add(ref second, index);
+                if (!(lookUp0?.Equals(lookUp1) ?? (object?)lookUp1 is null))
+                    goto NotEqual;
+                lookUp0 = Unsafe.Add(ref first, index + 1);
+                lookUp1 = Unsafe.Add(ref second, index + 1);
+                if (!(lookUp0?.Equals(lookUp1) ?? (object?)lookUp1 is null))
+                    goto NotEqual;
+                lookUp0 = Unsafe.Add(ref first, index + 2);
+                lookUp1 = Unsafe.Add(ref second, index + 2);
+                if (!(lookUp0?.Equals(lookUp1) ?? (object?)lookUp1 is null))
+                    goto NotEqual;
+                lookUp0 = Unsafe.Add(ref first, index + 3);
+                lookUp1 = Unsafe.Add(ref second, index + 3);
+                if (!(lookUp0?.Equals(lookUp1) ?? (object?)lookUp1 is null))
+                    goto NotEqual;
+
+                index += 4;
+            }
+
+            while (length > 0) {
+                lookUp0 = Unsafe.Add(ref first, index);
+                lookUp1 = Unsafe.Add(ref second, index);
+                if (!(lookUp0?.Equals(lookUp1) ?? (object?)lookUp1 is null))
+                    goto NotEqual;
+                index += 1;
+                length--;
+            }
+
+        Equal:
+            return true;
+
+        NotEqual: // Workaround for https://github.com/dotnet/runtime/issues/8795
+            return false;
+        }
+
+        public static int SequenceCompareTo<T>(ref T first, int firstLength, ref T second, int secondLength)
+            where T : IComparable<T>? {
+            Debug.Assert(firstLength >= 0);
+            Debug.Assert(secondLength >= 0);
+
+            int minLength = firstLength;
+            if (minLength > secondLength)
+                minLength = secondLength;
+            for (int i = 0; i < minLength; i++) {
+                T lookUp = Unsafe.Add(ref second, i);
+                int result = (Unsafe.Add(ref first, i)?.CompareTo(lookUp) ?? (((object?)lookUp is null) ? 0 : -1));
+                if (result != 0)
+                    return result;
+            }
+            return firstLength.CompareTo(secondLength);
+        }
+
         // Unrolled for small sizes
         internal static unsafe void Fill<T>(ref T refData, nuint numElements, T value) {
             // Early checks to see if it's even possible to vectorize - JIT will turn these checks into consts.

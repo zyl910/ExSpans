@@ -27,7 +27,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <InvariantGlobalization>true</InvariantGlobalization>
     <RootNamespace>Zyl.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
-    <DefineConstants>$(DefineConstants);SIZE_UINTPTR0</DefineConstants>
+    <DefineConstants>$(DefineConstants);SIZE_UINTPTR0;INVOKE_SPAN_METHOD</DefineConstants>
 
       <!--
       <PlatformTarget>ARM32</PlatformTarget>

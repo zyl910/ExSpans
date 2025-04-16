@@ -184,7 +184,7 @@ namespace Zyl.SizableSpans.Tests.AReadOnlySizableSpan {
             _ = bufferSize;
 #endif // CALL_LARGE
         }
-        /*
+
         [Fact]
         public static void CopyToVaryingSizes() {
             const int MaxLength = 2048;
@@ -209,10 +209,10 @@ namespace Zyl.SizableSpans.Tests.AReadOnlySizableSpan {
 
                 // Assert
 
-                Assert.True(inputSizableSpan.Slice((TSize)0, (TSize)i).SequenceEqual(outputSizableSpan.Slice(0, (TSize)i))); // src successfully copied to dst
+                Assert.True(inputSizableSpan.Slice((TSize)0, (TSize)i).SequenceEqual(outputSizableSpan.Slice((TSize)0, (TSize)i))); // src successfully copied to dst
                 Assert.True(outputSizableSpan.Slice((TSize)i).SequenceEqual(allZerosSizableSpan.Slice((TSize)i))); // no other part of dst was overwritten
             }
         }
-        */
+
     }
 }
