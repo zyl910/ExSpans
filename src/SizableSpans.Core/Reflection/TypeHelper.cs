@@ -86,6 +86,28 @@ namespace Zyl.SizableSpans.Reflection {
         }
 
         /// <summary>
+        /// Is BitwiseEquatable types (是按位相等的类型)
+        /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <returns>true is BitwiseEquatable types; otherwise is false.</returns>
+        /// <remarks>
+        /// <para>Due to the fact that the method was not publicly available at the time of execution, it will now rolled back to call the <see cref="IsPrimitive{T}()"/> method (由于运行时尚未公开该方法, 目前会回退为调用 IsPrimitive 方法)</para>
+        /// <para>BitwiseEquatable types: https://github.com/dotnet/runtime/issues/46017</para>
+        /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsBitwiseEquatable<T>()
+#if ALLOWS_REF_STRUCT
+                where T : allows ref struct
+#endif // ALLOWS_REF_STRUCT
+                {
+#if NETX_0_OR_GREATER
+            return RuntimeHelpers.IsBitwiseEquatable<T>();
+#else
+            return IsPrimitive<T>();
+#endif
+        }
+
+        /// <summary>
         /// Is generic types (是否为泛型类型).
         /// </summary>
         /// <typeparam name="T">The type (类型).</typeparam>
