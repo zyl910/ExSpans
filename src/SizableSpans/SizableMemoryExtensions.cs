@@ -20,16 +20,24 @@ namespace Zyl.SizableSpans {
     public static partial class SizableMemoryExtensions {
 
         /// <summary>
-        /// Determines whether two sequences are equal by comparing the elements using IEquatable{T}.Equals(T).
+        /// Determines whether a span and a read-only span are equal by comparing the elements using <see cref="IEquatable{T}.Equals(T)"/> (通过使用 <see cref="IEquatable{T}.Equals(T)"/> 比较元素, 确定跨度和只读跨度是否相等).
         /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="span">The first sequence to compare (要比较的第一个序列).</param>
+        /// <param name="other">The second sequence to compare (要比较的第二个序列).</param>
+        /// <returns>true if the two sequences are equal; otherwise, false (如果两个序列相等, 则 true; 否则 false).</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [OverloadResolutionPriority(-1)]
         public static bool SequenceEqual<T>(this SizableSpan<T> span, ReadOnlySizableSpan<T> other) where T : IEquatable<T>? =>
             SequenceEqual((ReadOnlySizableSpan<T>)span, other);
 
         /// <summary>
-        /// Determines whether two sequences are equal by comparing the elements using IEquatable{T}.Equals(T).
+        /// Determines whether two read-only sequences are equal by comparing the elements using <see cref="IEquatable{T}.Equals(T)"/> (通过使用 <see cref="IEquatable{T}.Equals(T)"/> 比较元素, 确定两个只读序列是否相等).
         /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="span">The first sequence to compare (要比较的第一个序列).</param>
+        /// <param name="other">The second sequence to compare (要比较的第二个序列).</param>
+        /// <returns>true if the two sequences are equal; otherwise, false (如果两个序列相等, 则 true; 否则 false).</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool SequenceEqual<T>(this ReadOnlySizableSpan<T> span, ReadOnlySizableSpan<T> other) where T : IEquatable<T>? {
             if (span.Length != other.Length) {
@@ -75,23 +83,23 @@ namespace Zyl.SizableSpans {
         }
 
         /// <summary>
-        /// Determines whether two sequences are equal by comparing the elements using an <see cref="IEqualityComparer{T}"/>.
+        /// Determines whether a span and a read-only span are equal by comparing the elements using <see cref="IEquatable{T}.Equals(T)"/> (通过使用 <see cref="IEquatable{T}.Equals(T)"/> 比较元素, 确定跨度和只读跨度是否相等).
         /// </summary>
-        /// <param name="span">The first sequence to compare.</param>
-        /// <param name="other">The second sequence to compare.</param>
-        /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
-        /// <returns>true if the two sequences are equal; otherwise, false.</returns>
+        /// <param name="span">The first sequence to compare (要比较的第一个序列).</param>
+        /// <param name="other">The second sequence to compare (要比较的第二个序列).</param>
+        /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element (比较元素时要使用的 <see cref="IEqualityComparer{T}"/> 实现. 或 null, 将使用元素的类型的默认 <see cref="IEqualityComparer{T}"/>).</param>
+        /// <returns>true if the two sequences are equal; otherwise, false (如果两个序列相等, 则 true; 否则 false).</returns>
         [OverloadResolutionPriority(-1)]
         public static bool SequenceEqual<T>(this SizableSpan<T> span, ReadOnlySizableSpan<T> other, IEqualityComparer<T>? comparer = null) =>
             SequenceEqual((ReadOnlySizableSpan<T>)span, other, comparer);
 
         /// <summary>
-        /// Determines whether two sequences are equal by comparing the elements using an <see cref="IEqualityComparer{T}"/>.
+        /// Determines whether two read-only sequences are equal by comparing the elements using <see cref="IEquatable{T}.Equals(T)"/> (通过使用 <see cref="IEquatable{T}.Equals(T)"/> 比较元素, 确定两个只读序列是否相等).
         /// </summary>
-        /// <param name="span">The first sequence to compare.</param>
-        /// <param name="other">The second sequence to compare.</param>
+        /// <param name="span">The first sequence to compare (要比较的第一个序列).</param>
+        /// <param name="other">The second sequence to compare (要比较的第二个序列).</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
-        /// <returns>true if the two sequences are equal; otherwise, false.</returns>
+        /// <returns>true if the two sequences are equal; otherwise, false (如果两个序列相等, 则 true; 否则 false).</returns>
         public static unsafe bool SequenceEqual<T>(this ReadOnlySizableSpan<T> span, ReadOnlySizableSpan<T> other, IEqualityComparer<T>? comparer = null) {
             // If the spans differ in length, they're not equal.
             if (span.Length != other.Length) {
