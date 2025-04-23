@@ -42,6 +42,25 @@ namespace Zyl.SizableSpans.Tests {
             }
         }
 
+        public static TheoryData<string?[]?, string?[]?, bool> SequenceEqualsNullData => new TheoryData<string?[]?, string?[]?, bool>()
+        {
+            { new string?[] { "1", null, "2" }, new string?[] { "1", null, "2" } , true},
+            { new string?[] { "1", null, "2" }, new string?[] { "1", "3", "2" } , false},
+            { new string?[] { "1", null, "2" }, new string?[] { null, "3", "2" } , false},
+            { new string?[] { "1", null, "2" }, new string?[] { null } , false},
+            { new string?[] { "1", null, "2" }, null , false},
+
+            { new string?[] { null, "2", "1" }, new string?[] { null, "2" } , false},
+
+            { null, new string?[] { null }, false},
+            { null, null , true},
+            { null, new string[] { "1", "3", "2" } , false},
+            { null, new string?[] { "1", null, "2" } , false},
+
+            { new string?[] { "1", null, null }, new string?[] { "1", null, null }, true},
+            { new string?[] { null, null, null }, new string?[] { null, null, null }, true},
+        };
+
         public enum TestEnum {
             E0,
             E1,
