@@ -7,7 +7,9 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
 #endif // NETCOREAPP3_0_OR_GREATER
 using System.Text;
+using System.Text.RegularExpressions;
 using Zyl.ExSpans.Impl;
+using Zyl.VectorTraits;
 using Zyl.VectorTraits.Numerics;
 
 namespace Zyl.ExSpans {
@@ -146,12 +148,36 @@ namespace Zyl.ExSpans {
                     goto NotEqual;
                 }
 #endif // NET7_0_OR_GREATER
+            } else if (length >= (nuint)Vector<byte>.Count) {
+                nuint offset = 0;
+                nuint lengthToExamine = length - (nuint)Vector<byte>.Count;
+                // Unsigned, so it shouldn't have overflowed larger than length (rather than negative)
+                Debug.Assert(lengthToExamine < length);
+                if (lengthToExamine != 0) {
+                    do {
+                        if (VectorHelper.LoadUnsafe(ref first, offset) !=
+                            VectorHelper.LoadUnsafe(ref second, offset)) {
+                            goto NotEqual;
+                        }
+                        offset += (nuint)Vector<byte>.Count;
+                    } while (lengthToExamine > offset);
+                }
+
+                // Do final compare as Vector<byte>.Count from end rather than start
+                if (VectorHelper.LoadUnsafe(ref first, lengthToExamine) ==
+                    VectorHelper.LoadUnsafe(ref second, lengthToExamine)) {
+                    // C# compiler inverts this test, making the outer goto the conditional jmp.
+                    goto Equal;
+                }
+
+                // This becomes a conditional jmp forward to not favor it.
+                goto NotEqual;
             }
 
             if (false) {
                 // See else.
 #if NET7_0_OR_GREATER
-            } else if (Vector128.IsHardwareAccelerated && 8 == sizeof(nuint)) { // old: Vector128.IsHardwareAccelerated
+            } else if (length == (nuint)(sizeof(nuint) * 2)) { // old: Vector128.IsHardwareAccelerated
                 Debug.Assert(length <= (nuint)sizeof(nuint) * 2);
 
                 nuint offset = length - (nuint)sizeof(nuint);
@@ -339,6 +365,47 @@ namespace Zyl.ExSpans {
                     goto BytewiseCheck;
                 }
 #endif // NET7_0_OR_GREATER
+            } else if (Vector.IsHardwareAccelerated && (lengthToExamine >= (nuint)Vector<byte>.Count)) {
+                lengthToExamine -= (nuint)Vector<byte>.Count;
+                //ulong matches;
+                ulong differences = 0;
+                Vector<byte> differencesVector;
+                while (lengthToExamine > offset) {
+                    //matches = Vector.Equals(VectorHelper.LoadUnsafe(ref first, offset), VectorHelper.LoadUnsafe(ref second, offset)).ExtractMostSignificantBits();
+                    differencesVector = Vector.OnesComplement(Vector.Equals(VectorHelper.LoadUnsafe(ref first, offset), VectorHelper.LoadUnsafe(ref second, offset)));
+                    differences = Vectors.ExtractMostSignificantBits(differencesVector);
+                    // Note that MoveMask has converted the equal vector elements into a set of bit flags,
+                    // So the bit position in 'matches' corresponds to the element offset.
+
+                    // so we compare to 0 to check if everything matched
+                    if (differences == 0) {
+                        // All matched
+                        offset += (nuint)Vector<byte>.Count;
+                        continue;
+                    }
+
+                    goto Difference;
+                }
+                // Move to Vector length from end for final compare
+                offset = lengthToExamine;
+                // Same as method as above
+                //matches = Vector.Equals(VectorHelper.LoadUnsafe(ref first, offset), VectorHelper.LoadUnsafe(ref second, offset)).ExtractMostSignificantBits();
+                differencesVector = Vector.OnesComplement(Vector.Equals(VectorHelper.LoadUnsafe(ref first, offset), VectorHelper.LoadUnsafe(ref second, offset)));
+                differences = Vectors.ExtractMostSignificantBits(differencesVector);
+                if (differences == 0) {
+                    // All matched
+                    goto Equal;
+                }
+            Difference:
+                // Invert matches to find differences
+                //ulong differences = ~matches;
+                // Find bitflag offset of first difference and add to current offset
+                offset += (uint)MathBitOperations.TrailingZeroCount(differences);
+
+                int result = ExUnsafe.AddByteOffset(ref first, offset).CompareTo(ExUnsafe.AddByteOffset(ref second, offset));
+                Debug.Assert(result != 0);
+
+                return result;
             }
 
             if (lengthToExamine > (nuint)sizeof(nuint)) {
