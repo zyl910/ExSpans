@@ -24,4 +24,4 @@ using Zyl.ExSpans.Extensions;
 
 // -- Zyl.ExSpans.Extensions
 [assembly: TypeForwardedToAttribute(typeof(IntPtrExtensions))]
-[assembly: TypeForwardedToAttribute(typeof(ExdLengthExtensions))]
+[assembly: TypeForwardedToAttribute(typeof(ExLengthExtensions))]

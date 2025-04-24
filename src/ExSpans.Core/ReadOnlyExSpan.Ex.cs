@@ -20,9 +20,9 @@ namespace Zyl.ExSpans {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator ReadOnlyExSpan<T>(ReadOnlySpan<T> span) {
 #if STRUCT_REF_FIELD
-            return new ReadOnlyExSpan<T>(ref Unsafe.AsRef(in span.GetPinnableReference()), span.ExdLength());
+            return new ReadOnlyExSpan<T>(ref Unsafe.AsRef(in span.GetPinnableReference()), span.ExLength());
 #else
-            return new ReadOnlyExSpan<T>(span, (TSize)0, span.ExdLength());
+            return new ReadOnlyExSpan<T>(span, (TSize)0, span.ExLength());
 #endif
         }
 

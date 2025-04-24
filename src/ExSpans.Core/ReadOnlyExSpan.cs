@@ -48,7 +48,7 @@ namespace Zyl.ExSpans {
                 return; // returns default
             }
 
-            _length = array.ExdLength();
+            _length = array.ExLength();
 #if STRUCT_REF_FIELD
             _reference = ref ExMemoryMarshal.GetArrayDataReference(array);
 #else
@@ -76,7 +76,7 @@ namespace Zyl.ExSpans {
                 this = default;
                 return; // returns default
             }
-            TUSize srcLength = array.ExdLength().ToUIntPtr();
+            TUSize srcLength = array.ExLength().ToUIntPtr();
             if (start.ToUIntPtr().GreaterThan(srcLength) || length.ToUIntPtr().GreaterThan(srcLength.Subtract(start.ToUIntPtr()))) {
                 ThrowHelper.ThrowArgumentOutOfRangeException();
             }

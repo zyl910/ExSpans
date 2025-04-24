@@ -57,10 +57,10 @@ namespace Zyl.ExSpans {
                     ThrowHelper.ThrowArgumentOutOfRangeException();
                 return default;
             }
-            if (IntPtrExtensions.GreaterThanOrEqual(start, array.ExdLength())) {
+            if (IntPtrExtensions.GreaterThanOrEqual(start, array.ExLength())) {
                 ThrowHelper.ThrowArgumentOutOfRangeException();
             }
-            return new ExSpan<T>(array, start, IntPtrExtensions.Subtract(array.ExdLength(), start));
+            return new ExSpan<T>(array, start, IntPtrExtensions.Subtract(array.ExLength(), start));
         }
 
 #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP3_0_OR_GREATER
@@ -84,7 +84,7 @@ namespace Zyl.ExSpans {
             if (actualIndex < 0) {
                 ThrowHelper.ThrowArgumentOutOfRangeException();
             }
-            return new ExSpan<T>(array, (TSize)actualIndex, IntPtrExtensions.Subtract(array.ExdLength(), (TSize)actualIndex));
+            return new ExSpan<T>(array, (TSize)actualIndex, IntPtrExtensions.Subtract(array.ExLength(), (TSize)actualIndex));
         }
 
         /// <summary>

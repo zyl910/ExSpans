@@ -53,7 +53,7 @@ namespace Zyl.ExSpans {
             if (!TypeHelper.IsValueType<T>() && array.GetType() != typeof(T[]))
                 ThrowHelper.ThrowArrayTypeMismatchException();
 
-            _length = array.ExdLength();
+            _length = array.ExLength();
 #if STRUCT_REF_FIELD
             _reference = ref ExMemoryMarshal.GetArrayDataReference(array);
 #else
@@ -84,7 +84,7 @@ namespace Zyl.ExSpans {
             }
             if (!TypeHelper.IsValueType<T>() && array.GetType() != typeof(T[]))
                 ThrowHelper.ThrowArrayTypeMismatchException();
-            TUSize srcLength = array.ExdLength().ToUIntPtr();
+            TUSize srcLength = array.ExLength().ToUIntPtr();
             if (start.ToUIntPtr().GreaterThan(srcLength) || length.ToUIntPtr().GreaterThan(srcLength.Subtract(start.ToUIntPtr()))) {
                 ThrowHelper.ThrowArgumentOutOfRangeException();
             }
