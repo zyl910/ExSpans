@@ -40,9 +40,9 @@
     </ItemGroup>
 
     <ItemGroup>
-    <ProjectReference Include="..\..\src\SizableSpans\SizableSpans.csproj" />
+    <ProjectReference Include="..\..\src\ExSpans\ExSpans.csproj" />
   </ItemGroup>
 
-  <Import Project="..\..\src\SizableSpans.InfoInc\SizableSpans.InfoInc.projitems" Label="Shared" />
+  <Import Project="..\..\src\ExSpans.InfoInc\ExSpans.InfoInc.projitems" Label="Shared" />
 
 </Project>

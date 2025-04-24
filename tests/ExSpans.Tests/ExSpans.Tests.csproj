@@ -47,7 +47,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\SizableSpans\SizableSpans.csproj" />
+    <ProjectReference Include="..\..\src\ExSpans\ExSpans.csproj" />
   </ItemGroup>
 
 </Project>

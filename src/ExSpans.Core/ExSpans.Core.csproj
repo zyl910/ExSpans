@@ -30,26 +30,26 @@
     <LangVersion>13.0</LangVersion>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <RootNamespace>Zyl.SizableSpans</RootNamespace>
+    <RootNamespace>Zyl.ExSpans</RootNamespace>
     <DefineConstants>$(DefineConstants);SIZE_UINTPTR0</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <IsAotCompatible Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net7.0'))">true</IsAotCompatible>
-    <Title>SizableSpans.Core</Title>
+    <Title>ExSpans.Core</Title>
     <AssemblyTitle>$(Title)</AssemblyTitle>
-    <Product>SizableSpans</Product>
+    <Product>ExSpans</Product>
     <Authors>zyl910</Authors>
     <Company>zyl910</Company>
     <AssemblyVersion>$(VersionPrefix).0</AssemblyVersion>
     <FileVersion>$(VersionPrefix).0</FileVersion>
     <CurrentYear>$([System.DateTime]::Now.ToString(yyyy))</CurrentYear>
     <Copyright>Copyright (c) 2025~$(CurrentYear) zyl910</Copyright>
-    <Description>Spans of sizable range (大范围的跨度). Provides definitions for types such as SizableSpan (提供了 SizableSpan 等类型的定义).</Description>
+    <Description>Spans of Ex range (大范围的跨度). Provides definitions for types such as ExSpan (提供了 ExSpan 等类型的定义).</Description>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <RepositoryUrl>https://github.com/zyl910/SizableSpans</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/zyl910/SizableSpans</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/zyl910/ExSpans</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/zyl910/ExSpans</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>Span;Memory;Pointer</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>

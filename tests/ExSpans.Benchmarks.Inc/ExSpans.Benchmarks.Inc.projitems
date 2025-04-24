@@ -6,11 +6,11 @@
     <SharedGUID>d58eeca3-5b3c-44ba-9993-f0d54cd923b1</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>Zyl.SizableSpans.Benchmarks</Import_RootNamespace>
+    <Import_RootNamespace>Zyl.ExSpans.Benchmarks</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AloneTestUtil.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ASizableSpan\SumBenchmark_Int32.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AExSpan\SumBenchmark_Int32.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BenchmarkMain.cs" />
   </ItemGroup>
 </Project>

@@ -36,7 +36,7 @@
       -->
     <Company>zyl910</Company>
     <Authors>zyl910</Authors>
-    <Product>SizableSpans</Product>
+    <Product>ExSpans</Product>
   </PropertyGroup>
 
   <ItemGroup>
@@ -45,14 +45,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\SizableSpans.Core\SizableSpans.Core.csproj" />
-    <ProjectReference Include="..\..\src\SizableSpans\SizableSpans.csproj" />
+    <ProjectReference Include="..\..\src\ExSpans.Core\ExSpans.Core.csproj" />
+    <ProjectReference Include="..\..\src\ExSpans\ExSpans.csproj" />
   </ItemGroup>
 
-  <Import Project="..\..\src\SizableSpans.InfoInc\SizableSpans.InfoInc.projitems" Label="Shared" />
+  <Import Project="..\..\src\ExSpans.InfoInc\ExSpans.InfoInc.projitems" Label="Shared" />
 
-  <Import Project="..\SizableSpans.Benchmarks.Core.Inc\SizableSpans.Benchmarks.Core.Inc.projitems" Label="Shared" />
+  <Import Project="..\ExSpans.Benchmarks.Core.Inc\ExSpans.Benchmarks.Core.Inc.projitems" Label="Shared" />
 
-  <Import Project="..\SizableSpans.Benchmarks.Inc\SizableSpans.Benchmarks.Inc.projitems" Label="Shared" />
+  <Import Project="..\ExSpans.Benchmarks.Inc\ExSpans.Benchmarks.Inc.projitems" Label="Shared" />
 
 </Project>
