@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Zyl.ExSpans {
     /// <summary>
-    /// The provider interface of sizable range span (大范围跨度的提供者接口).
+    /// The provider interface of Ex span (扩展跨度的提供者接口).
     /// </summary>
     /// <typeparam name="T">The element type (元素的类型).</typeparam>
     interface IExSpanProvider<T> : IExSpanBase<T> {

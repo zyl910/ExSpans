@@ -172,7 +172,7 @@ namespace Zyl.ExSpans {
 #endif
 
         /// <summary>
-        /// Returns the specified element of the sizable span (从大范围跨度中返回指定项).
+        /// Returns the specified element of the Ex span (从扩展跨度中返回指定项).
         /// </summary>
         /// <param name="index">The zero-based index (从零开始的索引).</param>
         /// <returns>Returns the specified element (返回指定项).</returns>
@@ -200,7 +200,7 @@ namespace Zyl.ExSpans {
         }
 
         /// <summary>
-        /// The number of items in the sizable span (大范围跨度中的项数).
+        /// The number of items in the Ex span (扩展跨度中的项数).
         /// </summary>
         [MyCLSCompliant(false)]
         public TSize Length {
@@ -209,7 +209,7 @@ namespace Zyl.ExSpans {
         }
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="ExSpan{T}"/> is empty (返回一个值，该值指示当前大范围跨度为空).
+        /// Gets a value indicating whether this <see cref="ExSpan{T}"/> is empty (返回一个值，该值指示当前扩展跨度为空).
         /// </summary>
         /// <value><see langword="true"/> if this ExSpan is empty; otherwise, <see langword="false"/>.</value>
         public bool IsEmpty {
@@ -418,10 +418,10 @@ namespace Zyl.ExSpans {
         }
 
         /// <summary>
-        /// Forms a slice out of the given sizable span, beginning at 'start' (从指定索引处开始的大范围跨度形成切片).
+        /// Forms a slice out of the given Ex span, beginning at 'start' (从指定索引处开始的扩展跨度形成切片).
         /// </summary>
         /// <param name="start">The zero-based index at which to begin this slice (从零开始切片的索引).</param>
-        /// <returns>Returns the new sizable span (返回新的大范围跨度).</returns>
+        /// <returns>Returns the new Ex span (返回新的扩展跨度).</returns>
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown when the specified <paramref name="start"/> index is not in range (&lt;0 or &gt;Length).
         /// </exception>
@@ -446,11 +446,11 @@ namespace Zyl.ExSpans {
         }
 
         /// <summary>
-        /// Forms a slice out of the given sizable span, beginning at 'start', of given length (从指定长度的指定索引处开始的当前大范围跨度形成切片).
+        /// Forms a slice out of the given Ex span, beginning at 'start', of given length (从指定长度的指定索引处开始的当前扩展跨度形成切片).
         /// </summary>
         /// <param name="start">The zero-based index at which to begin this slice (从零开始切片的索引).</param>
         /// <param name="length">The desired length for the slice (exclusive) (切片所需的长度).</param>
-        /// <returns>Returns the new sizable span (返回新的大范围跨度).</returns>
+        /// <returns>Returns the new Ex span (返回新的扩展跨度).</returns>
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown when the specified <paramref name="start"/> or end index is not in range (&lt;0 or &gt;Length).
         /// </exception>

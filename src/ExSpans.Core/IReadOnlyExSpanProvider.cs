@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Zyl.ExSpans {
     /// <summary>
-    /// The provider interface of read only sizable range span (只读大范围跨度的提供者接口).
+    /// The provider interface of read only Ex span (只读扩展跨度的提供者接口).
     /// </summary>
     /// <typeparam name="T">The element type (元素的类型).</typeparam>
     interface IReadOnlyExSpanProvider<T> : IReadOnlyExSpanBase<T> {

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Zyl.ExSpans {
     /// <summary>
-    /// The base interface of sizable range span (大范围跨度的基本接口).
+    /// The base interface of Ex span (扩展跨度的基本接口).
     /// </summary>
     /// <typeparam name="T">The element type (元素的类型).</typeparam>
     [MyCLSCompliant(false)]
