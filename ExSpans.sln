@@ -9,27 +9,27 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{41E49851-122
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{77671548-D96F-418B-8BD7-088287CC9B01}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SizableSpans.Sample", "samples\SizableSpans.Sample\SizableSpans.Sample.csproj", "{B9CDFAE2-38F2-49E3-B9C4-7A25122D27FF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExSpans.Sample", "samples\ExSpans.Sample\ExSpans.Sample.csproj", "{B9CDFAE2-38F2-49E3-B9C4-7A25122D27FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SizableSpans", "src\SizableSpans\SizableSpans.csproj", "{5BF6B505-8296-4F84-B2E1-B0C6E89248AE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExSpans", "src\ExSpans\ExSpans.csproj", "{5BF6B505-8296-4F84-B2E1-B0C6E89248AE}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SizableSpans.InfoInc", "src\SizableSpans.InfoInc\SizableSpans.InfoInc.shproj", "{3B871363-CD08-475B-903B-0CC1CA148F22}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "ExSpans.InfoInc", "src\ExSpans.InfoInc\ExSpans.InfoInc.shproj", "{3B871363-CD08-475B-903B-0CC1CA148F22}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Compatible.System", "src\Compatible.System\Compatible.System.shproj", "{4F69DCA3-39B4-4247-AC71-FE9A69B7A124}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SizableSpans.Tests", "tests\SizableSpans.Tests\SizableSpans.Tests.csproj", "{9DC94933-5987-40DF-90FD-5B789F9ED2A7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExSpans.Tests", "tests\ExSpans.Tests\ExSpans.Tests.csproj", "{9DC94933-5987-40DF-90FD-5B789F9ED2A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SizableSpans.Benchmarks", "tests\SizableSpans.Benchmarks\SizableSpans.Benchmarks.csproj", "{1603F4F1-AEA2-4BAB-9BA7-9FC9E3C2F82D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExSpans.Benchmarks", "tests\ExSpans.Benchmarks\ExSpans.Benchmarks.csproj", "{1603F4F1-AEA2-4BAB-9BA7-9FC9E3C2F82D}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SizableSpans.Benchmarks.Core.Inc", "tests\SizableSpans.Benchmarks.Core.Inc\SizableSpans.Benchmarks.Core.Inc.shproj", "{A45697E8-F604-4178-921A-B412C7AC3C93}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "ExSpans.Benchmarks.Core.Inc", "tests\ExSpans.Benchmarks.Core.Inc\ExSpans.Benchmarks.Core.Inc.shproj", "{A45697E8-F604-4178-921A-B412C7AC3C93}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SizableSpans.Benchmarks.Inc", "tests\SizableSpans.Benchmarks.Inc\SizableSpans.Benchmarks.Inc.shproj", "{D58EECA3-5B3C-44BA-9993-F0D54CD923B1}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "ExSpans.Benchmarks.Inc", "tests\ExSpans.Benchmarks.Inc\ExSpans.Benchmarks.Inc.shproj", "{D58EECA3-5B3C-44BA-9993-F0D54CD923B1}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "BenchmarkDotNet.Mock", "tests\BenchmarkDotNet.Mock\BenchmarkDotNet.Mock.shproj", "{FE742124-F9F3-463D-83D2-2FA9E33E0505}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SizableSpans.Benchmarks.NetFw", "tests\SizableSpans.Benchmarks.NetFw\SizableSpans.Benchmarks.NetFw.csproj", "{DDCFF4FC-12C0-42F3-A598-99AE5E85CED5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExSpans.Benchmarks.NetFw", "tests\ExSpans.Benchmarks.NetFw\ExSpans.Benchmarks.NetFw.csproj", "{DDCFF4FC-12C0-42F3-A598-99AE5E85CED5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SizableSpans.Core", "src\SizableSpans.Core\SizableSpans.Core.csproj", "{FC79112E-C852-4A8F-9F7E-77AB7B67303B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExSpans.Core", "src\ExSpans.Core\ExSpans.Core.csproj", "{FC79112E-C852-4A8F-9F7E-77AB7B67303B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -82,18 +82,18 @@ Global
 		SolutionGuid = {DF448437-BDEC-4C3B-9CEB-3D5D0B946D88}
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		src\SizableSpans.InfoInc\SizableSpans.InfoInc.projitems*{1603f4f1-aea2-4bab-9ba7-9fc9e3c2f82d}*SharedItemsImports = 5
-		tests\SizableSpans.Benchmarks.Core.Inc\SizableSpans.Benchmarks.Core.Inc.projitems*{1603f4f1-aea2-4bab-9ba7-9fc9e3c2f82d}*SharedItemsImports = 5
-		tests\SizableSpans.Benchmarks.Inc\SizableSpans.Benchmarks.Inc.projitems*{1603f4f1-aea2-4bab-9ba7-9fc9e3c2f82d}*SharedItemsImports = 5
-		src\SizableSpans.InfoInc\SizableSpans.InfoInc.projitems*{3b871363-cd08-475b-903b-0cc1ca148f22}*SharedItemsImports = 13
+		src\ExSpans.InfoInc\ExSpans.InfoInc.projitems*{1603f4f1-aea2-4bab-9ba7-9fc9e3c2f82d}*SharedItemsImports = 5
+		tests\ExSpans.Benchmarks.Core.Inc\ExSpans.Benchmarks.Core.Inc.projitems*{1603f4f1-aea2-4bab-9ba7-9fc9e3c2f82d}*SharedItemsImports = 5
+		tests\ExSpans.Benchmarks.Inc\ExSpans.Benchmarks.Inc.projitems*{1603f4f1-aea2-4bab-9ba7-9fc9e3c2f82d}*SharedItemsImports = 5
+		src\ExSpans.InfoInc\ExSpans.InfoInc.projitems*{3b871363-cd08-475b-903b-0cc1ca148f22}*SharedItemsImports = 13
 		src\Compatible.System\Compatible.System.projitems*{4f69dca3-39b4-4247-ac71-fe9a69b7a124}*SharedItemsImports = 13
 		src\Compatible.System\Compatible.System.projitems*{5bf6b505-8296-4f84-b2e1-b0c6e89248ae}*SharedItemsImports = 5
-		tests\SizableSpans.Benchmarks.Core.Inc\SizableSpans.Benchmarks.Core.Inc.projitems*{a45697e8-f604-4178-921a-b412c7ac3c93}*SharedItemsImports = 13
-		src\SizableSpans.InfoInc\SizableSpans.InfoInc.projitems*{b9cdfae2-38f2-49e3-b9c4-7a25122d27ff}*SharedItemsImports = 5
-		tests\SizableSpans.Benchmarks.Inc\SizableSpans.Benchmarks.Inc.projitems*{d58eeca3-5b3c-44ba-9993-f0d54cd923b1}*SharedItemsImports = 13
-		src\SizableSpans.InfoInc\SizableSpans.InfoInc.projitems*{ddcff4fc-12c0-42f3-a598-99ae5e85ced5}*SharedItemsImports = 4
-		tests\SizableSpans.Benchmarks.Core.Inc\SizableSpans.Benchmarks.Core.Inc.projitems*{ddcff4fc-12c0-42f3-a598-99ae5e85ced5}*SharedItemsImports = 4
-		tests\SizableSpans.Benchmarks.Inc\SizableSpans.Benchmarks.Inc.projitems*{ddcff4fc-12c0-42f3-a598-99ae5e85ced5}*SharedItemsImports = 4
+		tests\ExSpans.Benchmarks.Core.Inc\ExSpans.Benchmarks.Core.Inc.projitems*{a45697e8-f604-4178-921a-b412c7ac3c93}*SharedItemsImports = 13
+		src\ExSpans.InfoInc\ExSpans.InfoInc.projitems*{b9cdfae2-38f2-49e3-b9c4-7a25122d27ff}*SharedItemsImports = 5
+		tests\ExSpans.Benchmarks.Inc\ExSpans.Benchmarks.Inc.projitems*{d58eeca3-5b3c-44ba-9993-f0d54cd923b1}*SharedItemsImports = 13
+		src\ExSpans.InfoInc\ExSpans.InfoInc.projitems*{ddcff4fc-12c0-42f3-a598-99ae5e85ced5}*SharedItemsImports = 4
+		tests\ExSpans.Benchmarks.Core.Inc\ExSpans.Benchmarks.Core.Inc.projitems*{ddcff4fc-12c0-42f3-a598-99ae5e85ced5}*SharedItemsImports = 4
+		tests\ExSpans.Benchmarks.Inc\ExSpans.Benchmarks.Inc.projitems*{ddcff4fc-12c0-42f3-a598-99ae5e85ced5}*SharedItemsImports = 4
 		src\Compatible.System\Compatible.System.projitems*{fc79112e-c852-4a8f-9f7e-77ab7b67303b}*SharedItemsImports = 5
 		tests\BenchmarkDotNet.Mock\BenchmarkDotNet.Mock.projitems*{fe742124-f9f3-463d-83d2-2fa9e33e0505}*SharedItemsImports = 13
 	EndGlobalSection
