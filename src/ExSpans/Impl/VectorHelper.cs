@@ -1,4 +1,9 @@
-﻿using System;
+﻿#if NET8_0_OR_GREATER
+#else
+#define VECTOR_WHERE_STRUCT// Since .NET8, Vector type not have `where T : struct`.
+#endif // NET8_0_OR_GREATER
+
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -20,8 +25,16 @@ namespace Zyl.ExSpans.Impl {
         /// <exception cref="System.NotSupportedException">The type of <paramref name="source"/> (<typeparamref name="T"/>) is not supported.</exception>
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector<T> LoadUnsafe<T>(ref readonly T source, nuint elementOffset) where T : struct {
+        public static Vector<T> LoadUnsafe<T>(ref readonly T source, nuint elementOffset)
+#if VECTOR_WHERE_STRUCT
+                where T : struct
+#endif // VECTOR_WHERE_STRUCT
+                {
+#if NET8_0_OR_GREATER
+            return Vector.LoadUnsafe(in source, elementOffset);
+#else
             return Unsafe.As<T, Vector<T>>(ref ExUnsafe.Add(ref Unsafe.AsRef(in source), elementOffset));
+#endif // NET8_0_OR_GREATER
         }
 
         /// <summary>
@@ -32,8 +45,16 @@ namespace Zyl.ExSpans.Impl {
         /// <returns>The vector loaded from <paramref name="source"/>.</returns>
         /// <exception cref="System.NotSupportedException">The type of <paramref name="source"/> (<typeparamref name="T"/>) is not supported.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector<T> LoadUnsafe<T>(ref readonly T source) where T : struct {
+        public static Vector<T> LoadUnsafe<T>(ref readonly T source)
+#if VECTOR_WHERE_STRUCT
+                where T : struct
+#endif // VECTOR_WHERE_STRUCT
+                {
+#if NET8_0_OR_GREATER
+            return Vector.LoadUnsafe(in source);
+#else
             return Unsafe.As<T, Vector<T>>(ref Unsafe.AsRef(in source));
+#endif // NET8_0_OR_GREATER
         }
 
     }
