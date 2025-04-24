@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Zyl.SizableSpans {
+namespace Zyl.ExSpans {
     /// <summary>
     /// Helper methods of <see cref="SafeBufferSpanProvider{TSafeBuffer}"/> (<see cref="SafeBufferSpanProvider{TSafeBuffer}"/> 的辅助方法).
     /// </summary>

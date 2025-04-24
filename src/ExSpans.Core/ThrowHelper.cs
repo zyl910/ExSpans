@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
-namespace Zyl.SizableSpans {
+namespace Zyl.ExSpans {
 
 #if NET6_0_OR_GREATER
     [StackTraceHidden]

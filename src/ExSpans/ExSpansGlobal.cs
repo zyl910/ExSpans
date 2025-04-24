@@ -5,23 +5,23 @@ global using MyCLSCompliantAttribute = System.CLSCompliantAttribute;
 #else
 global using TSize = System.IntPtr;
 global using TSize32 = System.Int32;
-global using MyCLSCompliantAttribute = Zyl.SizableSpans.Impl.FakeCLSCompliantAttribute;
+global using MyCLSCompliantAttribute = Zyl.ExSpans.Impl.FakeCLSCompliantAttribute;
 #endif // SIZE_UINTPTR
 global using TUSize = System.UIntPtr;
 
 using System;
 using System.Runtime.CompilerServices;
-using Zyl.SizableSpans;
-using Zyl.SizableSpans.Extensions;
+using Zyl.ExSpans;
+using Zyl.ExSpans.Extensions;
 
 [assembly: CLSCompliant(true)]
 
-// -- Zyl.SizableSpans
-[assembly: TypeForwardedToAttribute(typeof(ReadOnlySizableSpan<>))]
-[assembly: TypeForwardedToAttribute(typeof(SizableMemoryMarshal))]
-[assembly: TypeForwardedToAttribute(typeof(SizableSpan<>))]
-[assembly: TypeForwardedToAttribute(typeof(SizableSpanExtensions))]
+// -- Zyl.ExSpans
+[assembly: TypeForwardedToAttribute(typeof(ReadOnlyExSpan<>))]
+[assembly: TypeForwardedToAttribute(typeof(ExMemoryMarshal))]
+[assembly: TypeForwardedToAttribute(typeof(ExSpan<>))]
+[assembly: TypeForwardedToAttribute(typeof(ExSpanExtensions))]
 
-// -- Zyl.SizableSpans.Extensions
+// -- Zyl.ExSpans.Extensions
 [assembly: TypeForwardedToAttribute(typeof(IntPtrExtensions))]
-[assembly: TypeForwardedToAttribute(typeof(SizabledLengthExtensions))]
+[assembly: TypeForwardedToAttribute(typeof(ExdLengthExtensions))]

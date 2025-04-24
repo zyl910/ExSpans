@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Zyl.SizableSpans.Tests.Fake.Attributes {
+namespace Zyl.ExSpans.Tests.Fake.Attributes {
     /// <summary>
     /// Fake ActiveIssueAttribute.
     /// </summary>

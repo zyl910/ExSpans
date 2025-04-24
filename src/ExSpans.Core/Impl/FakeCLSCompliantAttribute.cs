@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Zyl.SizableSpans.Impl {
+namespace Zyl.ExSpans.Impl {
     /// <summary>
     /// Fake - Indicates whether a program element is compliant with the Common Language Specification (CLS). This class cannot be inherited.
     /// </summary>

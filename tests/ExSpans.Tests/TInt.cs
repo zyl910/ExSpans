@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Zyl.SizableSpans.Tests {
+namespace Zyl.ExSpans.Tests {
     // A wrapped integer that invokes a custom delegate every time IEquatable<TInt>.Equals() is invoked.
     internal struct TInt : IEquatable<TInt>, IComparable<TInt> {
         public TInt(int value)

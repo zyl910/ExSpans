@@ -12,16 +12,16 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-using Zyl.SizableSpans.Tests.Fake.Attributes;
+using Zyl.ExSpans.Tests.Fake.Attributes;
 
-namespace Zyl.SizableSpans.Tests.ASizableSpan {
+namespace Zyl.ExSpans.Tests.AExSpan {
     public static class ACopyTo {
         [Fact]
         public static void TryCopyTo() {
             int[] src = { 1, 2, 3 };
             int[] dst = { 99, 100, 101 };
 
-            SizableSpan<int> srcSpan = new SizableSpan<int>(src);
+            ExSpan<int> srcSpan = new ExSpan<int>(src);
             bool success = srcSpan.TryCopyTo(dst);
             Assert.True(success);
             Assert.Equal(src, dst);
@@ -32,7 +32,7 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
             int[] src = { 1 };
             int[] dst = { 99 };
 
-            SizableSpan<int> srcSpan = new SizableSpan<int>(src);
+            ExSpan<int> srcSpan = new ExSpan<int>(src);
             bool success = srcSpan.TryCopyTo(dst);
             Assert.True(success);
             Assert.Equal(src, dst);
@@ -44,11 +44,11 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
             int[] dst = { 5, 99, 100, 101, 10 };
             var segment = new ArraySegment<int>(dst, 1, 3);
 
-            SizableSpan<int> srcSpan = new SizableSpan<int>(src);
+            ExSpan<int> srcSpan = new ExSpan<int>(src);
             bool success = srcSpan.TryCopyTo(segment);
             Assert.True(success);
             /*
-            Assert.Equal(src.AsSizableSpan(), segment);
+            Assert.Equal(src.AsExSpan(), segment);
             */
         }
 
@@ -57,7 +57,7 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
             int[] src = { };
             int[] dst = { 99, 100, 101 };
 
-            SizableSpan<int> srcSpan = new SizableSpan<int>(src);
+            ExSpan<int> srcSpan = new ExSpan<int>(src);
             bool success = srcSpan.TryCopyTo(dst);
             Assert.True(success);
             int[] expected = { 99, 100, 101 };
@@ -69,7 +69,7 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
             int[] src = { 1, 2, 3 };
             int[] dst = { 99, 100, 101, 102 };
 
-            SizableSpan<int> srcSpan = new SizableSpan<int>(src);
+            ExSpan<int> srcSpan = new ExSpan<int>(src);
             bool success = srcSpan.TryCopyTo(dst);
             Assert.True(success);
             int[] expected = { 1, 2, 3, 102 };
@@ -81,7 +81,7 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
             int[] src = { 1, 2, 3 };
             int[] dst = { 99, 100 };
 
-            SizableSpan<int> srcSpan = new SizableSpan<int>(src);
+            ExSpan<int> srcSpan = new ExSpan<int>(src);
             bool success = srcSpan.TryCopyTo(dst);
             Assert.False(success);
             int[] expected = { 99, 100 };
@@ -93,7 +93,7 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
             int[] src = { 1, 2, 3 };
             int[] dst = { 99, 100 };
 
-            SizableSpan<int> srcSpan = new SizableSpan<int>(src);
+            ExSpan<int> srcSpan = new ExSpan<int>(src);
             TestHelpers.AssertThrows<ArgumentException, int>(srcSpan, (_srcSpan) => _srcSpan.CopyTo(dst));
             int[] expected = { 99, 100 };
             Assert.Equal(expected, dst);  // CopyTo() checks for sufficient space before doing any copying.
@@ -103,8 +103,8 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
         public static void Overlapping1() {
             int[] a = { 90, 91, 92, 93, 94, 95, 96, 97 };
 
-            SizableSpan<int> src = new SizableSpan<int>(a, (TSize)1, (TSize)6);
-            SizableSpan<int> dst = new SizableSpan<int>(a, (TSize)2, (TSize)6);
+            ExSpan<int> src = new ExSpan<int>(a, (TSize)1, (TSize)6);
+            ExSpan<int> dst = new ExSpan<int>(a, (TSize)2, (TSize)6);
             src.CopyTo(dst);
 
             int[] expected = { 90, 91, 91, 92, 93, 94, 95, 96 };
@@ -115,8 +115,8 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
         public static void Overlapping2() {
             int[] a = { 90, 91, 92, 93, 94, 95, 96, 97 };
 
-            SizableSpan<int> src = new SizableSpan<int>(a, (TSize)2, (TSize)6);
-            SizableSpan<int> dst = new SizableSpan<int>(a, (TSize)1, (TSize)6);
+            ExSpan<int> src = new ExSpan<int>(a, (TSize)2, (TSize)6);
+            ExSpan<int> dst = new ExSpan<int>(a, (TSize)1, (TSize)6);
             src.CopyTo(dst);
 
             int[] expected = { 90, 92, 93, 94, 95, 96, 97, 97 };
@@ -126,7 +126,7 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
         [Fact]
         public static void CopyToArray() {
             int[] src = { 1, 2, 3 };
-            SizableSpan<int> dst = new int[3] { 99, 100, 101 };
+            ExSpan<int> dst = new int[3] { 99, 100, 101 };
 
             src.CopyTo(dst);
             Assert.Equal(src, dst.ToArray());
@@ -135,7 +135,7 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
         [Fact]
         public static void CopyToSingleArray() {
             int[] src = { 1 };
-            SizableSpan<int> dst = new int[1] { 99 };
+            ExSpan<int> dst = new int[1] { 99 };
 
             src.CopyTo(dst);
             Assert.Equal(src, dst.ToArray());
@@ -144,13 +144,13 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
         [Fact]
         public static void CopyToEmptyArray() {
             int[] src = { };
-            SizableSpan<int> dst = new int[3] { 99, 100, 101 };
+            ExSpan<int> dst = new int[3] { 99, 100, 101 };
 
             src.CopyTo(dst);
             int[] expected = { 99, 100, 101 };
             Assert.Equal(expected, dst.ToArray());
 
-            SizableSpan<int> dstEmpty = new int[0] { };
+            ExSpan<int> dstEmpty = new int[0] { };
 
             src.CopyTo(dstEmpty);
             int[] expectedEmpty = { };
@@ -160,7 +160,7 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
         [Fact]
         public static void CopyToLongerArray() {
             int[] src = { 1, 2, 3 };
-            SizableSpan<int> dst = new int[4] { 99, 100, 101, 102 };
+            ExSpan<int> dst = new int[4] { 99, 100, 101, 102 };
 
             src.CopyTo(dst);
             int[] expected = { 1, 2, 3, 102 };
@@ -181,14 +181,14 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
         [Fact]
         public static void CopyToCovariantArray() {
             string[] src = new string[] { "Hello" };
-            SizableSpan<object> dst = new object[] { "world" };
+            ExSpan<object> dst = new object[] { "world" };
 
             src.CopyTo<object>(dst); // .NET 7.0+ - System.ArrayTypeMismatchException : Attempted to access an element as a type incompatible with the array.
             Assert.Equal("Hello", dst[(nint)0]);
         }
 #endif // !NET7_0_OR_GREATER
 
-        // This test case tests the SizableSpan.CopyTo method for large buffers of size 4GB or more. In the fast path,
+        // This test case tests the ExSpan.CopyTo method for large buffers of size 4GB or more. In the fast path,
         // the CopyTo method performs copy in chunks of size 4GB (uint.MaxValue) with final iteration copying
         // the residual chunk of size (bufferSize % 4GB). The inputs sizes to this method, 4GB and 4GB+256B,
         // test the two size selection paths in CoptyTo method - memory size that is multiple of 4GB or,
@@ -222,10 +222,10 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
 
                     if (allocatedFirst && allocatedSecond) {
                         ref Guid memoryFirst = ref Unsafe.AsRef<Guid>(memBlockFirst.ToPointer());
-                        var spanFirst = new SizableSpan<Guid>(memBlockFirst.ToPointer(), (nint)GuidCount);
+                        var spanFirst = new ExSpan<Guid>(memBlockFirst.ToPointer(), (nint)GuidCount);
 
                         ref Guid memorySecond = ref Unsafe.AsRef<Guid>(memBlockSecond.ToPointer());
-                        var spanSecond = new SizableSpan<Guid>(memBlockSecond.ToPointer(), (nint)GuidCount);
+                        var spanSecond = new ExSpan<Guid>(memBlockSecond.ToPointer(), (nint)GuidCount);
 
                         Guid theGuid = Guid.Parse("900DBAD9-00DB-AD90-00DB-AD900DBADBAD");
                         for (int count = 0; count < GuidCount; ++count) {
@@ -258,9 +258,9 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
 
             var rng = new Random();
             byte[] inputArray = new byte[MaxLength];
-            SizableSpan<byte> inputSizableSpan = inputArray;
-            SizableSpan<byte> outputSizableSpan = new byte[MaxLength];
-            SizableSpan<byte> allZerosSizableSpan = new byte[MaxLength];
+            ExSpan<byte> inputExSpan = inputArray;
+            ExSpan<byte> outputExSpan = new byte[MaxLength];
+            ExSpan<byte> allZerosExSpan = new byte[MaxLength];
 
             // Test all inputs from size 0 .. MaxLength (inclusive) to make sure we don't have
             // gaps in our Memmove logic.
@@ -268,16 +268,16 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
                 // Arrange
 
                 rng.NextBytes(inputArray);
-                outputSizableSpan.Clear();
+                outputExSpan.Clear();
 
                 // Act
 
-                inputSizableSpan.Slice((TSize)0, (TSize)i).CopyTo(outputSizableSpan);
+                inputExSpan.Slice((TSize)0, (TSize)i).CopyTo(outputExSpan);
 
                 // Assert
 
-                Assert.True(inputSizableSpan.Slice((TSize)0, (TSize)i).SequenceEqual(outputSizableSpan.Slice((TSize)0, (TSize)i))); // src successfully copied to dst
-                Assert.True(outputSizableSpan.Slice((TSize)i).SequenceEqual(allZerosSizableSpan.Slice((TSize)i))); // no other part of dst was overwritten
+                Assert.True(inputExSpan.Slice((TSize)0, (TSize)i).SequenceEqual(outputExSpan.Slice((TSize)0, (TSize)i))); // src successfully copied to dst
+                Assert.True(outputExSpan.Slice((TSize)i).SequenceEqual(allZerosExSpan.Slice((TSize)i))); // no other part of dst was overwritten
             }
         }
 

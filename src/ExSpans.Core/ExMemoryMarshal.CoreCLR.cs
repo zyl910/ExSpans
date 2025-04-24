@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-namespace Zyl.SizableSpans {
-    partial class SizableMemoryMarshal {
+namespace Zyl.ExSpans {
+    partial class ExMemoryMarshal {
         /// <summary>
         /// Returns a reference to the 0th element of <paramref name="array"/>. If the array is empty, returns a null reference. Such a reference may be used for pinning but must never be dereferenced (返回对 array 中第 0 个元素的引用。 如果数组为空，则返回对 null 引用。 此类引用可用于固定，但绝不能取消引用).
         /// </summary>

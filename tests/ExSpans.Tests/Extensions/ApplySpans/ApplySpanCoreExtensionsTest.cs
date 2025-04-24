@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
-using Zyl.SizableSpans.Extensions.ApplySpans;
-using Zyl.SizableSpans.Reflection;
+using Zyl.ExSpans.Extensions.ApplySpans;
+using Zyl.ExSpans.Reflection;
 
-namespace Zyl.SizableSpans.Tests.Extensions.ApplySpans {
+namespace Zyl.ExSpans.Tests.Extensions.ApplySpans {
     public class ApplySpanCoreExtensionsTest {
         const int bufferSize = 16;
 

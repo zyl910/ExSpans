@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 using Zyl.VectorTraits;
 using Zyl.VectorTraits.Impl;
 
-namespace Zyl.SizableSpans.Benchmarks {
+namespace Zyl.ExSpans.Benchmarks {
 #nullable enable
 
     /// <summary>

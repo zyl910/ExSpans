@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Zyl.SizableSpans.Reflection {
+namespace Zyl.ExSpans.Reflection {
 
     /// <summary>
     /// Flags for type name (类型名的标志).

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace Zyl.SizableSpans.Benchmarks {
+namespace Zyl.ExSpans.Benchmarks {
 
     /// <summary>
     /// Disable <see cref="BenchmarkDotNet.Attributes.BenchmarkAttribute"/>.

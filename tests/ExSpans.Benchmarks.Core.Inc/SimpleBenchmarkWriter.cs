@@ -5,7 +5,7 @@ using System.Text;
 using static System.Net.Mime.MediaTypeNames;
 using System.Xml.Linq;
 
-namespace Zyl.SizableSpans.Benchmarks {
+namespace Zyl.ExSpans.Benchmarks {
     /// <summary>
     /// Simple benchmark writer (简单版基准测试文本写入).
     /// </summary>

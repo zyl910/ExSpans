@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace Zyl.SizableSpans.Reflection {
+namespace Zyl.ExSpans.Reflection {
     /// <summary>
     /// <see cref="Type"/> Helper.
     /// </summary>

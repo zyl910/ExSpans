@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-using Zyl.SizableSpans.Extensions;
+using Zyl.ExSpans.Extensions;
 
-namespace Zyl.SizableSpans.Impl {
+namespace Zyl.ExSpans.Impl {
     /// <summary>
     /// <see cref="MemoryMarshal"/> helper.
     /// </summary>

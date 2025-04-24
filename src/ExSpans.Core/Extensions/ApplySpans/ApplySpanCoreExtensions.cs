@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Zyl.SizableSpans.Reflection;
+using Zyl.ExSpans.Reflection;
 
-namespace Zyl.SizableSpans.Extensions.ApplySpans {
+namespace Zyl.ExSpans.Extensions.ApplySpans {
 
     /// <summary>
     /// Provides commonly used extension methods for the span-related types, such as <see cref="Span{T}"/> and <see cref="ReadOnlySpan{T}"/> (提供跨度相关的类型的常用的扩展方法，例如 <see cref="Span{T}"/> 和 <see cref="ReadOnlySpan{T}"/>).
@@ -11,7 +11,7 @@ namespace Zyl.SizableSpans.Extensions.ApplySpans {
     public static class ApplySpanCoreExtensions {
 
         /// <summary>
-        /// Convert items data append string. The headerLength parameter uses the value of <see cref="SizableMemoryMarshal.SpanViewLength"/> (将各项数据转追加字符串. headerLength 参数使用 <see cref="SizableMemoryMarshal.SpanViewLength"/> 的值).
+        /// Convert items data append string. The headerLength parameter uses the value of <see cref="ExMemoryMarshal.SpanViewLength"/> (将各项数据转追加字符串. headerLength 参数使用 <see cref="ExMemoryMarshal.SpanViewLength"/> 的值).
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <param name="source">The source data (源数据).</param>
@@ -22,7 +22,7 @@ namespace Zyl.SizableSpans.Extensions.ApplySpans {
         /// <seealso cref="ItemFormaters"/>
         [MyCLSCompliant(false)]
         public static void ItemsAppendString<T>(this ReadOnlySpan<T> source, StringBuilder output, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
-            ItemsAppendString(source, output, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
+            ItemsAppendString(source, output, (TSize)ExMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
         }
 
         /// <summary>
@@ -42,13 +42,13 @@ namespace Zyl.SizableSpans.Extensions.ApplySpans {
             if (!stringFlags.HasFlag(ItemsToStringFlags.HideType)) {
                 TypeNameUtil.AppendName(output, typeof(ReadOnlySpan<T>), nameFlags, null, typeof(T));
             }
-            SizableSpanExtensions.ItemsAppendStringUnsafe(in source.GetPinnableReference(), (TSize)source.Length, output, headerLength, footerLength, itemFormater, stringFlags);
+            ExSpanExtensions.ItemsAppendStringUnsafe(in source.GetPinnableReference(), (TSize)source.Length, output, headerLength, footerLength, itemFormater, stringFlags);
         }
 
         /// <inheritdoc cref="ItemsAppendString{T}(ReadOnlySpan{T}, StringBuilder, Func{TSize, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
         [MyCLSCompliant(false)]
         public static void ItemsAppendString<T>(this Span<T> source, StringBuilder output, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
-            ItemsAppendString(source, output, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
+            ItemsAppendString(source, output, (TSize)ExMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
         }
 
         /// <inheritdoc cref="ItemsAppendString{T}(ReadOnlySpan{T}, StringBuilder, TSize, TSize, Func{TSize, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
@@ -57,12 +57,12 @@ namespace Zyl.SizableSpans.Extensions.ApplySpans {
             if (!stringFlags.HasFlag(ItemsToStringFlags.HideType)) {
                 TypeNameUtil.AppendName(output, typeof(Span<T>), nameFlags, null, typeof(T));
             }
-            SizableSpanExtensions.ItemsAppendStringUnsafe(in source.GetPinnableReference(), (TSize)source.Length, output, headerLength, footerLength, itemFormater, stringFlags);
+            ExSpanExtensions.ItemsAppendStringUnsafe(in source.GetPinnableReference(), (TSize)source.Length, output, headerLength, footerLength, itemFormater, stringFlags);
         }
 
 
         /// <summary>
-        /// Convert items data append string to action. The headerLength parameter uses the value of <see cref="SizableMemoryMarshal.SpanViewLength"/> (将各项数据转追加字符串到动作. headerLength 参数使用 <see cref="SizableMemoryMarshal.SpanViewLength"/> 的值).
+        /// Convert items data append string to action. The headerLength parameter uses the value of <see cref="ExMemoryMarshal.SpanViewLength"/> (将各项数据转追加字符串到动作. headerLength 参数使用 <see cref="ExMemoryMarshal.SpanViewLength"/> 的值).
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <param name="source">The source data (源数据).</param>
@@ -73,7 +73,7 @@ namespace Zyl.SizableSpans.Extensions.ApplySpans {
         /// <seealso cref="ItemFormaters"/>
         [MyCLSCompliant(false)]
         public static void ItemsAppendStringTo<T>(this ReadOnlySpan<T> source, Action<string> output, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
-            ItemsAppendStringTo(source, output, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
+            ItemsAppendStringTo(source, output, (TSize)ExMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
         }
 
         /// <summary>
@@ -93,13 +93,13 @@ namespace Zyl.SizableSpans.Extensions.ApplySpans {
             if (!stringFlags.HasFlag(ItemsToStringFlags.HideType)) {
                 TypeNameUtil.AppendNameTo(output, typeof(ReadOnlySpan<T>), nameFlags, null, typeof(T));
             }
-            SizableSpanExtensions.ItemsAppendStringToUnsafe(in source.GetPinnableReference(), (TSize)source.Length, output, headerLength, footerLength, itemFormater, stringFlags);
+            ExSpanExtensions.ItemsAppendStringToUnsafe(in source.GetPinnableReference(), (TSize)source.Length, output, headerLength, footerLength, itemFormater, stringFlags);
         }
 
         /// <inheritdoc cref="ItemsAppendStringTo{T}(ReadOnlySpan{T}, Action{string}, Func{TSize, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
         [MyCLSCompliant(false)]
         public static void ItemsAppendStringTo<T>(this Span<T> source, Action<string> output, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
-            ItemsAppendStringTo(source, output, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
+            ItemsAppendStringTo(source, output, (TSize)ExMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
         }
 
         /// <inheritdoc cref="ItemsAppendStringTo{T}(ReadOnlySpan{T}, Action{string}, TSize, TSize, Func{TSize, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
@@ -108,11 +108,11 @@ namespace Zyl.SizableSpans.Extensions.ApplySpans {
             if (!stringFlags.HasFlag(ItemsToStringFlags.HideType)) {
                 TypeNameUtil.AppendNameTo(output, typeof(Span<T>), nameFlags, null, typeof(T));
             }
-            SizableSpanExtensions.ItemsAppendStringToUnsafe(in source.GetPinnableReference(), (TSize)source.Length, output, headerLength, footerLength, itemFormater, stringFlags);
+            ExSpanExtensions.ItemsAppendStringToUnsafe(in source.GetPinnableReference(), (TSize)source.Length, output, headerLength, footerLength, itemFormater, stringFlags);
         }
 
         /// <summary>
-        /// Convert items data into string. The headerLength parameter uses the value of <see cref="SizableMemoryMarshal.SpanViewLength"/> (将各项数据转为字符串. headerLength 参数使用 <see cref="SizableMemoryMarshal.SpanViewLength"/> 的值).
+        /// Convert items data into string. The headerLength parameter uses the value of <see cref="ExMemoryMarshal.SpanViewLength"/> (将各项数据转为字符串. headerLength 参数使用 <see cref="ExMemoryMarshal.SpanViewLength"/> 的值).
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <param name="source">The source data (源数据).</param>
@@ -123,7 +123,7 @@ namespace Zyl.SizableSpans.Extensions.ApplySpans {
         /// <seealso cref="ItemFormaters"/>
         [MyCLSCompliant(false)]
         public static string ItemsToString<T>(this ReadOnlySpan<T> source, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
-            return ItemsToString(source, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
+            return ItemsToString(source, (TSize)ExMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
         }
 
         /// <summary>
@@ -148,7 +148,7 @@ namespace Zyl.SizableSpans.Extensions.ApplySpans {
         /// <inheritdoc cref="ItemsToString{T}(ReadOnlySpan{T}, Func{TSize, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
         [MyCLSCompliant(false)]
         public static string ItemsToString<T>(this Span<T> source, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
-            return ItemsToString(source, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
+            return ItemsToString(source, (TSize)ExMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
         }
 
         /// <inheritdoc cref="ItemsToString{T}(ReadOnlySpan{T}, TSize, TSize, Func{TSize, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>

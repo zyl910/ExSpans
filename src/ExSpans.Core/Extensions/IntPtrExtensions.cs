@@ -6,9 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
-using Zyl.SizableSpans.Impl;
+using Zyl.ExSpans.Impl;
 
-namespace Zyl.SizableSpans.Extensions {
+namespace Zyl.ExSpans.Extensions {
     /// <summary>
     /// Extensions of <see cref="IntPtr"/> types (<see cref="IntPtr"/> 类型的扩展)
     /// </summary>
@@ -287,7 +287,7 @@ namespace Zyl.SizableSpans.Extensions {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static nint SaturatingToIntPtr(this ulong source) {
             nint dst;
-            if (SizableMemoryMarshal.Is64BitProcess) {
+            if (ExMemoryMarshal.Is64BitProcess) {
                 dst = (nint)((source < long.MaxValue) ? source : long.MaxValue);
             } else {
                 dst = (nint)((source < int.MaxValue) ? source : int.MaxValue);
@@ -304,7 +304,7 @@ namespace Zyl.SizableSpans.Extensions {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static nuint SaturatingToUIntPtr(this ulong source) {
             nuint dst;
-            if (SizableMemoryMarshal.Is64BitProcess) {
+            if (ExMemoryMarshal.Is64BitProcess) {
                 dst = (nuint)source;
             } else {
                 dst = (nuint)((source < uint.MaxValue) ? source : uint.MaxValue);

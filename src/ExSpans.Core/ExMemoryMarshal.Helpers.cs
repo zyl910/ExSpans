@@ -4,8 +4,8 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace Zyl.SizableSpans {
-    partial class SizableMemoryMarshal {
+namespace Zyl.ExSpans {
+    partial class ExMemoryMarshal {
 
         internal static unsafe void ClearWithReferences(ref IntPtr ip, nuint pointerSizeLength) {
             // Debug.Assert(Unsafe.IsOpportunisticallyAligned(ref ip, (uint)sizeof(IntPtr)), "Should've been aligned on natural word boundary.");

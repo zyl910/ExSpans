@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
-namespace Zyl.SizableSpans.Impl {
+namespace Zyl.ExSpans.Impl {
     /// <summary>
     /// Helper methods of <see cref="Debug"/> (<see cref="Debug"/> 的帮助方法).
     /// </summary>

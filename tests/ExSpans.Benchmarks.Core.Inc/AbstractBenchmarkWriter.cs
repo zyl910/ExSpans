@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace Zyl.SizableSpans.Benchmarks {
+namespace Zyl.ExSpans.Benchmarks {
     /// <summary>
     /// Abstract benchmark writer (抽象版基准测试文本写入).
     /// </summary>

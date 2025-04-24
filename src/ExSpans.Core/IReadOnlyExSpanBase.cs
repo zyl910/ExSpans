@@ -4,13 +4,13 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace Zyl.SizableSpans {
+namespace Zyl.ExSpans {
     /// <summary>
     /// The base interface of read only sizable range span (只读大范围跨度的基本接口).
     /// </summary>
     /// <typeparam name="T">The element type (元素的类型).</typeparam>
     [MyCLSCompliant(false)]
-    public interface IReadOnlySizableSpanBase<T> : ISizableLength {
+    public interface IReadOnlyExSpanBase<T> : IExLength {
 
         /// <summary>
         /// Returns a read only reference to the 0th element of the span. If the span is empty, returns null reference.

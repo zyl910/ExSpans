@@ -10,9 +10,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
-using Zyl.SizableSpans.Reflection;
+using Zyl.ExSpans.Reflection;
 
-namespace Zyl.SizableSpans.Tests.Reflection {
+namespace Zyl.ExSpans.Tests.Reflection {
     public class TypeNameUtilTest {
 
         private readonly ITestOutputHelper _output;
@@ -47,12 +47,12 @@ namespace Zyl.SizableSpans.Tests.Reflection {
             //CallItem<Tuple<,>>(); // CS7003 Unexpected use of an unbound generic name
             //CallItem1(typeof(Tuple<, >)); // OK. Same as the next line.
             CallItem1(typeof(Tuple<int?, string>).GetGenericTypeDefinition());
-            atype = typeof(SizableSpan<byte>);
+            atype = typeof(ExSpan<byte>);
             CallItem1(atype);
             CallItem1(atype, null, typeof(byte));
             atype = typeof(SafeBufferSpanProvider);
             CallItem1(atype);
-            CallItem1(atype, typeof(IReadOnlySizableSpanBase<>), typeof(byte));
+            CallItem1(atype, typeof(IReadOnlyExSpanBase<>), typeof(byte));
 
             void CallItem<T>()
 #if ALLOWS_REF_STRUCT

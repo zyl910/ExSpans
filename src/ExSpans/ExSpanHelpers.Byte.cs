@@ -7,11 +7,11 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
 #endif // NETCOREAPP3_0_OR_GREATER
 using System.Text;
-using Zyl.SizableSpans.Impl;
+using Zyl.ExSpans.Impl;
 using Zyl.VectorTraits.Numerics;
 
-namespace Zyl.SizableSpans {
-    partial class SizableSpanHelpers {
+namespace Zyl.ExSpans {
+    partial class ExSpanHelpers {
 
         // Optimized byte-based SequenceEquals. The "length" parameter for this one is declared a nuint rather than int as we also use it for types other than byte
         // where the length can exceed 2Gb once scaled by sizeof(T).
@@ -34,7 +34,7 @@ namespace Zyl.SizableSpans {
                     differentBits -= LoadUShort(ref second);
                 }
                 if ((length & 1) != 0) {
-                    differentBits |= (uint)SizableUnsafe.AddByteOffset(ref first, offset) - (uint)SizableUnsafe.AddByteOffset(ref second, offset);
+                    differentBits |= (uint)ExUnsafe.AddByteOffset(ref first, offset) - (uint)ExUnsafe.AddByteOffset(ref second, offset);
                 }
                 result = (differentBits == 0);
                 goto Result;
@@ -353,7 +353,7 @@ namespace Zyl.SizableSpans {
 
         BytewiseCheck:  // Workaround for https://github.com/dotnet/runtime/issues/8795
             while (minLength > offset) {
-                int result = SizableUnsafe.AddByteOffset(ref first, offset).CompareTo(SizableUnsafe.AddByteOffset(ref second, offset));
+                int result = ExUnsafe.AddByteOffset(ref first, offset).CompareTo(ExUnsafe.AddByteOffset(ref second, offset));
                 if (result != 0)
                     return result;
                 offset += 1;
@@ -381,7 +381,7 @@ namespace Zyl.SizableSpans {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static uint LoadUInt(ref byte start, nuint offset)
-            => Unsafe.ReadUnaligned<uint>(ref SizableUnsafe.AddByteOffset(ref start, offset));
+            => Unsafe.ReadUnaligned<uint>(ref ExUnsafe.AddByteOffset(ref start, offset));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static nuint LoadNUInt(ref byte start)
@@ -389,17 +389,17 @@ namespace Zyl.SizableSpans {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static nuint LoadNUInt(ref byte start, nuint offset)
-            => Unsafe.ReadUnaligned<nuint>(ref SizableUnsafe.AddByteOffset(ref start, offset));
+            => Unsafe.ReadUnaligned<nuint>(ref ExUnsafe.AddByteOffset(ref start, offset));
 
 #if NETCOREAPP3_0_OR_GREATER
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Vector128<byte> LoadVector128(ref byte start, nuint offset)
-            => Unsafe.ReadUnaligned<Vector128<byte>>(ref SizableUnsafe.AddByteOffset(ref start, offset));
+            => Unsafe.ReadUnaligned<Vector128<byte>>(ref ExUnsafe.AddByteOffset(ref start, offset));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Vector256<byte> LoadVector256(ref byte start, nuint offset)
-            => Unsafe.ReadUnaligned<Vector256<byte>>(ref SizableUnsafe.AddByteOffset(ref start, offset));
+            => Unsafe.ReadUnaligned<Vector256<byte>>(ref ExUnsafe.AddByteOffset(ref start, offset));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static nuint GetByteVector128SpanLength(nuint offset, int length)

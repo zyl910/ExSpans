@@ -4,10 +4,10 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using Zyl.SizableSpans.Benchmarks.ASizableSpan;
+using Zyl.ExSpans.Benchmarks.AExSpan;
 using Zyl.VectorTraits.Impl;
 
-namespace Zyl.SizableSpans.Benchmarks
+namespace Zyl.ExSpans.Benchmarks
 {
     internal class BenchmarkMain {
 

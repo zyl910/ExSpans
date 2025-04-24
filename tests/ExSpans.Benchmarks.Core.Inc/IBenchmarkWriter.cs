@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace Zyl.SizableSpans.Benchmarks {
+namespace Zyl.ExSpans.Benchmarks {
     /// <summary>
     /// Benchmark writer inteface (基准测试的文本写入接口).
     /// </summary>

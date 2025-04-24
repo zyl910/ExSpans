@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Zyl.SizableSpans {
+namespace Zyl.ExSpans {
     /// <summary>
     /// The formaters of each item (各项的格式化器集).
     /// </summary>
-    /// <seealso cref="SizableSpanExtensions.ItemsToString{T}(ReadOnlySizableSpan{T}, Func{nuint, T, string}?, bool)"/>
+    /// <seealso cref="ExSpanExtensions.ItemsToString{T}(ReadOnlyExSpan{T}, Func{nuint, T, string}?, bool)"/>
     public static class ItemFormaters {
 
         /// <summary>

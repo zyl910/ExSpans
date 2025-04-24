@@ -5,7 +5,7 @@ global using MyCLSCompliantAttribute = System.CLSCompliantAttribute;
 #else
 global using TSize = System.IntPtr;
 global using TSize32 = System.Int32;
-global using MyCLSCompliantAttribute = Zyl.SizableSpans.Impl.FakeCLSCompliantAttribute;
+global using MyCLSCompliantAttribute = Zyl.ExSpans.Impl.FakeCLSCompliantAttribute;
 #endif // SIZE_UINTPTR
 global using TUSize = System.UIntPtr;
 

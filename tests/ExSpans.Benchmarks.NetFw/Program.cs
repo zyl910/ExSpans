@@ -9,13 +9,13 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using Zyl.SizableSpans.Benchmarks.ASizableSpan;
+using Zyl.ExSpans.Benchmarks.AExSpan;
 
-namespace Zyl.SizableSpans.Benchmarks.NetFw {
+namespace Zyl.ExSpans.Benchmarks.NetFw {
     class Program {
         static void Main(string[] args) {
             TextWriter writer = Console.Out;
-            writer.WriteLine("SizableSpans.Benchmarks.NetFw");
+            writer.WriteLine("ExSpans.Benchmarks.NetFw");
             // benchmarkMode
             // 0: Benchmark all with my BenchmarkMain.
             // 1: Benchmark all with BenchmarkDotNet.

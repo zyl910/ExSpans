@@ -8,14 +8,14 @@ using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics;
 #endif // NETCOREAPP3_0_OR_GREATER
 using System.Text;
-using Zyl.SizableSpans.Impl;
-using Zyl.SizableSpans.Reflection;
+using Zyl.ExSpans.Impl;
+using Zyl.ExSpans.Reflection;
 using Zyl.VectorTraits;
 using Zyl.VectorTraits.Extensions;
 using Zyl.VectorTraits.Numerics;
 
-namespace Zyl.SizableSpans {
-    partial class SizableSpanHelpers {
+namespace Zyl.ExSpans {
+    partial class ExSpanHelpers {
 
         public static bool SequenceEqual<T>(ref T first, ref T second, nuint length) where T : IEquatable<T>? {
             Debug.Assert(length >= 0);
@@ -217,8 +217,8 @@ namespace Zyl.SizableSpans {
 
                 if (numElements >= (uint)(2 * Vector<byte>.Count / Unsafe.SizeOf<T>())) {
                     do {
-                        Unsafe.WriteUnaligned(ref SizableUnsafe.AddByteOffset(ref refDataAsBytes, offset), vector);
-                        Unsafe.WriteUnaligned(ref SizableUnsafe.AddByteOffset(ref refDataAsBytes, offset + (nuint)Vector<byte>.Count), vector);
+                        Unsafe.WriteUnaligned(ref ExUnsafe.AddByteOffset(ref refDataAsBytes, offset), vector);
+                        Unsafe.WriteUnaligned(ref ExUnsafe.AddByteOffset(ref refDataAsBytes, offset + (nuint)Vector<byte>.Count), vector);
                         offset += (uint)(2 * Vector<byte>.Count);
                     } while (offset < stopLoopAtOffset);
                 }
@@ -230,7 +230,7 @@ namespace Zyl.SizableSpans {
                 // count" situation.
 
                 if ((totalByteLength & (nuint)Vector<byte>.Count) != 0) {
-                    Unsafe.WriteUnaligned(ref SizableUnsafe.AddByteOffset(ref refDataAsBytes, offset), vector);
+                    Unsafe.WriteUnaligned(ref ExUnsafe.AddByteOffset(ref refDataAsBytes, offset), vector);
                 }
 
                 // It's possible that some small buffer remains to be populated - something that won't
@@ -240,7 +240,7 @@ namespace Zyl.SizableSpans {
                 // There's no need to perform a length check here because we already performed this
                 // check before entering the vectorized code path.
 
-                Unsafe.WriteUnaligned(ref SizableUnsafe.AddByteOffset(ref refDataAsBytes, totalByteLength - (nuint)Vector<byte>.Count), vector);
+                Unsafe.WriteUnaligned(ref ExUnsafe.AddByteOffset(ref refDataAsBytes, totalByteLength - (nuint)Vector<byte>.Count), vector);
 
                 // And we're done!
 

@@ -2,11 +2,11 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
-namespace Zyl.SizableSpans {
+namespace Zyl.ExSpans {
     /// <summary>
-    /// Helper methods of SizableSpan (SizableSpan 的帮助方法).
+    /// Helper methods of ExSpan (ExSpan 的帮助方法).
     /// </summary>
-    internal static partial class SizableSpanHelpers {
+    internal static partial class ExSpanHelpers {
 
     }
 }

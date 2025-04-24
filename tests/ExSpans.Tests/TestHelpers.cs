@@ -15,13 +15,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Zyl.SizableSpans.Tests {
+namespace Zyl.ExSpans.Tests {
     public static class TestHelpers {
 
-        public delegate void AssertThrowsAction<T>(SizableSpan<T> span);
+        public delegate void AssertThrowsAction<T>(ExSpan<T> span);
 
         // Cannot use standard Assert.Throws() when testing Span - Span and closures don't get along.
-        public static void AssertThrows<E, T>(SizableSpan<T> span, AssertThrowsAction<T> action) where E : Exception {
+        public static void AssertThrows<E, T>(ExSpan<T> span, AssertThrowsAction<T> action) where E : Exception {
             try {
                 action(span);
                 Assert.Fail($"Expected exception: {typeof(E)}");
@@ -30,10 +30,10 @@ namespace Zyl.SizableSpans.Tests {
             }
         }
 
-        public delegate void AssertThrowsActionReadOnly<T>(ReadOnlySizableSpan<T> span);
+        public delegate void AssertThrowsActionReadOnly<T>(ReadOnlyExSpan<T> span);
 
-        // Cannot use standard Assert.Throws() when testing SizableSpan - SizableSpan and closures don't get along.
-        public static void AssertThrows<E, T>(ReadOnlySizableSpan<T> span, AssertThrowsActionReadOnly<T> action) where E : Exception {
+        // Cannot use standard Assert.Throws() when testing ExSpan - ExSpan and closures don't get along.
+        public static void AssertThrows<E, T>(ReadOnlyExSpan<T> span, AssertThrowsActionReadOnly<T> action) where E : Exception {
             try {
                 action(span);
                 Assert.Fail($"Expected exception: {typeof(E)}");

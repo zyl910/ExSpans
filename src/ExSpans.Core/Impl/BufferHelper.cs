@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
-using Zyl.SizableSpans.Reflection;
+using Zyl.ExSpans.Reflection;
 
-namespace Zyl.SizableSpans.Impl {
+namespace Zyl.ExSpans.Impl {
     /// <summary>
     /// <see cref="Buffer"/> Helper.
     /// </summary>
@@ -25,7 +25,7 @@ namespace Zyl.SizableSpans.Impl {
             //}
             const byte byteValue = 0;
             ref byte p0 = ref b;
-            ref byte pEnd = ref SizableUnsafe.Add(ref p0, byteLength);
+            ref byte pEnd = ref ExUnsafe.Add(ref p0, byteLength);
             uint blockSize = MaxBlockSize;
             ulong count = (ulong)byteLength;
             ref byte p = ref p0;
@@ -112,7 +112,7 @@ namespace Zyl.SizableSpans.Impl {
         /// <seealso cref="TypeHelper.IsBlittable"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void MemmoveBlittable<T>(ref T destination, ref readonly T source, nuint elementCount) {
-            nuint sourceBytesToCopy = SizableUnsafe.GetByteSize<T>(elementCount);
+            nuint sourceBytesToCopy = ExUnsafe.GetByteSize<T>(elementCount);
             ref byte p0 = ref Unsafe.As<T, byte>(ref Unsafe.AsRef(in source));
 #if NETSTANDARD1_3_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET46_OR_GREATER
             unsafe {
@@ -123,8 +123,8 @@ namespace Zyl.SizableSpans.Impl {
             }
 #else
             ref byte q0 = ref Unsafe.As<T, byte>(ref destination);
-            ref byte pEnd = ref SizableUnsafe.Add(ref p0, sourceBytesToCopy);
-            ref byte qEnd = ref SizableUnsafe.Add(ref q0, sourceBytesToCopy);
+            ref byte pEnd = ref ExUnsafe.Add(ref p0, sourceBytesToCopy);
+            ref byte qEnd = ref ExUnsafe.Add(ref q0, sourceBytesToCopy);
             uint blockSize;
             bool needReverse = false;
             if (Unsafe.IsAddressLessThan(ref p0, ref q0)) {
@@ -186,8 +186,8 @@ namespace Zyl.SizableSpans.Impl {
             ref T q0 = ref destination;
             if (UIntPtr.Zero == elementCount) return;
             if (Unsafe.AreSame(ref p0, ref q0)) return;
-            ref T pEnd = ref SizableUnsafe.Add(ref p0, elementCount);
-            ref T qEnd = ref SizableUnsafe.Add(ref q0, elementCount);
+            ref T pEnd = ref ExUnsafe.Add(ref p0, elementCount);
+            ref T qEnd = ref ExUnsafe.Add(ref q0, elementCount);
             bool needReverse = Unsafe.IsAddressLessThan(ref p0, ref q0) && Unsafe.IsAddressLessThan(ref q0, ref pEnd); // overwritten next.
 #if USE_LOOP_UNROLLING
             bool allowLoopUnrolling;
@@ -208,7 +208,7 @@ namespace Zyl.SizableSpans.Impl {
                 nuint rem = elementCount & (UnrollingSize - 1);
                 nuint alignCount = elementCount - rem;
                 if (needReverse) {
-                    ref T pStartAlign = ref SizableUnsafe.Subtract(ref pEnd, alignCount);
+                    ref T pStartAlign = ref ExUnsafe.Subtract(ref pEnd, alignCount);
                     ref T p = ref pEnd;
                     ref T q = ref qEnd;
                     while (!Unsafe.AreSame(ref p, ref pStartAlign)) {
@@ -235,7 +235,7 @@ namespace Zyl.SizableSpans.Impl {
                         case 1: q = p; break;
                     }
                 } else {
-                    ref T pEndAlign = ref SizableUnsafe.Add(ref p0, alignCount);
+                    ref T pEndAlign = ref ExUnsafe.Add(ref p0, alignCount);
                     ref T p = ref p0;
                     ref T q = ref q0;
                     while (!Unsafe.AreSame(ref p, ref pEndAlign)) {

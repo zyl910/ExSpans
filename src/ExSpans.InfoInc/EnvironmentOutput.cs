@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace Zyl.SizableSpans {
+namespace Zyl.ExSpans {
 #nullable enable
 
     /// <summary>

@@ -5,20 +5,20 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
-using Zyl.SizableSpans.Extensions;
-using Zyl.SizableSpans.Impl;
+using Zyl.ExSpans.Extensions;
+using Zyl.ExSpans.Impl;
 
-namespace Zyl.SizableSpans {
-    internal sealed class SizableSpanDebugView<T> {
+namespace Zyl.ExSpans {
+    internal sealed class ExSpanDebugView<T> {
 #if USE_ALL_ITEMS
 
         private readonly T[] _array;
 
-        public SizableSpanDebugView(SizableSpan<T> span) {
+        public ExSpanDebugView(ExSpan<T> span) {
             _array = span.ToArray();
         }
 
-        public SizableSpanDebugView(ReadOnlySizableSpan<T> span) {
+        public ExSpanDebugView(ReadOnlyExSpan<T> span) {
             _array = span.ToArray();
         }
 
@@ -34,8 +34,8 @@ namespace Zyl.SizableSpans {
         private readonly TSize _itemsFooterStart;
         private readonly string _stringHeader;
 
-        public unsafe SizableSpanDebugView(SizableSpan<T> span) {
-            int spanViewLength = SizableMemoryMarshal.SpanViewLength;
+        public unsafe ExSpanDebugView(ExSpan<T> span) {
+            int spanViewLength = ExMemoryMarshal.SpanViewLength;
             _length = span.Length;
             _dataAddress = (nint)Unsafe.AsPointer(ref span.GetPinnableReference());
             _itemsHeader = span.ToArray(spanViewLength);
@@ -63,8 +63,8 @@ namespace Zyl.SizableSpans {
             }
         }
 
-        public unsafe SizableSpanDebugView(ReadOnlySizableSpan<T> span) {
-            int spanViewLength = SizableMemoryMarshal.SpanViewLength;
+        public unsafe ExSpanDebugView(ReadOnlyExSpan<T> span) {
+            int spanViewLength = ExMemoryMarshal.SpanViewLength;
             _length = span.Length;
             _dataAddress = (nint)Unsafe.AsPointer(ref Unsafe.AsRef(in span.GetPinnableReference()));
             _itemsHeader = span.ToArray(spanViewLength);

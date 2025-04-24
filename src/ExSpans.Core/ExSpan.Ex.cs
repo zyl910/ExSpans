@@ -7,32 +7,32 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-using Zyl.SizableSpans.Extensions;
-using Zyl.SizableSpans.Impl;
+using Zyl.ExSpans.Extensions;
+using Zyl.ExSpans.Impl;
 
-namespace Zyl.SizableSpans {
-    partial struct SizableSpan<T> {
+namespace Zyl.ExSpans {
+    partial struct ExSpan<T> {
 
         /// <summary>
-        /// Defines an implicit conversion of a <see cref="Span{T}"/> to a <see cref="SizableSpan{T}"/> (定义 <see cref="Span{T}"/> 到 <see cref="SizableSpan{T}"/> 的隐式转换).
+        /// Defines an implicit conversion of a <see cref="Span{T}"/> to a <see cref="ExSpan{T}"/> (定义 <see cref="Span{T}"/> 到 <see cref="ExSpan{T}"/> 的隐式转换).
         /// </summary>
         /// <param name="span">The object to convert (要转换的对象).</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator SizableSpan<T>(Span<T> span) {
+        public static implicit operator ExSpan<T>(Span<T> span) {
 #if STRUCT_REF_FIELD
-            return new SizableSpan<T>(ref span.GetPinnableReference(), span.SizabledLength());
+            return new ExSpan<T>(ref span.GetPinnableReference(), span.ExdLength());
 #else
-            return new SizableSpan<T>(span, (TSize)0, span.SizabledLength());
+            return new ExSpan<T>(span, (TSize)0, span.ExdLength());
 #endif
         }
 
         /// <summary>
-        /// Defines an explicit conversion of a <see cref="SizableSpan{T}"/> to a <see cref="Span{T}"/>. The length will saturating limited to the maximum length it supports (定义 <see cref="SizableSpan{T}"/> 到 <see cref="Span{T}"/> 的显式转换. 长度会饱和限制为它所支持的最大长度).
+        /// Defines an explicit conversion of a <see cref="ExSpan{T}"/> to a <see cref="Span{T}"/>. The length will saturating limited to the maximum length it supports (定义 <see cref="ExSpan{T}"/> 到 <see cref="Span{T}"/> 的显式转换. 长度会饱和限制为它所支持的最大长度).
         /// </summary>
         /// <param name="span">The object to convert (要转换的对象).</param>
         /// <seealso cref="MemoryMarshalHelper.GetSpanSaturatingLength"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static explicit operator Span<T>(SizableSpan<T> span) {
+        public static explicit operator Span<T>(ExSpan<T> span) {
             if (TSize.Zero == span.Length) return Span<T>.Empty;
             int len = MemoryMarshalHelper.GetSpanSaturatingLength(span.Length);
 #if STRUCT_REF_FIELD

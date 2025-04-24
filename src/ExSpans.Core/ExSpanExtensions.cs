@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
-using Zyl.SizableSpans.Extensions;
+using Zyl.ExSpans.Extensions;
 
-namespace Zyl.SizableSpans {
+namespace Zyl.ExSpans {
     /// <summary>
-    /// Provides commonly used extension methods for the span-related types, such as <see cref="SizableSpan{T}"/> and <see cref="ReadOnlySizableSpan{T}"/> (提供跨度相关的类型的常用的扩展方法，例如 <see cref="SizableSpan{T}"/> 和 <see cref="ReadOnlySizableSpan{T}"/>).
+    /// Provides commonly used extension methods for the span-related types, such as <see cref="ExSpan{T}"/> and <see cref="ReadOnlyExSpan{T}"/> (提供跨度相关的类型的常用的扩展方法，例如 <see cref="ExSpan{T}"/> 和 <see cref="ReadOnlyExSpan{T}"/>).
     /// </summary>
-    public static partial class SizableSpanExtensions {
+    public static partial class ExSpanExtensions {
 
         /// <summary>
         /// Creates a new span over the target array (在目标数组上创建新的跨度).
@@ -17,8 +17,8 @@ namespace Zyl.SizableSpans {
         /// <param name="array">The target array (目标数组).</param>
         /// <returns>The span representation of the array (数组的跨度表示形式).</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static SizableSpan<T> AsSizableSpan<T>(this T[]? array) {
-            return new SizableSpan<T>(array);
+        public static ExSpan<T> AsExSpan<T>(this T[]? array) {
+            return new ExSpan<T>(array);
         }
 
         /// <summary>
@@ -38,8 +38,8 @@ namespace Zyl.SizableSpans {
         /// </exception>
         [MyCLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static SizableSpan<T> AsSizableSpan<T>(this T[]? array, TSize start, TSize length) {
-            return new SizableSpan<T>(array, start, length);
+        public static ExSpan<T> AsExSpan<T>(this T[]? array, TSize start, TSize length) {
+            return new ExSpan<T>(array, start, length);
         }
 
         /// <summary>
@@ -51,16 +51,16 @@ namespace Zyl.SizableSpans {
         /// <returns>The span representation of the array (数组的跨度表示形式).</returns>
         [MyCLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static SizableSpan<T> AsSizableSpan<T>(this T[]? array, TSize start) {
+        public static ExSpan<T> AsExSpan<T>(this T[]? array, TSize start) {
             if (array == null) {
                 if (start != TSize.Zero)
                     ThrowHelper.ThrowArgumentOutOfRangeException();
                 return default;
             }
-            if (IntPtrExtensions.GreaterThanOrEqual(start, array.SizabledLength())) {
+            if (IntPtrExtensions.GreaterThanOrEqual(start, array.ExdLength())) {
                 ThrowHelper.ThrowArgumentOutOfRangeException();
             }
-            return new SizableSpan<T>(array, start, IntPtrExtensions.Subtract(array.SizabledLength(), start));
+            return new ExSpan<T>(array, start, IntPtrExtensions.Subtract(array.ExdLength(), start));
         }
 
 #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP3_0_OR_GREATER
@@ -73,7 +73,7 @@ namespace Zyl.SizableSpans {
         /// <returns>The span representation of the array (数组的跨度表示形式).</returns>
         /// <exception cref="ArgumentNullException">The array argument is null</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static SizableSpan<T> AsSizableSpan<T>(this T[]? array, Index startIndex) {
+        public static ExSpan<T> AsExSpan<T>(this T[]? array, Index startIndex) {
             if (array == null) {
                 if (!startIndex.Equals(Index.Start))
                     throw new ArgumentNullException(nameof(array), "The array argument is null!");
@@ -84,7 +84,7 @@ namespace Zyl.SizableSpans {
             if (actualIndex < 0) {
                 ThrowHelper.ThrowArgumentOutOfRangeException();
             }
-            return new SizableSpan<T>(array, (TSize)actualIndex, IntPtrExtensions.Subtract(array.SizabledLength(), (TSize)actualIndex));
+            return new ExSpan<T>(array, (TSize)actualIndex, IntPtrExtensions.Subtract(array.ExdLength(), (TSize)actualIndex));
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace Zyl.SizableSpans {
         /// <returns>The span representation of the array (数组的跨度表示形式).</returns>
         /// <exception cref="ArgumentNullException">The array argument is null</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static SizableSpan<T> AsSizableSpan<T>(this T[]? array, Range range) {
+        public static ExSpan<T> AsExSpan<T>(this T[]? array, Range range) {
             if (array == null) {
                 Index startIndex = range.Start;
                 Index endIndex = range.End;
@@ -105,7 +105,7 @@ namespace Zyl.SizableSpans {
                 return default;
             }
             (int start, int length) = range.GetOffsetAndLength(array.Length);
-            return new SizableSpan<T>(array, (TSize)start, (TSize)length);
+            return new ExSpan<T>(array, (TSize)start, (TSize)length);
         }
 
 #endif // NETSTANDARD2_0_OR_GREATER || NETCOREAPP3_0_OR_GREATER
@@ -123,8 +123,8 @@ namespace Zyl.SizableSpans {
         /// Thrown when the destination Span is shorter than the source array.
         /// </exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void CopyTo<T>(this T[]? source, SizableSpan<T> destination) {
-            new ReadOnlySizableSpan<T>(source).CopyTo(destination);
+        public static void CopyTo<T>(this T[]? source, ExSpan<T> destination) {
+            new ReadOnlyExSpan<T>(source).CopyTo(destination);
         }
 
     }

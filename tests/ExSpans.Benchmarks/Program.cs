@@ -6,13 +6,13 @@ using BenchmarkDotNet.Toolchains.InProcess.Emit;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using Zyl.SizableSpans.Benchmarks.ASizableSpan;
+using Zyl.ExSpans.Benchmarks.AExSpan;
 
-namespace Zyl.SizableSpans.Benchmarks {
+namespace Zyl.ExSpans.Benchmarks {
     internal class Program {
         static void Main(string[] args) {
             TextWriter writer = Console.Out;
-            writer.WriteLine("SizableSpans.Benchmarks");
+            writer.WriteLine("ExSpans.Benchmarks");
             // benchmarkMode
             // 0: Benchmark all with my BenchmarkMain.
             // 1: Benchmark all with BenchmarkDotNet.

@@ -5,13 +5,13 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-using static Zyl.SizableSpans.Tests.TestHelpers;
+using static Zyl.ExSpans.Tests.TestHelpers;
 
-namespace Zyl.SizableSpans.Tests.ASizableSpan {
+namespace Zyl.ExSpans.Tests.AExSpan {
     public static class AFill {
         [Fact]
         public static void FillEmpty() {
-            var span = SizableSpan<byte>.Empty;
+            var span = ExSpan<byte>.Empty;
             span.Fill((byte)1);
         }
 
@@ -24,7 +24,7 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
             }
             var actual = new byte[2048];
 
-            var span = new SizableSpan<byte>(actual);
+            var span = new ExSpan<byte>(actual);
             span.Fill(fill);
             Assert.Equal<byte>(expected, actual);
         }
@@ -40,12 +40,12 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
             var actualFull = new byte[length];
 
             var start = 1;
-            var expectedSizableSpan = new SizableSpan<byte>(expectedFull, (TSize)start, (TSize)(length - start - 1));
-            var actualSizableSpan = new SizableSpan<byte>(actualFull, (TSize)start, (TSize)(length - start - 1));
-            actualSizableSpan.Fill(fill);
+            var expectedExSpan = new ExSpan<byte>(expectedFull, (TSize)start, (TSize)(length - start - 1));
+            var actualExSpan = new ExSpan<byte>(actualFull, (TSize)start, (TSize)(length - start - 1));
+            actualExSpan.Fill(fill);
 
-            byte[] actual = actualSizableSpan.ToArray();
-            byte[] expected = expectedSizableSpan.ToArray();
+            byte[] actual = actualExSpan.ToArray();
+            byte[] expected = expectedExSpan.ToArray();
             Assert.Equal<byte>(expected, actual);
             Assert.Equal(0, actualFull[0]);
             Assert.Equal(0, actualFull[length - 1]);
@@ -61,7 +61,7 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
                     expectedFull[i] = fill;
                     actualFull[i] = i;
                 }
-                var span = new SizableSpan<int>(actualFull);
+                var span = new ExSpan<int>(actualFull);
                 span.Fill(fill);
                 Assert.Equal<int>(expectedFull, actualFull);
             }
@@ -72,7 +72,7 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
             string[] actual = { "a", "b", "c" };
             string[] expected = { "d", "d", "d" };
 
-            var span = new SizableSpan<string>(actual);
+            var span = new ExSpan<string>(actual);
             span.Fill("d");
             Assert.Equal(expected, actual);
         }
@@ -88,7 +88,7 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
                 new TestValueTypeWithReference() { I = 5, S = "d" },
                 new TestValueTypeWithReference() { I = 5, S = "d" } };
 
-            var span = new SizableSpan<TestValueTypeWithReference>(actual);
+            var span = new ExSpan<TestValueTypeWithReference>(actual);
             span.Fill(new TestValueTypeWithReference() { I = 5, S = "d" });
             Assert.Equal<TestValueTypeWithReference>(expected, actual);
         }
@@ -105,7 +105,7 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
             // Skipping test if Out-of-Memory, since this test can only be run, if there is enough memory
             catch (OutOfMemoryException) {
                 Console.WriteLine(
-                    $"SizableSpan.Fill test {nameof(FillNativeBytes)} skipped due to {nameof(OutOfMemoryException)}.");
+                    $"ExSpan.Fill test {nameof(FillNativeBytes)} skipped due to {nameof(OutOfMemoryException)}.");
                 return;
             }
 
@@ -115,7 +115,7 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
                     *(ptr + i) = initial;
                 }
                 const byte fill = 5;
-                var span = new SizableSpan<byte>(ptr, (TSize)length);
+                var span = new ExSpan<byte>(ptr, (TSize)length);
 
                 // Act
                 span.Fill(fill);
@@ -167,9 +167,9 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
 
                 for (int i = 0; i <= 64; i++) {
                     /* 
-                    arr.AsSizableSpan(0, i).Fill(value);
+                    arr.AsExSpan(0, i).Fill(value);
                     */
-                    (new SizableSpan<T>(arr, (TSize)0, (TSize)i)).Fill(value);
+                    (new ExSpan<T>(arr, (TSize)0, (TSize)i)).Fill(value);
                     Assert.Equal(Enumerable.Repeat(value, i), arr.Take(i)); // first i entries should've been populated with 'value'
 #if NET6_0_OR_GREATER
 #pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.

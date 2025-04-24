@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Zyl.SizableSpans {
+namespace Zyl.ExSpans {
 
     /// <summary>
     /// Flags for convert items data into string (各项数据转字符串的标志).

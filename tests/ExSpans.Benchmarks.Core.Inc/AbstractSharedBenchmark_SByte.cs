@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using Zyl.VectorTraits;
 
-namespace Zyl.SizableSpans.Benchmarks {
+namespace Zyl.ExSpans.Benchmarks {
 
     // My type.
     using TMy = SByte;

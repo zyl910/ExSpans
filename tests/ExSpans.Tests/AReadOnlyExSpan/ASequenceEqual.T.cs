@@ -4,17 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-using Zyl.SizableSpans.Tests.Fake.Attributes;
+using Zyl.ExSpans.Tests.Fake.Attributes;
 
-namespace Zyl.SizableSpans.Tests.AReadOnlySizableSpan {
+namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
     partial class ASequenceEqual {
 
         [Fact]
         public static void ZeroLengthSequenceEqual() {
             int[] a = new int[3];
 
-            ReadOnlySizableSpan<int> first = new ReadOnlySizableSpan<int>(a, (TSize)1, (TSize)0);
-            ReadOnlySizableSpan<int> second = new ReadOnlySizableSpan<int>(a, (TSize)2, (TSize)0);
+            ReadOnlyExSpan<int> first = new ReadOnlyExSpan<int>(a, (TSize)1, (TSize)0);
+            ReadOnlyExSpan<int> second = new ReadOnlyExSpan<int>(a, (TSize)2, (TSize)0);
 
             Assert.True(first.SequenceEqual(second));
             Assert.True(first.SequenceEqual(second, null));
@@ -22,9 +22,9 @@ namespace Zyl.SizableSpans.Tests.AReadOnlySizableSpan {
         }
 
         [Fact]
-        public static void SameSizableSpanSequenceEqual() {
+        public static void SameExSpanSequenceEqual() {
             int[] a = { 4, 5, 6 };
-            ReadOnlySizableSpan<int> span = new ReadOnlySizableSpan<int>(a);
+            ReadOnlyExSpan<int> span = new ReadOnlyExSpan<int>(a);
 
             Assert.True(span.SequenceEqual(span));
             Assert.True(span.SequenceEqual(span, null));
@@ -34,8 +34,8 @@ namespace Zyl.SizableSpans.Tests.AReadOnlySizableSpan {
         [Fact]
         public static void LengthMismatchSequenceEqual() {
             int[] a = { 4, 5, 6 };
-            ReadOnlySizableSpan<int> first = new ReadOnlySizableSpan<int>(a, (TSize)0, (TSize)3);
-            ReadOnlySizableSpan<int> second = new ReadOnlySizableSpan<int>(a, (TSize)0, (TSize)2);
+            ReadOnlyExSpan<int> first = new ReadOnlyExSpan<int>(a, (TSize)0, (TSize)3);
+            ReadOnlyExSpan<int> second = new ReadOnlyExSpan<int>(a, (TSize)0, (TSize)2);
 
             Assert.False(first.SequenceEqual(second));
             Assert.False(first.SequenceEqual(second, null));
@@ -46,7 +46,7 @@ namespace Zyl.SizableSpans.Tests.AReadOnlySizableSpan {
         [InlineData(0)]
         [InlineData(1)]
         [InlineData(2)]
-        public static void OnSequenceEqualOfEqualSizableSpansMakeSureEveryElementIsCompared(int mode) {
+        public static void OnSequenceEqualOfEqualExSpansMakeSureEveryElementIsCompared(int mode) {
             for (int length = 0; length < 100; length++) {
                 TIntLog log = new TIntLog();
 
@@ -56,13 +56,13 @@ namespace Zyl.SizableSpans.Tests.AReadOnlySizableSpan {
                     first[i] = second[i] = new TInt(10 * (i + 1), log);
                 }
 
-                ReadOnlySizableSpan<TInt> firstSizableSpan = new ReadOnlySizableSpan<TInt>(first);
-                ReadOnlySizableSpan<TInt> secondSizableSpan = new ReadOnlySizableSpan<TInt>(second);
+                ReadOnlyExSpan<TInt> firstExSpan = new ReadOnlyExSpan<TInt>(first);
+                ReadOnlyExSpan<TInt> secondExSpan = new ReadOnlyExSpan<TInt>(second);
 
                 Assert.True(mode switch {
-                    0 => firstSizableSpan.SequenceEqual(secondSizableSpan),
-                    1 => firstSizableSpan.SequenceEqual(secondSizableSpan, null),
-                    _ => firstSizableSpan.SequenceEqual(secondSizableSpan, EqualityComparer<TInt>.Default)
+                    0 => firstExSpan.SequenceEqual(secondExSpan),
+                    1 => firstExSpan.SequenceEqual(secondExSpan, null),
+                    _ => firstExSpan.SequenceEqual(secondExSpan, EqualityComparer<TInt>.Default)
                 });
 
                 // Make sure each element of the array was compared once. (Strictly speaking, it would not be illegal for
@@ -93,13 +93,13 @@ namespace Zyl.SizableSpans.Tests.AReadOnlySizableSpan {
 
                     second[mismatchIndex] = new TInt(second[mismatchIndex].Value + 1, log);
 
-                    ReadOnlySizableSpan<TInt> firstSizableSpan = new ReadOnlySizableSpan<TInt>(first);
-                    ReadOnlySizableSpan<TInt> secondSizableSpan = new ReadOnlySizableSpan<TInt>(second);
+                    ReadOnlyExSpan<TInt> firstExSpan = new ReadOnlyExSpan<TInt>(first);
+                    ReadOnlyExSpan<TInt> secondExSpan = new ReadOnlyExSpan<TInt>(second);
 
                     Assert.False(mode switch {
-                        0 => firstSizableSpan.SequenceEqual(secondSizableSpan),
-                        1 => firstSizableSpan.SequenceEqual(secondSizableSpan, null),
-                        _ => firstSizableSpan.SequenceEqual(secondSizableSpan, EqualityComparer<TInt>.Default)
+                        0 => firstExSpan.SequenceEqual(secondExSpan),
+                        1 => firstExSpan.SequenceEqual(secondExSpan, null),
+                        _ => firstExSpan.SequenceEqual(secondExSpan, EqualityComparer<TInt>.Default)
                     });
 
                     Assert.Equal(1, log.CountCompares(first[mismatchIndex].Value, second[mismatchIndex].Value));
@@ -129,19 +129,19 @@ namespace Zyl.SizableSpans.Tests.AReadOnlySizableSpan {
                     first[GuardLength + i] = second[GuardLength + i] = new TInt(10 * (i + 1), checkForOutOfRangeAccess);
                 }
 
-                ReadOnlySizableSpan<TInt> firstSizableSpan = new ReadOnlySizableSpan<TInt>(first, (TSize)GuardLength, (TSize)length);
-                ReadOnlySizableSpan<TInt> secondSizableSpan = new ReadOnlySizableSpan<TInt>(second, (TSize)GuardLength, (TSize)length);
+                ReadOnlyExSpan<TInt> firstExSpan = new ReadOnlyExSpan<TInt>(first, (TSize)GuardLength, (TSize)length);
+                ReadOnlyExSpan<TInt> secondExSpan = new ReadOnlyExSpan<TInt>(second, (TSize)GuardLength, (TSize)length);
 
-                Assert.True(firstSizableSpan.SequenceEqual(secondSizableSpan));
-                Assert.True(firstSizableSpan.SequenceEqual(secondSizableSpan, null));
-                Assert.True(firstSizableSpan.SequenceEqual(secondSizableSpan, EqualityComparer<TInt>.Default));
+                Assert.True(firstExSpan.SequenceEqual(secondExSpan));
+                Assert.True(firstExSpan.SequenceEqual(secondExSpan, null));
+                Assert.True(firstExSpan.SequenceEqual(secondExSpan, EqualityComparer<TInt>.Default));
             }
         }
 
         [Theory]
         [MemberData(nameof(TestHelpers.SequenceEqualsNullData), MemberType = typeof(TestHelpers))]
         public static void SequenceEqualsNullData_String(string?[]? firstInput, string?[]? secondInput, bool expected) {
-            ReadOnlySizableSpan<string?> theStrings = firstInput;
+            ReadOnlyExSpan<string?> theStrings = firstInput;
 
             Assert.Equal(expected, theStrings.SequenceEqual(secondInput));
             Assert.Equal(expected, theStrings.SequenceEqual(secondInput, null));
@@ -153,17 +153,17 @@ namespace Zyl.SizableSpans.Tests.AReadOnlySizableSpan {
         [Fact]
         public static void SequenceEqual_AlwaysTrueComparer() {
             EqualityComparer<int> alwaysTrueComparer = EqualityComparer<int>.Create((x, y) => true);
-            Assert.False(((ReadOnlySizableSpan<int>)new int[1]).SequenceEqual(new int[2], alwaysTrueComparer));
-            Assert.True(((ReadOnlySizableSpan<int>)new int[2]).SequenceEqual(new int[2], alwaysTrueComparer));
-            Assert.True(((ReadOnlySizableSpan<int>)new int[2] { 1, 3 }).SequenceEqual(new int[2] { 2, 4 }, alwaysTrueComparer));
+            Assert.False(((ReadOnlyExSpan<int>)new int[1]).SequenceEqual(new int[2], alwaysTrueComparer));
+            Assert.True(((ReadOnlyExSpan<int>)new int[2]).SequenceEqual(new int[2], alwaysTrueComparer));
+            Assert.True(((ReadOnlyExSpan<int>)new int[2] { 1, 3 }).SequenceEqual(new int[2] { 2, 4 }, alwaysTrueComparer));
         }
 
         [Fact]
         public static void SequenceEqual_AlwaysFalseComparer() {
             EqualityComparer<int> alwaysFalseComparer = EqualityComparer<int>.Create((x, y) => false);
-            Assert.False(((ReadOnlySizableSpan<int>)new int[1]).SequenceEqual(new int[2], alwaysFalseComparer));
-            Assert.False(((ReadOnlySizableSpan<int>)new int[1]).SequenceEqual(new int[2], alwaysFalseComparer));
-            Assert.False(((ReadOnlySizableSpan<int>)new int[2] { 1, 3 }).SequenceEqual(new int[2] { 2, 4 }, alwaysFalseComparer));
+            Assert.False(((ReadOnlyExSpan<int>)new int[1]).SequenceEqual(new int[2], alwaysFalseComparer));
+            Assert.False(((ReadOnlyExSpan<int>)new int[1]).SequenceEqual(new int[2], alwaysFalseComparer));
+            Assert.False(((ReadOnlyExSpan<int>)new int[2] { 1, 3 }).SequenceEqual(new int[2] { 2, 4 }, alwaysFalseComparer));
         }
 
 #endif // NET8_0_OR_GREATER
@@ -174,16 +174,16 @@ namespace Zyl.SizableSpans.Tests.AReadOnlySizableSpan {
             string[] upper = new[] { "HELLO", "WORLD" };
             string[] different = new[] { "hello", "wurld" };
 
-            Assert.True(((ReadOnlySizableSpan<string>)lower).SequenceEqual(lower));
-            Assert.False(((ReadOnlySizableSpan<string>)lower).SequenceEqual(upper));
-            Assert.True(((ReadOnlySizableSpan<string>)upper).SequenceEqual(upper));
+            Assert.True(((ReadOnlyExSpan<string>)lower).SequenceEqual(lower));
+            Assert.False(((ReadOnlyExSpan<string>)lower).SequenceEqual(upper));
+            Assert.True(((ReadOnlyExSpan<string>)upper).SequenceEqual(upper));
 
-            Assert.True(((ReadOnlySizableSpan<string>)lower).SequenceEqual(lower, StringComparer.OrdinalIgnoreCase));
-            Assert.True(((ReadOnlySizableSpan<string>)lower).SequenceEqual(upper, StringComparer.OrdinalIgnoreCase));
-            Assert.True(((ReadOnlySizableSpan<string>)upper).SequenceEqual(upper, StringComparer.OrdinalIgnoreCase));
+            Assert.True(((ReadOnlyExSpan<string>)lower).SequenceEqual(lower, StringComparer.OrdinalIgnoreCase));
+            Assert.True(((ReadOnlyExSpan<string>)lower).SequenceEqual(upper, StringComparer.OrdinalIgnoreCase));
+            Assert.True(((ReadOnlyExSpan<string>)upper).SequenceEqual(upper, StringComparer.OrdinalIgnoreCase));
 
-            Assert.False(((ReadOnlySizableSpan<string>)lower).SequenceEqual(different));
-            Assert.False(((ReadOnlySizableSpan<string>)lower).SequenceEqual(different, StringComparer.OrdinalIgnoreCase));
+            Assert.False(((ReadOnlyExSpan<string>)lower).SequenceEqual(different));
+            Assert.False(((ReadOnlyExSpan<string>)lower).SequenceEqual(different, StringComparer.OrdinalIgnoreCase));
         }
 
     }

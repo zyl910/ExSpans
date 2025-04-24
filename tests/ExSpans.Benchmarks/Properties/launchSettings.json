@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "SizableSpans.Benchmarks": {
+    "ExSpans.Benchmarks": {
       "commandName": "Project",
       "commandLineArgs": "1"
     }

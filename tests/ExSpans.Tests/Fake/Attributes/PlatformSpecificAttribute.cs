@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit.Sdk;
 
-namespace Zyl.SizableSpans.Tests.Fake.Attributes {
+namespace Zyl.ExSpans.Tests.Fake.Attributes {
     // From: https://github.com/dotnet/arcade/blob/b902fd6b6948e689a5128fa6d94dc7de13e6af84/src/Microsoft.DotNet.XUnitExtensions/src/Attributes/PlatformSpecificAttribute.cs
 
     [Flags]

@@ -7,13 +7,13 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
-using Zyl.SizableSpans.Extensions;
+using Zyl.ExSpans.Extensions;
 
-namespace Zyl.SizableSpans.Impl {
+namespace Zyl.ExSpans.Impl {
     /// <summary>
-    /// Sizable <see cref="Unsafe"/> methods.
+    /// Ex <see cref="Unsafe"/> methods.
     /// </summary>
-    public static class SizableUnsafe {
+    public static class ExUnsafe {
 
         /// <summary>
         /// Adds an element offset to the given managed pointer.

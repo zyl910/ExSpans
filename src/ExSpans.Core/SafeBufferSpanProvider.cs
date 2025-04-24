@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-using Zyl.SizableSpans.Extensions;
-using Zyl.SizableSpans.Impl;
+using Zyl.ExSpans.Extensions;
+using Zyl.ExSpans.Impl;
 
-namespace Zyl.SizableSpans {
+namespace Zyl.ExSpans {
     /// <summary>
     /// The span provider that manages the pointer acquire for <see cref="SafeBuffer"/> (管理 <see cref="SafeBuffer"/> 指针获取的跨度提供者). For example, it can provide span access for memory mapped files (例如它可以为内存映射文件提供跨度访问器).
     /// </summary>
@@ -16,14 +16,14 @@ namespace Zyl.SizableSpans {
     /// <code>
     /// static void TestMemoryMappedFile(TextWriter writer) {
     ///     try {
-    ///         const string MemoryMappedFileMapName = "SizableSpans.Sample.tmp";
+    ///         const string MemoryMappedFileMapName = "ExSpans.Sample.tmp";
     ///         const string MemoryMappedFilePath = MemoryMappedFileMapName;
     ///         const long MemoryMappedFileSize = 1 * 1024 * 1024; // 1MB
     ///         using MemoryMappedFile mappedFile = MemoryMappedFile.CreateFromFile(MemoryMappedFilePath, FileMode.Create, MemoryMappedFileMapName, MemoryMappedFileSize);
     ///         using MemoryMappedViewAccessor accessor = mappedFile.CreateViewAccessor();
     ///         using SafeBufferSpanProvider spanProvider = accessor.SafeMemoryMappedViewHandle.CreateSpanProvider();
     ///         // Write.
-    ///         SizableSpan&lt;int&gt; spanInt = spanProvider.CreateSizableSpan&lt;int&gt;();
+    ///         ExSpan&lt;int&gt; spanInt = spanProvider.CreateExSpan&lt;int&gt;();
     ///         spanInt.Fill(0x01020304);
     ///         spanInt[(nint)0] = 0x12345678;
     ///         // Read.
@@ -39,7 +39,7 @@ namespace Zyl.SizableSpans {
     /// </code>
     /// </example>
     /// </remarks>
-    public unsafe readonly struct SafeBufferSpanProvider : IDisposable, ISizableLength, IReadOnlySizableSpanProvider<byte>, ISizableSpanProvider<byte> {
+    public unsafe readonly struct SafeBufferSpanProvider : IDisposable, IExLength, IReadOnlyExSpanProvider<byte>, IExSpanProvider<byte> {
         private readonly SafeBuffer _source;
         private readonly byte* _pointer;
 
@@ -72,31 +72,31 @@ namespace Zyl.SizableSpans {
         }
 
         /// <inheritdoc/>
-        public ReadOnlySizableSpan<TTo> CreateReadOnlySizableSpan<TTo>() {
-            if (null == _source) return SizableSpan<TTo>.Empty;
+        public ReadOnlyExSpan<TTo> CreateReadOnlyExSpan<TTo>() {
+            if (null == _source) return ExSpan<TTo>.Empty;
             TSize len = checked((TSize)(_source.ByteLength / (ulong)Unsafe.SizeOf<TTo>()));
-            return new ReadOnlySizableSpan<TTo>(_pointer, len);
+            return new ReadOnlyExSpan<TTo>(_pointer, len);
         }
 
         /// <inheritdoc/>
-        public ReadOnlySizableSpan<TTo> CreateReadOnlySizableSpanSaturating<TTo>() {
-            if (null == _source) return SizableSpan<TTo>.Empty;
+        public ReadOnlyExSpan<TTo> CreateReadOnlyExSpanSaturating<TTo>() {
+            if (null == _source) return ExSpan<TTo>.Empty;
             TSize len = (_source.ByteLength / (ulong)Unsafe.SizeOf<TTo>()).SaturatingToTSize();
-            return new ReadOnlySizableSpan<TTo>(_pointer, len);
+            return new ReadOnlyExSpan<TTo>(_pointer, len);
         }
 
         /// <inheritdoc/>
-        public SizableSpan<TTo> CreateSizableSpan<TTo>() {
-            if (null == _source) return SizableSpan<TTo>.Empty;
+        public ExSpan<TTo> CreateExSpan<TTo>() {
+            if (null == _source) return ExSpan<TTo>.Empty;
             TSize len = checked((TSize)(_source.ByteLength / (ulong)Unsafe.SizeOf<TTo>()));
-            return new SizableSpan<TTo>(_pointer, len);
+            return new ExSpan<TTo>(_pointer, len);
         }
 
         /// <inheritdoc/>
-        public SizableSpan<TTo> CreateSizableSpanSaturating<TTo>() {
-            if (null == _source) return SizableSpan<TTo>.Empty;
+        public ExSpan<TTo> CreateExSpanSaturating<TTo>() {
+            if (null == _source) return ExSpan<TTo>.Empty;
             TSize len = (_source.ByteLength / (ulong)Unsafe.SizeOf<TTo>()).SaturatingToTSize();
-            return new SizableSpan<TTo>(_pointer, len);
+            return new ExSpan<TTo>(_pointer, len);
         }
 
         /// <summary>

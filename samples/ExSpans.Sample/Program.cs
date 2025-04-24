@@ -3,9 +3,9 @@ using System;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Runtime.InteropServices;
-using Zyl.SizableSpans.Extensions;
+using Zyl.ExSpans.Extensions;
 
-namespace Zyl.SizableSpans.Sample {
+namespace Zyl.ExSpans.Sample {
 #if SIZE_UINTPTR
     using TSize = UIntPtr;
 #else
@@ -15,7 +15,7 @@ namespace Zyl.SizableSpans.Sample {
     internal class Program {
         static void Main(string[] args) {
             TextWriter writer = Console.Out;
-            writer.WriteLine("SizableSpans.Sample");
+            writer.WriteLine("ExSpans.Sample");
             EnvironmentOutput.OutputEnvironment(writer);
             writer.WriteLine();
 
@@ -31,32 +31,32 @@ namespace Zyl.SizableSpans.Sample {
         /// <param name="writer">The <see cref="TextWriter"/>.</param>
         static void TestSimple(TextWriter writer) {
             const int bufferSize = 16;
-            // Create SizableSpan by Array.
+            // Create ExSpan by Array.
             int[] sourceArray = new int[bufferSize];
-            TestSizableSpan(writer, "Array", new SizableSpan<int>(sourceArray)); // Use constructor method.
-            //TestSizableSpan(writer, "Array", sourceArray.AsSizableSpan()); // Or use extension method.
+            TestExSpan(writer, "Array", new ExSpan<int>(sourceArray)); // Use constructor method.
+            //TestExSpan(writer, "Array", sourceArray.AsExSpan()); // Or use extension method.
             writer.WriteLine();
 
-            // Create SizableSpan by Span.
+            // Create ExSpan by Span.
             Span<int> sourceSpan = stackalloc int[bufferSize];
-            TestSizableSpan(writer, "Span", sourceSpan); // Use implicit conversion.
-            //TestSizableSpan(writer, "Span", sourceSpan.AsSizableSpan()); // Or use extension method.
+            TestExSpan(writer, "Span", sourceSpan); // Use implicit conversion.
+            //TestExSpan(writer, "Span", sourceSpan.AsExSpan()); // Or use extension method.
 
-            // Convert SizableSpan to Span.
-            SizableSpan<int> sizableSpan = sourceSpan; // Implicit conversion Span to SizableSpan.
+            // Convert ExSpan to Span.
+            ExSpan<int> sizableSpan = sourceSpan; // Implicit conversion Span to ExSpan.
             Span<int> span = (Span<int>)sizableSpan; // Use explicit conversion.
             //Span<int> span = sizableSpan.AsSpan(); // Or use extension method.
             writer.WriteLine(string.Format("Span[1]: {0} // 0x{0:X}", span[1]));
-            int checkSum = SumSizableSpan(sizableSpan); // Implicit conversion SizableSpan to ReadOnlySizableSpan.
+            int checkSum = SumExSpan(sizableSpan); // Implicit conversion ExSpan to ReadOnlyExSpan.
             writer.WriteLine(string.Format("CheckSum: {0} // 0x{0:X}", checkSum));
             writer.WriteLine();
 
             // Output:
-            // [TestSizableSpan-Array]
+            // [TestExSpan-Array]
             // Data[0]: 305419896 // 0x12345678
             // Data[1]: 16909060 // 0x1020304
             // 
-            // [TestSizableSpan-Span]
+            // [TestExSpan-Span]
             // Data[0]: 305419896 // 0x12345678
             // Data[1]: 16909060 // 0x1020304
             // Span[1]: 16909060 // 0x1020304
@@ -64,28 +64,28 @@ namespace Zyl.SizableSpans.Sample {
         }
 
         /// <summary>
-        /// Test <see cref="SizableSpan{T}"/> (测试 <see cref="SizableSpan{T}"/>).
+        /// Test <see cref="ExSpan{T}"/> (测试 <see cref="ExSpan{T}"/>).
         /// </summary>
         /// <param name="writer">The <see cref="TextWriter"/>.</param>
         /// <param name="title">The title (标题).</param>
         /// <param name="span">This span (当前跨度).</param>
-        static void TestSizableSpan(TextWriter writer, string title, SizableSpan<int> span) {
+        static void TestExSpan(TextWriter writer, string title, ExSpan<int> span) {
             try {
                 // Write.
-                writer.WriteLine($"[TestSizableSpan-{title}]");
+                writer.WriteLine($"[TestExSpan-{title}]");
                 span.Fill(0x01020304);
                 span[(TSize)0] = 0x12345678;
                 // Read.
                 writer.WriteLine(string.Format("Data[0]: {0} // 0x{0:X}", span[(TSize)0]));
                 writer.WriteLine(string.Format("Data[1]: {0} // 0x{0:X}", span[(TSize)1]));
             } catch (Exception ex) {
-                writer.WriteLine(string.Format("Run TestSizableSpan fail! {0}", ex.ToString()));
+                writer.WriteLine(string.Format("Run TestExSpan fail! {0}", ex.ToString()));
             }
         }
 
-        private static int SumSizableSpan(ReadOnlySizableSpan<int> span) {
+        private static int SumExSpan(ReadOnlyExSpan<int> span) {
             int rt = 0; // Result.
-            for (TSize i = (TSize)0; i.LessThan(span.Length); i += 1) { // The LessThan method is from `Zyl.SizableSpans.Extensions.IntPtrExtensions.LessThan`. Since .NET 7.0, the TSize type has only begin to support the less than operator.
+            for (TSize i = (TSize)0; i.LessThan(span.Length); i += 1) { // The LessThan method is from `Zyl.ExSpans.Extensions.IntPtrExtensions.LessThan`. Since .NET 7.0, the TSize type has only begin to support the less than operator.
                 rt += span[i];
             }
             return rt;
@@ -99,12 +99,12 @@ namespace Zyl.SizableSpans.Sample {
 #if NET6_0_OR_GREATER
             const uint byteSize = 2U * 1024 * 1024 * 1024; // 2GB
             TSize bufferSize = (TSize)(byteSize / sizeof(int));
-            // Create SizableSpan by Pointer.
+            // Create ExSpan by Pointer.
             try {
                 void* buffer = NativeMemory.Alloc(byteSize);
                 try {
-                    SizableSpan<int> sizableSpan = new SizableSpan<int>(buffer, bufferSize);
-                    TestSizableSpan(writer, "2GB", sizableSpan);
+                    ExSpan<int> sizableSpan = new ExSpan<int>(buffer, bufferSize);
+                    TestExSpan(writer, "2GB", sizableSpan);
                     writer.WriteLine(string.Format("ItemsToString: {0}", sizableSpan.ItemsToString((TSize)16)));
                     writer.WriteLine();
                 } finally {
@@ -122,7 +122,7 @@ namespace Zyl.SizableSpans.Sample {
         /// <param name="writer">The <see cref="TextWriter"/>.</param>
         static void TestMemoryMappedFile(TextWriter writer) {
             try {
-                const string MemoryMappedFileMapName = "SizableSpans.Sample.tmp";
+                const string MemoryMappedFileMapName = "ExSpans.Sample.tmp";
                 const string MemoryMappedFilePath = MemoryMappedFileMapName;
                 const long MemoryMappedFileSize = 1 * 1024 * 1024; // 1MB
                 using MemoryMappedFile mappedFile = MemoryMappedFile.CreateFromFile(MemoryMappedFilePath, FileMode.Create, MemoryMappedFileMapName, MemoryMappedFileSize);
@@ -130,13 +130,13 @@ namespace Zyl.SizableSpans.Sample {
                 using SafeBufferSpanProvider spanProvider = accessor.SafeMemoryMappedViewHandle.CreateSpanProvider();
                 // Write.
                 writer.WriteLine("[TestMemoryMappedFile]");
-                SizableSpan<int> spanInt = spanProvider.CreateSizableSpan<int>();
+                ExSpan<int> spanInt = spanProvider.CreateExSpan<int>();
                 spanInt.Fill(0x01020304);
                 spanInt[(TSize)0] = 0x12345678;
                 // Read.
                 writer.WriteLine(string.Format("Data[0]: {0} // 0x{0:X}", spanInt[(TSize)0]));
                 writer.WriteLine(string.Format("Data[1]: {0} // 0x{0:X}", spanInt[(TSize)1]));
-                // Extension methods provided by SizableSpanExtensions.
+                // Extension methods provided by ExSpanExtensions.
                 writer.WriteLine(string.Format("ItemsToString: {0}", spanProvider.ItemsToString(spanProvider.GetPinnableReadOnlyReference(), (TSize)16)));
                 // done.
                 writer.WriteLine();

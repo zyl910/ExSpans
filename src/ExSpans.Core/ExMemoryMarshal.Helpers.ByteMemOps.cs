@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
-using Zyl.SizableSpans.Impl;
+using Zyl.ExSpans.Impl;
 
-namespace Zyl.SizableSpans {
-    partial class SizableMemoryMarshal {
+namespace Zyl.ExSpans {
+    partial class ExMemoryMarshal {
 
         private const nuint ZeroMemoryNativeThreshold = 1024;
 
@@ -15,7 +15,7 @@ namespace Zyl.SizableSpans {
             if (len == 0)
                 return;
 
-            ref byte destEnd = ref SizableUnsafe.Add(ref dest, len);
+            ref byte destEnd = ref ExUnsafe.Add(ref dest, len);
 
             if (len <= 16)
                 goto MZER02;

@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Threading;
 
-namespace Zyl.SizableSpans.Tests {
+namespace Zyl.ExSpans.Tests {
     /// <summary>
     /// This class is used in testing functions that are allocating significantly large blocks
     /// of memory that could conceivably cause the machine to go OOM if more than one of the

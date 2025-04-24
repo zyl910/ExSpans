@@ -1,7 +1,7 @@
 //using NUnit.Framework;
 using Xunit;
 
-namespace Zyl.SizableSpans.Tests {
+namespace Zyl.ExSpans.Tests {
     public class UnitTest1 {
         //[SetUp]
         //public void Setup() {

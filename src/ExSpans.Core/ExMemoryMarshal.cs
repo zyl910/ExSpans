@@ -7,111 +7,111 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-using Zyl.SizableSpans.Extensions;
-using Zyl.SizableSpans.Reflection;
+using Zyl.ExSpans.Extensions;
+using Zyl.ExSpans.Reflection;
 
-namespace Zyl.SizableSpans {
+namespace Zyl.ExSpans {
     /// <summary>
-    /// Provides a collection of methods for interoperating with <see cref="SizableSpan{T}"/>, and <see cref="ReadOnlySizableSpan{T}"/>. It can be regarded as the <see cref="MemoryMarshal"/> of <see cref="TSize"/> index range (提供与 SizableSpan 和 SizableReadOnlySpan 互操作的方法. 它可以被视为 <see cref="TSize"/> 索引范围的 MemoryMarshal).
+    /// Provides a collection of methods for interoperating with <see cref="ExSpan{T}"/>, and <see cref="ReadOnlyExSpan{T}"/>. It can be regarded as the <see cref="MemoryMarshal"/> of <see cref="TSize"/> index range (提供与 ExSpan 和 ExReadOnlySpan 互操作的方法. 它可以被视为 <see cref="TSize"/> 索引范围的 MemoryMarshal).
     /// </summary>
-    public static partial class SizableMemoryMarshal {
+    public static partial class ExMemoryMarshal {
         /// <summary>
-        /// Casts a SizableSpan of one primitive type <typeparamref name="T"/> to SizableSpan of bytes.
+        /// Casts a ExSpan of one primitive type <typeparamref name="T"/> to ExSpan of bytes.
         /// That type may not contain pointers or references. This is checked at runtime in order to preserve type safety
-        /// (将一个基元类型<typeparamref name="T"/>的SizableSpan 转换为字节的SizableSpan. 该类型不能包含指针或引用. 它会在运行时检查这一点, 以保护类型安全).
+        /// (将一个基元类型<typeparamref name="T"/>的ExSpan 转换为字节的ExSpan. 该类型不能包含指针或引用. 它会在运行时检查这一点, 以保护类型安全).
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <param name="span">The source slice, of type <typeparamref name="T"/> (<typeparamref name="T"/> 类型的源切片).</param>
-        /// <returns>A SizableSpan of type <see cref="Byte"/> (<see cref="Byte"/> 类型的 SizableSpan).</returns>
+        /// <returns>A ExSpan of type <see cref="Byte"/> (<see cref="Byte"/> 类型的 ExSpan).</returns>
         /// <exception cref="ArgumentException">
         /// Thrown when <typeparamref name="T"/> contains pointers.
         /// </exception>
         /// <exception cref="OverflowException">
-        /// Thrown if the Length property of the new SizableSpan would exceed <see cref="TSize.MaxValue"/>.
+        /// Thrown if the Length property of the new ExSpan would exceed <see cref="TSize.MaxValue"/>.
         /// </exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static SizableSpan<byte> AsBytes<T>(SizableSpan<T> span)
+        public static ExSpan<byte> AsBytes<T>(ExSpan<T> span)
             where T : struct {
             if (TypeHelper.IsReferenceOrContainsReferences<T>())
                 ThrowHelper.ThrowInvalidTypeWithPointersNotSupported(typeof(T));
             TSize len = span.Length.MultiplyChecked(Unsafe.SizeOf<T>());
 #if STRUCT_REF_FIELD
-            return new SizableSpan<byte>(ref Unsafe.As<T, byte>(ref GetReference(span)), len);
+            return new ExSpan<byte>(ref Unsafe.As<T, byte>(ref GetReference(span)), len);
 #else
-            return new SizableSpan<byte>(MemoryMarshal.AsBytes(span._referenceSpan), span._byteOffset, len);
+            return new ExSpan<byte>(MemoryMarshal.AsBytes(span._referenceSpan), span._byteOffset, len);
 #endif // STRUCT_REF_FIELD
         }
 
         /// <summary>
-        /// Casts a ReadOnlySizableSpan of one primitive type <typeparamref name="T"/> to ReadOnlySizableSpan of bytes.
+        /// Casts a ReadOnlyExSpan of one primitive type <typeparamref name="T"/> to ReadOnlyExSpan of bytes.
         /// That type may not contain pointers or references. This is checked at runtime in order to preserve type safety.
-        /// (将一个基元类型<typeparamref name="T"/>的SizableSpan 转换为字节的ReadOnlySizableSpan. 该类型不能包含指针或引用. 它会在运行时检查这一点, 以保护类型安全).
+        /// (将一个基元类型<typeparamref name="T"/>的ExSpan 转换为字节的ReadOnlyExSpan. 该类型不能包含指针或引用. 它会在运行时检查这一点, 以保护类型安全).
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <param name="span">The source slice, of type <typeparamref name="T"/> (<typeparamref name="T"/> 类型的源切片).</param>
-        /// <returns>A ReadOnlySizableSpan of type <see cref="Byte"/> (<see cref="Byte"/> 类型的 ReadOnlySizableSpan).</returns>
+        /// <returns>A ReadOnlyExSpan of type <see cref="Byte"/> (<see cref="Byte"/> 类型的 ReadOnlyExSpan).</returns>
         /// <exception cref="ArgumentException">
         /// Thrown when <typeparamref name="T"/> contains pointers.
         /// </exception>
         /// <exception cref="OverflowException">
-        /// Thrown if the Length property of the new SizableSpan would exceed <see cref="TSize.MaxValue"/>.
+        /// Thrown if the Length property of the new ExSpan would exceed <see cref="TSize.MaxValue"/>.
         /// </exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ReadOnlySizableSpan<byte> AsBytes<T>(ReadOnlySizableSpan<T> span)
+        public static ReadOnlyExSpan<byte> AsBytes<T>(ReadOnlyExSpan<T> span)
             where T : struct {
             if (TypeHelper.IsReferenceOrContainsReferences<T>())
                 ThrowHelper.ThrowInvalidTypeWithPointersNotSupported(typeof(T));
 
             TSize len = span.Length.MultiplyChecked(Unsafe.SizeOf<T>());
 #if STRUCT_REF_FIELD
-            return new ReadOnlySizableSpan<byte>(ref Unsafe.As<T, byte>(ref GetReference(span)), len);
+            return new ReadOnlyExSpan<byte>(ref Unsafe.As<T, byte>(ref GetReference(span)), len);
 #else
-            return new ReadOnlySizableSpan<byte>(MemoryMarshal.AsBytes(span._referenceSpan), span._byteOffset, len);
+            return new ReadOnlyExSpan<byte>(MemoryMarshal.AsBytes(span._referenceSpan), span._byteOffset, len);
 #endif // STRUCT_REF_FIELD
         }
 
         /// <summary>
-        /// Returns a reference to the 0th element of the SizableSpan. Such a reference may or may not be null. It can be used for pinning but must never be dereferenced
-        /// (返回 SizableSpan 中索引为 0 处元素的引用. 这样的引用可能为空, 也可能不为空. 它可以用于固定, 但绝不能解引用).
+        /// Returns a reference to the 0th element of the ExSpan. Such a reference may or may not be null. It can be used for pinning but must never be dereferenced
+        /// (返回 ExSpan 中索引为 0 处元素的引用. 这样的引用可能为空, 也可能不为空. 它可以用于固定, 但绝不能解引用).
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <param name="span">The source span (源跨度).</param>
-        /// <returns>a reference to the 0th element of the SizableSpan (SizableSpan 中索引为 0 处元素的引用).</returns>
-        public static ref T GetReference<T>(SizableSpan<T> span) => ref span.GetPinnableReference();
+        /// <returns>a reference to the 0th element of the ExSpan (ExSpan 中索引为 0 处元素的引用).</returns>
+        public static ref T GetReference<T>(ExSpan<T> span) => ref span.GetPinnableReference();
 
         /// <summary>
-        /// Returns a reference to the 0th element of the ReadOnlySizableSpan. Such a reference may or may not be null. It can be used for pinning but must never be dereferenced
-        /// (返回 ReadOnlySizableSpan 中索引为 0 处元素的引用. 这样的引用可能为空, 也可能不为空. 它可以用于固定, 但绝不能解引用).
+        /// Returns a reference to the 0th element of the ReadOnlyExSpan. Such a reference may or may not be null. It can be used for pinning but must never be dereferenced
+        /// (返回 ReadOnlyExSpan 中索引为 0 处元素的引用. 这样的引用可能为空, 也可能不为空. 它可以用于固定, 但绝不能解引用).
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <param name="span">The source span (源跨度).</param>
-        /// <returns>a reference to the 0th element of the ReadOnlySizableSpan (ReadOnlySizableSpan 中索引为 0 处元素的引用).</returns>
-        public static ref T GetReference<T>(ReadOnlySizableSpan<T> span) => ref Unsafe.AsRef(in span.GetPinnableReference());
+        /// <returns>a reference to the 0th element of the ReadOnlyExSpan (ReadOnlyExSpan 中索引为 0 处元素的引用).</returns>
+        public static ref T GetReference<T>(ReadOnlyExSpan<T> span) => ref Unsafe.AsRef(in span.GetPinnableReference());
 
         /// <summary>
-        /// Returns a reference to the 0th element of the SizableSpan. If the SizableSpan is empty, returns a reference to fake non-null pointer. Such a reference can be used
+        /// Returns a reference to the 0th element of the ExSpan. If the ExSpan is empty, returns a reference to fake non-null pointer. Such a reference can be used
         /// for pinning but must never be dereferenced. This is useful for interop with methods that do not accept null pointers for zero-sized buffers.
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <param name="span">The source span (源跨度).</param>
-        /// <returns>a reference to the 0th element of the SizableSpan (SizableSpan 中索引为 0 处元素的引用).</returns>
+        /// <returns>a reference to the 0th element of the ExSpan (ExSpan 中索引为 0 处元素的引用).</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static unsafe ref T GetNonNullPinnableReference<T>(SizableSpan<T> span) => ref (!span.IsEmpty) ? ref span.GetPinnableReference() : ref Unsafe.AsRef<T>((void*)1);
+        internal static unsafe ref T GetNonNullPinnableReference<T>(ExSpan<T> span) => ref (!span.IsEmpty) ? ref span.GetPinnableReference() : ref Unsafe.AsRef<T>((void*)1);
 
         /// <summary>
-        /// Returns a reference to the 0th element of the ReadOnlySizableSpan. If the ReadOnlySizableSpan is empty, returns a reference to fake non-null pointer. Such a reference
+        /// Returns a reference to the 0th element of the ReadOnlyExSpan. If the ReadOnlyExSpan is empty, returns a reference to fake non-null pointer. Such a reference
         /// can be used for pinning but must never be dereferenced. This is useful for interop with methods that do not accept null pointers for zero-sized buffers.
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <param name="span">The source span (源跨度).</param>
-        /// <returns>a reference to the 0th element of the ReadOnlySizableSpan (ReadOnlySizableSpan 中索引为 0 处元素的引用).</returns>
+        /// <returns>a reference to the 0th element of the ReadOnlyExSpan (ReadOnlyExSpan 中索引为 0 处元素的引用).</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static unsafe ref T GetNonNullPinnableReference<T>(ReadOnlySizableSpan<T> span) => ref (!span.IsEmpty) ? ref Unsafe.AsRef(in span.GetPinnableReference()) : ref Unsafe.AsRef<T>((void*)1);
+        internal static unsafe ref T GetNonNullPinnableReference<T>(ReadOnlyExSpan<T> span) => ref (!span.IsEmpty) ? ref Unsafe.AsRef(in span.GetPinnableReference()) : ref Unsafe.AsRef<T>((void*)1);
 
         /// <summary>
-        /// Casts a SizableSpan of one primitive type <typeparamref name="TFrom"/> to another primitive type <typeparamref name="TTo"/>.
+        /// Casts a ExSpan of one primitive type <typeparamref name="TFrom"/> to another primitive type <typeparamref name="TTo"/>.
         /// These types may not contain pointers or references. This is checked at runtime in order to preserve type safety.
-        /// (将一种基元类型 <typeparamref name="TFrom"/>的SizableSpan 转换为另一种基元类型 <typeparamref name="TTo"/>. 该类型不能包含指针或引用。它会在运行时检查这一点，以保护类型安全).
+        /// (将一种基元类型 <typeparamref name="TFrom"/>的ExSpan 转换为另一种基元类型 <typeparamref name="TTo"/>. 该类型不能包含指针或引用。它会在运行时检查这一点，以保护类型安全).
         /// </summary>
         /// <typeparam name="TFrom">The element type of the source span (源跨度的元素类型).</typeparam>
         /// <typeparam name="TTo">The element type of the target span (目标跨度的元素类型).</typeparam>
@@ -124,7 +124,7 @@ namespace Zyl.SizableSpans {
         /// Thrown when <typeparamref name="TFrom"/> or <typeparamref name="TTo"/> contains pointers.
         /// </exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static SizableSpan<TTo> Cast<TFrom, TTo>(SizableSpan<TFrom> span)
+        public static ExSpan<TTo> Cast<TFrom, TTo>(ExSpan<TFrom> span)
             where TFrom : struct
             where TTo : struct {
             if (TypeHelper.IsReferenceOrContainsReferences<TFrom>())
@@ -157,16 +157,16 @@ namespace Zyl.SizableSpans {
             }
 
 #if STRUCT_REF_FIELD
-            return new SizableSpan<TTo>(ref Unsafe.As<TFrom, TTo>(ref GetReference(span)), toLength);
+            return new ExSpan<TTo>(ref Unsafe.As<TFrom, TTo>(ref GetReference(span)), toLength);
 #else
-            return new SizableSpan<TTo>(MemoryMarshal.Cast<TFrom, TTo>(span._referenceSpan), span._byteOffset, toLength);
+            return new ExSpan<TTo>(MemoryMarshal.Cast<TFrom, TTo>(span._referenceSpan), span._byteOffset, toLength);
 #endif // STRUCT_REF_FIELD
         }
 
         /// <summary>
-        /// Casts a ReadOnlySizableSpan of one primitive type <typeparamref name="TFrom"/> to another primitive type <typeparamref name="TTo"/>.
+        /// Casts a ReadOnlyExSpan of one primitive type <typeparamref name="TFrom"/> to another primitive type <typeparamref name="TTo"/>.
         /// These types may not contain pointers or references. This is checked at runtime in order to preserve type safety.
-        /// (将一种基元类型<typeparamref name="TFrom"/>的 ReadOnlySizableSpan 转换为另一种基元类型 <typeparamref name="TTo"/>. 该类型不能包含指针或引用。它会在运行时检查这一点，以保护类型安全).
+        /// (将一种基元类型<typeparamref name="TFrom"/>的 ReadOnlyExSpan 转换为另一种基元类型 <typeparamref name="TTo"/>. 该类型不能包含指针或引用。它会在运行时检查这一点，以保护类型安全).
         /// </summary>
         /// <typeparam name="TFrom">The element type of the source span (源跨度的元素类型).</typeparam>
         /// <typeparam name="TTo">The element type of the target span (目标跨度的元素类型).</typeparam>
@@ -179,7 +179,7 @@ namespace Zyl.SizableSpans {
         /// Thrown when <typeparamref name="TFrom"/> or <typeparamref name="TTo"/> contains pointers.
         /// </exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ReadOnlySizableSpan<TTo> Cast<TFrom, TTo>(ReadOnlySizableSpan<TFrom> span)
+        public static ReadOnlyExSpan<TTo> Cast<TFrom, TTo>(ReadOnlyExSpan<TFrom> span)
             where TFrom : struct
             where TTo : struct {
             if (TypeHelper.IsReferenceOrContainsReferences<TFrom>())
@@ -212,9 +212,9 @@ namespace Zyl.SizableSpans {
             }
 
 #if STRUCT_REF_FIELD
-            return new ReadOnlySizableSpan<TTo>(ref Unsafe.As<TFrom, TTo>(ref GetReference(span)), toLength);
+            return new ReadOnlyExSpan<TTo>(ref Unsafe.As<TFrom, TTo>(ref GetReference(span)), toLength);
 #else
-            return new ReadOnlySizableSpan<TTo>(MemoryMarshal.Cast<TFrom, TTo>(span._referenceSpan), span._byteOffset, toLength);
+            return new ReadOnlyExSpan<TTo>(MemoryMarshal.Cast<TFrom, TTo>(span._referenceSpan), span._byteOffset, toLength);
 #endif // STRUCT_REF_FIELD
         }
 
@@ -238,9 +238,9 @@ namespace Zyl.SizableSpans {
         /// </remarks>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #if STRUCT_REF_FIELD
-        public static SizableSpan<T> CreateSizableSpan<T>(scoped ref T reference, TSize length) => new SizableSpan<T>(ref Unsafe.AsRef(in reference), length);
+        public static ExSpan<T> CreateExSpan<T>(scoped ref T reference, TSize length) => new ExSpan<T>(ref Unsafe.AsRef(in reference), length);
 #else
-        public static SizableSpan<T> CreateSizableSpan<T>(ref T reference, TSize length) => new SizableSpan<T>(ref reference, length);
+        public static ExSpan<T> CreateExSpan<T>(ref T reference, TSize length) => new ExSpan<T>(ref reference, length);
 #endif
 
         /// <summary>
@@ -261,9 +261,9 @@ namespace Zyl.SizableSpans {
         /// </remarks>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #if STRUCT_REF_FIELD
-        public static ReadOnlySizableSpan<T> CreateReadOnlySizableSpan<T>(scoped ref readonly T reference, TSize length) => new ReadOnlySizableSpan<T>(ref Unsafe.AsRef(in reference), length);
+        public static ReadOnlyExSpan<T> CreateReadOnlyExSpan<T>(scoped ref readonly T reference, TSize length) => new ReadOnlyExSpan<T>(ref Unsafe.AsRef(in reference), length);
 #else
-        public static ReadOnlySizableSpan<T> CreateReadOnlySizableSpan<T>(ref readonly T reference, TSize length) => new ReadOnlySizableSpan<T>(ref Unsafe.AsRef(in reference), length);
+        public static ReadOnlyExSpan<T> CreateReadOnlyExSpan<T>(ref readonly T reference, TSize length) => new ReadOnlyExSpan<T>(ref Unsafe.AsRef(in reference), length);
 #endif
 
 #endif // NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
@@ -276,10 +276,10 @@ namespace Zyl.SizableSpans {
         /// <remarks>The returned span does not include the null terminator (返回的跨度不包括空终止符).</remarks>
         /// <exception cref="ArgumentException">The string is longer than <see cref="int.MaxValue"/>.</exception>
         [CLSCompliant(false)]
-        public static unsafe ReadOnlySizableSpan<char> CreateReadOnlySizableSpanFromNullTerminated(char* value) {
+        public static unsafe ReadOnlyExSpan<char> CreateReadOnlyExSpanFromNullTerminated(char* value) {
             if (null == value) return default;
-            //return new ReadOnlySizableSpan<char>(value, string.wcslen(value));
-            return MemoryMarshal.CreateReadOnlySpanFromNullTerminated(value).AsReadOnlySizableSpan();
+            //return new ReadOnlyExSpan<char>(value, string.wcslen(value));
+            return MemoryMarshal.CreateReadOnlySpanFromNullTerminated(value).AsReadOnlyExSpan();
         }
 
         /// <summary>Creates a new read-only span for a null-terminated UTF-8 string (为 空终止UTF-8字符串 创建新的只读跨度).</summary>
@@ -288,10 +288,10 @@ namespace Zyl.SizableSpans {
         /// <remarks>The returned span does not include the null terminator, nor does it validate the well-formedness of the UTF-8 data (返回的跨度不包括空终止符, 也不验证UTF-8数据的格式正确性).</remarks>
         /// <exception cref="ArgumentException">The string is longer than <see cref="int.MaxValue"/>.</exception>
         [CLSCompliant(false)]
-        public static unsafe ReadOnlySizableSpan<byte> CreateReadOnlySizableSpanFromNullTerminated(byte* value) {
+        public static unsafe ReadOnlyExSpan<byte> CreateReadOnlyExSpanFromNullTerminated(byte* value) {
             if (null == value) return default;
-            //return new ReadOnlySizableSpan<byte>(value, string.strlen(value));
-            return MemoryMarshal.CreateReadOnlySpanFromNullTerminated(value).AsReadOnlySizableSpan();
+            //return new ReadOnlyExSpan<byte>(value, string.strlen(value));
+            return MemoryMarshal.CreateReadOnlySpanFromNullTerminated(value).AsReadOnlyExSpan();
         }
 
 #endif // NET6_0_OR_GREATER
@@ -312,7 +312,7 @@ namespace Zyl.SizableSpans {
         /// <exception cref="ArgumentException">T contains managed object references.</exception>
         /// <exception cref="ArgumentOutOfRangeException">source is smaller than T's length in bytes.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T Read<T>(ReadOnlySizableSpan<byte> source)
+        public static T Read<T>(ReadOnlyExSpan<byte> source)
             where T : struct {
             if (TypeHelper.IsReferenceOrContainsReferences<T>()) {
                 ThrowHelper.ThrowInvalidTypeWithPointersNotSupported(typeof(T));
@@ -333,7 +333,7 @@ namespace Zyl.SizableSpans {
         /// <returns>true if the method succeeds in retrieving an instance of the structure; otherwise, false (如果此方法成功检索到结构体的实例, 则为 true; 否则为 false).</returns>
         /// <exception cref="ArgumentException">T contains managed object references.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool TryRead<T>(ReadOnlySizableSpan<byte> source, out T value)
+        public static bool TryRead<T>(ReadOnlyExSpan<byte> source, out T value)
             where T : struct {
             if (TypeHelper.IsReferenceOrContainsReferences<T>()) {
                 ThrowHelper.ThrowInvalidTypeWithPointersNotSupported(typeof(T));
@@ -356,7 +356,7 @@ namespace Zyl.SizableSpans {
         /// <exception cref="ArgumentException">T contains managed object references.</exception>
         /// <exception cref="ArgumentOutOfRangeException">destination is too small to contain value.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Write<T>(SizableSpan<byte> destination, in T value)
+        public static void Write<T>(ExSpan<byte> destination, in T value)
             where T : struct {
             if (TypeHelper.IsReferenceOrContainsReferences<T>()) {
                 ThrowHelper.ThrowInvalidTypeWithPointersNotSupported(typeof(T));
@@ -377,7 +377,7 @@ namespace Zyl.SizableSpans {
         /// <returns>true if the write operation succeeded; otherwise, false. The method returns false if the span is too small to contain <typeparamref name="T"/> (如果写入操作成功，则为 true；否则为 false。 如果跨度太小无法包含 <typeparamref name="T"/>，则此方法返回 false).</returns>
         /// <exception cref="ArgumentException">T contains managed object references.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool TryWrite<T>(SizableSpan<byte> destination, in T value)
+        public static bool TryWrite<T>(ExSpan<byte> destination, in T value)
             where T : struct {
             if (TypeHelper.IsReferenceOrContainsReferences<T>()) {
                 ThrowHelper.ThrowInvalidTypeWithPointersNotSupported(typeof(T));
@@ -403,7 +403,7 @@ namespace Zyl.SizableSpans {
         /// </remarks>
         /// <exception cref="ArgumentException">T contains managed object references.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ref T AsRef<T>(SizableSpan<byte> span)
+        public static ref T AsRef<T>(ExSpan<byte> span)
             where T : struct {
             if (TypeHelper.IsReferenceOrContainsReferences<T>()) {
                 ThrowHelper.ThrowInvalidTypeWithPointersNotSupported(typeof(T));
@@ -428,7 +428,7 @@ namespace Zyl.SizableSpans {
         /// </remarks>
         /// <exception cref="ArgumentException">T contains managed object references.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ref readonly T AsRef<T>(ReadOnlySizableSpan<byte> span)
+        public static ref readonly T AsRef<T>(ReadOnlyExSpan<byte> span)
             where T : struct {
             if (TypeHelper.IsReferenceOrContainsReferences<T>()) {
                 ThrowHelper.ThrowInvalidTypeWithPointersNotSupported(typeof(T));

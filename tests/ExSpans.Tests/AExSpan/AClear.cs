@@ -11,20 +11,20 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-using Zyl.SizableSpans.Tests.Fake.Attributes;
-using static Zyl.SizableSpans.Tests.TestHelpers;
+using Zyl.ExSpans.Tests.Fake.Attributes;
+using static Zyl.ExSpans.Tests.TestHelpers;
 
-namespace Zyl.SizableSpans.Tests.ASizableSpan {
+namespace Zyl.ExSpans.Tests.AExSpan {
     public static class AClear {
         [Fact]
         public static void ClearEmpty() {
-            var span = SizableSpan<byte>.Empty;
+            var span = ExSpan<byte>.Empty;
             span.Clear();
         }
 
         [Fact]
         public static void ClearEmptyWithReference() {
-            var span = SizableSpan<string>.Empty;
+            var span = ExSpan<string>.Empty;
             span.Clear();
         }
 
@@ -37,7 +37,7 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
             }
             var expected = new byte[actual.Length];
 
-            var span = new SizableSpan<byte>(actual);
+            var span = new ExSpan<byte>(actual);
             span.Clear();
             Assert.Equal<byte>(expected, actual);
         }
@@ -53,12 +53,12 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
             var expectedFull = new byte[length];
 
             var start = 1;
-            var expectedSizableSpan = new SizableSpan<byte>(expectedFull, (TSize)start, (TSize)(length - start - 1));
-            var actualSizableSpan = new SizableSpan<byte>(actualFull, (TSize)start, (TSize)(length - start - 1));
-            actualSizableSpan.Clear();
+            var expectedExSpan = new ExSpan<byte>(expectedFull, (TSize)start, (TSize)(length - start - 1));
+            var actualExSpan = new ExSpan<byte>(actualFull, (TSize)start, (TSize)(length - start - 1));
+            actualExSpan.Clear();
 
-            byte[] actual = actualSizableSpan.ToArray();
-            byte[] expected = expectedSizableSpan.ToArray();
+            byte[] actual = actualExSpan.ToArray();
+            byte[] expected = expectedExSpan.ToArray();
             Assert.Equal<byte>(expected, actual);
             Assert.Equal(initial, actualFull[0]);
             Assert.Equal(initial, actualFull[length - 1]);
@@ -75,13 +75,13 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
             var expectedFull = new byte[length];
 
             var start = 1;
-            var expectedSizableSpan = new SizableSpan<byte>(expectedFull, (TSize)start, (TSize)(length - start - 1));
+            var expectedExSpan = new ExSpan<byte>(expectedFull, (TSize)start, (TSize)(length - start - 1));
             fixed (byte* p = actualFull) {
-                var actualSizableSpan = new SizableSpan<byte>(p + start, (TSize)(length - start - 1));
-                actualSizableSpan.Clear();
+                var actualExSpan = new ExSpan<byte>(p + start, (TSize)(length - start - 1));
+                actualExSpan.Clear();
 
-                byte[] actual = actualSizableSpan.ToArray();
-                byte[] expected = expectedSizableSpan.ToArray();
+                byte[] actual = actualExSpan.ToArray();
+                byte[] expected = expectedExSpan.ToArray();
                 Assert.Equal<byte>(expected, actual);
                 Assert.Equal(initial, actualFull[0]);
                 Assert.Equal(initial, actualFull[length - 1]);
@@ -99,12 +99,12 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
             var expectedFull = new IntPtr[length];
 
             var start = 2;
-            var expectedSizableSpan = new SizableSpan<IntPtr>(expectedFull, (TSize)start, (TSize)(length - start - 1));
-            var actualSizableSpan = new SizableSpan<IntPtr>(actualFull, (TSize)start, (TSize)(length - start - 1));
-            actualSizableSpan.Clear();
+            var expectedExSpan = new ExSpan<IntPtr>(expectedFull, (TSize)start, (TSize)(length - start - 1));
+            var actualExSpan = new ExSpan<IntPtr>(actualFull, (TSize)start, (TSize)(length - start - 1));
+            actualExSpan.Clear();
 
-            IntPtr[] actual = actualSizableSpan.ToArray();
-            IntPtr[] expected = expectedSizableSpan.ToArray();
+            IntPtr[] actual = actualExSpan.ToArray();
+            IntPtr[] expected = expectedExSpan.ToArray();
             Assert.Equal<IntPtr>(expected, actual);
             Assert.Equal(initial, actualFull[0]);
             Assert.Equal(initial, actualFull[length - 1]);
@@ -119,7 +119,7 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
             }
             var expected = new IntPtr[actual.Length];
 
-            var span = new SizableSpan<IntPtr>(actual);
+            var span = new ExSpan<IntPtr>(actual);
             span.Clear();
             Assert.Equal<IntPtr>(expected, actual);
         }
@@ -129,7 +129,7 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
             int[] actual = { 1, 2, 3 };
             int[] expected = { 0, 0, 0 };
 
-            var span = new SizableSpan<int>(actual);
+            var span = new ExSpan<int>(actual);
             span.Clear();
             Assert.Equal<int>(expected, actual);
         }
@@ -142,7 +142,7 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
             }
             int[] expected = new int[actual.Length];
 
-            var span = new SizableSpan<int>(actual);
+            var span = new ExSpan<int>(actual);
             span.Clear();
             Assert.Equal<int>(expected, actual);
         }
@@ -155,7 +155,7 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
             }
             long[] expected = new long[actual.Length];
 
-            var span = new SizableSpan<long>(actual);
+            var span = new ExSpan<long>(actual);
             span.Clear();
             Assert.Equal<long>(expected, actual);
         }
@@ -165,7 +165,7 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
             string[] actual = { "a", "b", "c" };
             string?[] expected = { null, null, null };
 
-            var span = new SizableSpan<string>(actual);
+            var span = new ExSpan<string>(actual);
             span.Clear();
             Assert.Equal(expected, actual);
         }
@@ -178,7 +178,7 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
             }
             string[] expected = new string[actual.Length];
 
-            var span = new SizableSpan<string>(actual);
+            var span = new ExSpan<string>(actual);
             span.Clear();
             Assert.Equal(expected, actual);
         }
@@ -199,7 +199,7 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
                 }
 
                 string[] actual = (string[])baseline.Clone();
-                actual.AsSizableSpan((TSize)1, (TSize)i).Clear();
+                actual.AsExSpan((TSize)1, (TSize)i).Clear();
 
                 Assert.Equal(expected, actual);
             }
@@ -210,7 +210,7 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
             TestEnum[] actual = { TestEnum.E0, TestEnum.E1, TestEnum.E2 };
             TestEnum[] expected = { default, default, default };
 
-            var span = new SizableSpan<TestEnum>(actual);
+            var span = new ExSpan<TestEnum>(actual);
             span.Clear();
             Assert.Equal<TestEnum>(expected, actual);
         }
@@ -226,7 +226,7 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
                 default,
                 default };
 
-            var span = new SizableSpan<TestValueTypeWithReference>(actual);
+            var span = new ExSpan<TestValueTypeWithReference>(actual);
             span.Clear();
             Assert.Equal<TestValueTypeWithReference>(expected, actual);
         }
@@ -254,7 +254,7 @@ namespace Zyl.SizableSpans.Tests.ASizableSpan {
                 }
 
                 try {
-                    SizableSpan<int> span = new SizableSpan<int>(memory.ToPointer(), (nint)length);
+                    ExSpan<int> span = new ExSpan<int>(memory.ToPointer(), (nint)length);
                     span.Fill(5);
 
                     // Act

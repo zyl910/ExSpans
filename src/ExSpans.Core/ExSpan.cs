@@ -9,23 +9,23 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
-using Zyl.SizableSpans.Extensions;
-using Zyl.SizableSpans.Impl;
-using Zyl.SizableSpans.Reflection;
+using Zyl.ExSpans.Extensions;
+using Zyl.ExSpans.Impl;
+using Zyl.ExSpans.Reflection;
 using EditorBrowsableAttribute = System.ComponentModel.EditorBrowsableAttribute;
 using EditorBrowsableState = System.ComponentModel.EditorBrowsableState;
 
-#pragma warning disable 0809 // Obsolete member 'SizableSpan<T>.Equals(object)' overrides non-obsolete member 'object.Equals(object)'
+#pragma warning disable 0809 // Obsolete member 'ExSpan<T>.Equals(object)' overrides non-obsolete member 'object.Equals(object)'
 
-namespace Zyl.SizableSpans {
+namespace Zyl.ExSpans {
     /// <summary>
     /// Provides a type-safe and memory-safe representation of a contiguous region of arbitrary memory. It can be regarded as the <see cref="Span{T}"/> of <see cref="TSize"/> index range (提供任意内存的连续区域的类型安全和内存安全表示形式. 它可以被视为 <see cref="TSize"/> 索引范围的 <see cref="Span{T}"/>).
     /// </summary>
     /// <typeparam name="T">The element type (元素的类型).</typeparam>
-    [DebuggerTypeProxy(typeof(SizableSpanDebugView<>))]
+    [DebuggerTypeProxy(typeof(ExSpanDebugView<>))]
     [DebuggerDisplay("{ToString(),raw}")]
-    //[NativeMarshalling(typeof(SizableSpanMarshaller<,>))]
-    public readonly ref partial struct SizableSpan<T> : ISizableLength, IReadOnlySizableSpanBase<T>, ISizableSpanBase<T> {
+    //[NativeMarshalling(typeof(ExSpanMarshaller<,>))]
+    public readonly ref partial struct ExSpan<T> : IExLength, IReadOnlyExSpanBase<T>, IExSpanBase<T> {
         /// <summary>The number of elements this span contains (跨度中的项数).</summary>
         private readonly TSize _length;
 #if STRUCT_REF_FIELD
@@ -39,13 +39,13 @@ namespace Zyl.SizableSpans {
 #endif
 
         /// <summary>
-        /// Creates a new <see cref="SizableSpan{T}"/> over the entirety of the target array (在整个指定数组中创建新的 <see cref="SizableSpan{T}"/>).
+        /// Creates a new <see cref="ExSpan{T}"/> over the entirety of the target array (在整个指定数组中创建新的 <see cref="ExSpan{T}"/>).
         /// </summary>
         /// <param name="array">The target array (指定数组).</param>
         /// <remarks>Returns default when <paramref name="array"/> is null (当 array 为 null 时返回默认值).</remarks>
         /// <exception cref="ArrayTypeMismatchException">Thrown when <paramref name="array"/> is covariant and array's type is not exactly T[].</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public SizableSpan(T[]? array) {
+        public ExSpan(T[]? array) {
             if (array == null || array.Length <= 0) {
                 this = default;
                 return; // returns default
@@ -53,9 +53,9 @@ namespace Zyl.SizableSpans {
             if (!TypeHelper.IsValueType<T>() && array.GetType() != typeof(T[]))
                 ThrowHelper.ThrowArrayTypeMismatchException();
 
-            _length = array.SizabledLength();
+            _length = array.ExdLength();
 #if STRUCT_REF_FIELD
-            _reference = ref SizableMemoryMarshal.GetArrayDataReference(array);
+            _reference = ref ExMemoryMarshal.GetArrayDataReference(array);
 #else
             _byteOffset = TSize.Zero;
             _referenceSpan = new Span<T>(array);
@@ -63,7 +63,7 @@ namespace Zyl.SizableSpans {
         }
 
         /// <summary>
-        /// Creates a new <see cref="SizableSpan{T}"/> over the portion of the target array beginning at 'start' index and ending at 'end' index (exclusive) (创建一个新的 <see cref="SizableSpan{T}"/>，其中包含从指定索引开始的数组的指定数量的元素).
+        /// Creates a new <see cref="ExSpan{T}"/> over the portion of the target array beginning at 'start' index and ending at 'end' index (exclusive) (创建一个新的 <see cref="ExSpan{T}"/>，其中包含从指定索引开始的数组的指定数量的元素).
         /// </summary>
         /// <param name="array">The target array (指定数组).</param>
         /// <param name="start">The zero-based index at which to begin the span (从零开始的跨度索引).</param>
@@ -75,7 +75,7 @@ namespace Zyl.SizableSpans {
         /// </exception>
         [MyCLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public SizableSpan(T[]? array, TSize start, TSize length) {
+        public ExSpan(T[]? array, TSize start, TSize length) {
             if (array == null || array.Length <= 0) {
                 if (start != TSize.Zero || length != TSize.Zero)
                     ThrowHelper.ThrowArgumentOutOfRangeException();
@@ -84,22 +84,22 @@ namespace Zyl.SizableSpans {
             }
             if (!TypeHelper.IsValueType<T>() && array.GetType() != typeof(T[]))
                 ThrowHelper.ThrowArrayTypeMismatchException();
-            TUSize srcLength = array.SizabledLength().ToUIntPtr();
+            TUSize srcLength = array.ExdLength().ToUIntPtr();
             if (start.ToUIntPtr().GreaterThan(srcLength) || length.ToUIntPtr().GreaterThan(srcLength.Subtract(start.ToUIntPtr()))) {
                 ThrowHelper.ThrowArgumentOutOfRangeException();
             }
 
             _length = length;
 #if STRUCT_REF_FIELD
-            _reference = ref Unsafe.Add(ref SizableMemoryMarshal.GetArrayDataReference(array), start);
+            _reference = ref Unsafe.Add(ref ExMemoryMarshal.GetArrayDataReference(array), start);
 #else
-            _byteOffset = SizableUnsafe.GetByteSize<T>(start);
+            _byteOffset = ExUnsafe.GetByteSize<T>(start);
             _referenceSpan = new Span<T>(array);
 #endif
         }
 
         /// <summary>
-        /// Creates a new <see cref="SizableSpan{T}"/> over the target unmanaged buffer (在目标非托管缓冲区上创建新 <see cref="SizableSpan{T}"/>).
+        /// Creates a new <see cref="ExSpan{T}"/> over the target unmanaged buffer (在目标非托管缓冲区上创建新 <see cref="ExSpan{T}"/>).
         /// </summary>
         /// <param name="pointer">An unmanaged pointer to memory (指向内存的非托管指针).</param>
         /// <param name="length">The number of <typeparamref name="T"/> elements the memory contains (内存中包含的 <typeparamref name="T"/> 元素数量).</param>
@@ -111,7 +111,7 @@ namespace Zyl.SizableSpans {
         /// </exception>
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe SizableSpan(void* pointer, TSize length) {
+        public unsafe ExSpan(void* pointer, TSize length) {
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_0_OR_GREATER
             if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
                 ThrowHelper.ThrowInvalidTypeWithPointersNotSupported(typeof(T));
@@ -133,10 +133,10 @@ namespace Zyl.SizableSpans {
         }
 
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
-        /// <summary>Creates a new <see cref="SizableSpan{T}"/> of length 1 around the specified reference (在指定的引用周围创建长度为 1 的新 <see cref="SizableSpan{T}"/>).</summary>
+        /// <summary>Creates a new <see cref="ExSpan{T}"/> of length 1 around the specified reference (在指定的引用周围创建长度为 1 的新 <see cref="ExSpan{T}"/>).</summary>
         /// <param name="reference">A reference to data (数据的引用).</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public SizableSpan(ref T reference) {
+        public ExSpan(ref T reference) {
             _length = (TSize)1;
 #if STRUCT_REF_FIELD
             _reference = ref reference;
@@ -146,9 +146,9 @@ namespace Zyl.SizableSpans {
 #endif
         }
 
-        // Constructor for internal use only. It is not safe to expose publicly, and is instead exposed via the unsafe MemoryMarshal.CreateSizableSpan.
+        // Constructor for internal use only. It is not safe to expose publicly, and is instead exposed via the unsafe MemoryMarshal.CreateExSpan.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal SizableSpan(ref T reference, TSize length) {
+        internal ExSpan(ref T reference, TSize length) {
             Debug.Assert(length.GreaterThanOrEqual((TSize)0));
 
             _length = length;
@@ -164,7 +164,7 @@ namespace Zyl.SizableSpans {
 #if STRUCT_REF_FIELD
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal SizableSpan(Span<T> referenceSpan, TSize byteOffse, TSize length) {
+        internal ExSpan(Span<T> referenceSpan, TSize byteOffse, TSize length) {
             _length = length;
             _byteOffset = byteOffse;
             _referenceSpan = referenceSpan;
@@ -190,9 +190,9 @@ namespace Zyl.SizableSpans {
 #else
                 unsafe {
                     if (_referenceSpan.IsEmpty) {
-                        return ref SizableUnsafe.Add(ref Unsafe.AsRef<T>((void*)_byteOffset), index);
+                        return ref ExUnsafe.Add(ref Unsafe.AsRef<T>((void*)_byteOffset), index);
                     } else {
-                        return ref SizableUnsafe.Add(ref Unsafe.AddByteOffset(ref _referenceSpan.GetPinnableReference(), IntPtrExtensions.ToIntPtr(_byteOffset)), index);
+                        return ref ExUnsafe.Add(ref Unsafe.AddByteOffset(ref _referenceSpan.GetPinnableReference(), IntPtrExtensions.ToIntPtr(_byteOffset)), index);
                     }
                 }
 #endif
@@ -209,71 +209,71 @@ namespace Zyl.SizableSpans {
         }
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="SizableSpan{T}"/> is empty (返回一个值，该值指示当前大范围跨度为空).
+        /// Gets a value indicating whether this <see cref="ExSpan{T}"/> is empty (返回一个值，该值指示当前大范围跨度为空).
         /// </summary>
-        /// <value><see langword="true"/> if this SizableSpan is empty; otherwise, <see langword="false"/>.</value>
+        /// <value><see langword="true"/> if this ExSpan is empty; otherwise, <see langword="false"/>.</value>
         public bool IsEmpty {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => _length == (TSize)0;
         }
 
         /// <summary>
-        /// Returns a value that indicates whether two <see cref="SizableSpan{T}"/> instances are not equal (返回一个值，该值指示两个 <see cref="SizableSpan{T}"/> 实例是否不相等).
+        /// Returns a value that indicates whether two <see cref="ExSpan{T}"/> instances are not equal (返回一个值，该值指示两个 <see cref="ExSpan{T}"/> 实例是否不相等).
         /// </summary>
-        public static bool operator !=(SizableSpan<T> left, SizableSpan<T> right) => !(left == right);
+        public static bool operator !=(ExSpan<T> left, ExSpan<T> right) => !(left == right);
 
         /// <summary>
-        /// This method is not supported as SizableSpan cannot be boxed. To compare two SizableSpan, use operator==.
+        /// This method is not supported as ExSpan cannot be boxed. To compare two ExSpan, use operator==.
         /// </summary>
         /// <exception cref="NotSupportedException">
         /// Always thrown by this method.
         /// </exception>
-        [Obsolete("Equals() on SizableSpan will always throw an exception. Use the equality operator instead.")]
+        [Obsolete("Equals() on ExSpan will always throw an exception. Use the equality operator instead.")]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override bool Equals(object? obj) =>
-            throw new NotSupportedException(SR.NotSupported_CannotCallEqualsOnSizableSpan);
+            throw new NotSupportedException(SR.NotSupported_CannotCallEqualsOnExSpan);
 
         /// <summary>
-        /// This method is not supported as SizableSpans cannot be boxed.
+        /// This method is not supported as ExSpans cannot be boxed.
         /// </summary>
         /// <exception cref="NotSupportedException">
         /// Always thrown by this method.
         /// </exception>
-        [Obsolete("GetHashCode() on SizableSpan will always throw an exception.")]
+        [Obsolete("GetHashCode() on ExSpan will always throw an exception.")]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override int GetHashCode() =>
-            throw new NotSupportedException(SR.NotSupported_CannotCallGetHashCodeOnSizableSpan);
+            throw new NotSupportedException(SR.NotSupported_CannotCallGetHashCodeOnExSpan);
 
         /// <summary>
-        /// Defines an implicit conversion of an array to a <see cref="SizableSpan{T}"/> (定义数组到 <see cref="SizableSpan{T}"/> 的隐式转换)
+        /// Defines an implicit conversion of an array to a <see cref="ExSpan{T}"/> (定义数组到 <see cref="ExSpan{T}"/> 的隐式转换)
         /// </summary>
-        public static implicit operator SizableSpan<T>(T[]? array) => new SizableSpan<T>(array);
+        public static implicit operator ExSpan<T>(T[]? array) => new ExSpan<T>(array);
 
         /// <summary>
-        /// Defines an implicit conversion of a <see cref="ArraySegment{T}"/> to a <see cref="SizableSpan{T}"/> (定义 <see cref="ArraySegment{T}"/> 到 <see cref="SizableSpan{T}"/> 的隐式转换)
+        /// Defines an implicit conversion of a <see cref="ArraySegment{T}"/> to a <see cref="ExSpan{T}"/> (定义 <see cref="ArraySegment{T}"/> 到 <see cref="ExSpan{T}"/> 的隐式转换)
         /// </summary>
-        public static implicit operator SizableSpan<T>(ArraySegment<T> segment) =>
-            new SizableSpan<T>(segment.Array, (TSize)segment.Offset, (TSize)segment.Count);
+        public static implicit operator ExSpan<T>(ArraySegment<T> segment) =>
+            new ExSpan<T>(segment.Array, (TSize)segment.Offset, (TSize)segment.Count);
 
         /// <summary>
-        /// Returns an empty <see cref="SizableSpan{T}"/> (返回空的 <see cref="SizableSpan{T}"/>). 
+        /// Returns an empty <see cref="ExSpan{T}"/> (返回空的 <see cref="ExSpan{T}"/>). 
         /// </summary>
-        public static SizableSpan<T> Empty => default;
+        public static ExSpan<T> Empty => default;
 
         /// <summary>Gets an enumerator for this span (返回此跨度的枚举器).</summary>
         public Enumerator GetEnumerator() => new Enumerator(this);
 
-        /// <summary>Enumerates the elements of a <see cref="SizableSpan{T}"/> (为 <see cref="SizableSpan{T}"/> 的元素提供枚举器).</summary>
+        /// <summary>Enumerates the elements of a <see cref="ExSpan{T}"/> (为 <see cref="ExSpan{T}"/> 的元素提供枚举器).</summary>
         public ref struct Enumerator {
             /// <summary>The span being enumerated.</summary>
-            private readonly SizableSpan<T> _span;
+            private readonly ExSpan<T> _span;
             /// <summary>The next index to yield.</summary>
             private TSize _index;
 
             /// <summary>Initialize the enumerator.</summary>
             /// <param name="span">The span to enumerate.</param>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal Enumerator(SizableSpan<T> span) {
+            internal Enumerator(ExSpan<T> span) {
                 _span = span;
                 _index = TSize.Zero - 1;
             }
@@ -330,14 +330,14 @@ namespace Zyl.SizableSpans {
         }
 
         /// <summary>
-        /// Clears the contents of this SizableSpan.
+        /// Clears the contents of this ExSpan.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe void Clear() {
             if (!TypeHelper.IsBlittable<T>() && Unsafe.SizeOf<T>() >= sizeof(nuint)) {
-                SizableMemoryMarshal.ClearWithReferences(ref Unsafe.As<T, IntPtr>(ref GetPinnableReference()), _length.ToUIntPtr() * (nuint)(Unsafe.SizeOf<T>() / sizeof(nuint)));
+                ExMemoryMarshal.ClearWithReferences(ref Unsafe.As<T, IntPtr>(ref GetPinnableReference()), _length.ToUIntPtr() * (nuint)(Unsafe.SizeOf<T>() / sizeof(nuint)));
             } else {
-                SizableMemoryMarshal.ClearWithoutReferences(ref Unsafe.As<T, byte>(ref GetPinnableReference()), _length.ToUIntPtr() * (nuint)Unsafe.SizeOf<T>());
+                ExMemoryMarshal.ClearWithoutReferences(ref Unsafe.As<T, byte>(ref GetPinnableReference()), _length.ToUIntPtr() * (nuint)Unsafe.SizeOf<T>());
             }
         }
         
@@ -352,7 +352,7 @@ namespace Zyl.SizableSpans {
         /// Thrown when the destination span is shorter than the source span.
         /// </exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void CopyTo(SizableSpan<T> destination) {
+        public void CopyTo(ExSpan<T> destination) {
             // Using "if (!TryCopyTo(...))" results in two branches: one for the length
             // check, and one for the result of TryCopyTo. Since these checks are equivalent,
             // we can optimize by performing the check once ourselves then calling Memmove directly.
@@ -372,7 +372,7 @@ namespace Zyl.SizableSpans {
         /// </summary>
         /// <param name="destination">The destination span (目标跨度).</param>
         /// <returns>true if the copy operation succeeded; otherwise, false (如果复制操作已成功，则为 true；否则，为 false).</returns>
-        public bool TryCopyTo(SizableSpan<T> destination) {
+        public bool TryCopyTo(ExSpan<T> destination) {
             bool retVal = false;
             if (IntPtrExtensions.LessThanOrEqual(_length, destination.Length)) {
                 BufferHelper.Memmove(ref destination.GetPinnableReference(), in GetPinnableReference(), _length.ToUIntPtr());
@@ -382,9 +382,9 @@ namespace Zyl.SizableSpans {
         }
         
         /// <summary>
-        /// Returns a value that indicates whether two <see cref="SizableSpan{T}"/> instances are equal (返回一个值，该值指示两个 <see cref="SizableSpan{T}"/> 实例是否相等).
+        /// Returns a value that indicates whether two <see cref="ExSpan{T}"/> instances are equal (返回一个值，该值指示两个 <see cref="ExSpan{T}"/> 实例是否相等).
         /// </summary>
-        public static bool operator ==(SizableSpan<T> left, SizableSpan<T> right) =>
+        public static bool operator ==(ExSpan<T> left, ExSpan<T> right) =>
             left._length == right._length &&
 #if STRUCT_REF_FIELD
             Unsafe.AreSame(ref left._reference, ref right._reference)
@@ -395,26 +395,26 @@ namespace Zyl.SizableSpans {
             ;
 
         /// <summary>
-        /// Defines an implicit conversion of a <see cref="SizableSpan{T}"/> to a <see cref="ReadOnlySizableSpan{T}"/> (定义 <see cref="SizableSpan{T}"/> 到 <see cref="ReadOnlySizableSpan{T}"/> 的隐式转换).
+        /// Defines an implicit conversion of a <see cref="ExSpan{T}"/> to a <see cref="ReadOnlyExSpan{T}"/> (定义 <see cref="ExSpan{T}"/> 到 <see cref="ReadOnlyExSpan{T}"/> 的隐式转换).
         /// </summary>
         /// <param name="span">The object to convert (要转换的对象).</param>
-        public static implicit operator ReadOnlySizableSpan<T>(SizableSpan<T> span) {
+        public static implicit operator ReadOnlyExSpan<T>(ExSpan<T> span) {
 #if STRUCT_REF_FIELD
-            return new ReadOnlySizableSpan<T>(ref span._reference, span._length);
+            return new ReadOnlyExSpan<T>(ref span._reference, span._length);
 #else
-            return new ReadOnlySizableSpan<T>(span._referenceSpan, span._byteOffset, span._length);                     
+            return new ReadOnlyExSpan<T>(span._referenceSpan, span._byteOffset, span._length);                     
 #endif
         }
 
         /// <summary>
-        /// Returns the string representation of this <see cref="SizableSpan{Char}"/> (返回此 <see cref="SizableSpan{Char}"/> 的字符串表示形式).
+        /// Returns the string representation of this <see cref="ExSpan{Char}"/> (返回此 <see cref="ExSpan{Char}"/> 的字符串表示形式).
         /// </summary>
-        /// <seealso cref="SizableSpanExtensions.ItemsToString{T}(SizableSpan{T}, Func{TSize, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
+        /// <seealso cref="ExSpanExtensions.ItemsToString{T}(ExSpan{T}, Func{TSize, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
         public override string ToString() {
             //if (typeof(T) == typeof(char)) {
             //    return new string(new ReadOnlySpan<char>(ref Unsafe.As<T, char>(ref _reference), _length));
             //}
-            return $"Zyl.SizableSpans.SizableSpan<{typeof(T).Name}>[{_length}]";
+            return $"Zyl.ExSpans.ExSpan<{typeof(T).Name}>[{_length}]";
         }
 
         /// <summary>
@@ -427,19 +427,19 @@ namespace Zyl.SizableSpans {
         /// </exception>
         [MyCLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public SizableSpan<T> Slice(TSize start) {
+        public ExSpan<T> Slice(TSize start) {
             if (IntPtrExtensions.GreaterThan(start, _length))
                 ThrowHelper.ThrowArgumentOutOfRangeException();
 
             TSize len = IntPtrExtensions.Subtract(_length, start);
 #if STRUCT_REF_FIELD
-            return new SizableSpan<T>(ref Unsafe.Add(ref _reference, start), len);
+            return new ExSpan<T>(ref Unsafe.Add(ref _reference, start), len);
 #else
             unsafe {
                 if (_referenceSpan.IsEmpty) {
-                    return new SizableSpan<T>((void*)SizableUnsafe.AddPointer<T>(_byteOffset, start), len);
+                    return new ExSpan<T>((void*)ExUnsafe.AddPointer<T>(_byteOffset, start), len);
                 } else {
-                    return new SizableSpan<T>(_referenceSpan, SizableUnsafe.AddPointer<T>(_byteOffset, start), len);
+                    return new ExSpan<T>(_referenceSpan, ExUnsafe.AddPointer<T>(_byteOffset, start), len);
                 }
             }
 #endif
@@ -456,31 +456,31 @@ namespace Zyl.SizableSpans {
         /// </exception>
         [MyCLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public SizableSpan<T> Slice(TSize start, TSize length) {
+        public ExSpan<T> Slice(TSize start, TSize length) {
             if (start.ToUIntPtr().GreaterThan(_length.ToUIntPtr()))
                 ThrowHelper.ThrowArgumentOutOfRangeException();
             if (length.ToUIntPtr().GreaterThan(_length.Subtract(start).ToUIntPtr()))
                 ThrowHelper.ThrowArgumentOutOfRangeException();
 
 #if STRUCT_REF_FIELD
-            return new SizableSpan<T>(ref Unsafe.Add(ref _reference, start), length);
+            return new ExSpan<T>(ref Unsafe.Add(ref _reference, start), length);
 #else
             unsafe {
                 if (_referenceSpan.IsEmpty) {
-                    return new SizableSpan<T>((void*)SizableUnsafe.AddPointer<T>(_byteOffset, start), length);
+                    return new ExSpan<T>((void*)ExUnsafe.AddPointer<T>(_byteOffset, start), length);
                 } else {
-                    return new SizableSpan<T>(_referenceSpan, SizableUnsafe.AddPointer<T>(_byteOffset, start), length);
+                    return new ExSpan<T>(_referenceSpan, ExUnsafe.AddPointer<T>(_byteOffset, start), length);
                 }
             }
 #endif
         }
 
         /// <summary>
-        /// Copies the contents of this span into a new array. The maxLength parameter uses the value of <see cref="SizableMemoryMarshal.ArrayMaxLengthSafe"/> (将此范围的内容复制到新建数组中. maxLength 参数使用 <see cref="SizableMemoryMarshal.ArrayMaxLengthSafe"/> 的值).
+        /// Copies the contents of this span into a new array. The maxLength parameter uses the value of <see cref="ExMemoryMarshal.ArrayMaxLengthSafe"/> (将此范围的内容复制到新建数组中. maxLength 参数使用 <see cref="ExMemoryMarshal.ArrayMaxLengthSafe"/> 的值).
         /// </summary>
         /// <returns>An array containing the data in the current span (包含当前跨度中数据的数组).</returns>
         public T[] ToArray() {
-            return ToArray(SizableMemoryMarshal.ArrayMaxLengthSafe);
+            return ToArray(ExMemoryMarshal.ArrayMaxLengthSafe);
         }
 
         /// <summary>
@@ -496,7 +496,7 @@ namespace Zyl.SizableSpans {
 
             int len = (IntPtrExtensions.LessThan(_length, (TSize)maxLength)) ? (int)_length : maxLength;
             var destination = new T[len];
-            BufferHelper.Memmove(ref SizableMemoryMarshal.GetArrayDataReference(destination), in GetPinnableReference(), (uint)len);
+            BufferHelper.Memmove(ref ExMemoryMarshal.GetArrayDataReference(destination), in GetPinnableReference(), (uint)len);
             return destination;
         }
 

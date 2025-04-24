@@ -7,7 +7,7 @@ using System.Text;
 using Zyl.VectorTraits;
 using Zyl.VectorTraits.ExTypes;
 
-namespace Zyl.SizableSpans.Benchmarks {
+namespace Zyl.ExSpans.Benchmarks {
     /// <summary>
     /// Abstract shared array benchmark.
     /// </summary>

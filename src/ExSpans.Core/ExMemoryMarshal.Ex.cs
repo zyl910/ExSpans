@@ -5,8 +5,8 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Zyl.SizableSpans {
-    partial class SizableMemoryMarshal {
+namespace Zyl.ExSpans {
+    partial class ExMemoryMarshal {
 
         /// <summary>
         /// The safe maximum length of array (安全的数组最大长度).

@@ -6,49 +6,49 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
-using Zyl.SizableSpans.Extensions;
-using Zyl.SizableSpans.Impl;
-using Zyl.SizableSpans.Reflection;
+using Zyl.ExSpans.Extensions;
+using Zyl.ExSpans.Impl;
+using Zyl.ExSpans.Reflection;
 
-namespace Zyl.SizableSpans {
-    partial class SizableSpanExtensions {
+namespace Zyl.ExSpans {
+    partial class ExSpanExtensions {
 
         /// <summary>
-        /// An conversion of a <see cref="ReadOnlySpan{T}"/> to a <see cref="ReadOnlySizableSpan{T}"/> (<see cref="ReadOnlySpan{T}"/> 到 <see cref="ReadOnlySizableSpan{T}"/> 的转换).
+        /// An conversion of a <see cref="ReadOnlySpan{T}"/> to a <see cref="ReadOnlyExSpan{T}"/> (<see cref="ReadOnlySpan{T}"/> 到 <see cref="ReadOnlyExSpan{T}"/> 的转换).
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <param name="span">The object to convert (要转换的对象).</param>
-        /// <returns>a <see cref="ReadOnlySizableSpan{T}"/></returns>
+        /// <returns>a <see cref="ReadOnlyExSpan{T}"/></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ReadOnlySizableSpan<T> AsReadOnlySizableSpan<T>(this ReadOnlySpan<T> span) {
-            return (ReadOnlySizableSpan<T>)span;
+        public static ReadOnlyExSpan<T> AsReadOnlyExSpan<T>(this ReadOnlySpan<T> span) {
+            return (ReadOnlyExSpan<T>)span;
         }
 
         /// <summary>
-        /// An conversion of a <see cref="SizableSpan{T}"/> to a <see cref="ReadOnlySizableSpan{T}"/> (<see cref="SizableSpan{T}"/> 到 <see cref="ReadOnlySizableSpan{T}"/> 的转换).
+        /// An conversion of a <see cref="ExSpan{T}"/> to a <see cref="ReadOnlyExSpan{T}"/> (<see cref="ExSpan{T}"/> 到 <see cref="ReadOnlyExSpan{T}"/> 的转换).
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <param name="span">The object to convert (要转换的对象).</param>
-        /// <returns>a <see cref="ReadOnlySizableSpan{T}"/></returns>
+        /// <returns>a <see cref="ReadOnlyExSpan{T}"/></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ReadOnlySizableSpan<T> AsReadOnlySizableSpan<T>(this SizableSpan<T> span) {
-            return (ReadOnlySizableSpan<T>)span;
+        public static ReadOnlyExSpan<T> AsReadOnlyExSpan<T>(this ExSpan<T> span) {
+            return (ReadOnlyExSpan<T>)span;
         }
 
         /// <summary>
-        /// An conversion of a <see cref="ReadOnlySizableSpan{T}"/> to a <see cref="ReadOnlySpan{T}"/>. The length will saturating limited to the maximum length it supports (<see cref="ReadOnlySizableSpan{T}"/> 到 <see cref="ReadOnlySpan{T}"/> 的转换. 长度会饱和限制为它所支持的最大长度).
+        /// An conversion of a <see cref="ReadOnlyExSpan{T}"/> to a <see cref="ReadOnlySpan{T}"/>. The length will saturating limited to the maximum length it supports (<see cref="ReadOnlyExSpan{T}"/> 到 <see cref="ReadOnlySpan{T}"/> 的转换. 长度会饱和限制为它所支持的最大长度).
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <param name="span">The object to convert (要转换的对象).</param>
         /// <returns>a <see cref="ReadOnlySpan{T}"/></returns>
         /// <seealso cref="MemoryMarshalHelper.GetSpanSaturatingLength"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ReadOnlySpan<T> AsReadOnlySpan<T>(this ReadOnlySizableSpan<T> span) {
+        public static ReadOnlySpan<T> AsReadOnlySpan<T>(this ReadOnlyExSpan<T> span) {
             return (ReadOnlySpan<T>)span;
         }
 
         /// <summary>
-        /// An conversion of a <see cref="ReadOnlySizableSpan{T}"/> to a <see cref="ReadOnlySpan{T}"/>, beginning at 'start'. The length will saturating limited to the maximum length it supports (<see cref="ReadOnlySizableSpan{T}"/> 到 <see cref="ReadOnlySpan{T}"/> 的转换, 从指定索引处开始. 长度会饱和限制为它所支持的最大长度).
+        /// An conversion of a <see cref="ReadOnlyExSpan{T}"/> to a <see cref="ReadOnlySpan{T}"/>, beginning at 'start'. The length will saturating limited to the maximum length it supports (<see cref="ReadOnlyExSpan{T}"/> 到 <see cref="ReadOnlySpan{T}"/> 的转换, 从指定索引处开始. 长度会饱和限制为它所支持的最大长度).
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <param name="span">The object to convert (要转换的对象).</param>
@@ -57,12 +57,12 @@ namespace Zyl.SizableSpans {
         /// <seealso cref="MemoryMarshalHelper.GetSpanSaturatingLength"/>
         [MyCLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ReadOnlySpan<T> AsReadOnlySpan<T>(this ReadOnlySizableSpan<T> span, TSize start) {
+        public static ReadOnlySpan<T> AsReadOnlySpan<T>(this ReadOnlyExSpan<T> span, TSize start) {
             return (ReadOnlySpan<T>)span.Slice(start);
         }
 
         /// <summary>
-        /// An conversion of a <see cref="ReadOnlySizableSpan{T}"/> to a <see cref="ReadOnlySpan{T}"/>, beginning at 'start', of given length (<see cref="ReadOnlySizableSpan{T}"/> 到 <see cref="ReadOnlySpan{T}"/> 的转换, 从指定索引处开始, 且使用指定长度).
+        /// An conversion of a <see cref="ReadOnlyExSpan{T}"/> to a <see cref="ReadOnlySpan{T}"/>, beginning at 'start', of given length (<see cref="ReadOnlyExSpan{T}"/> 到 <see cref="ReadOnlySpan{T}"/> 的转换, 从指定索引处开始, 且使用指定长度).
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <param name="span">The object to convert (要转换的对象).</param>
@@ -71,37 +71,37 @@ namespace Zyl.SizableSpans {
         /// <returns>a <see cref="ReadOnlySpan{T}"/></returns>
         [MyCLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ReadOnlySpan<T> AsReadOnlySpan<T>(this ReadOnlySizableSpan<T> span, TSize start, int length) {
+        public static ReadOnlySpan<T> AsReadOnlySpan<T>(this ReadOnlyExSpan<T> span, TSize start, int length) {
             if (length < 0)
                 ThrowHelper.ThrowArgumentOutOfRangeException();
             return (ReadOnlySpan<T>)span.Slice(start, (TSize)(uint)length);
         }
 
         /// <summary>
-        /// An conversion of a <see cref="Span{T}"/> to a <see cref="SizableSpan{T}"/> (<see cref="Span{T}"/> 到 <see cref="SizableSpan{T}"/> 的转换).
+        /// An conversion of a <see cref="Span{T}"/> to a <see cref="ExSpan{T}"/> (<see cref="Span{T}"/> 到 <see cref="ExSpan{T}"/> 的转换).
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <param name="span">The object to convert (要转换的对象).</param>
-        /// <returns>a <see cref="SizableSpan{T}"/></returns>
+        /// <returns>a <see cref="ExSpan{T}"/></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static SizableSpan<T> AsSizableSpan<T>(this Span<T> span) {
-            return (SizableSpan<T>)span;
+        public static ExSpan<T> AsExSpan<T>(this Span<T> span) {
+            return (ExSpan<T>)span;
         }
 
         /// <summary>
-        /// An conversion of a <see cref="SizableSpan{T}"/> to a <see cref="Span{T}"/>. The length will saturating limited to the maximum length it supports (<see cref="SizableSpan{T}"/> 到 <see cref="Span{T}"/> 的转换. 长度会饱和限制为它所支持的最大长度).
+        /// An conversion of a <see cref="ExSpan{T}"/> to a <see cref="Span{T}"/>. The length will saturating limited to the maximum length it supports (<see cref="ExSpan{T}"/> 到 <see cref="Span{T}"/> 的转换. 长度会饱和限制为它所支持的最大长度).
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <param name="span">The object to convert (要转换的对象).</param>
         /// <returns>a <see cref="Span{T}"/></returns>
         /// <seealso cref="MemoryMarshalHelper.GetSpanSaturatingLength"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Span<T> AsSpan<T>(this SizableSpan<T> span) {
+        public static Span<T> AsSpan<T>(this ExSpan<T> span) {
             return (Span<T>)span;
         }
 
         /// <summary>
-        /// An conversion of a <see cref="SizableSpan{T}"/> to a <see cref="Span{T}"/>, beginning at 'start'. The length will saturating limited to the maximum length it supports (<see cref="SizableSpan{T}"/> 到 <see cref="Span{T}"/> 的转换, 从指定索引处开始. 长度会饱和限制为它所支持的最大长度).
+        /// An conversion of a <see cref="ExSpan{T}"/> to a <see cref="Span{T}"/>, beginning at 'start'. The length will saturating limited to the maximum length it supports (<see cref="ExSpan{T}"/> 到 <see cref="Span{T}"/> 的转换, 从指定索引处开始. 长度会饱和限制为它所支持的最大长度).
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <param name="span">The object to convert (要转换的对象).</param>
@@ -110,12 +110,12 @@ namespace Zyl.SizableSpans {
         /// <seealso cref="MemoryMarshalHelper.GetSpanSaturatingLength"/>
         [MyCLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Span<T> AsSpan<T>(this SizableSpan<T> span, TSize start) {
+        public static Span<T> AsSpan<T>(this ExSpan<T> span, TSize start) {
             return (Span<T>)span.Slice(start);
         }
 
         /// <summary>
-        /// An conversion of a <see cref="SizableSpan{T}"/> to a <see cref="Span{T}"/>, beginning at 'start', of given length (<see cref="SizableSpan{T}"/> 到 <see cref="Span{T}"/> 的转换, 从指定索引处开始, 且使用指定长度).
+        /// An conversion of a <see cref="ExSpan{T}"/> to a <see cref="Span{T}"/>, beginning at 'start', of given length (<see cref="ExSpan{T}"/> 到 <see cref="Span{T}"/> 的转换, 从指定索引处开始, 且使用指定长度).
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <param name="span">The object to convert (要转换的对象).</param>
@@ -124,7 +124,7 @@ namespace Zyl.SizableSpans {
         /// <returns>a <see cref="Span{T}"/></returns>
         [MyCLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Span<T> AsSpan<T>(this SizableSpan<T> span, TSize start, int length) {
+        public static Span<T> AsSpan<T>(this ExSpan<T> span, TSize start, int length) {
             if (length < 0)
                 ThrowHelper.ThrowArgumentOutOfRangeException();
             return (Span<T>)span.Slice(start, (TSize)(uint)length);
@@ -137,12 +137,12 @@ namespace Zyl.SizableSpans {
         /// <returns><see langword="true"/> if this object is empty; otherwise, <see langword="false"/> (当前对象为空时为 <see langword="true"/>; 否则为 <see langword="false"/>).</returns>
         [MyCLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsEmpty(this ISizableLength source) {
+        public static bool IsEmpty(this IExLength source) {
             return (TSize)0 == source.Length;
         }
 
         /// <summary>
-        /// Convert items data append string. The headerLength parameter uses the value of <see cref="SizableMemoryMarshal.SpanViewLength"/> (将各项数据转追加字符串. headerLength 参数使用 <see cref="SizableMemoryMarshal.SpanViewLength"/> 的值).
+        /// Convert items data append string. The headerLength parameter uses the value of <see cref="ExMemoryMarshal.SpanViewLength"/> (将各项数据转追加字符串. headerLength 参数使用 <see cref="ExMemoryMarshal.SpanViewLength"/> 的值).
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <param name="source">The source data (源数据).</param>
@@ -152,8 +152,8 @@ namespace Zyl.SizableSpans {
         /// <param name="nameFlags">Flags for type name (类型名的标志).</param>
         /// <seealso cref="ItemFormaters"/>
         [MyCLSCompliant(false)]
-        public static void ItemsAppendString<T>(this ReadOnlySizableSpan<T> source, StringBuilder output, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
-            ItemsAppendString(source, output, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
+        public static void ItemsAppendString<T>(this ReadOnlyExSpan<T> source, StringBuilder output, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
+            ItemsAppendString(source, output, (TSize)ExMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
         }
 
         /// <summary>
@@ -169,30 +169,30 @@ namespace Zyl.SizableSpans {
         /// <param name="nameFlags">Flags for type name (类型名的标志).</param>
         /// <seealso cref="ItemFormaters"/>
         [MyCLSCompliant(false)]
-        public static void ItemsAppendString<T>(this ReadOnlySizableSpan<T> source, StringBuilder output, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
+        public static void ItemsAppendString<T>(this ReadOnlyExSpan<T> source, StringBuilder output, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
             if (!stringFlags.HasFlag(ItemsToStringFlags.HideType)) {
-                TypeNameUtil.AppendName(output, typeof(ReadOnlySizableSpan<T>), nameFlags, null, typeof(T));
+                TypeNameUtil.AppendName(output, typeof(ReadOnlyExSpan<T>), nameFlags, null, typeof(T));
             }
             ItemsAppendStringUnsafe(in source.GetPinnableReadOnlyReference(), source.Length, output, headerLength, footerLength, itemFormater, stringFlags);
         }
 
-        /// <inheritdoc cref="ItemsAppendString{T}(ReadOnlySizableSpan{T}, StringBuilder, Func{TSize, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
+        /// <inheritdoc cref="ItemsAppendString{T}(ReadOnlyExSpan{T}, StringBuilder, Func{TSize, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
         [MyCLSCompliant(false)]
-        public static void ItemsAppendString<T>(this SizableSpan<T> source, StringBuilder output, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
-            ItemsAppendString(source, output, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
+        public static void ItemsAppendString<T>(this ExSpan<T> source, StringBuilder output, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
+            ItemsAppendString(source, output, (TSize)ExMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
         }
 
-        /// <inheritdoc cref="ItemsAppendString{T}(ReadOnlySizableSpan{T}, StringBuilder, TSize, TSize, Func{TSize, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
+        /// <inheritdoc cref="ItemsAppendString{T}(ReadOnlyExSpan{T}, StringBuilder, TSize, TSize, Func{TSize, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
         [MyCLSCompliant(false)]
-        public static void ItemsAppendString<T>(this SizableSpan<T> source, StringBuilder output, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
+        public static void ItemsAppendString<T>(this ExSpan<T> source, StringBuilder output, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
             if (!stringFlags.HasFlag(ItemsToStringFlags.HideType)) {
-                TypeNameUtil.AppendName(output, typeof(SizableSpan<T>), nameFlags, null, typeof(T));
+                TypeNameUtil.AppendName(output, typeof(ExSpan<T>), nameFlags, null, typeof(T));
             }
             ItemsAppendStringUnsafe(in source.GetPinnableReadOnlyReference(), source.Length, output, headerLength, footerLength, itemFormater, stringFlags);
         }
 
         /// <summary>
-        /// Convert items data append string. The headerLength parameter uses the value of <see cref="SizableMemoryMarshal.SpanViewLength"/> (将各项数据转追加字符串. headerLength 参数使用 <see cref="SizableMemoryMarshal.SpanViewLength"/> 的值).
+        /// Convert items data append string. The headerLength parameter uses the value of <see cref="ExMemoryMarshal.SpanViewLength"/> (将各项数据转追加字符串. headerLength 参数使用 <see cref="ExMemoryMarshal.SpanViewLength"/> 的值).
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <typeparam name="TSpan">The type of span (跨度的类型).</typeparam>
@@ -205,12 +205,12 @@ namespace Zyl.SizableSpans {
         /// <returns>A formatted string (格式化后的字符串).</returns>
         [MyCLSCompliant(false)]
         public static void ItemsAppendString<T, TSpan>(this TSpan source, in T typeSample, StringBuilder output, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default)
-                where TSpan : IReadOnlySizableSpanBase<T>
+                where TSpan : IReadOnlyExSpanBase<T>
 #if ALLOWS_REF_STRUCT
                 , allows ref struct
 #endif // ALLOWS_REF_STRUCT
                 {
-            ItemsAppendString(source, in typeSample, output, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
+            ItemsAppendString(source, in typeSample, output, (TSize)ExMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
         }
 
         /// <summary>
@@ -229,20 +229,20 @@ namespace Zyl.SizableSpans {
         /// <seealso cref="ItemFormaters"/>
         [MyCLSCompliant(false)]
         public static void ItemsAppendString<T, TSpan>(this TSpan source, in T typeSample, StringBuilder output, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default)
-                where TSpan : IReadOnlySizableSpanBase<T>
+                where TSpan : IReadOnlyExSpanBase<T>
 #if ALLOWS_REF_STRUCT
                 , allows ref struct
 #endif // ALLOWS_REF_STRUCT
                 {
             _ = typeSample;
             if (!stringFlags.HasFlag(ItemsToStringFlags.HideType)) {
-                TypeNameUtil.AppendName(output, typeof(TSpan), nameFlags, typeof(IReadOnlySizableSpanBase<T>), typeof(T));
+                TypeNameUtil.AppendName(output, typeof(TSpan), nameFlags, typeof(IReadOnlyExSpanBase<T>), typeof(T));
             }
             ItemsAppendStringUnsafe(in source.GetPinnableReadOnlyReference(), source.Length, output, headerLength, footerLength, itemFormater, stringFlags);
         }
 
         /// <summary>
-        /// Unsafe convert items data append string. The headerLength parameter uses the value of <see cref="SizableMemoryMarshal.SpanViewLength"/> (非安全的将各项数据转追加字符串. headerLength 参数使用 <see cref="SizableMemoryMarshal.SpanViewLength"/> 的值).
+        /// Unsafe convert items data append string. The headerLength parameter uses the value of <see cref="ExMemoryMarshal.SpanViewLength"/> (非安全的将各项数据转追加字符串. headerLength 参数使用 <see cref="ExMemoryMarshal.SpanViewLength"/> 的值).
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <param name="source">The reference to source data (源数据的引用).</param>
@@ -252,7 +252,7 @@ namespace Zyl.SizableSpans {
         /// <param name="stringFlags">Flags for convert items data into string (各项数据转字符串的标志). <see cref="ItemsToStringFlags.HideType">HideType</see> flag is invalid, please output the type name by yourself (<see cref="ItemsToStringFlags.HideType">HideType</see> 标志无效, 请自行输出类型名称). </param>
         /// <seealso cref="ItemFormaters"/>
         internal static void ItemsAppendStringUnsafe<T>(ref readonly T source, TSize length, StringBuilder output, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default) {
-            ItemsAppendStringUnsafe(in source, length, output, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags);
+            ItemsAppendStringUnsafe(in source, length, output, (TSize)ExMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags);
         }
 
         /// <summary>
@@ -275,7 +275,7 @@ namespace Zyl.SizableSpans {
         }
 
         /// <summary>
-        /// Convert items data append string to action. The headerLength parameter uses the value of <see cref="SizableMemoryMarshal.SpanViewLength"/> (将各项数据转追加字符串到动作. headerLength 参数使用 <see cref="SizableMemoryMarshal.SpanViewLength"/> 的值).
+        /// Convert items data append string to action. The headerLength parameter uses the value of <see cref="ExMemoryMarshal.SpanViewLength"/> (将各项数据转追加字符串到动作. headerLength 参数使用 <see cref="ExMemoryMarshal.SpanViewLength"/> 的值).
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <param name="source">The source data (源数据).</param>
@@ -285,8 +285,8 @@ namespace Zyl.SizableSpans {
         /// <param name="nameFlags">Flags for type name (类型名的标志).</param>
         /// <seealso cref="ItemFormaters"/>
         [MyCLSCompliant(false)]
-        public static void ItemsAppendStringTo<T>(this ReadOnlySizableSpan<T> source, Action<string> output, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
-            ItemsAppendStringTo(source, output, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
+        public static void ItemsAppendStringTo<T>(this ReadOnlyExSpan<T> source, Action<string> output, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
+            ItemsAppendStringTo(source, output, (TSize)ExMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
         }
 
         /// <summary>
@@ -302,30 +302,30 @@ namespace Zyl.SizableSpans {
         /// <param name="nameFlags">Flags for type name (类型名的标志).</param>
         /// <seealso cref="ItemFormaters"/>
         [MyCLSCompliant(false)]
-        public static void ItemsAppendStringTo<T>(this ReadOnlySizableSpan<T> source, Action<string> output, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
+        public static void ItemsAppendStringTo<T>(this ReadOnlyExSpan<T> source, Action<string> output, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
             if (!stringFlags.HasFlag(ItemsToStringFlags.HideType)) {
-                TypeNameUtil.AppendNameTo(output, typeof(ReadOnlySizableSpan<T>), nameFlags, null, typeof(T));
+                TypeNameUtil.AppendNameTo(output, typeof(ReadOnlyExSpan<T>), nameFlags, null, typeof(T));
             }
             ItemsAppendStringToUnsafe(in source.GetPinnableReadOnlyReference(), source.Length, output, headerLength, footerLength, itemFormater, stringFlags);
         }
 
-        /// <inheritdoc cref="ItemsAppendStringTo{T}(ReadOnlySizableSpan{T}, Action{string}, Func{TSize, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
+        /// <inheritdoc cref="ItemsAppendStringTo{T}(ReadOnlyExSpan{T}, Action{string}, Func{TSize, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
         [MyCLSCompliant(false)]
-        public static void ItemsAppendStringTo<T>(this SizableSpan<T> source, Action<string> output, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
-            ItemsAppendStringTo(source, output, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
+        public static void ItemsAppendStringTo<T>(this ExSpan<T> source, Action<string> output, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
+            ItemsAppendStringTo(source, output, (TSize)ExMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
         }
 
-        /// <inheritdoc cref="ItemsAppendStringTo{T}(ReadOnlySizableSpan{T}, Action{string}, TSize, TSize, Func{TSize, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
+        /// <inheritdoc cref="ItemsAppendStringTo{T}(ReadOnlyExSpan{T}, Action{string}, TSize, TSize, Func{TSize, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
         [MyCLSCompliant(false)]
-        public static void ItemsAppendStringTo<T>(this SizableSpan<T> source, Action<string> output, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
+        public static void ItemsAppendStringTo<T>(this ExSpan<T> source, Action<string> output, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
             if (!stringFlags.HasFlag(ItemsToStringFlags.HideType)) {
-                TypeNameUtil.AppendNameTo(output, typeof(SizableSpan<T>), nameFlags, null, typeof(T));
+                TypeNameUtil.AppendNameTo(output, typeof(ExSpan<T>), nameFlags, null, typeof(T));
             }
             ItemsAppendStringToUnsafe(in source.GetPinnableReadOnlyReference(), source.Length, output, headerLength, footerLength, itemFormater, stringFlags);
         }
 
         /// <summary>
-        /// Convert items data append string to action. The headerLength parameter uses the value of <see cref="SizableMemoryMarshal.SpanViewLength"/> (将各项数据转追加字符串到动作. headerLength 参数使用 <see cref="SizableMemoryMarshal.SpanViewLength"/> 的值).
+        /// Convert items data append string to action. The headerLength parameter uses the value of <see cref="ExMemoryMarshal.SpanViewLength"/> (将各项数据转追加字符串到动作. headerLength 参数使用 <see cref="ExMemoryMarshal.SpanViewLength"/> 的值).
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <typeparam name="TSpan">The type of span (跨度的类型).</typeparam>
@@ -338,12 +338,12 @@ namespace Zyl.SizableSpans {
         /// <returns>A formatted string (格式化后的字符串).</returns>
         [MyCLSCompliant(false)]
         public static void ItemsAppendStringTo<T, TSpan>(this TSpan source, in T typeSample, Action<string> output, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default)
-                where TSpan : IReadOnlySizableSpanBase<T>
+                where TSpan : IReadOnlyExSpanBase<T>
 #if ALLOWS_REF_STRUCT
                 , allows ref struct
 #endif // ALLOWS_REF_STRUCT
                 {
-            ItemsAppendStringTo(source, in typeSample, output, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
+            ItemsAppendStringTo(source, in typeSample, output, (TSize)ExMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
         }
 
         /// <summary>
@@ -362,20 +362,20 @@ namespace Zyl.SizableSpans {
         /// <seealso cref="ItemFormaters"/>
         [MyCLSCompliant(false)]
         public static void ItemsAppendStringTo<T, TSpan>(this TSpan source, in T typeSample, Action<string> output, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default)
-                where TSpan : IReadOnlySizableSpanBase<T>
+                where TSpan : IReadOnlyExSpanBase<T>
 #if ALLOWS_REF_STRUCT
                 , allows ref struct
 #endif // ALLOWS_REF_STRUCT
                 {
             _ = typeSample;
             if (!stringFlags.HasFlag(ItemsToStringFlags.HideType)) {
-                TypeNameUtil.AppendNameTo(output, typeof(TSpan), nameFlags, typeof(IReadOnlySizableSpanBase<T>), typeof(T));
+                TypeNameUtil.AppendNameTo(output, typeof(TSpan), nameFlags, typeof(IReadOnlyExSpanBase<T>), typeof(T));
             }
             ItemsAppendStringToUnsafe(in source.GetPinnableReadOnlyReference(), source.Length, output, headerLength, footerLength, itemFormater, stringFlags);
         }
 
         /// <summary>
-        /// Unsafe convert items data append string to action. The headerLength parameter uses the value of <see cref="SizableMemoryMarshal.SpanViewLength"/> (非安全的将各项数据转追加字符串到动作. headerLength 参数使用 <see cref="SizableMemoryMarshal.SpanViewLength"/> 的值).
+        /// Unsafe convert items data append string to action. The headerLength parameter uses the value of <see cref="ExMemoryMarshal.SpanViewLength"/> (非安全的将各项数据转追加字符串到动作. headerLength 参数使用 <see cref="ExMemoryMarshal.SpanViewLength"/> 的值).
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <param name="source">The reference to source data (源数据的引用).</param>
@@ -385,7 +385,7 @@ namespace Zyl.SizableSpans {
         /// <param name="stringFlags">Flags for convert items data into string (各项数据转字符串的标志). <see cref="ItemsToStringFlags.HideType">HideType</see> flag is invalid, please output the type name by yourself (<see cref="ItemsToStringFlags.HideType">HideType</see> 标志无效, 请自行输出类型名称). </param>
         /// <seealso cref="ItemFormaters"/>
         internal static void ItemsAppendStringToUnsafe<T>(ref readonly T source, TSize length, Action<string> output, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default) {
-            ItemsAppendStringToUnsafe(in source, length, output, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags);
+            ItemsAppendStringToUnsafe(in source, length, output, (TSize)ExMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags);
         }
 
         /// <summary>
@@ -458,7 +458,7 @@ namespace Zyl.SizableSpans {
             if (footerCount.GreaterThan(zero)) {
                 output(separator);
                 // Output.
-                p = ref SizableUnsafe.Add(ref p0, footerStart);
+                p = ref ExUnsafe.Add(ref p0, footerStart);
                 for (TSize i = zero; i.LessThan(footerCount); i += 1) {
                     if (i.GreaterThan(zero)) {
                         output(separator);
@@ -477,7 +477,7 @@ namespace Zyl.SizableSpans {
         }
 
         /// <summary>
-        /// Convert items data into string. The headerLength parameter uses the value of <see cref="SizableMemoryMarshal.SpanViewLength"/> (将各项数据转为字符串. headerLength 参数使用 <see cref="SizableMemoryMarshal.SpanViewLength"/> 的值).
+        /// Convert items data into string. The headerLength parameter uses the value of <see cref="ExMemoryMarshal.SpanViewLength"/> (将各项数据转为字符串. headerLength 参数使用 <see cref="ExMemoryMarshal.SpanViewLength"/> 的值).
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <param name="source">The source data (源数据).</param>
@@ -487,8 +487,8 @@ namespace Zyl.SizableSpans {
         /// <returns>A formatted string (格式化后的字符串).</returns>
         /// <seealso cref="ItemFormaters"/>
         [MyCLSCompliant(false)]
-        public static string ItemsToString<T>(this ReadOnlySizableSpan<T> source, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
-            return ItemsToString(source, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
+        public static string ItemsToString<T>(this ReadOnlyExSpan<T> source, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
+            return ItemsToString(source, (TSize)ExMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
         }
 
         /// <summary>
@@ -504,41 +504,41 @@ namespace Zyl.SizableSpans {
         /// <returns>A formatted string (格式化后的字符串).</returns>
         /// <seealso cref="ItemFormaters"/>
         [MyCLSCompliant(false)]
-        public static string ItemsToString<T>(this ReadOnlySizableSpan<T> source, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
+        public static string ItemsToString<T>(this ReadOnlyExSpan<T> source, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
             StringBuilder stringBuilder = new StringBuilder();
             ItemsAppendString(source, stringBuilder, headerLength, footerLength, itemFormater, stringFlags);
             return stringBuilder.ToString();
         }
 
-        /// <inheritdoc cref="ItemsToString{T}(ReadOnlySizableSpan{T}, Func{TSize, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
+        /// <inheritdoc cref="ItemsToString{T}(ReadOnlyExSpan{T}, Func{TSize, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
         [MyCLSCompliant(false)]
-        public static string ItemsToString<T>(this SizableSpan<T> source, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
-            return ItemsToString(source, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
+        public static string ItemsToString<T>(this ExSpan<T> source, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
+            return ItemsToString(source, (TSize)ExMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
         }
 
-        /// <inheritdoc cref="ItemsToString{T}(ReadOnlySizableSpan{T}, TSize, TSize, Func{TSize, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
+        /// <inheritdoc cref="ItemsToString{T}(ReadOnlyExSpan{T}, TSize, TSize, Func{TSize, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
         [MyCLSCompliant(false)]
-        public static string ItemsToString<T>(this SizableSpan<T> source, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
+        public static string ItemsToString<T>(this ExSpan<T> source, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default) {
             StringBuilder stringBuilder = new StringBuilder();
             ItemsAppendString(source, stringBuilder, headerLength, footerLength, itemFormater, stringFlags);
             return stringBuilder.ToString();
         }
 
-        // Output.WriteLine("TSpan without typeSample: {0}", span.ItemsToString()); // CS0411 The type arguments for method 'SizableSpanExtensions.ItemsToString<T, TSpan>(TSpan, bool)' cannot be inferred from the usage. Try specifying the type arguments explicitly.
-        // Output.WriteLine("TSpan without typeSample: {0}", span.ItemsToString<int, SizableSpan<int>>()); // OK. But the code is too long. So it was decided to disable it.
+        // Output.WriteLine("TSpan without typeSample: {0}", span.ItemsToString()); // CS0411 The type arguments for method 'ExSpanExtensions.ItemsToString<T, TSpan>(TSpan, bool)' cannot be inferred from the usage. Try specifying the type arguments explicitly.
+        // Output.WriteLine("TSpan without typeSample: {0}", span.ItemsToString<int, ExSpan<int>>()); // OK. But the code is too long. So it was decided to disable it.
         //public static string ItemsToString<T, TSpan>(this TSpan span, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default)
-        //        where TSpan : IReadOnlySizableSpanBase<T>, allows ref struct {
+        //        where TSpan : IReadOnlyExSpanBase<T>, allows ref struct {
         //    return ItemsToString(span, span.GetPinnableReadOnlyReference(), null, stringFlags);
         //}
 
-        //Output.WriteLine("TSpan use itemFormater: {0}", span.ItemsToString(ItemFormaters.Hex)); // CS0411 The type arguments for method 'SizableSpanExtensions.ItemsToString<T, TSpan>(TSpan, Func<TSize, T, string>?, bool)' cannot be inferred from the usage. Try specifying the type arguments explicitly.
+        //Output.WriteLine("TSpan use itemFormater: {0}", span.ItemsToString(ItemFormaters.Hex)); // CS0411 The type arguments for method 'ExSpanExtensions.ItemsToString<T, TSpan>(TSpan, Func<TSize, T, string>?, bool)' cannot be inferred from the usage. Try specifying the type arguments explicitly.
         //public static string ItemsToString<T, TSpan>(this TSpan source, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default)
-        //        where TSpan : IReadOnlySizableSpanBase<T>, allows ref struct {
-        //    return ItemsToString(source, source.GetPinnableReadOnlyReference(), (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags);
+        //        where TSpan : IReadOnlyExSpanBase<T>, allows ref struct {
+        //    return ItemsToString(source, source.GetPinnableReadOnlyReference(), (TSize)ExMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags);
         //}
 
         /// <summary>
-        /// Convert items data into string. It has the <paramref name="typeSample"/> parameter. The headerLength parameter uses the value of <see cref="SizableMemoryMarshal.SpanViewLength"/> (将各项数据转为字符串. 它具有 <paramref name="typeSample"/> 参数. headerLength 参数使用 <see cref="SizableMemoryMarshal.SpanViewLength"/> 的值).
+        /// Convert items data into string. It has the <paramref name="typeSample"/> parameter. The headerLength parameter uses the value of <see cref="ExMemoryMarshal.SpanViewLength"/> (将各项数据转为字符串. 它具有 <paramref name="typeSample"/> 参数. headerLength 参数使用 <see cref="ExMemoryMarshal.SpanViewLength"/> 的值).
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <typeparam name="TSpan">The type of span (跨度的类型).</typeparam>
@@ -551,12 +551,12 @@ namespace Zyl.SizableSpans {
         /// <seealso cref="ItemFormaters"/>
         [MyCLSCompliant(false)]
         public static string ItemsToString<T, TSpan>(this TSpan source, in T typeSample, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default)
-                where TSpan : IReadOnlySizableSpanBase<T>
+                where TSpan : IReadOnlyExSpanBase<T>
 #if ALLOWS_REF_STRUCT
                 , allows ref struct
 #endif // ALLOWS_REF_STRUCT
                 {
-            return ItemsToString(source, in typeSample, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
+            return ItemsToString(source, in typeSample, (TSize)ExMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags, nameFlags);
         }
 
         /// <summary>
@@ -575,7 +575,7 @@ namespace Zyl.SizableSpans {
         /// <seealso cref="ItemFormaters"/>
         [MyCLSCompliant(false)]
         public static string ItemsToString<T, TSpan>(this TSpan source, in T typeSample, TSize headerLength, TSize footerLength = default, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default, TypeNameFlags nameFlags = TypeNameFlags.Default)
-                where TSpan : IReadOnlySizableSpanBase<T>
+                where TSpan : IReadOnlyExSpanBase<T>
 #if ALLOWS_REF_STRUCT
                 , allows ref struct
 #endif // ALLOWS_REF_STRUCT
@@ -587,7 +587,7 @@ namespace Zyl.SizableSpans {
         }
 
         /// <summary>
-        /// Unsafe convert items data into string. The headerLength parameter uses the value of <see cref="SizableMemoryMarshal.SpanViewLength"/> (非安全的将各项数据转为字符串. headerLength 参数使用 <see cref="SizableMemoryMarshal.SpanViewLength"/> 的值).
+        /// Unsafe convert items data into string. The headerLength parameter uses the value of <see cref="ExMemoryMarshal.SpanViewLength"/> (非安全的将各项数据转为字符串. headerLength 参数使用 <see cref="ExMemoryMarshal.SpanViewLength"/> 的值).
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <param name="source">The reference to source data (源数据的引用).</param>
@@ -597,7 +597,7 @@ namespace Zyl.SizableSpans {
         /// <returns>A formatted string (格式化后的字符串).</returns>
         /// <seealso cref="ItemFormaters"/>
         internal static string ItemsToStringUnsafe<T>(ref readonly T source, TSize length, Func<TSize, T, string>? itemFormater = null, ItemsToStringFlags stringFlags = ItemsToStringFlags.Default) {
-            return ItemsToStringUnsafe(in source, length, (TSize)SizableMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags);
+            return ItemsToStringUnsafe(in source, length, (TSize)ExMemoryMarshal.SpanViewLength, default, itemFormater, stringFlags);
         }
 
         /// <summary>
