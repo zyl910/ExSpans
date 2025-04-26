@@ -50,4 +50,6 @@
     <ProjectReference Include="..\..\src\ExSpans\ExSpans.csproj" />
   </ItemGroup>
 
+  <Import Project="..\..\src\Compatible.System\Compatible.System.projitems" Label="Shared" />
+
 </Project>

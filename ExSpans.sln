@@ -88,6 +88,7 @@ Global
 		src\ExSpans.InfoInc\ExSpans.InfoInc.projitems*{3b871363-cd08-475b-903b-0cc1ca148f22}*SharedItemsImports = 13
 		src\Compatible.System\Compatible.System.projitems*{4f69dca3-39b4-4247-ac71-fe9a69b7a124}*SharedItemsImports = 13
 		src\Compatible.System\Compatible.System.projitems*{5bf6b505-8296-4f84-b2e1-b0c6e89248ae}*SharedItemsImports = 5
+		src\Compatible.System\Compatible.System.projitems*{9dc94933-5987-40df-90fd-5b789f9ed2a7}*SharedItemsImports = 5
 		tests\ExSpans.Benchmarks.Core.Inc\ExSpans.Benchmarks.Core.Inc.projitems*{a45697e8-f604-4178-921a-b412c7ac3c93}*SharedItemsImports = 13
 		src\ExSpans.InfoInc\ExSpans.InfoInc.projitems*{b9cdfae2-38f2-49e3-b9c4-7a25122d27ff}*SharedItemsImports = 5
 		tests\ExSpans.Benchmarks.Inc\ExSpans.Benchmarks.Inc.projitems*{d58eeca3-5b3c-44ba-9993-f0d54cd923b1}*SharedItemsImports = 13
