@@ -43,10 +43,14 @@ namespace Zyl.ExSpans {
                     return new Span<T>((void*)span._byteOffset, len);
                 }
             } else if (TSize.Zero == span._byteOffset) {
-                return span._referenceSpan;
+                if (len >= span._referenceSpan.Length) {
+                    return span._referenceSpan;
+                } else {
+                    return span._referenceSpan.Slice(0, len);
+                }
             } else {
                 int start = (int)((ulong)span._byteOffset / (uint)Unsafe.SizeOf<T>());
-                return span._referenceSpan.Slice(start);
+                return span._referenceSpan.Slice(start, len);
             }
 #endif
         }
