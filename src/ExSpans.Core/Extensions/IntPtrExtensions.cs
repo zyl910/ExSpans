@@ -1,6 +1,9 @@
 ﻿#if NET7_0_OR_GREATER
 #define GENERIC_MATH // C# 11 - Generic math support. https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-11#generic-math-support
 #endif // NET7_0_OR_GREATER
+#if NET9_0_OR_GREATER
+#define ALLOWS_REF_STRUCT // C# 13 - ref struct interface; allows ref struct. https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-13#ref-struct-interfaces
+#endif // NET9_0_OR_GREATER
 
 using System;
 using System.Collections.Generic;
@@ -138,6 +141,67 @@ namespace Zyl.ExSpans.Extensions {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool GreaterThanOrEqual(this nuint left, nuint right) {
             return left >= right;
+        }
+
+        /// <summary>
+        /// Is the byte length within the <see cref="Int32">Int32</see> range. This method does not check for negative numbers (字节长度是否在 <see cref="Int32">Int32</see> 范围内. 该方法不检查负数).
+        /// </summary>
+        /// <param name="source">Source value (源值).</param>
+        /// <returns><see langword="true"/> if within; otherwise, <see langword="false"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsByteLengthInInt32<T>(this nint source)
+#if ALLOWS_REF_STRUCT
+                where T : allows ref struct
+#endif // ALLOWS_REF_STRUCT
+                {
+            int n = Unsafe.SizeOf<T>();
+            if (1 == n) {
+                return IsLengthInInt32(source);
+            }
+            return source <= (int.MaxValue / n);
+        }
+
+        /// <summary>
+        /// Is the byte length within the <see cref="Int32">Int32</see> range. This method does not check for negative numbers (字节长度是否在 <see cref="Int32">Int32</see> 范围内. 该方法不检查负数).
+        /// </summary>
+        /// <param name="source">Source value (源值).</param>
+        /// <returns><see langword="true"/> if within; otherwise, <see langword="false"/></returns>
+        [CLSCompliant(false)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsByteLengthInInt32<T>(this nuint source)
+#if ALLOWS_REF_STRUCT
+                where T : allows ref struct
+#endif // ALLOWS_REF_STRUCT
+                {
+            int n = Unsafe.SizeOf<T>();
+            if (1 == n) {
+                return IsLengthInInt32(source);
+            }
+            return source <= (uint)(int.MaxValue / n);
+        }
+
+        /// <summary>
+        /// Is the length within the <see cref="Int32">Int32</see> range. This method does not check for negative numbers (长度是否在 <see cref="Int32">Int32</see> 范围内. 该方法不检查负数).
+        /// </summary>
+        /// <param name="source">Source value (源值).</param>
+        /// <returns><see langword="true"/> if within; otherwise, <see langword="false"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsLengthInInt32(this nint source) {
+            if (sizeof(int) == Unsafe.SizeOf<nint>()) {
+                return true;
+            }
+            return source <= int.MaxValue;
+        }
+
+        /// <summary>
+        /// Is the length within the <see cref="Int32">Int32</see> range. This method does not check for negative numbers (长度是否在 <see cref="Int32">Int32</see> 范围内. 该方法不检查负数).
+        /// </summary>
+        /// <param name="source">Source value (源值).</param>
+        /// <returns><see langword="true"/> if within; otherwise, <see langword="false"/></returns>
+        [CLSCompliant(false)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsLengthInInt32(this nuint source) {
+            return source <= (uint)int.MaxValue;
         }
 
         /// <summary>
