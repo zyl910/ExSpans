@@ -31,7 +31,7 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>Zyl.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
-    <DefineConstants>$(DefineConstants);SIZE_UINTPTR0</DefineConstants>
+    <DefineConstants>$(DefineConstants);INVOKE_SPAN_METHOD;SIZE_UINTPTR0</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>

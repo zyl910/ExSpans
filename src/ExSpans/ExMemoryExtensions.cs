@@ -3,6 +3,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -45,32 +46,38 @@ namespace Zyl.ExSpans {
             }
             TSize length = span.Length;
 #if INVOKE_SPAN_METHOD && NET6_0_OR_GREATER
-            int blockSize = ExMemoryMarshal.ArrayMaxLengthSafe / Unsafe.SizeOf<T>();
-            if (blockSize < 1) blockSize = 1;
-            TSize blockSizeN = (TSize)blockSize;
-            TSize index = (TSize)0;
-            while (index.LessThan(length)) {
-                TSize count = length.Subtract(index);
-                TSize indexNext;
-                bool rt;
-                if (count.LessThan(blockSizeN)) {
+            if (length.IsByteLengthInInt32<T>()) {
 #pragma warning disable CS8631 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match constraint type.
-                    rt = span.Slice(index, count).AsReadOnlySpan().SequenceEqual(other.Slice(index, count).AsReadOnlySpan());
+                return span.AsReadOnlySpan().SequenceEqual(other.AsReadOnlySpan());
 #pragma warning restore CS8631 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match constraint type.
-                    indexNext = length;
-                } else {
+            } else {
+                int blockSize = ExMemoryMarshal.ArrayMaxLengthSafe / Unsafe.SizeOf<T>();
+                if (blockSize < 1) blockSize = 1;
+                TSize blockSizeN = (TSize)blockSize;
+                TSize index = (TSize)0;
+                while (index.LessThan(length)) {
+                    TSize count = length.Subtract(index);
+                    TSize indexNext;
+                    bool rt;
+                    if (count.LessThan(blockSizeN)) {
 #pragma warning disable CS8631 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match constraint type.
-                    rt = span.Slice(index, blockSizeN).AsReadOnlySpan().SequenceEqual(other.Slice(index, blockSizeN).AsReadOnlySpan());
+                        rt = span.Slice(index, count).AsReadOnlySpan().SequenceEqual(other.Slice(index, count).AsReadOnlySpan());
 #pragma warning restore CS8631 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match constraint type.
-                    indexNext = index + blockSize;
+                        indexNext = length;
+                    } else {
+#pragma warning disable CS8631 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match constraint type.
+                        rt = span.Slice(index, blockSizeN).AsReadOnlySpan().SequenceEqual(other.Slice(index, blockSizeN).AsReadOnlySpan());
+#pragma warning restore CS8631 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match constraint type.
+                        indexNext = index + blockSize;
+                    }
+                    if (!rt) {
+                        return false;
+                    }
+                    // Next.
+                    index = indexNext;
                 }
-                if (!rt) {
-                    return false;
-                }
-                // Next.
-                index = indexNext;
+                return true;
             }
-            return true;
 #else
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 return ExSpanHelpers.SequenceEqual(
@@ -107,28 +114,32 @@ namespace Zyl.ExSpans {
             }
             TSize length = span.Length;
 #if INVOKE_SPAN_METHOD && NET6_0_OR_GREATER
-            int blockSize = ExMemoryMarshal.ArrayMaxLengthSafe / Unsafe.SizeOf<T>();
-            if (blockSize < 1) blockSize = 1;
-            TSize blockSizeN = (TSize)blockSize;
-            TSize index = (TSize)0;
-            while (index.LessThan(length)) {
-                TSize count = length.Subtract(index);
-                TSize indexNext;
-                bool rt;
-                if (count.LessThan(blockSizeN)) {
-                    rt = span.Slice(index, count).AsReadOnlySpan().SequenceEqual(other.Slice(index, count).AsReadOnlySpan(), comparer);
-                    indexNext = length;
-                } else {
-                    rt = span.Slice(index, blockSizeN).AsReadOnlySpan().SequenceEqual(other.Slice(index, blockSizeN).AsReadOnlySpan(), comparer);
-                    indexNext = index + blockSize;
+            if (length.IsByteLengthInInt32<T>()) {
+                return span.AsReadOnlySpan().SequenceEqual(other.AsReadOnlySpan(), comparer);
+            } else {
+                int blockSize = ExMemoryMarshal.ArrayMaxLengthSafe / Unsafe.SizeOf<T>();
+                if (blockSize < 1) blockSize = 1;
+                TSize blockSizeN = (TSize)blockSize;
+                TSize index = (TSize)0;
+                while (index.LessThan(length)) {
+                    TSize count = length.Subtract(index);
+                    TSize indexNext;
+                    bool rt;
+                    if (count.LessThan(blockSizeN)) {
+                        rt = span.Slice(index, count).AsReadOnlySpan().SequenceEqual(other.Slice(index, count).AsReadOnlySpan(), comparer);
+                        indexNext = length;
+                    } else {
+                        rt = span.Slice(index, blockSizeN).AsReadOnlySpan().SequenceEqual(other.Slice(index, blockSizeN).AsReadOnlySpan(), comparer);
+                        indexNext = index + blockSize;
+                    }
+                    if (!rt) {
+                        return false;
+                    }
+                    // Next.
+                    index = indexNext;
                 }
-                if (!rt) {
-                    return false;
-                }
-                // Next.
-                index = indexNext;
+                return true;
             }
-            return true;
 #else
             if (TypeHelper.IsValueType(typeof(T))) {
                 if (comparer is null || comparer == EqualityComparer<T>.Default) {

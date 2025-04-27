@@ -209,8 +209,8 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                 // Assert
 
-                Assert.True(inputExSpan.Slice((TSize)0, (TSize)i).SequenceEqual(outputExSpan.Slice((TSize)0, (TSize)i))); // src successfully copied to dst
-                Assert.True(outputExSpan.Slice((TSize)i).SequenceEqual(allZerosExSpan.Slice((TSize)i))); // no other part of dst was overwritten
+                Assert.True(inputExSpan.Slice((TSize)0, (TSize)i).SequenceEqual(outputExSpan.Slice((TSize)0, (TSize)i)), $"i={i}"); // src successfully copied to dst
+                Assert.True(outputExSpan.Slice((TSize)i).SequenceEqual(allZerosExSpan.Slice((TSize)i)), $"i={i}"); // no other part of dst was overwritten
             }
         }
 
