@@ -5,22 +5,23 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using Zyl.ExSpans.Extensions;
+using Zyl.ExSpans.Impl;
 
 namespace Zyl.ExSpans {
     partial class ExMemoryExtensions {
-
-#if TODO
         /// <summary>
         /// Indicates whether the specified span contains only white-space characters.
         /// </summary>
         public static bool IsWhiteSpace(this ReadOnlyExSpan<char> span) {
-            for (int i = 0; i < span.Length; i++) {
+            for (TSize i = (TSize)0; i.LessThan(span.Length); i+=1) {
                 if (!char.IsWhiteSpace(span[i]))
                     return false;
             }
             return true;
         }
 
+#if TODO
         /// <summary>
         /// Returns a value indicating whether the specified <paramref name="value"/> occurs within the <paramref name="span"/>.
         /// </summary>
@@ -38,18 +39,20 @@ namespace Zyl.ExSpans {
         /// <param name="span">The source span.</param>
         /// <param name="other">The value to compare with the source span.</param>
         /// <param name="comparisonType">One of the enumeration values that determines how the <paramref name="span"/> and <paramref name="other"/> are compared.</param>
-        [Intrinsic] // Unrolled and vectorized for half-constant input (Ordinal)
+        //[Intrinsic] // Unrolled and vectorized for half-constant input (Ordinal)
         public static bool Equals(this ReadOnlyExSpan<char> span, ReadOnlyExSpan<char> other, StringComparison comparisonType) {
-            string.CheckStringComparison(comparisonType);
+            StringHelper.CheckStringComparison(comparisonType);
 
             switch (comparisonType) {
                 case StringComparison.CurrentCulture:
                 case StringComparison.CurrentCultureIgnoreCase:
                     return CultureInfo.CurrentCulture.CompareInfo.Compare(span, other, string.GetCaseCompareOfComparisonCulture(comparisonType)) == 0;
 
+#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP2_0_OR_GREATER || NET20
                 case StringComparison.InvariantCulture:
                 case StringComparison.InvariantCultureIgnoreCase:
                     return CompareInfo.Invariant.Compare(span, other, string.GetCaseCompareOfComparisonCulture(comparisonType)) == 0;
+#endif // NETSTANDARD2_0_OR_GREATER || NETCOREAPP2_0_OR_GREATER || NET20
 
                 case StringComparison.Ordinal:
                     return EqualsOrdinal(span, other);
@@ -64,7 +67,7 @@ namespace Zyl.ExSpans {
         internal static bool EqualsOrdinal(this ReadOnlyExSpan<char> span, ReadOnlyExSpan<char> value) {
             if (span.Length != value.Length)
                 return false;
-            if (value.Length == 0)  // span.Length == value.Length == 0
+            if (value.Length == (TSize)0)  // span.Length == value.Length == 0
                 return true;
             return span.SequenceEqual(value);
         }
@@ -73,9 +76,9 @@ namespace Zyl.ExSpans {
         internal static bool EqualsOrdinalIgnoreCase(this ReadOnlyExSpan<char> span, ReadOnlyExSpan<char> value) {
             if (span.Length != value.Length)
                 return false;
-            if (value.Length == 0)  // span.Length == value.Length == 0
+            if (value.Length == (TSize)0)  // span.Length == value.Length == 0
                 return true;
-            return Ordinal.EqualsIgnoreCase(ref MemoryMarshal.GetReference(span), ref MemoryMarshal.GetReference(value), span.Length);
+            return Ordinal.EqualsIgnoreCase(ref ExMemoryMarshal.GetReference(span), ref ExMemoryMarshal.GetReference(value), span.Length);
         }
 
         /// <summary>
@@ -104,7 +107,7 @@ namespace Zyl.ExSpans {
 
                 default:
                     Debug.Assert(comparisonType == StringComparison.OrdinalIgnoreCase);
-                    return Ordinal.CompareStringIgnoreCase(ref MemoryMarshal.GetReference(span), span.Length, ref MemoryMarshal.GetReference(other), other.Length);
+                    return Ordinal.CompareStringIgnoreCase(ref ExMemoryMarshal.GetReference(span), span.Length, ref ExMemoryMarshal.GetReference(other), other.Length);
             }
         }
 
@@ -118,7 +121,7 @@ namespace Zyl.ExSpans {
             string.CheckStringComparison(comparisonType);
 
             if (comparisonType == StringComparison.Ordinal) {
-                return ExSpanHelpers.IndexOf(ref MemoryMarshal.GetReference(span), span.Length, ref MemoryMarshal.GetReference(value), value.Length);
+                return ExSpanHelpers.IndexOf(ref ExMemoryMarshal.GetReference(span), span.Length, ref ExMemoryMarshal.GetReference(value), value.Length);
             }
 
             switch (comparisonType) {
@@ -147,9 +150,9 @@ namespace Zyl.ExSpans {
 
             if (comparisonType == StringComparison.Ordinal) {
                 return ExSpanHelpers.LastIndexOf(
-                    ref MemoryMarshal.GetReference(span),
+                    ref ExMemoryMarshal.GetReference(span),
                     span.Length,
-                    ref MemoryMarshal.GetReference(value),
+                    ref ExMemoryMarshal.GetReference(value),
                     value.Length);
             }
 
@@ -300,8 +303,8 @@ namespace Zyl.ExSpans {
         internal static bool EndsWithOrdinalIgnoreCase(this ReadOnlyExSpan<char> span, ReadOnlyExSpan<char> value)
             => value.Length <= span.Length
             && Ordinal.EqualsIgnoreCase(
-                ref Unsafe.Add(ref MemoryMarshal.GetReference(span), span.Length - value.Length),
-                ref MemoryMarshal.GetReference(value),
+                ref Unsafe.Add(ref ExMemoryMarshal.GetReference(span), span.Length - value.Length),
+                ref ExMemoryMarshal.GetReference(value),
                 value.Length);
 
         /// <summary>
@@ -335,7 +338,7 @@ namespace Zyl.ExSpans {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static bool StartsWithOrdinalIgnoreCase(this ReadOnlyExSpan<char> span, ReadOnlyExSpan<char> value)
             => value.Length <= span.Length
-            && Ordinal.EqualsIgnoreCase(ref MemoryMarshal.GetReference(span), ref MemoryMarshal.GetReference(value), value.Length);
+            && Ordinal.EqualsIgnoreCase(ref ExMemoryMarshal.GetReference(span), ref ExMemoryMarshal.GetReference(value), value.Length);
 
         /// <summary>
         /// Returns an enumeration of <see cref="Rune"/> from the provided span.
