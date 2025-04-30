@@ -164,6 +164,31 @@ namespace Zyl.ExSpans.Impl {
         }
 
         /// <summary>
+        /// Reinterprets the given value of type <typeparamref name="TFrom" /> as a value of type <typeparamref name="TTo" />.
+        /// </summary>
+        /// <exception cref="NotSupportedException">The sizes of <typeparamref name="TFrom" /> and <typeparamref name="TTo" /> are not the same
+        /// or the type parameters are not <see langword="struct"/>s.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static TTo BitCast<TFrom, TTo>(TFrom source)
+#if ALLOWS_REF_STRUCT
+            where TFrom : allows ref struct
+            where TTo : allows ref struct
+#else
+            where TFrom : struct
+            where TTo : struct
+#endif // ALLOWS_REF_STRUCT
+            {
+#if NET8_0_OR_GREATER
+            return Unsafe.BitCast<TFrom, TTo>(source);
+#else
+            if (Unsafe.SizeOf<TFrom>() != Unsafe.SizeOf<TTo>()) { // || default(TFrom) is null || default(TTo) is null
+                throw new NotSupportedException();
+            }
+            return Unsafe.ReadUnaligned<TTo>(ref Unsafe.As<TFrom, byte>(ref source));
+#endif // NET8_0_OR_GREATER
+        }
+
+        /// <summary>
         /// Get byte size (取得字节长度).
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
