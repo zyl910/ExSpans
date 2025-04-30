@@ -224,9 +224,10 @@ namespace Zyl.ExSpans {
             }
             return -1;
         }
+#endif // TODO
 
         // Adapted from IndexOf(...)
-        public static bool Contains<T>(ref T searchSpace, T value, int length) where T : IEquatable<T>? {
+        public static bool Contains<T>(ref T searchSpace, T value, nint length) where T : IEquatable<T>? {
             Debug.Assert(length >= 0);
 
             nint index = 0; // Use nint for arithmetic to avoid unnecessary 64->32->64 truncations
@@ -237,7 +238,7 @@ namespace Zyl.ExSpans {
                 while (length >= 8) {
                     length -= 8;
 
-                    if (value.Equals(ExUnsafe.Add(ref searchSpace, index + 0)) ||
+                    if (value!.Equals(ExUnsafe.Add(ref searchSpace, index + 0)) ||
                         value.Equals(ExUnsafe.Add(ref searchSpace, index + 1)) ||
                         value.Equals(ExUnsafe.Add(ref searchSpace, index + 2)) ||
                         value.Equals(ExUnsafe.Add(ref searchSpace, index + 3)) ||
@@ -254,7 +255,7 @@ namespace Zyl.ExSpans {
                 if (length >= 4) {
                     length -= 4;
 
-                    if (value.Equals(ExUnsafe.Add(ref searchSpace, index + 0)) ||
+                    if (value!.Equals(ExUnsafe.Add(ref searchSpace, index + 0)) ||
                         value.Equals(ExUnsafe.Add(ref searchSpace, index + 1)) ||
                         value.Equals(ExUnsafe.Add(ref searchSpace, index + 2)) ||
                         value.Equals(ExUnsafe.Add(ref searchSpace, index + 3))) {
@@ -267,7 +268,7 @@ namespace Zyl.ExSpans {
                 while (length > 0) {
                     length--;
 
-                    if (value.Equals(ExUnsafe.Add(ref searchSpace, index)))
+                    if (value!.Equals(ExUnsafe.Add(ref searchSpace, index)))
                         goto Found;
 
                     index += 1;
@@ -287,6 +288,7 @@ namespace Zyl.ExSpans {
             return true;
         }
 
+#if TODO
         public static int IndexOf<T>(ref T searchSpace, T value, int length) where T : IEquatable<T>? {
             Debug.Assert(length >= 0);
 
