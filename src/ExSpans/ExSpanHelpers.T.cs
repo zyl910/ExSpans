@@ -155,39 +155,39 @@ namespace Zyl.ExSpans {
             if (numElements >= 8) {
                 nuint stopLoopAtOffset = numElements & ~(nuint)7;
                 do {
-                    Unsafe.Add(ref refData, (nint)i + 0) = value;
-                    Unsafe.Add(ref refData, (nint)i + 1) = value;
-                    Unsafe.Add(ref refData, (nint)i + 2) = value;
-                    Unsafe.Add(ref refData, (nint)i + 3) = value;
-                    Unsafe.Add(ref refData, (nint)i + 4) = value;
-                    Unsafe.Add(ref refData, (nint)i + 5) = value;
-                    Unsafe.Add(ref refData, (nint)i + 6) = value;
-                    Unsafe.Add(ref refData, (nint)i + 7) = value;
+                    ExUnsafe.Add(ref refData, (nint)i + 0) = value;
+                    ExUnsafe.Add(ref refData, (nint)i + 1) = value;
+                    ExUnsafe.Add(ref refData, (nint)i + 2) = value;
+                    ExUnsafe.Add(ref refData, (nint)i + 3) = value;
+                    ExUnsafe.Add(ref refData, (nint)i + 4) = value;
+                    ExUnsafe.Add(ref refData, (nint)i + 5) = value;
+                    ExUnsafe.Add(ref refData, (nint)i + 6) = value;
+                    ExUnsafe.Add(ref refData, (nint)i + 7) = value;
                 } while ((i += 8) < stopLoopAtOffset);
             }
 
             // Write next 4 elements if needed
 
             if ((numElements & 4) != 0) {
-                Unsafe.Add(ref refData, (nint)i + 0) = value;
-                Unsafe.Add(ref refData, (nint)i + 1) = value;
-                Unsafe.Add(ref refData, (nint)i + 2) = value;
-                Unsafe.Add(ref refData, (nint)i + 3) = value;
+                ExUnsafe.Add(ref refData, (nint)i + 0) = value;
+                ExUnsafe.Add(ref refData, (nint)i + 1) = value;
+                ExUnsafe.Add(ref refData, (nint)i + 2) = value;
+                ExUnsafe.Add(ref refData, (nint)i + 3) = value;
                 i += 4;
             }
 
             // Write next 2 elements if needed
 
             if ((numElements & 2) != 0) {
-                Unsafe.Add(ref refData, (nint)i + 0) = value;
-                Unsafe.Add(ref refData, (nint)i + 1) = value;
+                ExUnsafe.Add(ref refData, (nint)i + 0) = value;
+                ExUnsafe.Add(ref refData, (nint)i + 1) = value;
                 i += 2;
             }
 
             // Write final element if needed
 
             if ((numElements & 1) != 0) {
-                Unsafe.Add(ref refData, (nint)i) = value;
+                ExUnsafe.Add(ref refData, (nint)i) = value;
             }
         }
 
@@ -200,7 +200,7 @@ namespace Zyl.ExSpans {
                 return 0;  // A zero-length sequence is always treated as "found" at the start of the search space.
 
             T valueHead = value;
-            ref T valueTail = ref Unsafe.Add(ref value, 1);
+            ref T valueTail = ref ExUnsafe.Add(ref value, 1);
             int valueTailLength = valueLength - 1;
 
             int index = 0;
@@ -211,13 +211,13 @@ namespace Zyl.ExSpans {
                     break;  // The unsearched portion is now shorter than the sequence we're looking for. So it can't be there.
 
                 // Do a quick search for the first element of "value".
-                int relativeIndex = IndexOf(ref Unsafe.Add(ref searchSpace, index), valueHead, remainingSearchSpaceLength);
+                int relativeIndex = IndexOf(ref ExUnsafe.Add(ref searchSpace, index), valueHead, remainingSearchSpaceLength);
                 if (relativeIndex < 0)
                     break;
                 index += relativeIndex;
 
                 // Found the first element of "value". See if the tail matches.
-                if (SequenceEqual(ref Unsafe.Add(ref searchSpace, index + 1), ref valueTail, valueTailLength))
+                if (SequenceEqual(ref ExUnsafe.Add(ref searchSpace, index + 1), ref valueTail, valueTailLength))
                     return index;  // The tail matched. Return a successful find.
 
                 index++;
@@ -237,14 +237,14 @@ namespace Zyl.ExSpans {
                 while (length >= 8) {
                     length -= 8;
 
-                    if (value.Equals(Unsafe.Add(ref searchSpace, index + 0)) ||
-                        value.Equals(Unsafe.Add(ref searchSpace, index + 1)) ||
-                        value.Equals(Unsafe.Add(ref searchSpace, index + 2)) ||
-                        value.Equals(Unsafe.Add(ref searchSpace, index + 3)) ||
-                        value.Equals(Unsafe.Add(ref searchSpace, index + 4)) ||
-                        value.Equals(Unsafe.Add(ref searchSpace, index + 5)) ||
-                        value.Equals(Unsafe.Add(ref searchSpace, index + 6)) ||
-                        value.Equals(Unsafe.Add(ref searchSpace, index + 7))) {
+                    if (value.Equals(ExUnsafe.Add(ref searchSpace, index + 0)) ||
+                        value.Equals(ExUnsafe.Add(ref searchSpace, index + 1)) ||
+                        value.Equals(ExUnsafe.Add(ref searchSpace, index + 2)) ||
+                        value.Equals(ExUnsafe.Add(ref searchSpace, index + 3)) ||
+                        value.Equals(ExUnsafe.Add(ref searchSpace, index + 4)) ||
+                        value.Equals(ExUnsafe.Add(ref searchSpace, index + 5)) ||
+                        value.Equals(ExUnsafe.Add(ref searchSpace, index + 6)) ||
+                        value.Equals(ExUnsafe.Add(ref searchSpace, index + 7))) {
                         goto Found;
                     }
 
@@ -254,10 +254,10 @@ namespace Zyl.ExSpans {
                 if (length >= 4) {
                     length -= 4;
 
-                    if (value.Equals(Unsafe.Add(ref searchSpace, index + 0)) ||
-                        value.Equals(Unsafe.Add(ref searchSpace, index + 1)) ||
-                        value.Equals(Unsafe.Add(ref searchSpace, index + 2)) ||
-                        value.Equals(Unsafe.Add(ref searchSpace, index + 3))) {
+                    if (value.Equals(ExUnsafe.Add(ref searchSpace, index + 0)) ||
+                        value.Equals(ExUnsafe.Add(ref searchSpace, index + 1)) ||
+                        value.Equals(ExUnsafe.Add(ref searchSpace, index + 2)) ||
+                        value.Equals(ExUnsafe.Add(ref searchSpace, index + 3))) {
                         goto Found;
                     }
 
@@ -267,7 +267,7 @@ namespace Zyl.ExSpans {
                 while (length > 0) {
                     length--;
 
-                    if (value.Equals(Unsafe.Add(ref searchSpace, index)))
+                    if (value.Equals(ExUnsafe.Add(ref searchSpace, index)))
                         goto Found;
 
                     index += 1;
@@ -275,7 +275,7 @@ namespace Zyl.ExSpans {
             } else {
                 nint len = length;
                 for (index = 0; index < len; index++) {
-                    if ((object?)Unsafe.Add(ref searchSpace, index) is null) {
+                    if ((object?)ExUnsafe.Add(ref searchSpace, index) is null) {
                         goto Found;
                     }
                 }
@@ -297,21 +297,21 @@ namespace Zyl.ExSpans {
                 while (length >= 8) {
                     length -= 8;
 
-                    if (value.Equals(Unsafe.Add(ref searchSpace, index)))
+                    if (value.Equals(ExUnsafe.Add(ref searchSpace, index)))
                         goto Found;
-                    if (value.Equals(Unsafe.Add(ref searchSpace, index + 1)))
+                    if (value.Equals(ExUnsafe.Add(ref searchSpace, index + 1)))
                         goto Found1;
-                    if (value.Equals(Unsafe.Add(ref searchSpace, index + 2)))
+                    if (value.Equals(ExUnsafe.Add(ref searchSpace, index + 2)))
                         goto Found2;
-                    if (value.Equals(Unsafe.Add(ref searchSpace, index + 3)))
+                    if (value.Equals(ExUnsafe.Add(ref searchSpace, index + 3)))
                         goto Found3;
-                    if (value.Equals(Unsafe.Add(ref searchSpace, index + 4)))
+                    if (value.Equals(ExUnsafe.Add(ref searchSpace, index + 4)))
                         goto Found4;
-                    if (value.Equals(Unsafe.Add(ref searchSpace, index + 5)))
+                    if (value.Equals(ExUnsafe.Add(ref searchSpace, index + 5)))
                         goto Found5;
-                    if (value.Equals(Unsafe.Add(ref searchSpace, index + 6)))
+                    if (value.Equals(ExUnsafe.Add(ref searchSpace, index + 6)))
                         goto Found6;
-                    if (value.Equals(Unsafe.Add(ref searchSpace, index + 7)))
+                    if (value.Equals(ExUnsafe.Add(ref searchSpace, index + 7)))
                         goto Found7;
 
                     index += 8;
@@ -320,20 +320,20 @@ namespace Zyl.ExSpans {
                 if (length >= 4) {
                     length -= 4;
 
-                    if (value.Equals(Unsafe.Add(ref searchSpace, index)))
+                    if (value.Equals(ExUnsafe.Add(ref searchSpace, index)))
                         goto Found;
-                    if (value.Equals(Unsafe.Add(ref searchSpace, index + 1)))
+                    if (value.Equals(ExUnsafe.Add(ref searchSpace, index + 1)))
                         goto Found1;
-                    if (value.Equals(Unsafe.Add(ref searchSpace, index + 2)))
+                    if (value.Equals(ExUnsafe.Add(ref searchSpace, index + 2)))
                         goto Found2;
-                    if (value.Equals(Unsafe.Add(ref searchSpace, index + 3)))
+                    if (value.Equals(ExUnsafe.Add(ref searchSpace, index + 3)))
                         goto Found3;
 
                     index += 4;
                 }
 
                 while (length > 0) {
-                    if (value.Equals(Unsafe.Add(ref searchSpace, index)))
+                    if (value.Equals(ExUnsafe.Add(ref searchSpace, index)))
                         goto Found;
 
                     index += 1;
@@ -342,7 +342,7 @@ namespace Zyl.ExSpans {
             } else {
                 nint len = (nint)length;
                 for (index = 0; index < len; index++) {
-                    if ((object?)Unsafe.Add(ref searchSpace, index) is null) {
+                    if ((object?)ExUnsafe.Add(ref searchSpace, index) is null) {
                         goto Found;
                     }
                 }
@@ -376,28 +376,28 @@ namespace Zyl.ExSpans {
                 Debug.Assert(value0 is not null && value1 is not null);
 
                 while ((length - index) >= 8) {
-                    lookUp = Unsafe.Add(ref searchSpace, index);
+                    lookUp = ExUnsafe.Add(ref searchSpace, index);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp))
                         goto Found;
-                    lookUp = Unsafe.Add(ref searchSpace, index + 1);
+                    lookUp = ExUnsafe.Add(ref searchSpace, index + 1);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp))
                         goto Found1;
-                    lookUp = Unsafe.Add(ref searchSpace, index + 2);
+                    lookUp = ExUnsafe.Add(ref searchSpace, index + 2);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp))
                         goto Found2;
-                    lookUp = Unsafe.Add(ref searchSpace, index + 3);
+                    lookUp = ExUnsafe.Add(ref searchSpace, index + 3);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp))
                         goto Found3;
-                    lookUp = Unsafe.Add(ref searchSpace, index + 4);
+                    lookUp = ExUnsafe.Add(ref searchSpace, index + 4);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp))
                         goto Found4;
-                    lookUp = Unsafe.Add(ref searchSpace, index + 5);
+                    lookUp = ExUnsafe.Add(ref searchSpace, index + 5);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp))
                         goto Found5;
-                    lookUp = Unsafe.Add(ref searchSpace, index + 6);
+                    lookUp = ExUnsafe.Add(ref searchSpace, index + 6);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp))
                         goto Found6;
-                    lookUp = Unsafe.Add(ref searchSpace, index + 7);
+                    lookUp = ExUnsafe.Add(ref searchSpace, index + 7);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp))
                         goto Found7;
 
@@ -405,16 +405,16 @@ namespace Zyl.ExSpans {
                 }
 
                 if ((length - index) >= 4) {
-                    lookUp = Unsafe.Add(ref searchSpace, index);
+                    lookUp = ExUnsafe.Add(ref searchSpace, index);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp))
                         goto Found;
-                    lookUp = Unsafe.Add(ref searchSpace, index + 1);
+                    lookUp = ExUnsafe.Add(ref searchSpace, index + 1);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp))
                         goto Found1;
-                    lookUp = Unsafe.Add(ref searchSpace, index + 2);
+                    lookUp = ExUnsafe.Add(ref searchSpace, index + 2);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp))
                         goto Found2;
-                    lookUp = Unsafe.Add(ref searchSpace, index + 3);
+                    lookUp = ExUnsafe.Add(ref searchSpace, index + 3);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp))
                         goto Found3;
 
@@ -422,7 +422,7 @@ namespace Zyl.ExSpans {
                 }
 
                 while (index < length) {
-                    lookUp = Unsafe.Add(ref searchSpace, index);
+                    lookUp = ExUnsafe.Add(ref searchSpace, index);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp))
                         goto Found;
 
@@ -430,7 +430,7 @@ namespace Zyl.ExSpans {
                 }
             } else {
                 for (index = 0; index < length; index++) {
-                    lookUp = Unsafe.Add(ref searchSpace, index);
+                    lookUp = ExUnsafe.Add(ref searchSpace, index);
                     if ((object?)lookUp is null) {
                         if ((object?)value0 is null || (object?)value1 is null) {
                             goto Found;
@@ -470,28 +470,28 @@ namespace Zyl.ExSpans {
                 Debug.Assert(value0 is not null && value1 is not null && value2 is not null);
 
                 while ((length - index) >= 8) {
-                    lookUp = Unsafe.Add(ref searchSpace, index);
+                    lookUp = ExUnsafe.Add(ref searchSpace, index);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp) || value2.Equals(lookUp))
                         goto Found;
-                    lookUp = Unsafe.Add(ref searchSpace, index + 1);
+                    lookUp = ExUnsafe.Add(ref searchSpace, index + 1);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp) || value2.Equals(lookUp))
                         goto Found1;
-                    lookUp = Unsafe.Add(ref searchSpace, index + 2);
+                    lookUp = ExUnsafe.Add(ref searchSpace, index + 2);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp) || value2.Equals(lookUp))
                         goto Found2;
-                    lookUp = Unsafe.Add(ref searchSpace, index + 3);
+                    lookUp = ExUnsafe.Add(ref searchSpace, index + 3);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp) || value2.Equals(lookUp))
                         goto Found3;
-                    lookUp = Unsafe.Add(ref searchSpace, index + 4);
+                    lookUp = ExUnsafe.Add(ref searchSpace, index + 4);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp) || value2.Equals(lookUp))
                         goto Found4;
-                    lookUp = Unsafe.Add(ref searchSpace, index + 5);
+                    lookUp = ExUnsafe.Add(ref searchSpace, index + 5);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp) || value2.Equals(lookUp))
                         goto Found5;
-                    lookUp = Unsafe.Add(ref searchSpace, index + 6);
+                    lookUp = ExUnsafe.Add(ref searchSpace, index + 6);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp) || value2.Equals(lookUp))
                         goto Found6;
-                    lookUp = Unsafe.Add(ref searchSpace, index + 7);
+                    lookUp = ExUnsafe.Add(ref searchSpace, index + 7);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp) || value2.Equals(lookUp))
                         goto Found7;
 
@@ -499,16 +499,16 @@ namespace Zyl.ExSpans {
                 }
 
                 if ((length - index) >= 4) {
-                    lookUp = Unsafe.Add(ref searchSpace, index);
+                    lookUp = ExUnsafe.Add(ref searchSpace, index);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp) || value2.Equals(lookUp))
                         goto Found;
-                    lookUp = Unsafe.Add(ref searchSpace, index + 1);
+                    lookUp = ExUnsafe.Add(ref searchSpace, index + 1);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp) || value2.Equals(lookUp))
                         goto Found1;
-                    lookUp = Unsafe.Add(ref searchSpace, index + 2);
+                    lookUp = ExUnsafe.Add(ref searchSpace, index + 2);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp) || value2.Equals(lookUp))
                         goto Found2;
-                    lookUp = Unsafe.Add(ref searchSpace, index + 3);
+                    lookUp = ExUnsafe.Add(ref searchSpace, index + 3);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp) || value2.Equals(lookUp))
                         goto Found3;
 
@@ -516,7 +516,7 @@ namespace Zyl.ExSpans {
                 }
 
                 while (index < length) {
-                    lookUp = Unsafe.Add(ref searchSpace, index);
+                    lookUp = ExUnsafe.Add(ref searchSpace, index);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp) || value2.Equals(lookUp))
                         goto Found;
 
@@ -524,7 +524,7 @@ namespace Zyl.ExSpans {
                 }
             } else {
                 for (index = 0; index < length; index++) {
-                    lookUp = Unsafe.Add(ref searchSpace, index);
+                    lookUp = ExUnsafe.Add(ref searchSpace, index);
                     if ((object?)lookUp is null) {
                         if ((object?)value0 is null || (object?)value1 is null || (object?)value2 is null) {
                             goto Found;
@@ -578,9 +578,9 @@ namespace Zyl.ExSpans {
                 // the inner loop we'll pass a ref (as 'this') to each element in the needle.
 
                 for (int i = 0; i < searchSpaceLength; i++) {
-                    T candidate = Unsafe.Add(ref searchSpace, i);
+                    T candidate = ExUnsafe.Add(ref searchSpace, i);
                     for (int j = 0; j < valueLength; j++) {
-                        if (Unsafe.Add(ref value, j)!.Equals(candidate)) {
+                        if (ExUnsafe.Add(ref value, j)!.Equals(candidate)) {
                             return i;
                         }
                     }
@@ -590,16 +590,16 @@ namespace Zyl.ExSpans {
                 // in the outer loop instead of in the inner loop to save some branching.
 
                 for (int i = 0; i < searchSpaceLength; i++) {
-                    T candidate = Unsafe.Add(ref searchSpace, i);
+                    T candidate = ExUnsafe.Add(ref searchSpace, i);
                     if (candidate is not null) {
                         for (int j = 0; j < valueLength; j++) {
-                            if (candidate.Equals(Unsafe.Add(ref value, j))) {
+                            if (candidate.Equals(ExUnsafe.Add(ref value, j))) {
                                 return i;
                             }
                         }
                     } else {
                         for (int j = 0; j < valueLength; j++) {
-                            if (Unsafe.Add(ref value, j) is null) {
+                            if (ExUnsafe.Add(ref value, j) is null) {
                                 return i;
                             }
                         }
@@ -625,7 +625,7 @@ namespace Zyl.ExSpans {
             int index = 0;
 
             T valueHead = value;
-            ref T valueTail = ref Unsafe.Add(ref value, 1);
+            ref T valueTail = ref ExUnsafe.Add(ref value, 1);
 
             while (true) {
                 Debug.Assert(0 <= index && index <= searchSpaceLength); // Ensures no deceptive underflows in the computation of "remainingSearchSpaceLength".
@@ -639,7 +639,7 @@ namespace Zyl.ExSpans {
                     break;
 
                 // Found the first element of "value". See if the tail matches.
-                if (SequenceEqual(ref Unsafe.Add(ref searchSpace, relativeIndex + 1), ref valueTail, valueTailLength))
+                if (SequenceEqual(ref ExUnsafe.Add(ref searchSpace, relativeIndex + 1), ref valueTail, valueTailLength))
                     return relativeIndex;  // The tail matched. Return a successful find.
 
                 index += remainingSearchSpaceLength - relativeIndex;
@@ -656,46 +656,46 @@ namespace Zyl.ExSpans {
                 while (length >= 8) {
                     length -= 8;
 
-                    if (value.Equals(Unsafe.Add(ref searchSpace, length + 7)))
+                    if (value.Equals(ExUnsafe.Add(ref searchSpace, length + 7)))
                         goto Found7;
-                    if (value.Equals(Unsafe.Add(ref searchSpace, length + 6)))
+                    if (value.Equals(ExUnsafe.Add(ref searchSpace, length + 6)))
                         goto Found6;
-                    if (value.Equals(Unsafe.Add(ref searchSpace, length + 5)))
+                    if (value.Equals(ExUnsafe.Add(ref searchSpace, length + 5)))
                         goto Found5;
-                    if (value.Equals(Unsafe.Add(ref searchSpace, length + 4)))
+                    if (value.Equals(ExUnsafe.Add(ref searchSpace, length + 4)))
                         goto Found4;
-                    if (value.Equals(Unsafe.Add(ref searchSpace, length + 3)))
+                    if (value.Equals(ExUnsafe.Add(ref searchSpace, length + 3)))
                         goto Found3;
-                    if (value.Equals(Unsafe.Add(ref searchSpace, length + 2)))
+                    if (value.Equals(ExUnsafe.Add(ref searchSpace, length + 2)))
                         goto Found2;
-                    if (value.Equals(Unsafe.Add(ref searchSpace, length + 1)))
+                    if (value.Equals(ExUnsafe.Add(ref searchSpace, length + 1)))
                         goto Found1;
-                    if (value.Equals(Unsafe.Add(ref searchSpace, length)))
+                    if (value.Equals(ExUnsafe.Add(ref searchSpace, length)))
                         goto Found;
                 }
 
                 if (length >= 4) {
                     length -= 4;
 
-                    if (value.Equals(Unsafe.Add(ref searchSpace, length + 3)))
+                    if (value.Equals(ExUnsafe.Add(ref searchSpace, length + 3)))
                         goto Found3;
-                    if (value.Equals(Unsafe.Add(ref searchSpace, length + 2)))
+                    if (value.Equals(ExUnsafe.Add(ref searchSpace, length + 2)))
                         goto Found2;
-                    if (value.Equals(Unsafe.Add(ref searchSpace, length + 1)))
+                    if (value.Equals(ExUnsafe.Add(ref searchSpace, length + 1)))
                         goto Found1;
-                    if (value.Equals(Unsafe.Add(ref searchSpace, length)))
+                    if (value.Equals(ExUnsafe.Add(ref searchSpace, length)))
                         goto Found;
                 }
 
                 while (length > 0) {
                     length--;
 
-                    if (value.Equals(Unsafe.Add(ref searchSpace, length)))
+                    if (value.Equals(ExUnsafe.Add(ref searchSpace, length)))
                         goto Found;
                 }
             } else {
                 for (length--; length >= 0; length--) {
-                    if ((object?)Unsafe.Add(ref searchSpace, length) is null) {
+                    if ((object?)ExUnsafe.Add(ref searchSpace, length) is null) {
                         goto Found;
                     }
                 }
@@ -731,28 +731,28 @@ namespace Zyl.ExSpans {
                 while (length >= 8) {
                     length -= 8;
 
-                    lookUp = Unsafe.Add(ref searchSpace, length + 7);
+                    lookUp = ExUnsafe.Add(ref searchSpace, length + 7);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp))
                         goto Found7;
-                    lookUp = Unsafe.Add(ref searchSpace, length + 6);
+                    lookUp = ExUnsafe.Add(ref searchSpace, length + 6);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp))
                         goto Found6;
-                    lookUp = Unsafe.Add(ref searchSpace, length + 5);
+                    lookUp = ExUnsafe.Add(ref searchSpace, length + 5);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp))
                         goto Found5;
-                    lookUp = Unsafe.Add(ref searchSpace, length + 4);
+                    lookUp = ExUnsafe.Add(ref searchSpace, length + 4);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp))
                         goto Found4;
-                    lookUp = Unsafe.Add(ref searchSpace, length + 3);
+                    lookUp = ExUnsafe.Add(ref searchSpace, length + 3);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp))
                         goto Found3;
-                    lookUp = Unsafe.Add(ref searchSpace, length + 2);
+                    lookUp = ExUnsafe.Add(ref searchSpace, length + 2);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp))
                         goto Found2;
-                    lookUp = Unsafe.Add(ref searchSpace, length + 1);
+                    lookUp = ExUnsafe.Add(ref searchSpace, length + 1);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp))
                         goto Found1;
-                    lookUp = Unsafe.Add(ref searchSpace, length);
+                    lookUp = ExUnsafe.Add(ref searchSpace, length);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp))
                         goto Found;
                 }
@@ -760,16 +760,16 @@ namespace Zyl.ExSpans {
                 if (length >= 4) {
                     length -= 4;
 
-                    lookUp = Unsafe.Add(ref searchSpace, length + 3);
+                    lookUp = ExUnsafe.Add(ref searchSpace, length + 3);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp))
                         goto Found3;
-                    lookUp = Unsafe.Add(ref searchSpace, length + 2);
+                    lookUp = ExUnsafe.Add(ref searchSpace, length + 2);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp))
                         goto Found2;
-                    lookUp = Unsafe.Add(ref searchSpace, length + 1);
+                    lookUp = ExUnsafe.Add(ref searchSpace, length + 1);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp))
                         goto Found1;
-                    lookUp = Unsafe.Add(ref searchSpace, length);
+                    lookUp = ExUnsafe.Add(ref searchSpace, length);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp))
                         goto Found;
                 }
@@ -777,13 +777,13 @@ namespace Zyl.ExSpans {
                 while (length > 0) {
                     length--;
 
-                    lookUp = Unsafe.Add(ref searchSpace, length);
+                    lookUp = ExUnsafe.Add(ref searchSpace, length);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp))
                         goto Found;
                 }
             } else {
                 for (length--; length >= 0; length--) {
-                    lookUp = Unsafe.Add(ref searchSpace, length);
+                    lookUp = ExUnsafe.Add(ref searchSpace, length);
                     if ((object?)lookUp is null) {
                         if ((object?)value0 is null || (object?)value1 is null) {
                             goto Found;
@@ -824,28 +824,28 @@ namespace Zyl.ExSpans {
                 while (length >= 8) {
                     length -= 8;
 
-                    lookUp = Unsafe.Add(ref searchSpace, length + 7);
+                    lookUp = ExUnsafe.Add(ref searchSpace, length + 7);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp) || value2.Equals(lookUp))
                         goto Found7;
-                    lookUp = Unsafe.Add(ref searchSpace, length + 6);
+                    lookUp = ExUnsafe.Add(ref searchSpace, length + 6);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp) || value2.Equals(lookUp))
                         goto Found6;
-                    lookUp = Unsafe.Add(ref searchSpace, length + 5);
+                    lookUp = ExUnsafe.Add(ref searchSpace, length + 5);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp) || value2.Equals(lookUp))
                         goto Found5;
-                    lookUp = Unsafe.Add(ref searchSpace, length + 4);
+                    lookUp = ExUnsafe.Add(ref searchSpace, length + 4);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp) || value2.Equals(lookUp))
                         goto Found4;
-                    lookUp = Unsafe.Add(ref searchSpace, length + 3);
+                    lookUp = ExUnsafe.Add(ref searchSpace, length + 3);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp) || value2.Equals(lookUp))
                         goto Found3;
-                    lookUp = Unsafe.Add(ref searchSpace, length + 2);
+                    lookUp = ExUnsafe.Add(ref searchSpace, length + 2);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp) || value2.Equals(lookUp))
                         goto Found2;
-                    lookUp = Unsafe.Add(ref searchSpace, length + 1);
+                    lookUp = ExUnsafe.Add(ref searchSpace, length + 1);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp) || value2.Equals(lookUp))
                         goto Found1;
-                    lookUp = Unsafe.Add(ref searchSpace, length);
+                    lookUp = ExUnsafe.Add(ref searchSpace, length);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp) || value2.Equals(lookUp))
                         goto Found;
                 }
@@ -853,16 +853,16 @@ namespace Zyl.ExSpans {
                 if (length >= 4) {
                     length -= 4;
 
-                    lookUp = Unsafe.Add(ref searchSpace, length + 3);
+                    lookUp = ExUnsafe.Add(ref searchSpace, length + 3);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp) || value2.Equals(lookUp))
                         goto Found3;
-                    lookUp = Unsafe.Add(ref searchSpace, length + 2);
+                    lookUp = ExUnsafe.Add(ref searchSpace, length + 2);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp) || value2.Equals(lookUp))
                         goto Found2;
-                    lookUp = Unsafe.Add(ref searchSpace, length + 1);
+                    lookUp = ExUnsafe.Add(ref searchSpace, length + 1);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp) || value2.Equals(lookUp))
                         goto Found1;
-                    lookUp = Unsafe.Add(ref searchSpace, length);
+                    lookUp = ExUnsafe.Add(ref searchSpace, length);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp) || value2.Equals(lookUp))
                         goto Found;
                 }
@@ -870,13 +870,13 @@ namespace Zyl.ExSpans {
                 while (length > 0) {
                     length--;
 
-                    lookUp = Unsafe.Add(ref searchSpace, length);
+                    lookUp = ExUnsafe.Add(ref searchSpace, length);
                     if (value0.Equals(lookUp) || value1.Equals(lookUp) || value2.Equals(lookUp))
                         goto Found;
                 }
             } else {
                 for (length--; length >= 0; length--) {
-                    lookUp = Unsafe.Add(ref searchSpace, length);
+                    lookUp = ExUnsafe.Add(ref searchSpace, length);
                     if ((object?)lookUp is null) {
                         if ((object?)value0 is null || (object?)value1 is null || (object?)value2 is null) {
                             goto Found;
@@ -919,25 +919,25 @@ namespace Zyl.ExSpans {
 
             if (typeof(T).IsValueType) {
                 for (int i = searchSpaceLength - 1; i >= 0; i--) {
-                    T candidate = Unsafe.Add(ref searchSpace, i);
+                    T candidate = ExUnsafe.Add(ref searchSpace, i);
                     for (int j = 0; j < valueLength; j++) {
-                        if (Unsafe.Add(ref value, j)!.Equals(candidate)) {
+                        if (ExUnsafe.Add(ref value, j)!.Equals(candidate)) {
                             return i;
                         }
                     }
                 }
             } else {
                 for (int i = searchSpaceLength - 1; i >= 0; i--) {
-                    T candidate = Unsafe.Add(ref searchSpace, i);
+                    T candidate = ExUnsafe.Add(ref searchSpace, i);
                     if (candidate is not null) {
                         for (int j = 0; j < valueLength; j++) {
-                            if (candidate.Equals(Unsafe.Add(ref value, j))) {
+                            if (candidate.Equals(ExUnsafe.Add(ref value, j))) {
                                 return i;
                             }
                         }
                     } else {
                         for (int j = 0; j < valueLength; j++) {
-                            if (Unsafe.Add(ref value, j) is null) {
+                            if (ExUnsafe.Add(ref value, j) is null) {
                                 return i;
                             }
                         }
@@ -952,7 +952,7 @@ namespace Zyl.ExSpans {
             Debug.Assert(length >= 0, "Expected non-negative length");
 
             for (int i = 0; i < length; i++) {
-                if (!EqualityComparer<T>.Default.Equals(Unsafe.Add(ref searchSpace, i), value0)) {
+                if (!EqualityComparer<T>.Default.Equals(ExUnsafe.Add(ref searchSpace, i), value0)) {
                     return i;
                 }
             }
@@ -964,7 +964,7 @@ namespace Zyl.ExSpans {
             Debug.Assert(length >= 0, "Expected non-negative length");
 
             for (int i = length - 1; i >= 0; i--) {
-                if (!EqualityComparer<T>.Default.Equals(Unsafe.Add(ref searchSpace, i), value0)) {
+                if (!EqualityComparer<T>.Default.Equals(ExUnsafe.Add(ref searchSpace, i), value0)) {
                     return i;
                 }
             }
@@ -976,7 +976,7 @@ namespace Zyl.ExSpans {
             Debug.Assert(length >= 0, "Expected non-negative length");
 
             for (int i = 0; i < length; i++) {
-                ref T current = ref Unsafe.Add(ref searchSpace, i);
+                ref T current = ref ExUnsafe.Add(ref searchSpace, i);
                 if (!EqualityComparer<T>.Default.Equals(current, value0) && !EqualityComparer<T>.Default.Equals(current, value1)) {
                     return i;
                 }
@@ -989,7 +989,7 @@ namespace Zyl.ExSpans {
             Debug.Assert(length >= 0, "Expected non-negative length");
 
             for (int i = length - 1; i >= 0; i--) {
-                ref T current = ref Unsafe.Add(ref searchSpace, i);
+                ref T current = ref ExUnsafe.Add(ref searchSpace, i);
                 if (!EqualityComparer<T>.Default.Equals(current, value0) && !EqualityComparer<T>.Default.Equals(current, value1)) {
                     return i;
                 }
@@ -1002,7 +1002,7 @@ namespace Zyl.ExSpans {
             Debug.Assert(length >= 0, "Expected non-negative length");
 
             for (int i = 0; i < length; i++) {
-                ref T current = ref Unsafe.Add(ref searchSpace, i);
+                ref T current = ref ExUnsafe.Add(ref searchSpace, i);
                 if (!EqualityComparer<T>.Default.Equals(current, value0)
                     && !EqualityComparer<T>.Default.Equals(current, value1)
                     && !EqualityComparer<T>.Default.Equals(current, value2)) {
@@ -1017,7 +1017,7 @@ namespace Zyl.ExSpans {
             Debug.Assert(length >= 0, "Expected non-negative length");
 
             for (int i = length - 1; i >= 0; i--) {
-                ref T current = ref Unsafe.Add(ref searchSpace, i);
+                ref T current = ref ExUnsafe.Add(ref searchSpace, i);
                 if (!EqualityComparer<T>.Default.Equals(current, value0)
                     && !EqualityComparer<T>.Default.Equals(current, value1)
                     && !EqualityComparer<T>.Default.Equals(current, value2)) {
@@ -1032,7 +1032,7 @@ namespace Zyl.ExSpans {
             Debug.Assert(length >= 0, "Expected non-negative length");
 
             for (int i = 0; i < length; i++) {
-                ref T current = ref Unsafe.Add(ref searchSpace, i);
+                ref T current = ref ExUnsafe.Add(ref searchSpace, i);
                 if (!EqualityComparer<T>.Default.Equals(current, value0)
                     && !EqualityComparer<T>.Default.Equals(current, value1)
                     && !EqualityComparer<T>.Default.Equals(current, value2)
@@ -1048,7 +1048,7 @@ namespace Zyl.ExSpans {
             Debug.Assert(length >= 0, "Expected non-negative length");
 
             for (int i = length - 1; i >= 0; i--) {
-                ref T current = ref Unsafe.Add(ref searchSpace, i);
+                ref T current = ref ExUnsafe.Add(ref searchSpace, i);
                 if (!EqualityComparer<T>.Default.Equals(current, value0)
                     && !EqualityComparer<T>.Default.Equals(current, value1)
                     && !EqualityComparer<T>.Default.Equals(current, value2)
@@ -1073,36 +1073,36 @@ namespace Zyl.ExSpans {
             while (length >= 8) {
                 length -= 8;
 
-                lookUp0 = Unsafe.Add(ref first, index);
-                lookUp1 = Unsafe.Add(ref second, index);
+                lookUp0 = ExUnsafe.Add(ref first, index);
+                lookUp1 = ExUnsafe.Add(ref second, index);
                 if (!(lookUp0?.Equals(lookUp1) ?? (object?)lookUp1 is null))
                     goto NotEqual;
-                lookUp0 = Unsafe.Add(ref first, index + 1);
-                lookUp1 = Unsafe.Add(ref second, index + 1);
+                lookUp0 = ExUnsafe.Add(ref first, index + 1);
+                lookUp1 = ExUnsafe.Add(ref second, index + 1);
                 if (!(lookUp0?.Equals(lookUp1) ?? (object?)lookUp1 is null))
                     goto NotEqual;
-                lookUp0 = Unsafe.Add(ref first, index + 2);
-                lookUp1 = Unsafe.Add(ref second, index + 2);
+                lookUp0 = ExUnsafe.Add(ref first, index + 2);
+                lookUp1 = ExUnsafe.Add(ref second, index + 2);
                 if (!(lookUp0?.Equals(lookUp1) ?? (object?)lookUp1 is null))
                     goto NotEqual;
-                lookUp0 = Unsafe.Add(ref first, index + 3);
-                lookUp1 = Unsafe.Add(ref second, index + 3);
+                lookUp0 = ExUnsafe.Add(ref first, index + 3);
+                lookUp1 = ExUnsafe.Add(ref second, index + 3);
                 if (!(lookUp0?.Equals(lookUp1) ?? (object?)lookUp1 is null))
                     goto NotEqual;
-                lookUp0 = Unsafe.Add(ref first, index + 4);
-                lookUp1 = Unsafe.Add(ref second, index + 4);
+                lookUp0 = ExUnsafe.Add(ref first, index + 4);
+                lookUp1 = ExUnsafe.Add(ref second, index + 4);
                 if (!(lookUp0?.Equals(lookUp1) ?? (object?)lookUp1 is null))
                     goto NotEqual;
-                lookUp0 = Unsafe.Add(ref first, index + 5);
-                lookUp1 = Unsafe.Add(ref second, index + 5);
+                lookUp0 = ExUnsafe.Add(ref first, index + 5);
+                lookUp1 = ExUnsafe.Add(ref second, index + 5);
                 if (!(lookUp0?.Equals(lookUp1) ?? (object?)lookUp1 is null))
                     goto NotEqual;
-                lookUp0 = Unsafe.Add(ref first, index + 6);
-                lookUp1 = Unsafe.Add(ref second, index + 6);
+                lookUp0 = ExUnsafe.Add(ref first, index + 6);
+                lookUp1 = ExUnsafe.Add(ref second, index + 6);
                 if (!(lookUp0?.Equals(lookUp1) ?? (object?)lookUp1 is null))
                     goto NotEqual;
-                lookUp0 = Unsafe.Add(ref first, index + 7);
-                lookUp1 = Unsafe.Add(ref second, index + 7);
+                lookUp0 = ExUnsafe.Add(ref first, index + 7);
+                lookUp1 = ExUnsafe.Add(ref second, index + 7);
                 if (!(lookUp0?.Equals(lookUp1) ?? (object?)lookUp1 is null))
                     goto NotEqual;
 
@@ -1112,20 +1112,20 @@ namespace Zyl.ExSpans {
             if (length >= 4) {
                 length -= 4;
 
-                lookUp0 = Unsafe.Add(ref first, index);
-                lookUp1 = Unsafe.Add(ref second, index);
+                lookUp0 = ExUnsafe.Add(ref first, index);
+                lookUp1 = ExUnsafe.Add(ref second, index);
                 if (!(lookUp0?.Equals(lookUp1) ?? (object?)lookUp1 is null))
                     goto NotEqual;
-                lookUp0 = Unsafe.Add(ref first, index + 1);
-                lookUp1 = Unsafe.Add(ref second, index + 1);
+                lookUp0 = ExUnsafe.Add(ref first, index + 1);
+                lookUp1 = ExUnsafe.Add(ref second, index + 1);
                 if (!(lookUp0?.Equals(lookUp1) ?? (object?)lookUp1 is null))
                     goto NotEqual;
-                lookUp0 = Unsafe.Add(ref first, index + 2);
-                lookUp1 = Unsafe.Add(ref second, index + 2);
+                lookUp0 = ExUnsafe.Add(ref first, index + 2);
+                lookUp1 = ExUnsafe.Add(ref second, index + 2);
                 if (!(lookUp0?.Equals(lookUp1) ?? (object?)lookUp1 is null))
                     goto NotEqual;
-                lookUp0 = Unsafe.Add(ref first, index + 3);
-                lookUp1 = Unsafe.Add(ref second, index + 3);
+                lookUp0 = ExUnsafe.Add(ref first, index + 3);
+                lookUp1 = ExUnsafe.Add(ref second, index + 3);
                 if (!(lookUp0?.Equals(lookUp1) ?? (object?)lookUp1 is null))
                     goto NotEqual;
 
@@ -1133,8 +1133,8 @@ namespace Zyl.ExSpans {
             }
 
             while (length > 0) {
-                lookUp0 = Unsafe.Add(ref first, index);
-                lookUp1 = Unsafe.Add(ref second, index);
+                lookUp0 = ExUnsafe.Add(ref first, index);
+                lookUp1 = ExUnsafe.Add(ref second, index);
                 if (!(lookUp0?.Equals(lookUp1) ?? (object?)lookUp1 is null))
                     goto NotEqual;
                 index += 1;
@@ -1157,72 +1157,41 @@ namespace Zyl.ExSpans {
             if (minLength > secondLength)
                 minLength = secondLength;
             for (int i = 0; i < minLength; i++) {
-                T lookUp = Unsafe.Add(ref second, i);
-                int result = (Unsafe.Add(ref first, i)?.CompareTo(lookUp) ?? (((object?)lookUp is null) ? 0 : -1));
+                T lookUp = ExUnsafe.Add(ref second, i);
+                int result = (ExUnsafe.Add(ref first, i)?.CompareTo(lookUp) ?? (((object?)lookUp is null) ? 0 : -1));
                 if (result != 0)
                     return result;
             }
             return firstLength.CompareTo(secondLength);
         }
 
-#if TODO
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static bool ContainsValueType<T>(ref T searchSpace, T value, int length) where T : struct, INumber<T> {
-            if (PackedSpanHelpers.PackedIndexOfIsSupported && typeof(T) == typeof(short) && PackedSpanHelpers.CanUsePackedIndexOf(value)) {
-                return PackedSpanHelpers.Contains(ref Unsafe.As<T, short>(ref searchSpace), Unsafe.BitCast<T, short>(value), length);
-            }
+        internal static bool ContainsValueType<T>(ref T searchSpace, T value, nint length) where T : struct, IEquatable<T>
+#if NET7_0_OR_GREATER
+                , INumber<T>
+#endif // NET7_0_OR_GREATER
+                {
+            //if (PackedSpanHelpers.PackedIndexOfIsSupported && typeof(T) == typeof(short) && PackedSpanHelpers.CanUsePackedIndexOf(value)) {
+            //    return PackedSpanHelpers.Contains(ref Unsafe.As<T, short>(ref searchSpace), Unsafe.BitCast<T, short>(value), length);
+            //}
 
             return NonPackedContainsValueType(ref searchSpace, value, length);
         }
 
-        internal static bool NonPackedContainsValueType<T>(ref T searchSpace, T value, int length) where T : struct, INumber<T> {
+        internal static bool NonPackedContainsValueType<T>(ref T searchSpace, T value, nint length) where T : struct, IEquatable<T>
+#if NET7_0_OR_GREATER
+                , INumber<T>
+#endif // NET7_0_OR_GREATER
+                {
             Debug.Assert(length >= 0, "Expected non-negative length");
             Debug.Assert(value is byte or short or int or long, "Expected caller to normalize to one of these types");
 
-            if (!Vector128.IsHardwareAccelerated || length < Vector128<T>.Count) {
-                nuint offset = 0;
-
-                while (length >= 8) {
-                    length -= 8;
-
-                    if (Unsafe.Add(ref searchSpace, offset) == value
-                     || Unsafe.Add(ref searchSpace, offset + 1) == value
-                     || Unsafe.Add(ref searchSpace, offset + 2) == value
-                     || Unsafe.Add(ref searchSpace, offset + 3) == value
-                     || Unsafe.Add(ref searchSpace, offset + 4) == value
-                     || Unsafe.Add(ref searchSpace, offset + 5) == value
-                     || Unsafe.Add(ref searchSpace, offset + 6) == value
-                     || Unsafe.Add(ref searchSpace, offset + 7) == value) {
-                        return true;
-                    }
-
-                    offset += 8;
-                }
-
-                if (length >= 4) {
-                    length -= 4;
-
-                    if (Unsafe.Add(ref searchSpace, offset) == value
-                     || Unsafe.Add(ref searchSpace, offset + 1) == value
-                     || Unsafe.Add(ref searchSpace, offset + 2) == value
-                     || Unsafe.Add(ref searchSpace, offset + 3) == value) {
-                        return true;
-                    }
-
-                    offset += 4;
-                }
-
-                while (length > 0) {
-                    length -= 1;
-
-                    if (Unsafe.Add(ref searchSpace, offset) == value) return true;
-
-                    offset += 1;
-                }
-            } else if (Vector512.IsHardwareAccelerated && length >= Vector512<T>.Count) {
+            if (false) {
+#if NET8_0_OR_GREATER
+            } else if (Vector512.IsHardwareAccelerated && length >= Vector512<T>.Count && Vector512<byte>.Count >= Vector<byte>.Count) {
                 Vector512<T> current, values = Vector512.Create(value);
                 ref T currentSearchSpace = ref searchSpace;
-                ref T oneVectorAwayFromEnd = ref Unsafe.Add(ref searchSpace, (uint)(length - Vector512<T>.Count));
+                ref T oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, length - Vector512<T>.Count);
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 do {
@@ -1232,7 +1201,7 @@ namespace Zyl.ExSpans {
                         return true;
                     }
 
-                    currentSearchSpace = ref Unsafe.Add(ref currentSearchSpace, Vector512<T>.Count);
+                    currentSearchSpace = ref ExUnsafe.Add(ref currentSearchSpace, Vector512<T>.Count);
                 }
                 while (!Unsafe.IsAddressGreaterThan(ref currentSearchSpace, ref oneVectorAwayFromEnd));
 
@@ -1244,16 +1213,43 @@ namespace Zyl.ExSpans {
                         return true;
                     }
                 }
+#endif // NET8_0_OR_GREATER
+            } else if (Vector.IsHardwareAccelerated && length >= Vector<T>.Count) {
+                Vector<T> current, values = Vectors.Create(value);
+                ref T currentSearchSpace = ref searchSpace;
+                ref T oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, length - Vector<T>.Count);
+
+                // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
+                do {
+                    current = VectorHelper.LoadUnsafe(ref currentSearchSpace);
+
+                    if (Vector.EqualsAny(values, current)) {
+                        return true;
+                    }
+
+                    currentSearchSpace = ref ExUnsafe.Add(ref currentSearchSpace, Vector<T>.Count);
+                }
+                while (!Unsafe.IsAddressGreaterThan(ref currentSearchSpace, ref oneVectorAwayFromEnd));
+
+                // If any elements remain, process the last vector in the search space.
+                if ((uint)length % Vector<T>.Count != 0) {
+                    current = VectorHelper.LoadUnsafe(ref oneVectorAwayFromEnd);
+
+                    if (Vector.EqualsAny(values, current)) {
+                        return true;
+                    }
+                }
+#if NET7_0_OR_GREATER
             } else if (Vector256.IsHardwareAccelerated && length >= Vector256<T>.Count) {
                 Vector256<T> equals, values = Vector256.Create(value);
                 ref T currentSearchSpace = ref searchSpace;
-                ref T oneVectorAwayFromEnd = ref Unsafe.Add(ref searchSpace, (uint)(length - Vector256<T>.Count));
+                ref T oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, (uint)(length - Vector256<T>.Count));
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 do {
                     equals = Vector256.Equals(values, Vector256.LoadUnsafe(ref currentSearchSpace));
                     if (equals == Vector256<T>.Zero) {
-                        currentSearchSpace = ref Unsafe.Add(ref currentSearchSpace, Vector256<T>.Count);
+                        currentSearchSpace = ref ExUnsafe.Add(ref currentSearchSpace, Vector256<T>.Count);
                         continue;
                     }
 
@@ -1271,13 +1267,13 @@ namespace Zyl.ExSpans {
             } else {
                 Vector128<T> equals, values = Vector128.Create(value);
                 ref T currentSearchSpace = ref searchSpace;
-                ref T oneVectorAwayFromEnd = ref Unsafe.Add(ref searchSpace, (uint)(length - Vector128<T>.Count));
+                ref T oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, (uint)(length - Vector128<T>.Count));
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 do {
                     equals = Vector128.Equals(values, Vector128.LoadUnsafe(ref currentSearchSpace));
                     if (equals == Vector128<T>.Zero) {
-                        currentSearchSpace = ref Unsafe.Add(ref currentSearchSpace, Vector128<T>.Count);
+                        currentSearchSpace = ref ExUnsafe.Add(ref currentSearchSpace, Vector128<T>.Count);
                         continue;
                     }
 
@@ -1292,11 +1288,54 @@ namespace Zyl.ExSpans {
                         return true;
                     }
                 }
+#endif // NET7_0_OR_GREATER
             }
 
+            if (true) {
+                nuint offset = 0;
+
+                while (length >= 8) {
+                    length -= 8;
+
+                    if (ExUnsafe.Add(ref searchSpace, offset).Equals(value)
+                     || ExUnsafe.Add(ref searchSpace, offset + 1).Equals(value)
+                     || ExUnsafe.Add(ref searchSpace, offset + 2).Equals(value)
+                     || ExUnsafe.Add(ref searchSpace, offset + 3).Equals(value)
+                     || ExUnsafe.Add(ref searchSpace, offset + 4).Equals(value)
+                     || ExUnsafe.Add(ref searchSpace, offset + 5).Equals(value)
+                     || ExUnsafe.Add(ref searchSpace, offset + 6).Equals(value)
+                     || ExUnsafe.Add(ref searchSpace, offset + 7).Equals(value)) {
+                        return true;
+                    }
+
+                    offset += 8;
+                }
+
+                if (length >= 4) {
+                    length -= 4;
+
+                    if (ExUnsafe.Add(ref searchSpace, offset).Equals(value)
+                     || ExUnsafe.Add(ref searchSpace, offset + 1).Equals(value)
+                     || ExUnsafe.Add(ref searchSpace, offset + 2).Equals(value)
+                     || ExUnsafe.Add(ref searchSpace, offset + 3).Equals(value)) {
+                        return true;
+                    }
+
+                    offset += 4;
+                }
+
+                while (length > 0) {
+                    length -= 1;
+
+                    if (ExUnsafe.Add(ref searchSpace, offset).Equals(value)) return true;
+
+                    offset += 1;
+                }
+            }
             return false;
         }
 
+#if TODO
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static int IndexOfChar(ref char searchSpace, char value, int length)
             => IndexOfValueType(ref Unsafe.As<char, short>(ref searchSpace), (short)value, length);
@@ -1338,14 +1377,14 @@ namespace Zyl.ExSpans {
                 while (length >= 8) {
                     length -= 8;
 
-                    if (TNegator.NegateIfNeeded(Unsafe.Add(ref searchSpace, offset) == value)) goto Found;
-                    if (TNegator.NegateIfNeeded(Unsafe.Add(ref searchSpace, offset + 1) == value)) goto Found1;
-                    if (TNegator.NegateIfNeeded(Unsafe.Add(ref searchSpace, offset + 2) == value)) goto Found2;
-                    if (TNegator.NegateIfNeeded(Unsafe.Add(ref searchSpace, offset + 3) == value)) goto Found3;
-                    if (TNegator.NegateIfNeeded(Unsafe.Add(ref searchSpace, offset + 4) == value)) goto Found4;
-                    if (TNegator.NegateIfNeeded(Unsafe.Add(ref searchSpace, offset + 5) == value)) goto Found5;
-                    if (TNegator.NegateIfNeeded(Unsafe.Add(ref searchSpace, offset + 6) == value)) goto Found6;
-                    if (TNegator.NegateIfNeeded(Unsafe.Add(ref searchSpace, offset + 7) == value)) goto Found7;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset) == value)) goto Found;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset + 1) == value)) goto Found1;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset + 2) == value)) goto Found2;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset + 3) == value)) goto Found3;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset + 4) == value)) goto Found4;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset + 5) == value)) goto Found5;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset + 6) == value)) goto Found6;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset + 7) == value)) goto Found7;
 
                     offset += 8;
                 }
@@ -1353,10 +1392,10 @@ namespace Zyl.ExSpans {
                 if (length >= 4) {
                     length -= 4;
 
-                    if (TNegator.NegateIfNeeded(Unsafe.Add(ref searchSpace, offset) == value)) goto Found;
-                    if (TNegator.NegateIfNeeded(Unsafe.Add(ref searchSpace, offset + 1) == value)) goto Found1;
-                    if (TNegator.NegateIfNeeded(Unsafe.Add(ref searchSpace, offset + 2) == value)) goto Found2;
-                    if (TNegator.NegateIfNeeded(Unsafe.Add(ref searchSpace, offset + 3) == value)) goto Found3;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset) == value)) goto Found;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset + 1) == value)) goto Found1;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset + 2) == value)) goto Found2;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset + 3) == value)) goto Found3;
 
                     offset += 4;
                 }
@@ -1364,7 +1403,7 @@ namespace Zyl.ExSpans {
                 while (length > 0) {
                     length -= 1;
 
-                    if (TNegator.NegateIfNeeded(Unsafe.Add(ref searchSpace, offset) == value)) goto Found;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset) == value)) goto Found;
 
                     offset += 1;
                 }
@@ -1388,7 +1427,7 @@ namespace Zyl.ExSpans {
             } else if (Vector512.IsHardwareAccelerated && length >= Vector512<TValue>.Count) {
                 Vector512<TValue> current, values = Vector512.Create(value);
                 ref TValue currentSearchSpace = ref searchSpace;
-                ref TValue oneVectorAwayFromEnd = ref Unsafe.Add(ref searchSpace, length - Vector512<TValue>.Count);
+                ref TValue oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, length - Vector512<TValue>.Count);
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 do {
@@ -1398,7 +1437,7 @@ namespace Zyl.ExSpans {
                         return ComputeFirstIndex(ref searchSpace, ref currentSearchSpace, TNegator.GetMatchMask(values, current));
                     }
 
-                    currentSearchSpace = ref Unsafe.Add(ref currentSearchSpace, Vector512<TValue>.Count);
+                    currentSearchSpace = ref ExUnsafe.Add(ref currentSearchSpace, Vector512<TValue>.Count);
                 }
                 while (!Unsafe.IsAddressGreaterThan(ref currentSearchSpace, ref oneVectorAwayFromEnd));
 
@@ -1413,13 +1452,13 @@ namespace Zyl.ExSpans {
             } else if (Vector256.IsHardwareAccelerated && length >= Vector256<TValue>.Count) {
                 Vector256<TValue> equals, values = Vector256.Create(value);
                 ref TValue currentSearchSpace = ref searchSpace;
-                ref TValue oneVectorAwayFromEnd = ref Unsafe.Add(ref searchSpace, length - Vector256<TValue>.Count);
+                ref TValue oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, length - Vector256<TValue>.Count);
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 do {
                     equals = TNegator.NegateIfNeeded(Vector256.Equals(values, Vector256.LoadUnsafe(ref currentSearchSpace)));
                     if (equals == Vector256<TValue>.Zero) {
-                        currentSearchSpace = ref Unsafe.Add(ref currentSearchSpace, Vector256<TValue>.Count);
+                        currentSearchSpace = ref ExUnsafe.Add(ref currentSearchSpace, Vector256<TValue>.Count);
                         continue;
                     }
 
@@ -1437,13 +1476,13 @@ namespace Zyl.ExSpans {
             } else {
                 Vector128<TValue> equals, values = Vector128.Create(value);
                 ref TValue currentSearchSpace = ref searchSpace;
-                ref TValue oneVectorAwayFromEnd = ref Unsafe.Add(ref searchSpace, length - Vector128<TValue>.Count);
+                ref TValue oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, length - Vector128<TValue>.Count);
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 do {
                     equals = TNegator.NegateIfNeeded(Vector128.Equals(values, Vector128.LoadUnsafe(ref currentSearchSpace)));
                     if (equals == Vector128<TValue>.Zero) {
-                        currentSearchSpace = ref Unsafe.Add(ref currentSearchSpace, Vector128<TValue>.Count);
+                        currentSearchSpace = ref ExUnsafe.Add(ref currentSearchSpace, Vector128<TValue>.Count);
                         continue;
                     }
 
@@ -1520,22 +1559,22 @@ namespace Zyl.ExSpans {
                     while (length >= 8) {
                         length -= 8;
 
-                        ref TValue current = ref Unsafe.Add(ref searchSpace, offset);
+                        ref TValue current = ref ExUnsafe.Add(ref searchSpace, offset);
                         lookUp = current;
                         if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1)) goto Found;
-                        lookUp = Unsafe.Add(ref current, 1);
+                        lookUp = ExUnsafe.Add(ref current, 1);
                         if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1)) goto Found1;
-                        lookUp = Unsafe.Add(ref current, 2);
+                        lookUp = ExUnsafe.Add(ref current, 2);
                         if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1)) goto Found2;
-                        lookUp = Unsafe.Add(ref current, 3);
+                        lookUp = ExUnsafe.Add(ref current, 3);
                         if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1)) goto Found3;
-                        lookUp = Unsafe.Add(ref current, 4);
+                        lookUp = ExUnsafe.Add(ref current, 4);
                         if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1)) goto Found4;
-                        lookUp = Unsafe.Add(ref current, 5);
+                        lookUp = ExUnsafe.Add(ref current, 5);
                         if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1)) goto Found5;
-                        lookUp = Unsafe.Add(ref current, 6);
+                        lookUp = ExUnsafe.Add(ref current, 6);
                         if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1)) goto Found6;
-                        lookUp = Unsafe.Add(ref current, 7);
+                        lookUp = ExUnsafe.Add(ref current, 7);
                         if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1)) goto Found7;
 
                         offset += 8;
@@ -1545,14 +1584,14 @@ namespace Zyl.ExSpans {
                 while (length >= 4) {
                     length -= 4;
 
-                    ref TValue current = ref Unsafe.Add(ref searchSpace, offset);
+                    ref TValue current = ref ExUnsafe.Add(ref searchSpace, offset);
                     lookUp = current;
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1)) goto Found;
-                    lookUp = Unsafe.Add(ref current, 1);
+                    lookUp = ExUnsafe.Add(ref current, 1);
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1)) goto Found1;
-                    lookUp = Unsafe.Add(ref current, 2);
+                    lookUp = ExUnsafe.Add(ref current, 2);
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1)) goto Found2;
-                    lookUp = Unsafe.Add(ref current, 3);
+                    lookUp = ExUnsafe.Add(ref current, 3);
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1)) goto Found3;
 
                     offset += 4;
@@ -1561,7 +1600,7 @@ namespace Zyl.ExSpans {
                 while (length > 0) {
                     length -= 1;
 
-                    lookUp = Unsafe.Add(ref searchSpace, offset);
+                    lookUp = ExUnsafe.Add(ref searchSpace, offset);
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1)) goto Found;
 
                     offset += 1;
@@ -1586,14 +1625,14 @@ namespace Zyl.ExSpans {
             } else if (Vector512.IsHardwareAccelerated && length >= Vector512<TValue>.Count) {
                 Vector512<TValue> equals, current, values0 = Vector512.Create(value0), values1 = Vector512.Create(value1);
                 ref TValue currentSearchSpace = ref searchSpace;
-                ref TValue oneVectorAwayFromEnd = ref Unsafe.Add(ref searchSpace, length - Vector512<TValue>.Count);
+                ref TValue oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, length - Vector512<TValue>.Count);
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 do {
                     current = Vector512.LoadUnsafe(ref currentSearchSpace);
                     equals = TNegator.NegateIfNeeded(Vector512.Equals(values0, current) | Vector512.Equals(values1, current));
                     if (equals == Vector512<TValue>.Zero) {
-                        currentSearchSpace = ref Unsafe.Add(ref currentSearchSpace, Vector512<TValue>.Count);
+                        currentSearchSpace = ref ExUnsafe.Add(ref currentSearchSpace, Vector512<TValue>.Count);
                         continue;
                     }
 
@@ -1612,14 +1651,14 @@ namespace Zyl.ExSpans {
             } else if (Vector256.IsHardwareAccelerated && length >= Vector256<TValue>.Count) {
                 Vector256<TValue> equals, current, values0 = Vector256.Create(value0), values1 = Vector256.Create(value1);
                 ref TValue currentSearchSpace = ref searchSpace;
-                ref TValue oneVectorAwayFromEnd = ref Unsafe.Add(ref searchSpace, length - Vector256<TValue>.Count);
+                ref TValue oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, length - Vector256<TValue>.Count);
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 do {
                     current = Vector256.LoadUnsafe(ref currentSearchSpace);
                     equals = TNegator.NegateIfNeeded(Vector256.Equals(values0, current) | Vector256.Equals(values1, current));
                     if (equals == Vector256<TValue>.Zero) {
-                        currentSearchSpace = ref Unsafe.Add(ref currentSearchSpace, Vector256<TValue>.Count);
+                        currentSearchSpace = ref ExUnsafe.Add(ref currentSearchSpace, Vector256<TValue>.Count);
                         continue;
                     }
 
@@ -1638,14 +1677,14 @@ namespace Zyl.ExSpans {
             } else {
                 Vector128<TValue> equals, current, values0 = Vector128.Create(value0), values1 = Vector128.Create(value1);
                 ref TValue currentSearchSpace = ref searchSpace;
-                ref TValue oneVectorAwayFromEnd = ref Unsafe.Add(ref searchSpace, length - Vector128<TValue>.Count);
+                ref TValue oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, length - Vector128<TValue>.Count);
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 do {
                     current = Vector128.LoadUnsafe(ref currentSearchSpace);
                     equals = TNegator.NegateIfNeeded(Vector128.Equals(values0, current) | Vector128.Equals(values1, current));
                     if (equals == Vector128<TValue>.Zero) {
-                        currentSearchSpace = ref Unsafe.Add(ref currentSearchSpace, Vector128<TValue>.Count);
+                        currentSearchSpace = ref ExUnsafe.Add(ref currentSearchSpace, Vector128<TValue>.Count);
                         continue;
                     }
 
@@ -1702,22 +1741,22 @@ namespace Zyl.ExSpans {
                     while (length >= 8) {
                         length -= 8;
 
-                        ref TValue current = ref Unsafe.Add(ref searchSpace, offset);
+                        ref TValue current = ref ExUnsafe.Add(ref searchSpace, offset);
                         lookUp = current;
                         if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2)) goto Found;
-                        lookUp = Unsafe.Add(ref current, 1);
+                        lookUp = ExUnsafe.Add(ref current, 1);
                         if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2)) goto Found1;
-                        lookUp = Unsafe.Add(ref current, 2);
+                        lookUp = ExUnsafe.Add(ref current, 2);
                         if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2)) goto Found2;
-                        lookUp = Unsafe.Add(ref current, 3);
+                        lookUp = ExUnsafe.Add(ref current, 3);
                         if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2)) goto Found3;
-                        lookUp = Unsafe.Add(ref current, 4);
+                        lookUp = ExUnsafe.Add(ref current, 4);
                         if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2)) goto Found4;
-                        lookUp = Unsafe.Add(ref current, 5);
+                        lookUp = ExUnsafe.Add(ref current, 5);
                         if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2)) goto Found5;
-                        lookUp = Unsafe.Add(ref current, 6);
+                        lookUp = ExUnsafe.Add(ref current, 6);
                         if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2)) goto Found6;
-                        lookUp = Unsafe.Add(ref current, 7);
+                        lookUp = ExUnsafe.Add(ref current, 7);
                         if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2)) goto Found7;
 
                         offset += 8;
@@ -1727,14 +1766,14 @@ namespace Zyl.ExSpans {
                 while (length >= 4) {
                     length -= 4;
 
-                    ref TValue current = ref Unsafe.Add(ref searchSpace, offset);
+                    ref TValue current = ref ExUnsafe.Add(ref searchSpace, offset);
                     lookUp = current;
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2)) goto Found;
-                    lookUp = Unsafe.Add(ref current, 1);
+                    lookUp = ExUnsafe.Add(ref current, 1);
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2)) goto Found1;
-                    lookUp = Unsafe.Add(ref current, 2);
+                    lookUp = ExUnsafe.Add(ref current, 2);
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2)) goto Found2;
-                    lookUp = Unsafe.Add(ref current, 3);
+                    lookUp = ExUnsafe.Add(ref current, 3);
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2)) goto Found3;
 
                     offset += 4;
@@ -1743,7 +1782,7 @@ namespace Zyl.ExSpans {
                 while (length > 0) {
                     length -= 1;
 
-                    lookUp = Unsafe.Add(ref searchSpace, offset);
+                    lookUp = ExUnsafe.Add(ref searchSpace, offset);
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2)) goto Found;
 
                     offset += 1;
@@ -1768,14 +1807,14 @@ namespace Zyl.ExSpans {
             } else if (Vector512.IsHardwareAccelerated && length >= Vector512<TValue>.Count) {
                 Vector512<TValue> equals, current, values0 = Vector512.Create(value0), values1 = Vector512.Create(value1), values2 = Vector512.Create(value2);
                 ref TValue currentSearchSpace = ref searchSpace;
-                ref TValue oneVectorAwayFromEnd = ref Unsafe.Add(ref searchSpace, length - Vector512<TValue>.Count);
+                ref TValue oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, length - Vector512<TValue>.Count);
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 do {
                     current = Vector512.LoadUnsafe(ref currentSearchSpace);
                     equals = TNegator.NegateIfNeeded(Vector512.Equals(values0, current) | Vector512.Equals(values1, current) | Vector512.Equals(values2, current));
                     if (equals == Vector512<TValue>.Zero) {
-                        currentSearchSpace = ref Unsafe.Add(ref currentSearchSpace, Vector512<TValue>.Count);
+                        currentSearchSpace = ref ExUnsafe.Add(ref currentSearchSpace, Vector512<TValue>.Count);
                         continue;
                     }
 
@@ -1794,14 +1833,14 @@ namespace Zyl.ExSpans {
             } else if (Vector256.IsHardwareAccelerated && length >= Vector256<TValue>.Count) {
                 Vector256<TValue> equals, current, values0 = Vector256.Create(value0), values1 = Vector256.Create(value1), values2 = Vector256.Create(value2);
                 ref TValue currentSearchSpace = ref searchSpace;
-                ref TValue oneVectorAwayFromEnd = ref Unsafe.Add(ref searchSpace, length - Vector256<TValue>.Count);
+                ref TValue oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, length - Vector256<TValue>.Count);
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 do {
                     current = Vector256.LoadUnsafe(ref currentSearchSpace);
                     equals = TNegator.NegateIfNeeded(Vector256.Equals(values0, current) | Vector256.Equals(values1, current) | Vector256.Equals(values2, current));
                     if (equals == Vector256<TValue>.Zero) {
-                        currentSearchSpace = ref Unsafe.Add(ref currentSearchSpace, Vector256<TValue>.Count);
+                        currentSearchSpace = ref ExUnsafe.Add(ref currentSearchSpace, Vector256<TValue>.Count);
                         continue;
                     }
 
@@ -1820,14 +1859,14 @@ namespace Zyl.ExSpans {
             } else {
                 Vector128<TValue> equals, current, values0 = Vector128.Create(value0), values1 = Vector128.Create(value1), values2 = Vector128.Create(value2);
                 ref TValue currentSearchSpace = ref searchSpace;
-                ref TValue oneVectorAwayFromEnd = ref Unsafe.Add(ref searchSpace, length - Vector128<TValue>.Count);
+                ref TValue oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, length - Vector128<TValue>.Count);
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 do {
                     current = Vector128.LoadUnsafe(ref currentSearchSpace);
                     equals = TNegator.NegateIfNeeded(Vector128.Equals(values0, current) | Vector128.Equals(values1, current) | Vector128.Equals(values2, current));
                     if (equals == Vector128<TValue>.Zero) {
-                        currentSearchSpace = ref Unsafe.Add(ref currentSearchSpace, Vector128<TValue>.Count);
+                        currentSearchSpace = ref ExUnsafe.Add(ref currentSearchSpace, Vector128<TValue>.Count);
                         continue;
                     }
 
@@ -1869,14 +1908,14 @@ namespace Zyl.ExSpans {
                 while (length >= 4) {
                     length -= 4;
 
-                    ref TValue current = ref Unsafe.Add(ref searchSpace, offset);
+                    ref TValue current = ref ExUnsafe.Add(ref searchSpace, offset);
                     lookUp = current;
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2 || lookUp == value3)) goto Found;
-                    lookUp = Unsafe.Add(ref current, 1);
+                    lookUp = ExUnsafe.Add(ref current, 1);
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2 || lookUp == value3)) goto Found1;
-                    lookUp = Unsafe.Add(ref current, 2);
+                    lookUp = ExUnsafe.Add(ref current, 2);
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2 || lookUp == value3)) goto Found2;
-                    lookUp = Unsafe.Add(ref current, 3);
+                    lookUp = ExUnsafe.Add(ref current, 3);
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2 || lookUp == value3)) goto Found3;
 
                     offset += 4;
@@ -1885,7 +1924,7 @@ namespace Zyl.ExSpans {
                 while (length > 0) {
                     length -= 1;
 
-                    lookUp = Unsafe.Add(ref searchSpace, offset);
+                    lookUp = ExUnsafe.Add(ref searchSpace, offset);
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2 || lookUp == value3)) goto Found;
 
                     offset += 1;
@@ -1902,7 +1941,7 @@ namespace Zyl.ExSpans {
             } else if (Vector512.IsHardwareAccelerated && length >= Vector512<TValue>.Count) {
                 Vector512<TValue> equals, current, values0 = Vector512.Create(value0), values1 = Vector512.Create(value1), values2 = Vector512.Create(value2), values3 = Vector512.Create(value3);
                 ref TValue currentSearchSpace = ref searchSpace;
-                ref TValue oneVectorAwayFromEnd = ref Unsafe.Add(ref searchSpace, length - Vector512<TValue>.Count);
+                ref TValue oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, length - Vector512<TValue>.Count);
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 do {
@@ -1910,7 +1949,7 @@ namespace Zyl.ExSpans {
                     equals = TNegator.NegateIfNeeded(Vector512.Equals(values0, current) | Vector512.Equals(values1, current)
                         | Vector512.Equals(values2, current) | Vector512.Equals(values3, current));
                     if (equals == Vector512<TValue>.Zero) {
-                        currentSearchSpace = ref Unsafe.Add(ref currentSearchSpace, Vector512<TValue>.Count);
+                        currentSearchSpace = ref ExUnsafe.Add(ref currentSearchSpace, Vector512<TValue>.Count);
                         continue;
                     }
 
@@ -1930,7 +1969,7 @@ namespace Zyl.ExSpans {
             } else if (Vector256.IsHardwareAccelerated && length >= Vector256<TValue>.Count) {
                 Vector256<TValue> equals, current, values0 = Vector256.Create(value0), values1 = Vector256.Create(value1), values2 = Vector256.Create(value2), values3 = Vector256.Create(value3);
                 ref TValue currentSearchSpace = ref searchSpace;
-                ref TValue oneVectorAwayFromEnd = ref Unsafe.Add(ref searchSpace, length - Vector256<TValue>.Count);
+                ref TValue oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, length - Vector256<TValue>.Count);
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 do {
@@ -1938,7 +1977,7 @@ namespace Zyl.ExSpans {
                     equals = TNegator.NegateIfNeeded(Vector256.Equals(values0, current) | Vector256.Equals(values1, current)
                         | Vector256.Equals(values2, current) | Vector256.Equals(values3, current));
                     if (equals == Vector256<TValue>.Zero) {
-                        currentSearchSpace = ref Unsafe.Add(ref currentSearchSpace, Vector256<TValue>.Count);
+                        currentSearchSpace = ref ExUnsafe.Add(ref currentSearchSpace, Vector256<TValue>.Count);
                         continue;
                     }
 
@@ -1958,7 +1997,7 @@ namespace Zyl.ExSpans {
             } else {
                 Vector128<TValue> equals, current, values0 = Vector128.Create(value0), values1 = Vector128.Create(value1), values2 = Vector128.Create(value2), values3 = Vector128.Create(value3);
                 ref TValue currentSearchSpace = ref searchSpace;
-                ref TValue oneVectorAwayFromEnd = ref Unsafe.Add(ref searchSpace, length - Vector128<TValue>.Count);
+                ref TValue oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, length - Vector128<TValue>.Count);
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 do {
@@ -1966,7 +2005,7 @@ namespace Zyl.ExSpans {
                     equals = TNegator.NegateIfNeeded(Vector128.Equals(values0, current) | Vector128.Equals(values1, current)
                         | Vector128.Equals(values2, current) | Vector128.Equals(values3, current));
                     if (equals == Vector128<TValue>.Zero) {
-                        currentSearchSpace = ref Unsafe.Add(ref currentSearchSpace, Vector128<TValue>.Count);
+                        currentSearchSpace = ref ExUnsafe.Add(ref currentSearchSpace, Vector128<TValue>.Count);
                         continue;
                     }
 
@@ -2009,14 +2048,14 @@ namespace Zyl.ExSpans {
                 while (length >= 4) {
                     length -= 4;
 
-                    ref TValue current = ref Unsafe.Add(ref searchSpace, offset);
+                    ref TValue current = ref ExUnsafe.Add(ref searchSpace, offset);
                     lookUp = current;
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2 || lookUp == value3 || lookUp == value4)) goto Found;
-                    lookUp = Unsafe.Add(ref current, 1);
+                    lookUp = ExUnsafe.Add(ref current, 1);
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2 || lookUp == value3 || lookUp == value4)) goto Found1;
-                    lookUp = Unsafe.Add(ref current, 2);
+                    lookUp = ExUnsafe.Add(ref current, 2);
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2 || lookUp == value3 || lookUp == value4)) goto Found2;
-                    lookUp = Unsafe.Add(ref current, 3);
+                    lookUp = ExUnsafe.Add(ref current, 3);
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2 || lookUp == value3 || lookUp == value4)) goto Found3;
 
                     offset += 4;
@@ -2025,7 +2064,7 @@ namespace Zyl.ExSpans {
                 while (length > 0) {
                     length -= 1;
 
-                    lookUp = Unsafe.Add(ref searchSpace, offset);
+                    lookUp = ExUnsafe.Add(ref searchSpace, offset);
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2 || lookUp == value3 || lookUp == value4)) goto Found;
 
                     offset += 1;
@@ -2044,7 +2083,7 @@ namespace Zyl.ExSpans {
                 Vector512<TValue> equals, current, values0 = Vector512.Create(value0), values1 = Vector512.Create(value1),
                     values2 = Vector512.Create(value2), values3 = Vector512.Create(value3), values4 = Vector512.Create(value4);
                 ref TValue currentSearchSpace = ref searchSpace;
-                ref TValue oneVectorAwayFromEnd = ref Unsafe.Add(ref searchSpace, (uint)(length - Vector512<TValue>.Count));
+                ref TValue oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, (uint)(length - Vector512<TValue>.Count));
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 do {
@@ -2052,7 +2091,7 @@ namespace Zyl.ExSpans {
                     equals = TNegator.NegateIfNeeded(Vector512.Equals(values0, current) | Vector512.Equals(values1, current) | Vector512.Equals(values2, current)
                            | Vector512.Equals(values3, current) | Vector512.Equals(values4, current));
                     if (equals == Vector512<TValue>.Zero) {
-                        currentSearchSpace = ref Unsafe.Add(ref currentSearchSpace, Vector512<TValue>.Count);
+                        currentSearchSpace = ref ExUnsafe.Add(ref currentSearchSpace, Vector512<TValue>.Count);
                         continue;
                     }
 
@@ -2073,7 +2112,7 @@ namespace Zyl.ExSpans {
                 Vector256<TValue> equals, current, values0 = Vector256.Create(value0), values1 = Vector256.Create(value1),
                     values2 = Vector256.Create(value2), values3 = Vector256.Create(value3), values4 = Vector256.Create(value4);
                 ref TValue currentSearchSpace = ref searchSpace;
-                ref TValue oneVectorAwayFromEnd = ref Unsafe.Add(ref searchSpace, (uint)(length - Vector256<TValue>.Count));
+                ref TValue oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, (uint)(length - Vector256<TValue>.Count));
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 do {
@@ -2081,7 +2120,7 @@ namespace Zyl.ExSpans {
                     equals = TNegator.NegateIfNeeded(Vector256.Equals(values0, current) | Vector256.Equals(values1, current) | Vector256.Equals(values2, current)
                            | Vector256.Equals(values3, current) | Vector256.Equals(values4, current));
                     if (equals == Vector256<TValue>.Zero) {
-                        currentSearchSpace = ref Unsafe.Add(ref currentSearchSpace, Vector256<TValue>.Count);
+                        currentSearchSpace = ref ExUnsafe.Add(ref currentSearchSpace, Vector256<TValue>.Count);
                         continue;
                     }
 
@@ -2102,7 +2141,7 @@ namespace Zyl.ExSpans {
                 Vector128<TValue> equals, current, values0 = Vector128.Create(value0), values1 = Vector128.Create(value1),
                     values2 = Vector128.Create(value2), values3 = Vector128.Create(value3), values4 = Vector128.Create(value4);
                 ref TValue currentSearchSpace = ref searchSpace;
-                ref TValue oneVectorAwayFromEnd = ref Unsafe.Add(ref searchSpace, (uint)(length - Vector128<TValue>.Count));
+                ref TValue oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, (uint)(length - Vector128<TValue>.Count));
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 do {
@@ -2110,7 +2149,7 @@ namespace Zyl.ExSpans {
                     equals = TNegator.NegateIfNeeded(Vector128.Equals(values0, current) | Vector128.Equals(values1, current) | Vector128.Equals(values2, current)
                            | Vector128.Equals(values3, current) | Vector128.Equals(values4, current));
                     if (equals == Vector128<TValue>.Zero) {
-                        currentSearchSpace = ref Unsafe.Add(ref currentSearchSpace, Vector128<TValue>.Count);
+                        currentSearchSpace = ref ExUnsafe.Add(ref currentSearchSpace, Vector128<TValue>.Count);
                         continue;
                     }
 
@@ -2152,14 +2191,14 @@ namespace Zyl.ExSpans {
                 while (length >= 8) {
                     length -= 8;
 
-                    if (TNegator.NegateIfNeeded(Unsafe.Add(ref searchSpace, offset) == value)) goto Found;
-                    if (TNegator.NegateIfNeeded(Unsafe.Add(ref searchSpace, offset - 1) == value)) goto FoundM1;
-                    if (TNegator.NegateIfNeeded(Unsafe.Add(ref searchSpace, offset - 2) == value)) goto FoundM2;
-                    if (TNegator.NegateIfNeeded(Unsafe.Add(ref searchSpace, offset - 3) == value)) goto FoundM3;
-                    if (TNegator.NegateIfNeeded(Unsafe.Add(ref searchSpace, offset - 4) == value)) goto FoundM4;
-                    if (TNegator.NegateIfNeeded(Unsafe.Add(ref searchSpace, offset - 5) == value)) goto FoundM5;
-                    if (TNegator.NegateIfNeeded(Unsafe.Add(ref searchSpace, offset - 6) == value)) goto FoundM6;
-                    if (TNegator.NegateIfNeeded(Unsafe.Add(ref searchSpace, offset - 7) == value)) goto FoundM7;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset) == value)) goto Found;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset - 1) == value)) goto FoundM1;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset - 2) == value)) goto FoundM2;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset - 3) == value)) goto FoundM3;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset - 4) == value)) goto FoundM4;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset - 5) == value)) goto FoundM5;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset - 6) == value)) goto FoundM6;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset - 7) == value)) goto FoundM7;
 
                     offset -= 8;
                 }
@@ -2167,10 +2206,10 @@ namespace Zyl.ExSpans {
                 if (length >= 4) {
                     length -= 4;
 
-                    if (TNegator.NegateIfNeeded(Unsafe.Add(ref searchSpace, offset) == value)) goto Found;
-                    if (TNegator.NegateIfNeeded(Unsafe.Add(ref searchSpace, offset - 1) == value)) goto FoundM1;
-                    if (TNegator.NegateIfNeeded(Unsafe.Add(ref searchSpace, offset - 2) == value)) goto FoundM2;
-                    if (TNegator.NegateIfNeeded(Unsafe.Add(ref searchSpace, offset - 3) == value)) goto FoundM3;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset) == value)) goto Found;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset - 1) == value)) goto FoundM1;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset - 2) == value)) goto FoundM2;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset - 3) == value)) goto FoundM3;
 
                     offset -= 4;
                 }
@@ -2178,7 +2217,7 @@ namespace Zyl.ExSpans {
                 while (length > 0) {
                     length -= 1;
 
-                    if (TNegator.NegateIfNeeded(Unsafe.Add(ref searchSpace, offset) == value)) goto Found;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset) == value)) goto Found;
 
                     offset -= 1;
                 }
@@ -2216,7 +2255,7 @@ namespace Zyl.ExSpans {
 
                 // Loop until either we've finished all elements -or- there's one or less than a vector's-worth remaining.
                 while (offset > 0) {
-                    current = TVector.LoadUnsafe(ref searchSpace, (uint)(offset));
+                    current = TVectorHelper.LoadUnsafe(ref searchSpace, (uint)(offset));
 
                     if (TNegator.HasMatch(values, current)) {
                         return offset + TVector.LastIndexOfWhereAllBitsSet(TNegator.GetMatchMask(values, current));
@@ -2227,7 +2266,7 @@ namespace Zyl.ExSpans {
 
                 // Process the first vector in the search space.
 
-                current = TVector.LoadUnsafe(ref searchSpace);
+                current = TVectorHelper.LoadUnsafe(ref searchSpace);
 
                 if (TNegator.HasMatch(values, current)) {
                     return TVector.LastIndexOfWhereAllBitsSet(TNegator.GetMatchMask(values, current));
@@ -2260,22 +2299,22 @@ namespace Zyl.ExSpans {
                     while (length >= 8) {
                         length -= 8;
 
-                        ref TValue current = ref Unsafe.Add(ref searchSpace, offset);
+                        ref TValue current = ref ExUnsafe.Add(ref searchSpace, offset);
                         lookUp = current;
                         if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1)) goto Found;
-                        lookUp = Unsafe.Add(ref current, -1);
+                        lookUp = ExUnsafe.Add(ref current, -1);
                         if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1)) goto FoundM1;
-                        lookUp = Unsafe.Add(ref current, -2);
+                        lookUp = ExUnsafe.Add(ref current, -2);
                         if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1)) goto FoundM2;
-                        lookUp = Unsafe.Add(ref current, -3);
+                        lookUp = ExUnsafe.Add(ref current, -3);
                         if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1)) goto FoundM3;
-                        lookUp = Unsafe.Add(ref current, -4);
+                        lookUp = ExUnsafe.Add(ref current, -4);
                         if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1)) goto FoundM4;
-                        lookUp = Unsafe.Add(ref current, -5);
+                        lookUp = ExUnsafe.Add(ref current, -5);
                         if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1)) goto FoundM5;
-                        lookUp = Unsafe.Add(ref current, -6);
+                        lookUp = ExUnsafe.Add(ref current, -6);
                         if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1)) goto FoundM6;
-                        lookUp = Unsafe.Add(ref current, -7);
+                        lookUp = ExUnsafe.Add(ref current, -7);
                         if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1)) goto FoundM7;
 
                         offset -= 8;
@@ -2285,14 +2324,14 @@ namespace Zyl.ExSpans {
                 while (length >= 4) {
                     length -= 4;
 
-                    ref TValue current = ref Unsafe.Add(ref searchSpace, offset);
+                    ref TValue current = ref ExUnsafe.Add(ref searchSpace, offset);
                     lookUp = current;
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1)) goto Found;
-                    lookUp = Unsafe.Add(ref current, -1);
+                    lookUp = ExUnsafe.Add(ref current, -1);
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1)) goto FoundM1;
-                    lookUp = Unsafe.Add(ref current, -2);
+                    lookUp = ExUnsafe.Add(ref current, -2);
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1)) goto FoundM2;
-                    lookUp = Unsafe.Add(ref current, -3);
+                    lookUp = ExUnsafe.Add(ref current, -3);
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1)) goto FoundM3;
 
                     offset -= 4;
@@ -2301,7 +2340,7 @@ namespace Zyl.ExSpans {
                 while (length > 0) {
                     length -= 1;
 
-                    lookUp = Unsafe.Add(ref searchSpace, offset);
+                    lookUp = ExUnsafe.Add(ref searchSpace, offset);
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1)) goto Found;
 
                     offset -= 1;
@@ -2425,22 +2464,22 @@ namespace Zyl.ExSpans {
                     while (length >= 8) {
                         length -= 8;
 
-                        ref TValue current = ref Unsafe.Add(ref searchSpace, offset);
+                        ref TValue current = ref ExUnsafe.Add(ref searchSpace, offset);
                         lookUp = current;
                         if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2)) goto Found;
-                        lookUp = Unsafe.Add(ref current, -1);
+                        lookUp = ExUnsafe.Add(ref current, -1);
                         if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2)) goto FoundM1;
-                        lookUp = Unsafe.Add(ref current, -2);
+                        lookUp = ExUnsafe.Add(ref current, -2);
                         if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2)) goto FoundM2;
-                        lookUp = Unsafe.Add(ref current, -3);
+                        lookUp = ExUnsafe.Add(ref current, -3);
                         if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2)) goto FoundM3;
-                        lookUp = Unsafe.Add(ref current, -4);
+                        lookUp = ExUnsafe.Add(ref current, -4);
                         if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2)) goto FoundM4;
-                        lookUp = Unsafe.Add(ref current, -5);
+                        lookUp = ExUnsafe.Add(ref current, -5);
                         if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2)) goto FoundM5;
-                        lookUp = Unsafe.Add(ref current, -6);
+                        lookUp = ExUnsafe.Add(ref current, -6);
                         if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2)) goto FoundM6;
-                        lookUp = Unsafe.Add(ref current, -7);
+                        lookUp = ExUnsafe.Add(ref current, -7);
                         if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2)) goto FoundM7;
 
                         offset -= 8;
@@ -2450,14 +2489,14 @@ namespace Zyl.ExSpans {
                 while (length >= 4) {
                     length -= 4;
 
-                    ref TValue current = ref Unsafe.Add(ref searchSpace, offset);
+                    ref TValue current = ref ExUnsafe.Add(ref searchSpace, offset);
                     lookUp = current;
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2)) goto Found;
-                    lookUp = Unsafe.Add(ref current, -1);
+                    lookUp = ExUnsafe.Add(ref current, -1);
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2)) goto FoundM1;
-                    lookUp = Unsafe.Add(ref current, -2);
+                    lookUp = ExUnsafe.Add(ref current, -2);
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2)) goto FoundM2;
-                    lookUp = Unsafe.Add(ref current, -3);
+                    lookUp = ExUnsafe.Add(ref current, -3);
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2)) goto FoundM3;
 
                     offset -= 4;
@@ -2466,7 +2505,7 @@ namespace Zyl.ExSpans {
                 while (length > 0) {
                     length -= 1;
 
-                    lookUp = Unsafe.Add(ref searchSpace, offset);
+                    lookUp = ExUnsafe.Add(ref searchSpace, offset);
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2)) goto Found;
 
                     offset -= 1;
@@ -2589,14 +2628,14 @@ namespace Zyl.ExSpans {
                 while (length >= 4) {
                     length -= 4;
 
-                    ref TValue current = ref Unsafe.Add(ref searchSpace, offset);
+                    ref TValue current = ref ExUnsafe.Add(ref searchSpace, offset);
                     lookUp = current;
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2 || lookUp == value3)) goto Found;
-                    lookUp = Unsafe.Add(ref current, -1);
+                    lookUp = ExUnsafe.Add(ref current, -1);
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2 || lookUp == value3)) goto FoundM1;
-                    lookUp = Unsafe.Add(ref current, -2);
+                    lookUp = ExUnsafe.Add(ref current, -2);
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2 || lookUp == value3)) goto FoundM2;
-                    lookUp = Unsafe.Add(ref current, -3);
+                    lookUp = ExUnsafe.Add(ref current, -3);
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2 || lookUp == value3)) goto FoundM3;
 
                     offset -= 4;
@@ -2605,7 +2644,7 @@ namespace Zyl.ExSpans {
                 while (length > 0) {
                     length -= 1;
 
-                    lookUp = Unsafe.Add(ref searchSpace, offset);
+                    lookUp = ExUnsafe.Add(ref searchSpace, offset);
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2 || lookUp == value3)) goto Found;
 
                     offset -= 1;
@@ -2704,13 +2743,13 @@ namespace Zyl.ExSpans {
                 Debug.Assert(oldValue is not null);
 
                 for (nuint idx = 0; idx < length; ++idx) {
-                    T original = Unsafe.Add(ref src, idx);
-                    Unsafe.Add(ref dst, idx) = oldValue.Equals(original) ? newValue : original;
+                    T original = ExUnsafe.Add(ref src, idx);
+                    ExUnsafe.Add(ref dst, idx) = oldValue.Equals(original) ? newValue : original;
                 }
             } else {
                 for (nuint idx = 0; idx < length; ++idx) {
-                    T original = Unsafe.Add(ref src, idx);
-                    Unsafe.Add(ref dst, idx) = original is null ? newValue : original;
+                    T original = ExUnsafe.Add(ref src, idx);
+                    ExUnsafe.Add(ref dst, idx) = original is null ? newValue : original;
                 }
             }
         }
@@ -2718,8 +2757,8 @@ namespace Zyl.ExSpans {
         public static void ReplaceValueType<T>(ref T src, ref T dst, T oldValue, T newValue, nuint length) where T : struct {
             if (!Vector128.IsHardwareAccelerated || length < (uint)Vector128<T>.Count) {
                 for (nuint idx = 0; idx < length; ++idx) {
-                    T original = Unsafe.Add(ref src, idx);
-                    Unsafe.Add(ref dst, idx) = EqualityComparer<T>.Default.Equals(original, oldValue) ? newValue : original;
+                    T original = ExUnsafe.Add(ref src, idx);
+                    ExUnsafe.Add(ref dst, idx) = EqualityComparer<T>.Default.Equals(original, oldValue) ? newValue : original;
                 }
             } else {
                 Debug.Assert(Vector128.IsHardwareAccelerated && Vector128<T>.IsSupported, "Vector128 is not HW-accelerated or not supported");
@@ -2818,14 +2857,14 @@ namespace Zyl.ExSpans {
                 while (length >= 4) {
                     length -= 4;
 
-                    ref TValue current = ref Unsafe.Add(ref searchSpace, offset);
+                    ref TValue current = ref ExUnsafe.Add(ref searchSpace, offset);
                     lookUp = current;
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2 || lookUp == value3 || lookUp == value4)) return (int)offset;
-                    lookUp = Unsafe.Add(ref current, -1);
+                    lookUp = ExUnsafe.Add(ref current, -1);
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2 || lookUp == value3 || lookUp == value4)) return (int)offset - 1;
-                    lookUp = Unsafe.Add(ref current, -2);
+                    lookUp = ExUnsafe.Add(ref current, -2);
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2 || lookUp == value3 || lookUp == value4)) return (int)offset - 2;
-                    lookUp = Unsafe.Add(ref current, -3);
+                    lookUp = ExUnsafe.Add(ref current, -3);
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2 || lookUp == value3 || lookUp == value4)) return (int)offset - 3;
 
                     offset -= 4;
@@ -2834,7 +2873,7 @@ namespace Zyl.ExSpans {
                 while (length > 0) {
                     length -= 1;
 
-                    lookUp = Unsafe.Add(ref searchSpace, offset);
+                    lookUp = ExUnsafe.Add(ref searchSpace, offset);
                     if (TNegator.NegateIfNeeded(lookUp == value0 || lookUp == value1 || lookUp == value2 || lookUp == value3 || lookUp == value4)) return (int)offset;
 
                     offset -= 1;
@@ -3029,7 +3068,7 @@ namespace Zyl.ExSpans {
         internal static int IndexOfAnyInRange<T>(ref T searchSpace, T lowInclusive, T highInclusive, int length)
             where T : IComparable<T> {
             for (int i = 0; i < length; i++) {
-                ref T current = ref Unsafe.Add(ref searchSpace, i);
+                ref T current = ref ExUnsafe.Add(ref searchSpace, i);
                 if ((lowInclusive.CompareTo(current) <= 0) && (highInclusive.CompareTo(current) >= 0)) {
                     return i;
                 }
@@ -3041,7 +3080,7 @@ namespace Zyl.ExSpans {
         internal static int IndexOfAnyExceptInRange<T>(ref T searchSpace, T lowInclusive, T highInclusive, int length)
             where T : IComparable<T> {
             for (int i = 0; i < length; i++) {
-                ref T current = ref Unsafe.Add(ref searchSpace, i);
+                ref T current = ref ExUnsafe.Add(ref searchSpace, i);
                 if ((lowInclusive.CompareTo(current) > 0) || (highInclusive.CompareTo(current) < 0)) {
                     return i;
                 }
@@ -3083,7 +3122,7 @@ namespace Zyl.ExSpans {
             if (!Vector128.IsHardwareAccelerated || length < Vector128<T>.Count) {
                 T rangeInclusive = highInclusive - lowInclusive;
                 for (int i = 0; i < length; i++) {
-                    ref T current = ref Unsafe.Add(ref searchSpace, i);
+                    ref T current = ref ExUnsafe.Add(ref searchSpace, i);
                     if (TNegator.NegateIfNeeded((current - lowInclusive) <= rangeInclusive)) {
                         return i;
                     }
@@ -3094,7 +3133,7 @@ namespace Zyl.ExSpans {
                 Vector128<T> inRangeVector;
 
                 ref T current = ref searchSpace;
-                ref T oneVectorAwayFromEnd = ref Unsafe.Add(ref searchSpace, (uint)(length - Vector128<T>.Count));
+                ref T oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, (uint)(length - Vector128<T>.Count));
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 do {
@@ -3103,7 +3142,7 @@ namespace Zyl.ExSpans {
                         return ComputeFirstIndex(ref searchSpace, ref current, inRangeVector);
                     }
 
-                    current = ref Unsafe.Add(ref current, Vector128<T>.Count);
+                    current = ref ExUnsafe.Add(ref current, Vector128<T>.Count);
                 }
                 while (Unsafe.IsAddressLessThan(ref current, ref oneVectorAwayFromEnd));
 
@@ -3118,7 +3157,7 @@ namespace Zyl.ExSpans {
                 Vector256<T> inRangeVector;
 
                 ref T current = ref searchSpace;
-                ref T oneVectorAwayFromEnd = ref Unsafe.Add(ref searchSpace, (uint)(length - Vector256<T>.Count));
+                ref T oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, (uint)(length - Vector256<T>.Count));
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 do {
@@ -3127,7 +3166,7 @@ namespace Zyl.ExSpans {
                         return ComputeFirstIndex(ref searchSpace, ref current, inRangeVector);
                     }
 
-                    current = ref Unsafe.Add(ref current, Vector256<T>.Count);
+                    current = ref ExUnsafe.Add(ref current, Vector256<T>.Count);
                 }
                 while (Unsafe.IsAddressLessThan(ref current, ref oneVectorAwayFromEnd));
 
@@ -3142,7 +3181,7 @@ namespace Zyl.ExSpans {
                 Vector512<T> inRangeVector;
 
                 ref T current = ref searchSpace;
-                ref T oneVectorAwayFromEnd = ref Unsafe.Add(ref searchSpace, (uint)(length - Vector512<T>.Count));
+                ref T oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, (uint)(length - Vector512<T>.Count));
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 do {
@@ -3151,7 +3190,7 @@ namespace Zyl.ExSpans {
                         return ComputeFirstIndex(ref searchSpace, ref current, inRangeVector);
                     }
 
-                    current = ref Unsafe.Add(ref current, Vector256<T>.Count);
+                    current = ref ExUnsafe.Add(ref current, Vector256<T>.Count);
                 }
                 while (Unsafe.IsAddressLessThan(ref current, ref oneVectorAwayFromEnd));
 
@@ -3168,7 +3207,7 @@ namespace Zyl.ExSpans {
         internal static int LastIndexOfAnyInRange<T>(ref T searchSpace, T lowInclusive, T highInclusive, int length)
             where T : IComparable<T> {
             for (int i = length - 1; i >= 0; i--) {
-                ref T current = ref Unsafe.Add(ref searchSpace, i);
+                ref T current = ref ExUnsafe.Add(ref searchSpace, i);
                 if ((lowInclusive.CompareTo(current) <= 0) && (highInclusive.CompareTo(current) >= 0)) {
                     return i;
                 }
@@ -3180,7 +3219,7 @@ namespace Zyl.ExSpans {
         internal static int LastIndexOfAnyExceptInRange<T>(ref T searchSpace, T lowInclusive, T highInclusive, int length)
             where T : IComparable<T> {
             for (int i = length - 1; i >= 0; i--) {
-                ref T current = ref Unsafe.Add(ref searchSpace, i);
+                ref T current = ref ExUnsafe.Add(ref searchSpace, i);
                 if ((lowInclusive.CompareTo(current) > 0) || (highInclusive.CompareTo(current) < 0)) {
                     return i;
                 }
@@ -3205,7 +3244,7 @@ namespace Zyl.ExSpans {
             if (!Vector128.IsHardwareAccelerated || length < Vector128<T>.Count) {
                 T rangeInclusive = highInclusive - lowInclusive;
                 for (int i = length - 1; i >= 0; i--) {
-                    ref T current = ref Unsafe.Add(ref searchSpace, i);
+                    ref T current = ref ExUnsafe.Add(ref searchSpace, i);
                     if (TNegator.NegateIfNeeded((current - lowInclusive) <= rangeInclusive)) {
                         return i;
                     }
@@ -3284,14 +3323,14 @@ namespace Zyl.ExSpans {
         public static int Count<T>(ref T current, T value, int length) where T : IEquatable<T>? {
             int count = 0;
 
-            ref T end = ref Unsafe.Add(ref current, length);
+            ref T end = ref ExUnsafe.Add(ref current, length);
             if (value is not null) {
                 while (Unsafe.IsAddressLessThan(ref current, ref end)) {
                     if (value.Equals(current)) {
                         count++;
                     }
 
-                    current = ref Unsafe.Add(ref current, 1);
+                    current = ref ExUnsafe.Add(ref current, 1);
                 }
             } else {
                 while (Unsafe.IsAddressLessThan(ref current, ref end)) {
@@ -3299,7 +3338,7 @@ namespace Zyl.ExSpans {
                         count++;
                     }
 
-                    current = ref Unsafe.Add(ref current, 1);
+                    current = ref ExUnsafe.Add(ref current, 1);
                 }
             }
 
@@ -3308,7 +3347,7 @@ namespace Zyl.ExSpans {
 
         public static unsafe int CountValueType<T>(ref T current, T value, int length) where T : struct, IEquatable<T>? {
             int count = 0;
-            ref T end = ref Unsafe.Add(ref current, length);
+            ref T end = ref ExUnsafe.Add(ref current, length);
 
             if (Vector128.IsHardwareAccelerated && length >= Vector128<T>.Count) {
                 if (Vector512.IsHardwareAccelerated && length >= Vector512<T>.Count) {
@@ -3316,7 +3355,7 @@ namespace Zyl.ExSpans {
                     ref T oneVectorAwayFromEnd = ref Unsafe.Subtract(ref end, Vector512<T>.Count);
                     while (Unsafe.IsAddressLessThan(ref current, ref oneVectorAwayFromEnd)) {
                         count += BitOperations.PopCount(Vector512.Equals(Vector512.LoadUnsafe(ref current), targetVector).ExtractMostSignificantBits());
-                        current = ref Unsafe.Add(ref current, Vector512<T>.Count);
+                        current = ref ExUnsafe.Add(ref current, Vector512<T>.Count);
                     }
 
                     // Count the last vector and mask off the elements that were already counted (number of elements between oneVectorAwayFromEnd and current).
@@ -3328,7 +3367,7 @@ namespace Zyl.ExSpans {
                     ref T oneVectorAwayFromEnd = ref Unsafe.Subtract(ref end, Vector256<T>.Count);
                     while (Unsafe.IsAddressLessThan(ref current, ref oneVectorAwayFromEnd)) {
                         count += BitOperations.PopCount(Vector256.Equals(Vector256.LoadUnsafe(ref current), targetVector).ExtractMostSignificantBits());
-                        current = ref Unsafe.Add(ref current, Vector256<T>.Count);
+                        current = ref ExUnsafe.Add(ref current, Vector256<T>.Count);
                     }
 
                     // Count the last vector and mask off the elements that were already counted (number of elements between oneVectorAwayFromEnd and current).
@@ -3340,7 +3379,7 @@ namespace Zyl.ExSpans {
                     ref T oneVectorAwayFromEnd = ref Unsafe.Subtract(ref end, Vector128<T>.Count);
                     while (Unsafe.IsAddressLessThan(ref current, ref oneVectorAwayFromEnd)) {
                         count += BitOperations.PopCount(Vector128.Equals(Vector128.LoadUnsafe(ref current), targetVector).ExtractMostSignificantBits());
-                        current = ref Unsafe.Add(ref current, Vector128<T>.Count);
+                        current = ref ExUnsafe.Add(ref current, Vector128<T>.Count);
                     }
 
                     // Count the last vector and mask off the elements that were already counted (number of elements between oneVectorAwayFromEnd and current).
@@ -3354,7 +3393,7 @@ namespace Zyl.ExSpans {
                         count++;
                     }
 
-                    current = ref Unsafe.Add(ref current, 1);
+                    current = ref ExUnsafe.Add(ref current, 1);
                 }
             }
 
