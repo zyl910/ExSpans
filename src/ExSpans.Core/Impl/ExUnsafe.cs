@@ -173,19 +173,16 @@ namespace Zyl.ExSpans.Impl {
 #if ALLOWS_REF_STRUCT
             where TFrom : allows ref struct
             where TTo : allows ref struct
-#else
-            where TFrom : struct
-            where TTo : struct
 #endif // ALLOWS_REF_STRUCT
             {
-#if NET8_0_OR_GREATER
-            return Unsafe.BitCast<TFrom, TTo>(source);
+#if NET8_0_OR_GALLOWS_REF_STRUCTREATER
+            return Unsafe.BitCast<TFrom, TTo>(source); // NET8_0_OR_GREATER
 #else
-            if (Unsafe.SizeOf<TFrom>() != Unsafe.SizeOf<TTo>()) { // || default(TFrom) is null || default(TTo) is null
+            if (Unsafe.SizeOf<TFrom>() != Unsafe.SizeOf<TTo>() || default(TFrom) is null || default(TTo) is null) {
                 throw new NotSupportedException();
             }
             return Unsafe.ReadUnaligned<TTo>(ref Unsafe.As<TFrom, byte>(ref source));
-#endif // NET8_0_OR_GREATER
+#endif // ALLOWS_REF_STRUCT
         }
 
         /// <summary>
