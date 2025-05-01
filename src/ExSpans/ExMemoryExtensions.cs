@@ -20,7 +20,7 @@ namespace Zyl.ExSpans {
     /// </remarks>
     public static partial class ExMemoryExtensions {
 
-#if TODO
+#if NOT_RELATED
         /// <summary>Creates a new <see cref="ReadOnlyMemory{T}"/> over the portion of the target string.</summary>
         /// <param name="text">The target string.</param>
         /// <remarks>Returns default when <paramref name="text"/> is null.</remarks>
@@ -113,48 +113,50 @@ namespace Zyl.ExSpans {
             (int start, int length) = range.GetOffsetAndLength(text.Length);
             return new ReadOnlyMemory<char>(text, start, length);
         }
+#endif // NOT_RELATED
 
         /// <inheritdoc cref="Contains{T}(ReadOnlyExSpan{T}, T)"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [OverloadResolutionPriority(-1)]
-        public static bool Contains<T>(this ExSpan<T> ExSpan, T value) where T : IEquatable<T>? =>
-            Contains((ReadOnlyExSpan<T>)ExSpan, value);
+        public static bool Contains<T>(this ExSpan<T> span, T value) where T : IEquatable<T>? =>
+            Contains((ReadOnlyExSpan<T>)span, value);
 
         /// <summary>
         /// Searches for the specified value and returns true if found. If not found, returns false. Values are compared using IEquatable{T}.Equals(T).
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="ExSpan">The ExSpan to search.</param>
+        /// <param name="span">The span to search.</param>
         /// <param name="value">The value to search for.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe bool Contains<T>(this ReadOnlyExSpan<T> ExSpan, T value) where T : IEquatable<T>? {
-            if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                if (sizeof(T) == sizeof(byte)) {
+        public static bool Contains<T>(this ReadOnlyExSpan<T> span, T value) where T : IEquatable<T>? {
+            if (TypeHelper.IsBitwiseEquatable<T>()) {
+                if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.ContainsValueType(
-                        ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, byte>(value),
-                        ExSpan.Length);
-                } else if (sizeof(T) == sizeof(short)) {
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
+                        ExUnsafe.BitCast<T, byte>(value),
+                        span.Length);
+                } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                     return ExSpanHelpers.ContainsValueType(
-                        ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, short>(value),
-                        ExSpan.Length);
-                } else if (sizeof(T) == sizeof(int)) {
+                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span)),
+                        ExUnsafe.BitCast<T, short>(value),
+                        span.Length);
+                } else if (Unsafe.SizeOf<T>() == sizeof(int)) {
                     return ExSpanHelpers.ContainsValueType(
-                        ref Unsafe.As<T, int>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, int>(value),
-                        ExSpan.Length);
-                } else if (sizeof(T) == sizeof(long)) {
+                        ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(span)),
+                        ExUnsafe.BitCast<T, int>(value),
+                        span.Length);
+                } else if (Unsafe.SizeOf<T>() == sizeof(long)) {
                     return ExSpanHelpers.ContainsValueType(
-                        ref Unsafe.As<T, long>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, long>(value),
-                        ExSpan.Length);
+                        ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(span)),
+                        ExUnsafe.BitCast<T, long>(value),
+                        span.Length);
                 }
             }
 
-            return ExSpanHelpers.Contains(ref MemoryMarshal.GetReference(ExSpan), value, ExSpan.Length);
+            return ExSpanHelpers.Contains(ref ExMemoryMarshal.GetReference(span), value, span.Length);
         }
 
+#if TODO
         /// <summary>
         /// Searches for the specified value and returns true if found. If not found, returns false.
         /// </summary>
@@ -594,31 +596,31 @@ namespace Zyl.ExSpans {
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int IndexOfAnyExcept<T>(this ReadOnlyExSpan<T> ExSpan, T value) where T : IEquatable<T>? {
-            if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                if (sizeof(T) == sizeof(byte)) {
+            if (TypeHelper.IsBitwiseEquatable<T>()) {
+                if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.IndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, byte>(value),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, byte>(value),
                         ExSpan.Length);
-                } else if (sizeof(T) == sizeof(short)) {
+                } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                     return ExSpanHelpers.IndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, short>(value),
+                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, short>(value),
                         ExSpan.Length);
-                } else if (sizeof(T) == sizeof(int)) {
+                } else if (Unsafe.SizeOf<T>() == sizeof(int)) {
                     return ExSpanHelpers.IndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, int>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, int>(value),
+                        ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, int>(value),
                         ExSpan.Length);
-                } else if (sizeof(T) == sizeof(long)) {
+                } else if (Unsafe.SizeOf<T>() == sizeof(long)) {
                     return ExSpanHelpers.IndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, long>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, long>(value),
+                        ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, long>(value),
                         ExSpan.Length);
                 }
             }
 
-            return ExSpanHelpers.IndexOfAnyExcept(ref MemoryMarshal.GetReference(ExSpan), value, ExSpan.Length);
+            return ExSpanHelpers.IndexOfAnyExcept(ref ExMemoryMarshal.GetReference(ExSpan), value, ExSpan.Length);
         }
 
         /// <summary>Searches for the first index of any value other than the specified <paramref name="value"/>.</summary>
@@ -633,26 +635,26 @@ namespace Zyl.ExSpans {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int IndexOfAnyExcept<T>(this ReadOnlyExSpan<T> ExSpan, T value, IEqualityComparer<T>? comparer = null) {
             if (typeof(T).IsValueType && (comparer is null || comparer == EqualityComparer<T>.Default)) {
-                if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                    if (sizeof(T) == sizeof(byte)) {
+                if (TypeHelper.IsBitwiseEquatable<T>()) {
+                    if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                         return ExSpanHelpers.IndexOfAnyExceptValueType(
-                            ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
-                            Unsafe.BitCast<T, byte>(value),
+                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ExUnsafe.BitCast<T, byte>(value),
                             ExSpan.Length);
-                    } else if (sizeof(T) == sizeof(short)) {
+                    } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                         return ExSpanHelpers.IndexOfAnyExceptValueType(
-                            ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(ExSpan)),
-                            Unsafe.BitCast<T, short>(value),
+                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ExUnsafe.BitCast<T, short>(value),
                             ExSpan.Length);
-                    } else if (sizeof(T) == sizeof(int)) {
+                    } else if (Unsafe.SizeOf<T>() == sizeof(int)) {
                         return ExSpanHelpers.IndexOfAnyExceptValueType(
-                            ref Unsafe.As<T, int>(ref MemoryMarshal.GetReference(ExSpan)),
-                            Unsafe.BitCast<T, int>(value),
+                            ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ExUnsafe.BitCast<T, int>(value),
                             ExSpan.Length);
-                    } else if (sizeof(T) == sizeof(long)) {
+                    } else if (Unsafe.SizeOf<T>() == sizeof(long)) {
                         return ExSpanHelpers.IndexOfAnyExceptValueType(
-                            ref Unsafe.As<T, long>(ref MemoryMarshal.GetReference(ExSpan)),
-                            Unsafe.BitCast<T, long>(value),
+                            ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ExUnsafe.BitCast<T, long>(value),
                             ExSpan.Length);
                     }
                 }
@@ -694,23 +696,23 @@ namespace Zyl.ExSpans {
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int IndexOfAnyExcept<T>(this ReadOnlyExSpan<T> ExSpan, T value0, T value1) where T : IEquatable<T>? {
-            if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                if (sizeof(T) == sizeof(byte)) {
+            if (TypeHelper.IsBitwiseEquatable<T>()) {
+                if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.IndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, byte>(value0),
-                        Unsafe.BitCast<T, byte>(value1),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, byte>(value0),
+                        ExUnsafe.BitCast<T, byte>(value1),
                         ExSpan.Length);
-                } else if (sizeof(T) == sizeof(short)) {
+                } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                     return ExSpanHelpers.IndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, short>(value0),
-                        Unsafe.BitCast<T, short>(value1),
+                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, short>(value0),
+                        ExUnsafe.BitCast<T, short>(value1),
                         ExSpan.Length);
                 }
             }
 
-            return ExSpanHelpers.IndexOfAnyExcept(ref MemoryMarshal.GetReference(ExSpan), value0, value1, ExSpan.Length);
+            return ExSpanHelpers.IndexOfAnyExcept(ref ExMemoryMarshal.GetReference(ExSpan), value0, value1, ExSpan.Length);
         }
 
         /// <summary>Searches for the first index of any value other than the specified <paramref name="value0"/> or <paramref name="value1"/>.</summary>
@@ -726,18 +728,18 @@ namespace Zyl.ExSpans {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int IndexOfAnyExcept<T>(this ReadOnlyExSpan<T> ExSpan, T value0, T value1, IEqualityComparer<T>? comparer = null) {
             if (typeof(T).IsValueType && (comparer is null || comparer == EqualityComparer<T>.Default)) {
-                if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                    if (sizeof(T) == sizeof(byte)) {
+                if (TypeHelper.IsBitwiseEquatable<T>()) {
+                    if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                         return ExSpanHelpers.IndexOfAnyExceptValueType(
-                            ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
-                            Unsafe.BitCast<T, byte>(value0),
-                            Unsafe.BitCast<T, byte>(value1),
+                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ExUnsafe.BitCast<T, byte>(value0),
+                            ExUnsafe.BitCast<T, byte>(value1),
                             ExSpan.Length);
-                    } else if (sizeof(T) == sizeof(short)) {
+                    } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                         return ExSpanHelpers.IndexOfAnyExceptValueType(
-                            ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(ExSpan)),
-                            Unsafe.BitCast<T, short>(value0),
-                            Unsafe.BitCast<T, short>(value1),
+                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ExUnsafe.BitCast<T, short>(value0),
+                            ExUnsafe.BitCast<T, short>(value1),
                             ExSpan.Length);
                     }
                 }
@@ -782,25 +784,25 @@ namespace Zyl.ExSpans {
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int IndexOfAnyExcept<T>(this ReadOnlyExSpan<T> ExSpan, T value0, T value1, T value2) where T : IEquatable<T>? {
-            if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                if (sizeof(T) == sizeof(byte)) {
+            if (TypeHelper.IsBitwiseEquatable<T>()) {
+                if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.IndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, byte>(value0),
-                        Unsafe.BitCast<T, byte>(value1),
-                        Unsafe.BitCast<T, byte>(value2),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, byte>(value0),
+                        ExUnsafe.BitCast<T, byte>(value1),
+                        ExUnsafe.BitCast<T, byte>(value2),
                         ExSpan.Length);
-                } else if (sizeof(T) == sizeof(short)) {
+                } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                     return ExSpanHelpers.IndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, short>(value0),
-                        Unsafe.BitCast<T, short>(value1),
-                        Unsafe.BitCast<T, short>(value2),
+                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, short>(value0),
+                        ExUnsafe.BitCast<T, short>(value1),
+                        ExUnsafe.BitCast<T, short>(value2),
                         ExSpan.Length);
                 }
             }
 
-            return ExSpanHelpers.IndexOfAnyExcept(ref MemoryMarshal.GetReference(ExSpan), value0, value1, value2, ExSpan.Length);
+            return ExSpanHelpers.IndexOfAnyExcept(ref ExMemoryMarshal.GetReference(ExSpan), value0, value1, value2, ExSpan.Length);
         }
 
         /// <summary>Searches for the first index of any value other than the specified <paramref name="value0"/>, <paramref name="value1"/>, or <paramref name="value2"/>.</summary>
@@ -817,20 +819,20 @@ namespace Zyl.ExSpans {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int IndexOfAnyExcept<T>(this ReadOnlyExSpan<T> ExSpan, T value0, T value1, T value2, IEqualityComparer<T>? comparer = null) {
             if (typeof(T).IsValueType && (comparer is null || comparer == EqualityComparer<T>.Default)) {
-                if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                    if (sizeof(T) == sizeof(byte)) {
+                if (TypeHelper.IsBitwiseEquatable<T>()) {
+                    if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                         return ExSpanHelpers.IndexOfAnyExceptValueType(
-                            ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
-                            Unsafe.BitCast<T, byte>(value0),
-                            Unsafe.BitCast<T, byte>(value1),
-                            Unsafe.BitCast<T, byte>(value2),
+                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ExUnsafe.BitCast<T, byte>(value0),
+                            ExUnsafe.BitCast<T, byte>(value1),
+                            ExUnsafe.BitCast<T, byte>(value2),
                             ExSpan.Length);
-                    } else if (sizeof(T) == sizeof(short)) {
+                    } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                         return ExSpanHelpers.IndexOfAnyExceptValueType(
-                            ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(ExSpan)),
-                            Unsafe.BitCast<T, short>(value0),
-                            Unsafe.BitCast<T, short>(value1),
-                            Unsafe.BitCast<T, short>(value2),
+                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ExUnsafe.BitCast<T, short>(value0),
+                            ExUnsafe.BitCast<T, short>(value1),
+                            ExUnsafe.BitCast<T, short>(value2),
                             ExSpan.Length);
                     }
                 }
@@ -866,27 +868,27 @@ namespace Zyl.ExSpans {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static unsafe int IndexOfAnyExcept<T>(this ReadOnlyExSpan<T> ExSpan, T value0, T value1, T value2, T value3) where T : IEquatable<T>? {
-            if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                if (sizeof(T) == sizeof(byte)) {
+            if (TypeHelper.IsBitwiseEquatable<T>()) {
+                if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.IndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, byte>(value0),
-                        Unsafe.BitCast<T, byte>(value1),
-                        Unsafe.BitCast<T, byte>(value2),
-                        Unsafe.BitCast<T, byte>(value3),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, byte>(value0),
+                        ExUnsafe.BitCast<T, byte>(value1),
+                        ExUnsafe.BitCast<T, byte>(value2),
+                        ExUnsafe.BitCast<T, byte>(value3),
                         ExSpan.Length);
-                } else if (sizeof(T) == sizeof(short)) {
+                } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                     return ExSpanHelpers.IndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, short>(value0),
-                        Unsafe.BitCast<T, short>(value1),
-                        Unsafe.BitCast<T, short>(value2),
-                        Unsafe.BitCast<T, short>(value3),
+                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, short>(value0),
+                        ExUnsafe.BitCast<T, short>(value1),
+                        ExUnsafe.BitCast<T, short>(value2),
+                        ExUnsafe.BitCast<T, short>(value3),
                         ExSpan.Length);
                 }
             }
 
-            return ExSpanHelpers.IndexOfAnyExcept(ref MemoryMarshal.GetReference(ExSpan), value0, value1, value2, value3, ExSpan.Length);
+            return ExSpanHelpers.IndexOfAnyExcept(ref ExMemoryMarshal.GetReference(ExSpan), value0, value1, value2, value3, ExSpan.Length);
         }
 
         /// <summary>Searches for the first index of any value other than the specified <paramref name="values"/>.</summary>
@@ -918,23 +920,23 @@ namespace Zyl.ExSpans {
                     return IndexOfAnyExcept(ExSpan, values[0], values[1], values[2], values[3]);
 
                 default:
-                    if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                        if (sizeof(T) == sizeof(byte) && values.Length == 5) {
-                            ref byte valuesRef = ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(values));
+                    if (TypeHelper.IsBitwiseEquatable<T>()) {
+                        if (Unsafe.SizeOf<T>() == sizeof(byte) && values.Length == 5) {
+                            ref byte valuesRef = ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(values));
 
                             return ExSpanHelpers.IndexOfAnyExceptValueType(
-                                ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
+                                ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
                                 valuesRef,
                                 Unsafe.Add(ref valuesRef, 1),
                                 Unsafe.Add(ref valuesRef, 2),
                                 Unsafe.Add(ref valuesRef, 3),
                                 Unsafe.Add(ref valuesRef, 4),
                                 ExSpan.Length);
-                        } else if (sizeof(T) == sizeof(short) && values.Length == 5) {
-                            ref short valuesRef = ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(values));
+                        } else if (Unsafe.SizeOf<T>() == sizeof(short) && values.Length == 5) {
+                            ref short valuesRef = ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(values));
 
                             return ExSpanHelpers.IndexOfAnyExceptValueType(
-                                ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(ExSpan)),
+                                ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
                                 valuesRef,
                                 Unsafe.Add(ref valuesRef, 1),
                                 Unsafe.Add(ref valuesRef, 2),
@@ -944,11 +946,11 @@ namespace Zyl.ExSpans {
                         }
                     }
 
-                    if (RuntimeHelpers.IsBitwiseEquatable<T>() && sizeof(T) == sizeof(char)) {
+                    if (TypeHelper.IsBitwiseEquatable<T>() && Unsafe.SizeOf<T>() == sizeof(char)) {
                         return ProbabilisticMap.IndexOfAnyExcept(
-                            ref Unsafe.As<T, char>(ref MemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(ExSpan)),
                             ExSpan.Length,
-                            ref Unsafe.As<T, char>(ref MemoryMarshal.GetReference(values)),
+                            ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(values)),
                             values.Length);
                     }
 
@@ -1087,31 +1089,31 @@ namespace Zyl.ExSpans {
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int LastIndexOfAnyExcept<T>(this ReadOnlyExSpan<T> ExSpan, T value) where T : IEquatable<T>? {
-            if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                if (sizeof(T) == sizeof(byte)) {
+            if (TypeHelper.IsBitwiseEquatable<T>()) {
+                if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, byte>(value),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, byte>(value),
                         ExSpan.Length);
-                } else if (sizeof(T) == sizeof(short)) {
+                } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                     return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, short>(value),
+                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, short>(value),
                         ExSpan.Length);
-                } else if (sizeof(T) == sizeof(int)) {
+                } else if (Unsafe.SizeOf<T>() == sizeof(int)) {
                     return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, int>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, int>(value),
+                        ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, int>(value),
                         ExSpan.Length);
-                } else if (sizeof(T) == sizeof(long)) {
+                } else if (Unsafe.SizeOf<T>() == sizeof(long)) {
                     return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, long>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, long>(value),
+                        ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, long>(value),
                         ExSpan.Length);
                 }
             }
 
-            return ExSpanHelpers.LastIndexOfAnyExcept(ref MemoryMarshal.GetReference(ExSpan), value, ExSpan.Length);
+            return ExSpanHelpers.LastIndexOfAnyExcept(ref ExMemoryMarshal.GetReference(ExSpan), value, ExSpan.Length);
         }
 
         /// <summary>Searches for the last index of any value other than the specified <paramref name="value"/>.</summary>
@@ -1126,26 +1128,26 @@ namespace Zyl.ExSpans {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int LastIndexOfAnyExcept<T>(this ReadOnlyExSpan<T> ExSpan, T value, IEqualityComparer<T>? comparer = null) {
             if (typeof(T).IsValueType && (comparer is null || comparer == EqualityComparer<T>.Default)) {
-                if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                    if (sizeof(T) == sizeof(byte)) {
+                if (TypeHelper.IsBitwiseEquatable<T>()) {
+                    if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                         return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                            ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
-                            Unsafe.BitCast<T, byte>(value),
+                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ExUnsafe.BitCast<T, byte>(value),
                             ExSpan.Length);
-                    } else if (sizeof(T) == sizeof(short)) {
+                    } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                         return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                            ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(ExSpan)),
-                            Unsafe.BitCast<T, short>(value),
+                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ExUnsafe.BitCast<T, short>(value),
                             ExSpan.Length);
-                    } else if (sizeof(T) == sizeof(int)) {
+                    } else if (Unsafe.SizeOf<T>() == sizeof(int)) {
                         return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                            ref Unsafe.As<T, int>(ref MemoryMarshal.GetReference(ExSpan)),
-                            Unsafe.BitCast<T, int>(value),
+                            ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ExUnsafe.BitCast<T, int>(value),
                             ExSpan.Length);
-                    } else if (sizeof(T) == sizeof(long)) {
+                    } else if (Unsafe.SizeOf<T>() == sizeof(long)) {
                         return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                            ref Unsafe.As<T, long>(ref MemoryMarshal.GetReference(ExSpan)),
-                            Unsafe.BitCast<T, long>(value),
+                            ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ExUnsafe.BitCast<T, long>(value),
                             ExSpan.Length);
                     }
                 }
@@ -1187,23 +1189,23 @@ namespace Zyl.ExSpans {
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int LastIndexOfAnyExcept<T>(this ReadOnlyExSpan<T> ExSpan, T value0, T value1) where T : IEquatable<T>? {
-            if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                if (sizeof(T) == sizeof(byte)) {
+            if (TypeHelper.IsBitwiseEquatable<T>()) {
+                if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, byte>(value0),
-                        Unsafe.BitCast<T, byte>(value1),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, byte>(value0),
+                        ExUnsafe.BitCast<T, byte>(value1),
                         ExSpan.Length);
-                } else if (sizeof(T) == sizeof(short)) {
+                } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                     return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, short>(value0),
-                        Unsafe.BitCast<T, short>(value1),
+                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, short>(value0),
+                        ExUnsafe.BitCast<T, short>(value1),
                         ExSpan.Length);
                 }
             }
 
-            return ExSpanHelpers.LastIndexOfAnyExcept(ref MemoryMarshal.GetReference(ExSpan), value0, value1, ExSpan.Length);
+            return ExSpanHelpers.LastIndexOfAnyExcept(ref ExMemoryMarshal.GetReference(ExSpan), value0, value1, ExSpan.Length);
         }
 
         /// <summary>Searches for the last index of any value other than the specified <paramref name="value0"/> or <paramref name="value1"/>.</summary>
@@ -1219,18 +1221,18 @@ namespace Zyl.ExSpans {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int LastIndexOfAnyExcept<T>(this ReadOnlyExSpan<T> ExSpan, T value0, T value1, IEqualityComparer<T>? comparer = null) {
             if (typeof(T).IsValueType && (comparer is null || comparer == EqualityComparer<T>.Default)) {
-                if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                    if (sizeof(T) == sizeof(byte)) {
+                if (TypeHelper.IsBitwiseEquatable<T>()) {
+                    if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                         return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                            ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
-                            Unsafe.BitCast<T, byte>(value0),
-                            Unsafe.BitCast<T, byte>(value1),
+                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ExUnsafe.BitCast<T, byte>(value0),
+                            ExUnsafe.BitCast<T, byte>(value1),
                             ExSpan.Length);
-                    } else if (sizeof(T) == sizeof(short)) {
+                    } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                         return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                            ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(ExSpan)),
-                            Unsafe.BitCast<T, short>(value0),
-                            Unsafe.BitCast<T, short>(value1),
+                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ExUnsafe.BitCast<T, short>(value0),
+                            ExUnsafe.BitCast<T, short>(value1),
                             ExSpan.Length);
                     }
                 }
@@ -1275,25 +1277,25 @@ namespace Zyl.ExSpans {
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int LastIndexOfAnyExcept<T>(this ReadOnlyExSpan<T> ExSpan, T value0, T value1, T value2) where T : IEquatable<T>? {
-            if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                if (sizeof(T) == sizeof(byte)) {
+            if (TypeHelper.IsBitwiseEquatable<T>()) {
+                if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, byte>(value0),
-                        Unsafe.BitCast<T, byte>(value1),
-                        Unsafe.BitCast<T, byte>(value2),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, byte>(value0),
+                        ExUnsafe.BitCast<T, byte>(value1),
+                        ExUnsafe.BitCast<T, byte>(value2),
                         ExSpan.Length);
-                } else if (sizeof(T) == sizeof(short)) {
+                } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                     return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, short>(value0),
-                        Unsafe.BitCast<T, short>(value1),
-                        Unsafe.BitCast<T, short>(value2),
+                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, short>(value0),
+                        ExUnsafe.BitCast<T, short>(value1),
+                        ExUnsafe.BitCast<T, short>(value2),
                         ExSpan.Length);
                 }
             }
 
-            return ExSpanHelpers.LastIndexOfAnyExcept(ref MemoryMarshal.GetReference(ExSpan), value0, value1, value2, ExSpan.Length);
+            return ExSpanHelpers.LastIndexOfAnyExcept(ref ExMemoryMarshal.GetReference(ExSpan), value0, value1, value2, ExSpan.Length);
         }
 
         /// <summary>Searches for the last index of any value other than the specified <paramref name="value0"/>, <paramref name="value1"/>, or <paramref name="value2"/>.</summary>
@@ -1310,20 +1312,20 @@ namespace Zyl.ExSpans {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int LastIndexOfAnyExcept<T>(this ReadOnlyExSpan<T> ExSpan, T value0, T value1, T value2, IEqualityComparer<T>? comparer = null) {
             if (typeof(T).IsValueType && (comparer is null || comparer == EqualityComparer<T>.Default)) {
-                if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                    if (sizeof(T) == sizeof(byte)) {
+                if (TypeHelper.IsBitwiseEquatable<T>()) {
+                    if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                         return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                            ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
-                            Unsafe.BitCast<T, byte>(value0),
-                            Unsafe.BitCast<T, byte>(value1),
-                            Unsafe.BitCast<T, byte>(value2),
+                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ExUnsafe.BitCast<T, byte>(value0),
+                            ExUnsafe.BitCast<T, byte>(value1),
+                            ExUnsafe.BitCast<T, byte>(value2),
                             ExSpan.Length);
-                    } else if (sizeof(T) == sizeof(short)) {
+                    } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                         return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                            ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(ExSpan)),
-                            Unsafe.BitCast<T, short>(value0),
-                            Unsafe.BitCast<T, short>(value1),
-                            Unsafe.BitCast<T, short>(value2),
+                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ExUnsafe.BitCast<T, short>(value0),
+                            ExUnsafe.BitCast<T, short>(value1),
+                            ExUnsafe.BitCast<T, short>(value2),
                             ExSpan.Length);
                     }
                 }
@@ -1360,27 +1362,27 @@ namespace Zyl.ExSpans {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static unsafe int LastIndexOfAnyExcept<T>(this ReadOnlyExSpan<T> ExSpan, T value0, T value1, T value2, T value3) where T : IEquatable<T>? {
-            if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                if (sizeof(T) == sizeof(byte)) {
+            if (TypeHelper.IsBitwiseEquatable<T>()) {
+                if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, byte>(value0),
-                        Unsafe.BitCast<T, byte>(value1),
-                        Unsafe.BitCast<T, byte>(value2),
-                        Unsafe.BitCast<T, byte>(value3),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, byte>(value0),
+                        ExUnsafe.BitCast<T, byte>(value1),
+                        ExUnsafe.BitCast<T, byte>(value2),
+                        ExUnsafe.BitCast<T, byte>(value3),
                         ExSpan.Length);
-                } else if (sizeof(T) == sizeof(short)) {
+                } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                     return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, short>(value0),
-                        Unsafe.BitCast<T, short>(value1),
-                        Unsafe.BitCast<T, short>(value2),
-                        Unsafe.BitCast<T, short>(value3),
+                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, short>(value0),
+                        ExUnsafe.BitCast<T, short>(value1),
+                        ExUnsafe.BitCast<T, short>(value2),
+                        ExUnsafe.BitCast<T, short>(value3),
                         ExSpan.Length);
                 }
             }
 
-            return ExSpanHelpers.LastIndexOfAnyExcept(ref MemoryMarshal.GetReference(ExSpan), value0, value1, value2, value3, ExSpan.Length);
+            return ExSpanHelpers.LastIndexOfAnyExcept(ref ExMemoryMarshal.GetReference(ExSpan), value0, value1, value2, value3, ExSpan.Length);
         }
 
         /// <summary>Searches for the last index of any value other than the specified <paramref name="values"/>.</summary>
@@ -1413,23 +1415,23 @@ namespace Zyl.ExSpans {
                     return LastIndexOfAnyExcept(ExSpan, values[0], values[1], values[2], values[3]);
 
                 default:
-                    if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                        if (sizeof(T) == sizeof(byte) && values.Length == 5) {
-                            ref byte valuesRef = ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(values));
+                    if (TypeHelper.IsBitwiseEquatable<T>()) {
+                        if (Unsafe.SizeOf<T>() == sizeof(byte) && values.Length == 5) {
+                            ref byte valuesRef = ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(values));
 
                             return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                                ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
+                                ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
                                 valuesRef,
                                 Unsafe.Add(ref valuesRef, 1),
                                 Unsafe.Add(ref valuesRef, 2),
                                 Unsafe.Add(ref valuesRef, 3),
                                 Unsafe.Add(ref valuesRef, 4),
                                 ExSpan.Length);
-                        } else if (sizeof(T) == sizeof(short) && values.Length == 5) {
-                            ref short valuesRef = ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(values));
+                        } else if (Unsafe.SizeOf<T>() == sizeof(short) && values.Length == 5) {
+                            ref short valuesRef = ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(values));
 
                             return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                                ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(ExSpan)),
+                                ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
                                 valuesRef,
                                 Unsafe.Add(ref valuesRef, 1),
                                 Unsafe.Add(ref valuesRef, 2),
@@ -1439,11 +1441,11 @@ namespace Zyl.ExSpans {
                         }
                     }
 
-                    if (RuntimeHelpers.IsBitwiseEquatable<T>() && sizeof(T) == sizeof(char)) {
+                    if (TypeHelper.IsBitwiseEquatable<T>() && Unsafe.SizeOf<T>() == sizeof(char)) {
                         return ProbabilisticMap.LastIndexOfAnyExcept(
-                            ref Unsafe.As<T, char>(ref MemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(ExSpan)),
                             ExSpan.Length,
-                            ref Unsafe.As<T, char>(ref MemoryMarshal.GetReference(values)),
+                            ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(values)),
                             values.Length);
                     }
 
@@ -1532,38 +1534,38 @@ namespace Zyl.ExSpans {
             if (Vector128.IsHardwareAccelerated) {
                 if (lowInclusive is byte or sbyte) {
                     return ExSpanHelpers.IndexOfAnyInRangeUnsignedNumber(
-                        ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, byte>(lowInclusive),
-                        Unsafe.BitCast<T, byte>(highInclusive),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, byte>(lowInclusive),
+                        ExUnsafe.BitCast<T, byte>(highInclusive),
                         ExSpan.Length);
                 }
 
                 if (lowInclusive is short or ushort or char) {
                     return ExSpanHelpers.IndexOfAnyInRangeUnsignedNumber(
-                        ref Unsafe.As<T, ushort>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, ushort>(lowInclusive),
-                        Unsafe.BitCast<T, ushort>(highInclusive),
+                        ref Unsafe.As<T, ushort>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, ushort>(lowInclusive),
+                        ExUnsafe.BitCast<T, ushort>(highInclusive),
                         ExSpan.Length);
                 }
 
                 if (lowInclusive is int or uint || (IntPtr.Size == 4 && (lowInclusive is nint or nuint))) {
                     return ExSpanHelpers.IndexOfAnyInRangeUnsignedNumber(
-                        ref Unsafe.As<T, uint>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, uint>(lowInclusive),
-                        Unsafe.BitCast<T, uint>(highInclusive),
+                        ref Unsafe.As<T, uint>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, uint>(lowInclusive),
+                        ExUnsafe.BitCast<T, uint>(highInclusive),
                         ExSpan.Length);
                 }
 
                 if (lowInclusive is long or ulong || (IntPtr.Size == 8 && (lowInclusive is nint or nuint))) {
                     return ExSpanHelpers.IndexOfAnyInRangeUnsignedNumber(
-                        ref Unsafe.As<T, ulong>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, ulong>(lowInclusive),
-                        Unsafe.BitCast<T, ulong>(highInclusive),
+                        ref Unsafe.As<T, ulong>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, ulong>(lowInclusive),
+                        ExUnsafe.BitCast<T, ulong>(highInclusive),
                         ExSpan.Length);
                 }
             }
 
-            return ExSpanHelpers.IndexOfAnyInRange(ref MemoryMarshal.GetReference(ExSpan), lowInclusive, highInclusive, ExSpan.Length);
+            return ExSpanHelpers.IndexOfAnyInRange(ref ExMemoryMarshal.GetReference(ExSpan), lowInclusive, highInclusive, ExSpan.Length);
         }
 
         /// <inheritdoc cref="IndexOfAnyExceptInRange{T}(ReadOnlyExSpan{T}, T, T)"/>
@@ -1590,38 +1592,38 @@ namespace Zyl.ExSpans {
             if (Vector128.IsHardwareAccelerated) {
                 if (lowInclusive is byte or sbyte) {
                     return ExSpanHelpers.IndexOfAnyExceptInRangeUnsignedNumber(
-                        ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, byte>(lowInclusive),
-                        Unsafe.BitCast<T, byte>(highInclusive),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, byte>(lowInclusive),
+                        ExUnsafe.BitCast<T, byte>(highInclusive),
                         ExSpan.Length);
                 }
 
                 if (lowInclusive is short or ushort or char) {
                     return ExSpanHelpers.IndexOfAnyExceptInRangeUnsignedNumber(
-                        ref Unsafe.As<T, ushort>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, ushort>(lowInclusive),
-                        Unsafe.BitCast<T, ushort>(highInclusive),
+                        ref Unsafe.As<T, ushort>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, ushort>(lowInclusive),
+                        ExUnsafe.BitCast<T, ushort>(highInclusive),
                         ExSpan.Length);
                 }
 
                 if (lowInclusive is int or uint || (IntPtr.Size == 4 && (lowInclusive is nint or nuint))) {
                     return ExSpanHelpers.IndexOfAnyExceptInRangeUnsignedNumber(
-                        ref Unsafe.As<T, uint>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, uint>(lowInclusive),
-                        Unsafe.BitCast<T, uint>(highInclusive),
+                        ref Unsafe.As<T, uint>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, uint>(lowInclusive),
+                        ExUnsafe.BitCast<T, uint>(highInclusive),
                         ExSpan.Length);
                 }
 
                 if (lowInclusive is long or ulong || (IntPtr.Size == 8 && (lowInclusive is nint or nuint))) {
                     return ExSpanHelpers.IndexOfAnyExceptInRangeUnsignedNumber(
-                        ref Unsafe.As<T, ulong>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, ulong>(lowInclusive),
-                        Unsafe.BitCast<T, ulong>(highInclusive),
+                        ref Unsafe.As<T, ulong>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, ulong>(lowInclusive),
+                        ExUnsafe.BitCast<T, ulong>(highInclusive),
                         ExSpan.Length);
                 }
             }
 
-            return ExSpanHelpers.IndexOfAnyExceptInRange(ref MemoryMarshal.GetReference(ExSpan), lowInclusive, highInclusive, ExSpan.Length);
+            return ExSpanHelpers.IndexOfAnyExceptInRange(ref ExMemoryMarshal.GetReference(ExSpan), lowInclusive, highInclusive, ExSpan.Length);
         }
 
         /// <inheritdoc cref="LastIndexOfAnyInRange{T}(ReadOnlyExSpan{T}, T, T)"/>
@@ -1648,38 +1650,38 @@ namespace Zyl.ExSpans {
             if (Vector128.IsHardwareAccelerated) {
                 if (lowInclusive is byte or sbyte) {
                     return ExSpanHelpers.LastIndexOfAnyInRangeUnsignedNumber(
-                        ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, byte>(lowInclusive),
-                        Unsafe.BitCast<T, byte>(highInclusive),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, byte>(lowInclusive),
+                        ExUnsafe.BitCast<T, byte>(highInclusive),
                         ExSpan.Length);
                 }
 
                 if (lowInclusive is short or ushort or char) {
                     return ExSpanHelpers.LastIndexOfAnyInRangeUnsignedNumber(
-                        ref Unsafe.As<T, ushort>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, ushort>(lowInclusive),
-                        Unsafe.BitCast<T, ushort>(highInclusive),
+                        ref Unsafe.As<T, ushort>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, ushort>(lowInclusive),
+                        ExUnsafe.BitCast<T, ushort>(highInclusive),
                         ExSpan.Length);
                 }
 
                 if (lowInclusive is int or uint || (IntPtr.Size == 4 && (lowInclusive is nint or nuint))) {
                     return ExSpanHelpers.LastIndexOfAnyInRangeUnsignedNumber(
-                        ref Unsafe.As<T, uint>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, uint>(lowInclusive),
-                        Unsafe.BitCast<T, uint>(highInclusive),
+                        ref Unsafe.As<T, uint>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, uint>(lowInclusive),
+                        ExUnsafe.BitCast<T, uint>(highInclusive),
                         ExSpan.Length);
                 }
 
                 if (lowInclusive is long or ulong || (IntPtr.Size == 8 && (lowInclusive is nint or nuint))) {
                     return ExSpanHelpers.LastIndexOfAnyInRangeUnsignedNumber(
-                        ref Unsafe.As<T, ulong>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, ulong>(lowInclusive),
-                        Unsafe.BitCast<T, ulong>(highInclusive),
+                        ref Unsafe.As<T, ulong>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, ulong>(lowInclusive),
+                        ExUnsafe.BitCast<T, ulong>(highInclusive),
                         ExSpan.Length);
                 }
             }
 
-            return ExSpanHelpers.LastIndexOfAnyInRange(ref MemoryMarshal.GetReference(ExSpan), lowInclusive, highInclusive, ExSpan.Length);
+            return ExSpanHelpers.LastIndexOfAnyInRange(ref ExMemoryMarshal.GetReference(ExSpan), lowInclusive, highInclusive, ExSpan.Length);
         }
 
         /// <inheritdoc cref="LastIndexOfAnyExceptInRange{T}(ReadOnlyExSpan{T}, T, T)"/>
@@ -1706,38 +1708,38 @@ namespace Zyl.ExSpans {
             if (Vector128.IsHardwareAccelerated) {
                 if (lowInclusive is byte or sbyte) {
                     return ExSpanHelpers.LastIndexOfAnyExceptInRangeUnsignedNumber(
-                        ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, byte>(lowInclusive),
-                        Unsafe.BitCast<T, byte>(highInclusive),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, byte>(lowInclusive),
+                        ExUnsafe.BitCast<T, byte>(highInclusive),
                         ExSpan.Length);
                 }
 
                 if (lowInclusive is short or ushort or char) {
                     return ExSpanHelpers.LastIndexOfAnyExceptInRangeUnsignedNumber(
-                        ref Unsafe.As<T, ushort>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, ushort>(lowInclusive),
-                        Unsafe.BitCast<T, ushort>(highInclusive),
+                        ref Unsafe.As<T, ushort>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, ushort>(lowInclusive),
+                        ExUnsafe.BitCast<T, ushort>(highInclusive),
                         ExSpan.Length);
                 }
 
                 if (lowInclusive is int or uint || (IntPtr.Size == 4 && (lowInclusive is nint or nuint))) {
                     return ExSpanHelpers.LastIndexOfAnyExceptInRangeUnsignedNumber(
-                        ref Unsafe.As<T, uint>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, uint>(lowInclusive),
-                        Unsafe.BitCast<T, uint>(highInclusive),
+                        ref Unsafe.As<T, uint>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, uint>(lowInclusive),
+                        ExUnsafe.BitCast<T, uint>(highInclusive),
                         ExSpan.Length);
                 }
 
                 if (lowInclusive is long or ulong || (IntPtr.Size == 8 && (lowInclusive is nint or nuint))) {
                     return ExSpanHelpers.LastIndexOfAnyExceptInRangeUnsignedNumber(
-                        ref Unsafe.As<T, ulong>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, ulong>(lowInclusive),
-                        Unsafe.BitCast<T, ulong>(highInclusive),
+                        ref Unsafe.As<T, ulong>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, ulong>(lowInclusive),
+                        ExUnsafe.BitCast<T, ulong>(highInclusive),
                         ExSpan.Length);
                 }
             }
 
-            return ExSpanHelpers.LastIndexOfAnyExceptInRange(ref MemoryMarshal.GetReference(ExSpan), lowInclusive, highInclusive, ExSpan.Length);
+            return ExSpanHelpers.LastIndexOfAnyExceptInRange(ref ExMemoryMarshal.GetReference(ExSpan), lowInclusive, highInclusive, ExSpan.Length);
         }
 
         /// <summary>Throws an <see cref="ArgumentNullException"/> for <paramref name="lowInclusive"/> or <paramref name="highInclusive"/> being null.</summary>
@@ -1775,33 +1777,33 @@ namespace Zyl.ExSpans {
         /// <param name="value">The value to search for.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int IndexOf<T>(this ReadOnlyExSpan<T> ExSpan, T value) where T : IEquatable<T>? {
-            if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                if (sizeof(T) == sizeof(byte))
+            if (TypeHelper.IsBitwiseEquatable<T>()) {
+                if (Unsafe.SizeOf<T>() == sizeof(byte))
                     return ExSpanHelpers.IndexOfValueType(
-                        ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, byte>(value),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, byte>(value),
                         ExSpan.Length);
 
-                if (sizeof(T) == sizeof(short))
+                if (Unsafe.SizeOf<T>() == sizeof(short))
                     return ExSpanHelpers.IndexOfValueType(
-                        ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, short>(value),
+                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, short>(value),
                         ExSpan.Length);
 
-                if (sizeof(T) == sizeof(int))
+                if (Unsafe.SizeOf<T>() == sizeof(int))
                     return ExSpanHelpers.IndexOfValueType(
-                        ref Unsafe.As<T, int>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, int>(value),
+                        ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, int>(value),
                         ExSpan.Length);
 
-                if (sizeof(T) == sizeof(long))
+                if (Unsafe.SizeOf<T>() == sizeof(long))
                     return ExSpanHelpers.IndexOfValueType(
-                        ref Unsafe.As<T, long>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, long>(value),
+                        ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, long>(value),
                         ExSpan.Length);
             }
 
-            return ExSpanHelpers.IndexOf(ref MemoryMarshal.GetReference(ExSpan), value, ExSpan.Length);
+            return ExSpanHelpers.IndexOf(ref ExMemoryMarshal.GetReference(ExSpan), value, ExSpan.Length);
         }
 
         /// <summary>
@@ -1813,29 +1815,29 @@ namespace Zyl.ExSpans {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int IndexOf<T>(this ReadOnlyExSpan<T> ExSpan, T value, IEqualityComparer<T>? comparer = null) {
             if (typeof(T).IsValueType && (comparer is null || comparer == EqualityComparer<T>.Default)) {
-                if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                    if (sizeof(T) == sizeof(byte))
+                if (TypeHelper.IsBitwiseEquatable<T>()) {
+                    if (Unsafe.SizeOf<T>() == sizeof(byte))
                         return ExSpanHelpers.IndexOfValueType(
-                            ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
-                            Unsafe.BitCast<T, byte>(value),
+                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ExUnsafe.BitCast<T, byte>(value),
                             ExSpan.Length);
 
-                    if (sizeof(T) == sizeof(short))
+                    if (Unsafe.SizeOf<T>() == sizeof(short))
                         return ExSpanHelpers.IndexOfValueType(
-                            ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(ExSpan)),
-                            Unsafe.BitCast<T, short>(value),
+                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ExUnsafe.BitCast<T, short>(value),
                             ExSpan.Length);
 
-                    if (sizeof(T) == sizeof(int))
+                    if (Unsafe.SizeOf<T>() == sizeof(int))
                         return ExSpanHelpers.IndexOfValueType(
-                            ref Unsafe.As<T, int>(ref MemoryMarshal.GetReference(ExSpan)),
-                            Unsafe.BitCast<T, int>(value),
+                            ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ExUnsafe.BitCast<T, int>(value),
                             ExSpan.Length);
 
-                    if (sizeof(T) == sizeof(long))
+                    if (Unsafe.SizeOf<T>() == sizeof(long))
                         return ExSpanHelpers.IndexOfValueType(
-                            ref Unsafe.As<T, long>(ref MemoryMarshal.GetReference(ExSpan)),
-                            Unsafe.BitCast<T, long>(value),
+                            ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ExUnsafe.BitCast<T, long>(value),
                             ExSpan.Length);
                 }
 
@@ -1871,23 +1873,23 @@ namespace Zyl.ExSpans {
         /// <param name="value">The sequence to search for.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int IndexOf<T>(this ReadOnlyExSpan<T> ExSpan, ReadOnlyExSpan<T> value) where T : IEquatable<T>? {
-            if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                if (sizeof(T) == sizeof(byte))
+            if (TypeHelper.IsBitwiseEquatable<T>()) {
+                if (Unsafe.SizeOf<T>() == sizeof(byte))
                     return ExSpanHelpers.IndexOf(
-                        ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
                         ExSpan.Length,
-                        ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(value)),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(value)),
                         value.Length);
 
-                if (sizeof(T) == sizeof(char))
+                if (Unsafe.SizeOf<T>() == sizeof(char))
                     return ExSpanHelpers.IndexOf(
-                        ref Unsafe.As<T, char>(ref MemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(ExSpan)),
                         ExSpan.Length,
-                        ref Unsafe.As<T, char>(ref MemoryMarshal.GetReference(value)),
+                        ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(value)),
                         value.Length);
             }
 
-            return ExSpanHelpers.IndexOf(ref MemoryMarshal.GetReference(ExSpan), ExSpan.Length, ref MemoryMarshal.GetReference(value), value.Length);
+            return ExSpanHelpers.IndexOf(ref ExMemoryMarshal.GetReference(ExSpan), ExSpan.Length, ref ExMemoryMarshal.GetReference(value), value.Length);
         }
 
         /// <summary>
@@ -1898,19 +1900,19 @@ namespace Zyl.ExSpans {
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int IndexOf<T>(this ReadOnlyExSpan<T> ExSpan, ReadOnlyExSpan<T> value, IEqualityComparer<T>? comparer = null) {
-            if (RuntimeHelpers.IsBitwiseEquatable<T>() && (comparer is null || comparer == EqualityComparer<T>.Default)) {
-                if (sizeof(T) == sizeof(byte))
+            if (TypeHelper.IsBitwiseEquatable<T>() && (comparer is null || comparer == EqualityComparer<T>.Default)) {
+                if (Unsafe.SizeOf<T>() == sizeof(byte))
                     return ExSpanHelpers.IndexOf(
-                        ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
                         ExSpan.Length,
-                        ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(value)),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(value)),
                         value.Length);
 
-                if (sizeof(T) == sizeof(char))
+                if (Unsafe.SizeOf<T>() == sizeof(char))
                     return ExSpanHelpers.IndexOf(
-                        ref Unsafe.As<T, char>(ref MemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(ExSpan)),
                         ExSpan.Length,
-                        ref Unsafe.As<T, char>(ref MemoryMarshal.GetReference(value)),
+                        ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(value)),
                         value.Length);
             }
 
@@ -1948,31 +1950,31 @@ namespace Zyl.ExSpans {
         /// <param name="value">The value to search for.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int LastIndexOf<T>(this ReadOnlyExSpan<T> ExSpan, T value) where T : IEquatable<T>? {
-            if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                if (sizeof(T) == sizeof(byte)) {
+            if (TypeHelper.IsBitwiseEquatable<T>()) {
+                if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.LastIndexOfValueType(
-                        ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, byte>(value),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, byte>(value),
                         ExSpan.Length);
-                } else if (sizeof(T) == sizeof(short)) {
+                } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                     return ExSpanHelpers.LastIndexOfValueType(
-                        ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, short>(value),
+                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, short>(value),
                         ExSpan.Length);
-                } else if (sizeof(T) == sizeof(int)) {
+                } else if (Unsafe.SizeOf<T>() == sizeof(int)) {
                     return ExSpanHelpers.LastIndexOfValueType(
-                        ref Unsafe.As<T, int>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, int>(value),
+                        ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, int>(value),
                         ExSpan.Length);
-                } else if (sizeof(T) == sizeof(long)) {
+                } else if (Unsafe.SizeOf<T>() == sizeof(long)) {
                     return ExSpanHelpers.LastIndexOfValueType(
-                        ref Unsafe.As<T, long>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, long>(value),
+                        ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, long>(value),
                         ExSpan.Length);
                 }
             }
 
-            return ExSpanHelpers.LastIndexOf(ref MemoryMarshal.GetReference(ExSpan), value, ExSpan.Length);
+            return ExSpanHelpers.LastIndexOf(ref ExMemoryMarshal.GetReference(ExSpan), value, ExSpan.Length);
         }
 
         /// <summary>
@@ -1984,26 +1986,26 @@ namespace Zyl.ExSpans {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int LastIndexOf<T>(this ReadOnlyExSpan<T> ExSpan, T value, IEqualityComparer<T>? comparer = null) {
             if (typeof(T).IsValueType && (comparer is null || comparer == EqualityComparer<T>.Default)) {
-                if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                    if (sizeof(T) == sizeof(byte)) {
+                if (TypeHelper.IsBitwiseEquatable<T>()) {
+                    if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                         return ExSpanHelpers.LastIndexOfValueType(
-                            ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
-                            Unsafe.BitCast<T, byte>(value),
+                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ExUnsafe.BitCast<T, byte>(value),
                             ExSpan.Length);
-                    } else if (sizeof(T) == sizeof(short)) {
+                    } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                         return ExSpanHelpers.LastIndexOfValueType(
-                            ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(ExSpan)),
-                            Unsafe.BitCast<T, short>(value),
+                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ExUnsafe.BitCast<T, short>(value),
                             ExSpan.Length);
-                    } else if (sizeof(T) == sizeof(int)) {
+                    } else if (Unsafe.SizeOf<T>() == sizeof(int)) {
                         return ExSpanHelpers.LastIndexOfValueType(
-                            ref Unsafe.As<T, int>(ref MemoryMarshal.GetReference(ExSpan)),
-                            Unsafe.BitCast<T, int>(value),
+                            ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ExUnsafe.BitCast<T, int>(value),
                             ExSpan.Length);
-                    } else if (sizeof(T) == sizeof(long)) {
+                    } else if (Unsafe.SizeOf<T>() == sizeof(long)) {
                         return ExSpanHelpers.LastIndexOfValueType(
-                            ref Unsafe.As<T, long>(ref MemoryMarshal.GetReference(ExSpan)),
-                            Unsafe.BitCast<T, long>(value),
+                            ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ExUnsafe.BitCast<T, long>(value),
                             ExSpan.Length);
                     }
                 }
@@ -2041,24 +2043,24 @@ namespace Zyl.ExSpans {
         /// <param name="value">The sequence to search for.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int LastIndexOf<T>(this ReadOnlyExSpan<T> ExSpan, ReadOnlyExSpan<T> value) where T : IEquatable<T>? {
-            if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                if (sizeof(T) == sizeof(byte)) {
+            if (TypeHelper.IsBitwiseEquatable<T>()) {
+                if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.LastIndexOf(
-                        ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
                         ExSpan.Length,
-                        ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(value)),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(value)),
                         value.Length);
                 }
-                if (sizeof(T) == sizeof(char)) {
+                if (Unsafe.SizeOf<T>() == sizeof(char)) {
                     return ExSpanHelpers.LastIndexOf(
-                        ref Unsafe.As<T, char>(ref MemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(ExSpan)),
                         ExSpan.Length,
-                        ref Unsafe.As<T, char>(ref MemoryMarshal.GetReference(value)),
+                        ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(value)),
                         value.Length);
                 }
             }
 
-            return ExSpanHelpers.LastIndexOf(ref MemoryMarshal.GetReference(ExSpan), ExSpan.Length, ref MemoryMarshal.GetReference(value), value.Length);
+            return ExSpanHelpers.LastIndexOf(ref ExMemoryMarshal.GetReference(ExSpan), ExSpan.Length, ref ExMemoryMarshal.GetReference(value), value.Length);
         }
 
         /// <summary>
@@ -2069,19 +2071,19 @@ namespace Zyl.ExSpans {
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int LastIndexOf<T>(this ReadOnlyExSpan<T> ExSpan, ReadOnlyExSpan<T> value, IEqualityComparer<T>? comparer = null) {
-            if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                if (sizeof(T) == sizeof(byte)) {
+            if (TypeHelper.IsBitwiseEquatable<T>()) {
+                if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.LastIndexOf(
-                        ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
                         ExSpan.Length,
-                        ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(value)),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(value)),
                         value.Length);
                 }
-                if (sizeof(T) == sizeof(char)) {
+                if (Unsafe.SizeOf<T>() == sizeof(char)) {
                     return ExSpanHelpers.LastIndexOf(
-                        ref Unsafe.As<T, char>(ref MemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(ExSpan)),
                         ExSpan.Length,
-                        ref Unsafe.As<T, char>(ref MemoryMarshal.GetReference(value)),
+                        ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(value)),
                         value.Length);
                 }
             }
@@ -2171,23 +2173,23 @@ namespace Zyl.ExSpans {
         /// <param name="value1">One of the values to search for.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int IndexOfAny<T>(this ReadOnlyExSpan<T> ExSpan, T value0, T value1) where T : IEquatable<T>? {
-            if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                if (sizeof(T) == sizeof(byte)) {
+            if (TypeHelper.IsBitwiseEquatable<T>()) {
+                if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.IndexOfAnyValueType(
-                        ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, byte>(value0),
-                        Unsafe.BitCast<T, byte>(value1),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, byte>(value0),
+                        ExUnsafe.BitCast<T, byte>(value1),
                         ExSpan.Length);
-                } else if (sizeof(T) == sizeof(short)) {
+                } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                     return ExSpanHelpers.IndexOfAnyValueType(
-                        ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, short>(value0),
-                        Unsafe.BitCast<T, short>(value1),
+                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, short>(value0),
+                        ExUnsafe.BitCast<T, short>(value1),
                         ExSpan.Length);
                 }
             }
 
-            return ExSpanHelpers.IndexOfAny(ref MemoryMarshal.GetReference(ExSpan), value0, value1, ExSpan.Length);
+            return ExSpanHelpers.IndexOfAny(ref ExMemoryMarshal.GetReference(ExSpan), value0, value1, ExSpan.Length);
         }
 
         /// <summary>
@@ -2200,18 +2202,18 @@ namespace Zyl.ExSpans {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int IndexOfAny<T>(this ReadOnlyExSpan<T> ExSpan, T value0, T value1, IEqualityComparer<T>? comparer = null) {
             if (typeof(T).IsValueType && (comparer is null || comparer == EqualityComparer<T>.Default)) {
-                if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                    if (sizeof(T) == sizeof(byte)) {
+                if (TypeHelper.IsBitwiseEquatable<T>()) {
+                    if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                         return ExSpanHelpers.IndexOfAnyValueType(
-                            ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
-                            Unsafe.BitCast<T, byte>(value0),
-                            Unsafe.BitCast<T, byte>(value1),
+                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ExUnsafe.BitCast<T, byte>(value0),
+                            ExUnsafe.BitCast<T, byte>(value1),
                             ExSpan.Length);
-                    } else if (sizeof(T) == sizeof(short)) {
+                    } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                         return ExSpanHelpers.IndexOfAnyValueType(
-                            ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(ExSpan)),
-                            Unsafe.BitCast<T, short>(value0),
-                            Unsafe.BitCast<T, short>(value1),
+                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ExUnsafe.BitCast<T, short>(value0),
+                            ExUnsafe.BitCast<T, short>(value1),
                             ExSpan.Length);
                     }
                 }
@@ -2252,25 +2254,25 @@ namespace Zyl.ExSpans {
         /// <param name="value2">One of the values to search for.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int IndexOfAny<T>(this ReadOnlyExSpan<T> ExSpan, T value0, T value1, T value2) where T : IEquatable<T>? {
-            if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                if (sizeof(T) == sizeof(byte)) {
+            if (TypeHelper.IsBitwiseEquatable<T>()) {
+                if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.IndexOfAnyValueType(
-                        ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, byte>(value0),
-                        Unsafe.BitCast<T, byte>(value1),
-                        Unsafe.BitCast<T, byte>(value2),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, byte>(value0),
+                        ExUnsafe.BitCast<T, byte>(value1),
+                        ExUnsafe.BitCast<T, byte>(value2),
                         ExSpan.Length);
-                } else if (sizeof(T) == sizeof(short)) {
+                } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                     return ExSpanHelpers.IndexOfAnyValueType(
-                        ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, short>(value0),
-                        Unsafe.BitCast<T, short>(value1),
-                        Unsafe.BitCast<T, short>(value2),
+                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, short>(value0),
+                        ExUnsafe.BitCast<T, short>(value1),
+                        ExUnsafe.BitCast<T, short>(value2),
                         ExSpan.Length);
                 }
             }
 
-            return ExSpanHelpers.IndexOfAny(ref MemoryMarshal.GetReference(ExSpan), value0, value1, value2, ExSpan.Length);
+            return ExSpanHelpers.IndexOfAny(ref ExMemoryMarshal.GetReference(ExSpan), value0, value1, value2, ExSpan.Length);
         }
 
         /// <summary>
@@ -2284,20 +2286,20 @@ namespace Zyl.ExSpans {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int IndexOfAny<T>(this ReadOnlyExSpan<T> ExSpan, T value0, T value1, T value2, IEqualityComparer<T>? comparer = null) {
             if (typeof(T).IsValueType && (comparer is null || comparer == EqualityComparer<T>.Default)) {
-                if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                    if (sizeof(T) == sizeof(byte)) {
+                if (TypeHelper.IsBitwiseEquatable<T>()) {
+                    if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                         return ExSpanHelpers.IndexOfAnyValueType(
-                            ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
-                            Unsafe.BitCast<T, byte>(value0),
-                            Unsafe.BitCast<T, byte>(value1),
-                            Unsafe.BitCast<T, byte>(value2),
+                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ExUnsafe.BitCast<T, byte>(value0),
+                            ExUnsafe.BitCast<T, byte>(value1),
+                            ExUnsafe.BitCast<T, byte>(value2),
                             ExSpan.Length);
-                    } else if (sizeof(T) == sizeof(short)) {
+                    } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                         return ExSpanHelpers.IndexOfAnyValueType(
-                            ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(ExSpan)),
-                            Unsafe.BitCast<T, short>(value0),
-                            Unsafe.BitCast<T, short>(value1),
-                            Unsafe.BitCast<T, short>(value2),
+                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ExUnsafe.BitCast<T, short>(value0),
+                            ExUnsafe.BitCast<T, short>(value1),
+                            ExUnsafe.BitCast<T, short>(value2),
                             ExSpan.Length);
                     }
                 }
@@ -2338,10 +2340,10 @@ namespace Zyl.ExSpans {
         /// <param name="values">The set of values to search for.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int IndexOfAny<T>(this ReadOnlyExSpan<T> ExSpan, ReadOnlyExSpan<T> values) where T : IEquatable<T>? {
-            if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                if (sizeof(T) == sizeof(byte)) {
-                    ref byte ExSpanRef = ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan));
-                    ref byte valueRef = ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(values));
+            if (TypeHelper.IsBitwiseEquatable<T>()) {
+                if (Unsafe.SizeOf<T>() == sizeof(byte)) {
+                    ref byte ExSpanRef = ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan));
+                    ref byte valueRef = ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(values));
                     switch (values.Length) {
                         case 0:
                             return -1;
@@ -2385,9 +2387,9 @@ namespace Zyl.ExSpans {
                     }
                 }
 
-                if (sizeof(T) == sizeof(short)) {
-                    ref short ExSpanRef = ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(ExSpan));
-                    ref short valueRef = ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(values));
+                if (Unsafe.SizeOf<T>() == sizeof(short)) {
+                    ref short ExSpanRef = ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan));
+                    ref short valueRef = ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(values));
                     return values.Length switch {
                         0 => -1,
                         1 => ExSpanHelpers.IndexOfValueType(ref ExSpanRef, valueRef, ExSpan.Length),
@@ -2422,7 +2424,7 @@ namespace Zyl.ExSpans {
                 }
             }
 
-            return ExSpanHelpers.IndexOfAny(ref MemoryMarshal.GetReference(ExSpan), ExSpan.Length, ref MemoryMarshal.GetReference(values), values.Length);
+            return ExSpanHelpers.IndexOfAny(ref ExMemoryMarshal.GetReference(ExSpan), ExSpan.Length, ref ExMemoryMarshal.GetReference(values), values.Length);
         }
 
         /// <summary>
@@ -2539,23 +2541,23 @@ namespace Zyl.ExSpans {
         /// <param name="value1">One of the values to search for.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int LastIndexOfAny<T>(this ReadOnlyExSpan<T> ExSpan, T value0, T value1) where T : IEquatable<T>? {
-            if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                if (sizeof(T) == sizeof(byte)) {
+            if (TypeHelper.IsBitwiseEquatable<T>()) {
+                if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.LastIndexOfAnyValueType(
-                        ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, byte>(value0),
-                        Unsafe.BitCast<T, byte>(value1),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, byte>(value0),
+                        ExUnsafe.BitCast<T, byte>(value1),
                         ExSpan.Length);
-                } else if (sizeof(T) == sizeof(short)) {
+                } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                     return ExSpanHelpers.LastIndexOfAnyValueType(
-                        ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, short>(value0),
-                        Unsafe.BitCast<T, short>(value1),
+                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, short>(value0),
+                        ExUnsafe.BitCast<T, short>(value1),
                         ExSpan.Length);
                 }
             }
 
-            return ExSpanHelpers.LastIndexOfAny(ref MemoryMarshal.GetReference(ExSpan), value0, value1, ExSpan.Length);
+            return ExSpanHelpers.LastIndexOfAny(ref ExMemoryMarshal.GetReference(ExSpan), value0, value1, ExSpan.Length);
         }
 
         /// <summary>
@@ -2568,18 +2570,18 @@ namespace Zyl.ExSpans {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int LastIndexOfAny<T>(this ReadOnlyExSpan<T> ExSpan, T value0, T value1, IEqualityComparer<T>? comparer = null) {
             if (typeof(T).IsValueType && (comparer is null || comparer == EqualityComparer<T>.Default)) {
-                if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                    if (sizeof(T) == sizeof(byte)) {
+                if (TypeHelper.IsBitwiseEquatable<T>()) {
+                    if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                         return ExSpanHelpers.LastIndexOfAnyValueType(
-                            ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
-                            Unsafe.BitCast<T, byte>(value0),
-                            Unsafe.BitCast<T, byte>(value1),
+                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ExUnsafe.BitCast<T, byte>(value0),
+                            ExUnsafe.BitCast<T, byte>(value1),
                             ExSpan.Length);
-                    } else if (sizeof(T) == sizeof(short)) {
+                    } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                         return ExSpanHelpers.LastIndexOfAnyValueType(
-                            ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(ExSpan)),
-                            Unsafe.BitCast<T, short>(value0),
-                            Unsafe.BitCast<T, short>(value1),
+                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ExUnsafe.BitCast<T, short>(value0),
+                            ExUnsafe.BitCast<T, short>(value1),
                             ExSpan.Length);
                     }
                 }
@@ -2621,25 +2623,25 @@ namespace Zyl.ExSpans {
         /// <param name="value2">One of the values to search for.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int LastIndexOfAny<T>(this ReadOnlyExSpan<T> ExSpan, T value0, T value1, T value2) where T : IEquatable<T>? {
-            if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                if (sizeof(T) == sizeof(byte)) {
+            if (TypeHelper.IsBitwiseEquatable<T>()) {
+                if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.LastIndexOfAnyValueType(
-                        ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, byte>(value0),
-                        Unsafe.BitCast<T, byte>(value1),
-                        Unsafe.BitCast<T, byte>(value2),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, byte>(value0),
+                        ExUnsafe.BitCast<T, byte>(value1),
+                        ExUnsafe.BitCast<T, byte>(value2),
                         ExSpan.Length);
-                } else if (sizeof(T) == sizeof(short)) {
+                } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                     return ExSpanHelpers.LastIndexOfAnyValueType(
-                        ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, short>(value0),
-                        Unsafe.BitCast<T, short>(value1),
-                        Unsafe.BitCast<T, short>(value2),
+                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, short>(value0),
+                        ExUnsafe.BitCast<T, short>(value1),
+                        ExUnsafe.BitCast<T, short>(value2),
                         ExSpan.Length);
                 }
             }
 
-            return ExSpanHelpers.LastIndexOfAny(ref MemoryMarshal.GetReference(ExSpan), value0, value1, value2, ExSpan.Length);
+            return ExSpanHelpers.LastIndexOfAny(ref ExMemoryMarshal.GetReference(ExSpan), value0, value1, value2, ExSpan.Length);
         }
 
         /// <summary>
@@ -2653,20 +2655,20 @@ namespace Zyl.ExSpans {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int LastIndexOfAny<T>(this ReadOnlyExSpan<T> ExSpan, T value0, T value1, T value2, IEqualityComparer<T>? comparer = null) {
             if (typeof(T).IsValueType && (comparer is null || comparer == EqualityComparer<T>.Default)) {
-                if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                    if (sizeof(T) == sizeof(byte)) {
+                if (TypeHelper.IsBitwiseEquatable<T>()) {
+                    if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                         return ExSpanHelpers.LastIndexOfAnyValueType(
-                            ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
-                            Unsafe.BitCast<T, byte>(value0),
-                            Unsafe.BitCast<T, byte>(value1),
-                            Unsafe.BitCast<T, byte>(value2),
+                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ExUnsafe.BitCast<T, byte>(value0),
+                            ExUnsafe.BitCast<T, byte>(value1),
+                            ExUnsafe.BitCast<T, byte>(value2),
                             ExSpan.Length);
-                    } else if (sizeof(T) == sizeof(short)) {
+                    } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                         return ExSpanHelpers.LastIndexOfAnyValueType(
-                            ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(ExSpan)),
-                            Unsafe.BitCast<T, short>(value0),
-                            Unsafe.BitCast<T, short>(value1),
-                            Unsafe.BitCast<T, short>(value2),
+                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ExUnsafe.BitCast<T, short>(value0),
+                            ExUnsafe.BitCast<T, short>(value1),
+                            ExUnsafe.BitCast<T, short>(value2),
                             ExSpan.Length);
                     }
                 }
@@ -2708,10 +2710,10 @@ namespace Zyl.ExSpans {
         /// <param name="values">The set of values to search for.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int LastIndexOfAny<T>(this ReadOnlyExSpan<T> ExSpan, ReadOnlyExSpan<T> values) where T : IEquatable<T>? {
-            if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                if (sizeof(T) == sizeof(byte)) {
-                    ref byte ExSpanRef = ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan));
-                    ref byte valueRef = ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(values));
+            if (TypeHelper.IsBitwiseEquatable<T>()) {
+                if (Unsafe.SizeOf<T>() == sizeof(byte)) {
+                    ref byte ExSpanRef = ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan));
+                    ref byte valueRef = ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(values));
                     switch (values.Length) {
                         case 0:
                             return -1;
@@ -2755,9 +2757,9 @@ namespace Zyl.ExSpans {
                     }
                 }
 
-                if (sizeof(T) == sizeof(short)) {
-                    ref short ExSpanRef = ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(ExSpan));
-                    ref short valueRef = ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(values));
+                if (Unsafe.SizeOf<T>() == sizeof(short)) {
+                    ref short ExSpanRef = ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan));
+                    ref short valueRef = ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(values));
                     return values.Length switch {
                         0 => -1,
                         1 => ExSpanHelpers.LastIndexOfValueType(ref ExSpanRef, valueRef, ExSpan.Length),
@@ -2792,7 +2794,7 @@ namespace Zyl.ExSpans {
                 }
             }
 
-            return ExSpanHelpers.LastIndexOfAny(ref MemoryMarshal.GetReference(ExSpan), ExSpan.Length, ref MemoryMarshal.GetReference(values), values.Length);
+            return ExSpanHelpers.LastIndexOfAny(ref ExMemoryMarshal.GetReference(ExSpan), ExSpan.Length, ref ExMemoryMarshal.GetReference(values), values.Length);
         }
 
         /// <summary>
@@ -2996,19 +2998,19 @@ namespace Zyl.ExSpans {
 
             if (typeof(T) == typeof(byte))
                 return ExSpanHelpers.SequenceCompareTo(
-                    ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
+                    ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
                     ExSpan.Length,
-                    ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(other)),
+                    ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(other)),
                     other.Length);
 
             if (typeof(T) == typeof(char))
                 return ExSpanHelpers.SequenceCompareTo(
-                    ref Unsafe.As<T, char>(ref MemoryMarshal.GetReference(ExSpan)),
+                    ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(ExSpan)),
                     ExSpan.Length,
-                    ref Unsafe.As<T, char>(ref MemoryMarshal.GetReference(other)),
+                    ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(other)),
                     other.Length);
 
-            return ExSpanHelpers.SequenceCompareTo(ref MemoryMarshal.GetReference(ExSpan), ExSpan.Length, ref MemoryMarshal.GetReference(other), other.Length);
+            return ExSpanHelpers.SequenceCompareTo(ref ExMemoryMarshal.GetReference(ExSpan), ExSpan.Length, ref ExMemoryMarshal.GetReference(other), other.Length);
         }
 
         /// <summary>
@@ -3044,15 +3046,15 @@ namespace Zyl.ExSpans {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe bool StartsWith<T>(this ReadOnlyExSpan<T> ExSpan, ReadOnlyExSpan<T> value) where T : IEquatable<T>? {
             int valueLength = value.Length;
-            if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
+            if (TypeHelper.IsBitwiseEquatable<T>()) {
                 return valueLength <= ExSpan.Length &&
                 ExSpanHelpers.SequenceEqual(
-                    ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
-                    ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(value)),
-                    ((uint)valueLength) * (nuint)sizeof(T));  // If this multiplication overflows, the ExSpan we got overflows the entire address range. There's no happy outcome for this api in such a case so we choose not to take the overhead of checking.
+                    ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                    ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(value)),
+                    ((uint)valueLength) * (nuint)Unsafe.SizeOf<T>());  // If this multiplication overflows, the ExSpan we got overflows the entire address range. There's no happy outcome for this api in such a case so we choose not to take the overhead of checking.
             }
 
-            return valueLength <= ExSpan.Length && ExSpanHelpers.SequenceEqual(ref MemoryMarshal.GetReference(ExSpan), ref MemoryMarshal.GetReference(value), valueLength);
+            return valueLength <= ExSpan.Length && ExSpanHelpers.SequenceEqual(ref ExMemoryMarshal.GetReference(ExSpan), ref ExMemoryMarshal.GetReference(value), valueLength);
         }
 
         /// <summary>
@@ -3083,18 +3085,18 @@ namespace Zyl.ExSpans {
         public static unsafe bool EndsWith<T>(this ReadOnlyExSpan<T> ExSpan, ReadOnlyExSpan<T> value) where T : IEquatable<T>? {
             int ExSpanLength = ExSpan.Length;
             int valueLength = value.Length;
-            if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
+            if (TypeHelper.IsBitwiseEquatable<T>()) {
                 return valueLength <= ExSpanLength &&
                 ExSpanHelpers.SequenceEqual(
-                    ref Unsafe.As<T, byte>(ref Unsafe.Add(ref MemoryMarshal.GetReference(ExSpan), (nint)(uint)(ExSpanLength - valueLength) /* force zero-extension */)),
-                    ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(value)),
-                    ((uint)valueLength) * (nuint)sizeof(T));  // If this multiplication overflows, the ExSpan we got overflows the entire address range. There's no happy outcome for this api in such a case so we choose not to take the overhead of checking.
+                    ref Unsafe.As<T, byte>(ref Unsafe.Add(ref ExMemoryMarshal.GetReference(ExSpan), (nint)(uint)(ExSpanLength - valueLength) /* force zero-extension */)),
+                    ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(value)),
+                    ((uint)valueLength) * (nuint)Unsafe.SizeOf<T>());  // If this multiplication overflows, the ExSpan we got overflows the entire address range. There's no happy outcome for this api in such a case so we choose not to take the overhead of checking.
             }
 
             return valueLength <= ExSpanLength &&
                 ExSpanHelpers.SequenceEqual(
-                    ref Unsafe.Add(ref MemoryMarshal.GetReference(ExSpan), (nint)(uint)(ExSpanLength - valueLength) /* force zero-extension */),
-                    ref MemoryMarshal.GetReference(value),
+                    ref Unsafe.Add(ref ExMemoryMarshal.GetReference(ExSpan), (nint)(uint)(ExSpanLength - valueLength) /* force zero-extension */),
+                    ref ExMemoryMarshal.GetReference(value),
                     valueLength);
         }
 
@@ -3162,7 +3164,7 @@ namespace Zyl.ExSpans {
         /// </summary>
         public static void Reverse<T>(this ExSpan<T> ExSpan) {
             if (ExSpan.Length > 1) {
-                ExSpanHelpers.Reverse(ref MemoryMarshal.GetReference(ExSpan), (nuint)ExSpan.Length);
+                ExSpanHelpers.Reverse(ref ExMemoryMarshal.GetReference(ExSpan), (nuint)ExSpan.Length);
             }
         }
 
@@ -3357,10 +3359,10 @@ namespace Zyl.ExSpans {
         //
         //  Let's say there are two sequences, x and y. Let
         //
-        //      ref T xRef = MemoryMarshal.GetReference(x)
-        //      uint xLength = x.Length * sizeof(T)
-        //      ref T yRef = MemoryMarshal.GetReference(y)
-        //      uint yLength = y.Length * sizeof(T)
+        //      ref T xRef = ExMemoryMarshal.GetReference(x)
+        //      uint xLength = x.Length * Unsafe.SizeOf<T>()
+        //      ref T yRef = ExMemoryMarshal.GetReference(y)
+        //      uint yLength = y.Length * Unsafe.SizeOf<T>()
         //
         //  Visually, the two sequences are located somewhere in the 32-bit
         //  address space as follows:
@@ -3459,11 +3461,11 @@ namespace Zyl.ExSpans {
             }
 
             nint byteOffset = Unsafe.ByteOffset(
-                ref MemoryMarshal.GetReference(ExSpan),
-                ref MemoryMarshal.GetReference(other));
+                ref ExMemoryMarshal.GetReference(ExSpan),
+                ref ExMemoryMarshal.GetReference(other));
 
-            return (nuint)byteOffset < (nuint)((nint)ExSpan.Length * sizeof(T)) ||
-                    (nuint)byteOffset > (nuint)(-((nint)other.Length * sizeof(T)));
+            return (nuint)byteOffset < (nuint)((nint)ExSpan.Length * Unsafe.SizeOf<T>()) ||
+                    (nuint)byteOffset > (nuint)(-((nint)other.Length * Unsafe.SizeOf<T>()));
         }
 
         /// <summary>
@@ -3476,15 +3478,15 @@ namespace Zyl.ExSpans {
             }
 
             nint byteOffset = Unsafe.ByteOffset(
-                ref MemoryMarshal.GetReference(ExSpan),
-                ref MemoryMarshal.GetReference(other));
+                ref ExMemoryMarshal.GetReference(ExSpan),
+                ref ExMemoryMarshal.GetReference(other));
 
-            if ((nuint)byteOffset < (nuint)((nint)ExSpan.Length * sizeof(T)) ||
-                (nuint)byteOffset > (nuint)(-((nint)other.Length * sizeof(T)))) {
-                if (byteOffset % sizeof(T) != 0)
+            if ((nuint)byteOffset < (nuint)((nint)ExSpan.Length * Unsafe.SizeOf<T>()) ||
+                (nuint)byteOffset > (nuint)(-((nint)other.Length * Unsafe.SizeOf<T>()))) {
+                if (byteOffset % Unsafe.SizeOf<T>() != 0)
                     ThrowHelper.ThrowArgumentException_OverlapAlignmentMismatch();
 
-                elementOffset = (int)(byteOffset / sizeof(T));
+                elementOffset = (int)(byteOffset / Unsafe.SizeOf<T>());
                 return true;
             } else {
                 elementOffset = 0;
@@ -3770,48 +3772,48 @@ namespace Zyl.ExSpans {
         public static unsafe void Replace<T>(this ExSpan<T> ExSpan, T oldValue, T newValue) where T : IEquatable<T>? {
             nuint length = (uint)ExSpan.Length;
 
-            if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                if (sizeof(T) == sizeof(byte)) {
-                    ref byte src = ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan));
+            if (TypeHelper.IsBitwiseEquatable<T>()) {
+                if (Unsafe.SizeOf<T>() == sizeof(byte)) {
+                    ref byte src = ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan));
                     ExSpanHelpers.ReplaceValueType(
                         ref src,
                         ref src,
-                        Unsafe.BitCast<T, byte>(oldValue),
-                        Unsafe.BitCast<T, byte>(newValue),
+                        ExUnsafe.BitCast<T, byte>(oldValue),
+                        ExUnsafe.BitCast<T, byte>(newValue),
                         length);
                     return;
-                } else if (sizeof(T) == sizeof(ushort)) {
+                } else if (Unsafe.SizeOf<T>() == sizeof(ushort)) {
                     // Use ushort rather than short, as this avoids a sign-extending move.
-                    ref ushort src = ref Unsafe.As<T, ushort>(ref MemoryMarshal.GetReference(ExSpan));
+                    ref ushort src = ref Unsafe.As<T, ushort>(ref ExMemoryMarshal.GetReference(ExSpan));
                     ExSpanHelpers.ReplaceValueType(
                         ref src,
                         ref src,
-                        Unsafe.BitCast<T, ushort>(oldValue),
-                        Unsafe.BitCast<T, ushort>(newValue),
+                        ExUnsafe.BitCast<T, ushort>(oldValue),
+                        ExUnsafe.BitCast<T, ushort>(newValue),
                         length);
                     return;
-                } else if (sizeof(T) == sizeof(int)) {
-                    ref int src = ref Unsafe.As<T, int>(ref MemoryMarshal.GetReference(ExSpan));
+                } else if (Unsafe.SizeOf<T>() == sizeof(int)) {
+                    ref int src = ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(ExSpan));
                     ExSpanHelpers.ReplaceValueType(
                         ref src,
                         ref src,
-                        Unsafe.BitCast<T, int>(oldValue),
-                        Unsafe.BitCast<T, int>(newValue),
+                        ExUnsafe.BitCast<T, int>(oldValue),
+                        ExUnsafe.BitCast<T, int>(newValue),
                         length);
                     return;
-                } else if (sizeof(T) == sizeof(long)) {
-                    ref long src = ref Unsafe.As<T, long>(ref MemoryMarshal.GetReference(ExSpan));
+                } else if (Unsafe.SizeOf<T>() == sizeof(long)) {
+                    ref long src = ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(ExSpan));
                     ExSpanHelpers.ReplaceValueType(
                         ref src,
                         ref src,
-                        Unsafe.BitCast<T, long>(oldValue),
-                        Unsafe.BitCast<T, long>(newValue),
+                        ExUnsafe.BitCast<T, long>(oldValue),
+                        ExUnsafe.BitCast<T, long>(newValue),
                         length);
                     return;
                 }
             }
 
-            ref T src2 = ref MemoryMarshal.GetReference(ExSpan);
+            ref T src2 = ref ExMemoryMarshal.GetReference(ExSpan);
             ExSpanHelpers.Replace(ref src2, ref src2, oldValue, newValue, length);
         }
 
@@ -3826,42 +3828,42 @@ namespace Zyl.ExSpans {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void Replace<T>(this ExSpan<T> ExSpan, T oldValue, T newValue, IEqualityComparer<T>? comparer = null) {
             if (typeof(T).IsValueType && (comparer is null || comparer == EqualityComparer<T>.Default)) {
-                if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                    if (sizeof(T) == sizeof(byte)) {
-                        ref byte src = ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan));
+                if (TypeHelper.IsBitwiseEquatable<T>()) {
+                    if (Unsafe.SizeOf<T>() == sizeof(byte)) {
+                        ref byte src = ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan));
                         ExSpanHelpers.ReplaceValueType(
                             ref src,
                             ref src,
-                            Unsafe.BitCast<T, byte>(oldValue),
-                            Unsafe.BitCast<T, byte>(newValue),
+                            ExUnsafe.BitCast<T, byte>(oldValue),
+                            ExUnsafe.BitCast<T, byte>(newValue),
                             (uint)ExSpan.Length);
                         return;
-                    } else if (sizeof(T) == sizeof(ushort)) {
+                    } else if (Unsafe.SizeOf<T>() == sizeof(ushort)) {
                         // Use ushort rather than short, as this avoids a sign-extending move.
-                        ref ushort src = ref Unsafe.As<T, ushort>(ref MemoryMarshal.GetReference(ExSpan));
+                        ref ushort src = ref Unsafe.As<T, ushort>(ref ExMemoryMarshal.GetReference(ExSpan));
                         ExSpanHelpers.ReplaceValueType(
                             ref src,
                             ref src,
-                            Unsafe.BitCast<T, ushort>(oldValue),
-                            Unsafe.BitCast<T, ushort>(newValue),
+                            ExUnsafe.BitCast<T, ushort>(oldValue),
+                            ExUnsafe.BitCast<T, ushort>(newValue),
                             (uint)ExSpan.Length);
                         return;
-                    } else if (sizeof(T) == sizeof(int)) {
-                        ref int src = ref Unsafe.As<T, int>(ref MemoryMarshal.GetReference(ExSpan));
+                    } else if (Unsafe.SizeOf<T>() == sizeof(int)) {
+                        ref int src = ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(ExSpan));
                         ExSpanHelpers.ReplaceValueType(
                             ref src,
                             ref src,
-                            Unsafe.BitCast<T, int>(oldValue),
-                            Unsafe.BitCast<T, int>(newValue),
+                            ExUnsafe.BitCast<T, int>(oldValue),
+                            ExUnsafe.BitCast<T, int>(newValue),
                             (uint)ExSpan.Length);
                         return;
-                    } else if (sizeof(T) == sizeof(long)) {
-                        ref long src = ref Unsafe.As<T, long>(ref MemoryMarshal.GetReference(ExSpan));
+                    } else if (Unsafe.SizeOf<T>() == sizeof(long)) {
+                        ref long src = ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(ExSpan));
                         ExSpanHelpers.ReplaceValueType(
                             ref src,
                             ref src,
-                            Unsafe.BitCast<T, long>(oldValue),
-                            Unsafe.BitCast<T, long>(newValue),
+                            ExUnsafe.BitCast<T, long>(oldValue),
+                            ExUnsafe.BitCast<T, long>(newValue),
                             (uint)ExSpan.Length);
                         return;
                     }
@@ -3909,48 +3911,48 @@ namespace Zyl.ExSpans {
                 ThrowHelper.ThrowArgumentException_DestinationTooShort();
             }
 
-            ref T src = ref MemoryMarshal.GetReference(source);
-            ref T dst = ref MemoryMarshal.GetReference(destination);
+            ref T src = ref ExMemoryMarshal.GetReference(source);
+            ref T dst = ref ExMemoryMarshal.GetReference(destination);
 
             nint byteOffset = Unsafe.ByteOffset(ref src, ref dst);
             if (byteOffset != 0 &&
-                ((nuint)byteOffset < (nuint)((nint)source.Length * sizeof(T)) ||
-                 (nuint)byteOffset > (nuint)(-((nint)destination.Length * sizeof(T))))) {
+                ((nuint)byteOffset < (nuint)((nint)source.Length * Unsafe.SizeOf<T>()) ||
+                 (nuint)byteOffset > (nuint)(-((nint)destination.Length * Unsafe.SizeOf<T>())))) {
                 ThrowHelper.ThrowArgumentException(ExceptionResource.InvalidOperation_ExSpanOverlappedOperation);
             }
 
-            if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                if (sizeof(T) == sizeof(byte)) {
+            if (TypeHelper.IsBitwiseEquatable<T>()) {
+                if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     ExSpanHelpers.ReplaceValueType(
                         ref Unsafe.As<T, byte>(ref src),
                         ref Unsafe.As<T, byte>(ref dst),
-                        Unsafe.BitCast<T, byte>(oldValue),
-                        Unsafe.BitCast<T, byte>(newValue),
+                        ExUnsafe.BitCast<T, byte>(oldValue),
+                        ExUnsafe.BitCast<T, byte>(newValue),
                         length);
                     return;
-                } else if (sizeof(T) == sizeof(ushort)) {
+                } else if (Unsafe.SizeOf<T>() == sizeof(ushort)) {
                     // Use ushort rather than short, as this avoids a sign-extending move.
                     ExSpanHelpers.ReplaceValueType(
                         ref Unsafe.As<T, ushort>(ref src),
                         ref Unsafe.As<T, ushort>(ref dst),
-                        Unsafe.BitCast<T, ushort>(oldValue),
-                        Unsafe.BitCast<T, ushort>(newValue),
+                        ExUnsafe.BitCast<T, ushort>(oldValue),
+                        ExUnsafe.BitCast<T, ushort>(newValue),
                         length);
                     return;
-                } else if (sizeof(T) == sizeof(int)) {
+                } else if (Unsafe.SizeOf<T>() == sizeof(int)) {
                     ExSpanHelpers.ReplaceValueType(
                         ref Unsafe.As<T, int>(ref src),
                         ref Unsafe.As<T, int>(ref dst),
-                        Unsafe.BitCast<T, int>(oldValue),
-                        Unsafe.BitCast<T, int>(newValue),
+                        ExUnsafe.BitCast<T, int>(oldValue),
+                        ExUnsafe.BitCast<T, int>(newValue),
                         length);
                     return;
-                } else if (sizeof(T) == sizeof(long)) {
+                } else if (Unsafe.SizeOf<T>() == sizeof(long)) {
                     ExSpanHelpers.ReplaceValueType(
                         ref Unsafe.As<T, long>(ref src),
                         ref Unsafe.As<T, long>(ref dst),
-                        Unsafe.BitCast<T, long>(oldValue),
-                        Unsafe.BitCast<T, long>(newValue),
+                        ExUnsafe.BitCast<T, long>(oldValue),
+                        ExUnsafe.BitCast<T, long>(newValue),
                         length);
                     return;
                 }
@@ -3981,49 +3983,49 @@ namespace Zyl.ExSpans {
                 ThrowHelper.ThrowArgumentException_DestinationTooShort();
             }
 
-            ref T src = ref MemoryMarshal.GetReference(source);
-            ref T dst = ref MemoryMarshal.GetReference(destination);
+            ref T src = ref ExMemoryMarshal.GetReference(source);
+            ref T dst = ref ExMemoryMarshal.GetReference(destination);
 
             nint byteOffset = Unsafe.ByteOffset(ref src, ref dst);
             if (byteOffset != 0 &&
-                ((nuint)byteOffset < (nuint)((nint)source.Length * sizeof(T)) ||
-                 (nuint)byteOffset > (nuint)(-((nint)destination.Length * sizeof(T))))) {
+                ((nuint)byteOffset < (nuint)((nint)source.Length * Unsafe.SizeOf<T>()) ||
+                 (nuint)byteOffset > (nuint)(-((nint)destination.Length * Unsafe.SizeOf<T>())))) {
                 ThrowHelper.ThrowArgumentException(ExceptionResource.InvalidOperation_ExSpanOverlappedOperation);
             }
 
             if (typeof(T).IsValueType && (comparer is null || comparer == EqualityComparer<T>.Default)) {
-                if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                    if (sizeof(T) == sizeof(byte)) {
+                if (TypeHelper.IsBitwiseEquatable<T>()) {
+                    if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                         ExSpanHelpers.ReplaceValueType(
                             ref Unsafe.As<T, byte>(ref src),
                             ref Unsafe.As<T, byte>(ref dst),
-                            Unsafe.BitCast<T, byte>(oldValue),
-                            Unsafe.BitCast<T, byte>(newValue),
+                            ExUnsafe.BitCast<T, byte>(oldValue),
+                            ExUnsafe.BitCast<T, byte>(newValue),
                             length);
                         return;
-                    } else if (sizeof(T) == sizeof(ushort)) {
+                    } else if (Unsafe.SizeOf<T>() == sizeof(ushort)) {
                         // Use ushort rather than short, as this avoids a sign-extending move.
                         ExSpanHelpers.ReplaceValueType(
                             ref Unsafe.As<T, ushort>(ref src),
                             ref Unsafe.As<T, ushort>(ref dst),
-                            Unsafe.BitCast<T, ushort>(oldValue),
-                            Unsafe.BitCast<T, ushort>(newValue),
+                            ExUnsafe.BitCast<T, ushort>(oldValue),
+                            ExUnsafe.BitCast<T, ushort>(newValue),
                             length);
                         return;
-                    } else if (sizeof(T) == sizeof(int)) {
+                    } else if (Unsafe.SizeOf<T>() == sizeof(int)) {
                         ExSpanHelpers.ReplaceValueType(
                             ref Unsafe.As<T, int>(ref src),
                             ref Unsafe.As<T, int>(ref dst),
-                            Unsafe.BitCast<T, int>(oldValue),
-                            Unsafe.BitCast<T, int>(newValue),
+                            ExUnsafe.BitCast<T, int>(oldValue),
+                            ExUnsafe.BitCast<T, int>(newValue),
                             length);
                         return;
-                    } else if (sizeof(T) == sizeof(long)) {
+                    } else if (Unsafe.SizeOf<T>() == sizeof(long)) {
                         ExSpanHelpers.ReplaceValueType(
                             ref Unsafe.As<T, long>(ref src),
                             ref Unsafe.As<T, long>(ref dst),
-                            Unsafe.BitCast<T, long>(oldValue),
-                            Unsafe.BitCast<T, long>(newValue),
+                            ExUnsafe.BitCast<T, long>(oldValue),
+                            ExUnsafe.BitCast<T, long>(newValue),
                             length);
                         return;
                     }
@@ -4160,12 +4162,12 @@ namespace Zyl.ExSpans {
         /// <param name="other">The second sequence to compare.</param>
         /// <returns>The length of the common prefix shared by the two ExSpans.  If there's no shared prefix, 0 is returned.</returns>
         public static unsafe int CommonPrefixLength<T>(this ReadOnlyExSpan<T> ExSpan, ReadOnlyExSpan<T> other) {
-            if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
+            if (TypeHelper.IsBitwiseEquatable<T>()) {
                 nuint length = Math.Min((nuint)(uint)ExSpan.Length, (nuint)(uint)other.Length);
-                nuint size = (uint)sizeof(T);
+                nuint size = (uint)Unsafe.SizeOf<T>();
                 nuint index = ExSpanHelpers.CommonPrefixLength(
-                    ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
-                    ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(other)),
+                    ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                    ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(other)),
                     length * size);
 
                 // A byte-wise comparison in CommonPrefixLength can be used for multi-byte types,
@@ -4609,32 +4611,32 @@ namespace Zyl.ExSpans {
         /// <returns>The number of times <paramref name="value"/> was found in the <paramref name="ExSpan"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int Count<T>(this ReadOnlyExSpan<T> ExSpan, T value) where T : IEquatable<T>? {
-            if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                if (sizeof(T) == sizeof(byte)) {
+            if (TypeHelper.IsBitwiseEquatable<T>()) {
+                if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.CountValueType(
-                        ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, byte>(value),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, byte>(value),
                         ExSpan.Length);
-                } else if (sizeof(T) == sizeof(short)) {
+                } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                     return ExSpanHelpers.CountValueType(
-                        ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, short>(value),
+                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, short>(value),
                         ExSpan.Length);
-                } else if (sizeof(T) == sizeof(int)) {
+                } else if (Unsafe.SizeOf<T>() == sizeof(int)) {
                     return ExSpanHelpers.CountValueType(
-                        ref Unsafe.As<T, int>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, int>(value),
+                        ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, int>(value),
                         ExSpan.Length);
-                } else if (sizeof(T) == sizeof(long)) {
+                } else if (Unsafe.SizeOf<T>() == sizeof(long)) {
                     return ExSpanHelpers.CountValueType(
-                        ref Unsafe.As<T, long>(ref MemoryMarshal.GetReference(ExSpan)),
-                        Unsafe.BitCast<T, long>(value),
+                        ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ExUnsafe.BitCast<T, long>(value),
                         ExSpan.Length);
                 }
             }
 
             return ExSpanHelpers.Count(
-                ref MemoryMarshal.GetReference(ExSpan),
+                ref ExMemoryMarshal.GetReference(ExSpan),
                 value,
                 ExSpan.Length);
         }
@@ -4648,26 +4650,26 @@ namespace Zyl.ExSpans {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int Count<T>(this ReadOnlyExSpan<T> ExSpan, T value, IEqualityComparer<T>? comparer = null) {
             if (typeof(T).IsValueType && (comparer is null || comparer == EqualityComparer<T>.Default)) {
-                if (RuntimeHelpers.IsBitwiseEquatable<T>()) {
-                    if (sizeof(T) == sizeof(byte)) {
+                if (TypeHelper.IsBitwiseEquatable<T>()) {
+                    if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                         return ExSpanHelpers.CountValueType(
-                            ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(ExSpan)),
-                            Unsafe.BitCast<T, byte>(value),
+                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ExUnsafe.BitCast<T, byte>(value),
                             ExSpan.Length);
-                    } else if (sizeof(T) == sizeof(short)) {
+                    } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                         return ExSpanHelpers.CountValueType(
-                            ref Unsafe.As<T, short>(ref MemoryMarshal.GetReference(ExSpan)),
-                            Unsafe.BitCast<T, short>(value),
+                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ExUnsafe.BitCast<T, short>(value),
                             ExSpan.Length);
-                    } else if (sizeof(T) == sizeof(int)) {
+                    } else if (Unsafe.SizeOf<T>() == sizeof(int)) {
                         return ExSpanHelpers.CountValueType(
-                            ref Unsafe.As<T, int>(ref MemoryMarshal.GetReference(ExSpan)),
-                            Unsafe.BitCast<T, int>(value),
+                            ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ExUnsafe.BitCast<T, int>(value),
                             ExSpan.Length);
-                    } else if (sizeof(T) == sizeof(long)) {
+                    } else if (Unsafe.SizeOf<T>() == sizeof(long)) {
                         return ExSpanHelpers.CountValueType(
-                            ref Unsafe.As<T, long>(ref MemoryMarshal.GetReference(ExSpan)),
-                            Unsafe.BitCast<T, long>(value),
+                            ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ExUnsafe.BitCast<T, long>(value),
                             ExSpan.Length);
                     }
                 }
