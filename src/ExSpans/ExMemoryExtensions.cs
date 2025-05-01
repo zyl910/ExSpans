@@ -332,7 +332,7 @@ namespace Zyl.ExSpans {
         /// <param name="span">The span to search.</param>
         /// <param name="value">A value to avoid.</param>
         /// <returns>
-        /// True if any value other than <paramref name="value"/> is present in the ExSpan.
+        /// True if any value other than <paramref name="value"/> is present in the span.
         /// If all of the values are <paramref name="value"/>, returns false.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -346,7 +346,7 @@ namespace Zyl.ExSpans {
         /// <param name="value">A value to avoid.</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         /// <returns>
-        /// True if any value other than <paramref name="value"/> is present in the ExSpan.
+        /// True if any value other than <paramref name="value"/> is present in the span.
         /// If all of the values are <paramref name="value"/>, returns false.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -360,7 +360,7 @@ namespace Zyl.ExSpans {
         /// <param name="value0">A value to avoid.</param>
         /// <param name="value1">A value to avoid.</param>
         /// <returns>
-        /// True if any value other than <paramref name="value0"/> and <paramref name="value1"/> is present in the ExSpan.
+        /// True if any value other than <paramref name="value0"/> and <paramref name="value1"/> is present in the span.
         /// If all of the values are <paramref name="value0"/> or <paramref name="value1"/>, returns false.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -375,7 +375,7 @@ namespace Zyl.ExSpans {
         /// <param name="value1">A value to avoid.</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         /// <returns>
-        /// True if any value other than <paramref name="value0"/> and <paramref name="value1"/> is present in the ExSpan.
+        /// True if any value other than <paramref name="value0"/> and <paramref name="value1"/> is present in the span.
         /// If all of the values are <paramref name="value0"/> or <paramref name="value1"/>, returns false.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -390,7 +390,7 @@ namespace Zyl.ExSpans {
         /// <param name="value1">A value to avoid.</param>
         /// <param name="value2">A value to avoid.</param>
         /// <returns>
-        /// True if any value other than <paramref name="value0"/>, <paramref name="value1"/>, and <paramref name="value2"/> is present in the ExSpan.
+        /// True if any value other than <paramref name="value0"/>, <paramref name="value1"/>, and <paramref name="value2"/> is present in the span.
         /// If all of the values are <paramref name="value0"/>, <paramref name="value1"/>, or <paramref name="value2"/>, returns false.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -406,7 +406,7 @@ namespace Zyl.ExSpans {
         /// <param name="value2">A value to avoid.</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         /// <returns>
-        /// True if any value other than <paramref name="value0"/>, <paramref name="value1"/>, and <paramref name="value2"/> is present in the ExSpan.
+        /// True if any value other than <paramref name="value0"/>, <paramref name="value1"/>, and <paramref name="value2"/> is present in the span.
         /// If all of the values are <paramref name="value0"/>, <paramref name="value1"/>, or <paramref name="value2"/>, returns false.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -419,7 +419,7 @@ namespace Zyl.ExSpans {
         /// <param name="span">The span to search.</param>
         /// <param name="values">The values to avoid.</param>
         /// <returns>
-        /// True if any value other than those in <paramref name="values"/> is present in the ExSpan.
+        /// True if any value other than those in <paramref name="values"/> is present in the span.
         /// If all of the values are in <paramref name="values"/>, returns false.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -433,7 +433,7 @@ namespace Zyl.ExSpans {
         /// <param name="values">The values to avoid.</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         /// <returns>
-        /// True if any value other than those in <paramref name="values"/> is present in the ExSpan.
+        /// True if any value other than those in <paramref name="values"/> is present in the span.
         /// If all of the values are in <paramref name="values"/>, returns false.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -446,7 +446,7 @@ namespace Zyl.ExSpans {
         /// <param name="span">The span to search.</param>
         /// <param name="values">The values to avoid.</param>
         /// <returns>
-        /// True if any value other than those in <paramref name="values"/> is present in the ExSpan.
+        /// True if any value other than those in <paramref name="values"/> is present in the span.
         /// If all of the values are in <paramref name="values"/>, returns false.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -475,7 +475,7 @@ namespace Zyl.ExSpans {
         /// <param name="lowInclusive">A lower bound, inclusive, of the excluded range.</param>
         /// <param name="highInclusive">A upper bound, inclusive, of the excluded range.</param>
         /// <returns>
-        /// True if any value other than those in the specified range is present in the ExSpan.
+        /// True if any value other than those in the specified range is present in the span.
         /// If all of the values are inside of the specified range, returns false.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -599,28 +599,28 @@ namespace Zyl.ExSpans {
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.IndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, byte>(value),
-                        ExSpan.Length);
+                        span.Length);
                 } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                     return ExSpanHelpers.IndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, short>(value),
-                        ExSpan.Length);
+                        span.Length);
                 } else if (Unsafe.SizeOf<T>() == sizeof(int)) {
                     return ExSpanHelpers.IndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, int>(value),
-                        ExSpan.Length);
+                        span.Length);
                 } else if (Unsafe.SizeOf<T>() == sizeof(long)) {
                     return ExSpanHelpers.IndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, long>(value),
-                        ExSpan.Length);
+                        span.Length);
                 }
             }
 
-            return ExSpanHelpers.IndexOfAnyExcept(ref ExMemoryMarshal.GetReference(ExSpan), value, ExSpan.Length);
+            return ExSpanHelpers.IndexOfAnyExcept(ref ExMemoryMarshal.GetReference(span), value, span.Length);
         }
 
         /// <summary>Searches for the first index of any value other than the specified <paramref name="value"/>.</summary>
@@ -634,35 +634,35 @@ namespace Zyl.ExSpans {
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int IndexOfAnyExcept<T>(this ReadOnlyExSpan<T> span, T value, IEqualityComparer<T>? comparer = null) {
-            if (typeof(T).IsValueType && (comparer is null || comparer == EqualityComparer<T>.Default)) {
+            if (TypeHelper.IsValueType<T>() && (comparer is null || comparer == EqualityComparer<T>.Default)) {
                 if (TypeHelper.IsBitwiseEquatable<T>()) {
                     if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                         return ExSpanHelpers.IndexOfAnyExceptValueType(
-                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                             ExUnsafe.BitCast<T, byte>(value),
-                            ExSpan.Length);
+                            span.Length);
                     } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                         return ExSpanHelpers.IndexOfAnyExceptValueType(
-                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span)),
                             ExUnsafe.BitCast<T, short>(value),
-                            ExSpan.Length);
+                            span.Length);
                     } else if (Unsafe.SizeOf<T>() == sizeof(int)) {
                         return ExSpanHelpers.IndexOfAnyExceptValueType(
-                            ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(span)),
                             ExUnsafe.BitCast<T, int>(value),
-                            ExSpan.Length);
+                            span.Length);
                     } else if (Unsafe.SizeOf<T>() == sizeof(long)) {
                         return ExSpanHelpers.IndexOfAnyExceptValueType(
-                            ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(span)),
                             ExUnsafe.BitCast<T, long>(value),
-                            ExSpan.Length);
+                            span.Length);
                     }
                 }
 
                 return IndexOfAnyExceptDefaultComparer(span, value);
                 static int IndexOfAnyExceptDefaultComparer(ReadOnlyExSpan<T> span, T value) {
-                    for (int i = 0; i < ExSpan.Length; i++) {
-                        if (!EqualityComparer<T>.Default.Equals(ExSpan[i], value)) {
+                    for (int i = 0; i < span.Length; i++) {
+                        if (!EqualityComparer<T>.Default.Equals(span[i], value)) {
                             return i;
                         }
                     }
@@ -674,8 +674,8 @@ namespace Zyl.ExSpans {
                 static int IndexOfAnyExceptComparer(ReadOnlyExSpan<T> span, T value, IEqualityComparer<T>? comparer) {
                     comparer ??= EqualityComparer<T>.Default;
 
-                    for (int i = 0; i < ExSpan.Length; i++) {
-                        if (!comparer.Equals(ExSpan[i], value)) {
+                    for (int i = 0; i < span.Length; i++) {
+                        if (!comparer.Equals(span[i], value)) {
                             return i;
                         }
                     }
@@ -699,20 +699,20 @@ namespace Zyl.ExSpans {
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.IndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, byte>(value0),
                         ExUnsafe.BitCast<T, byte>(value1),
-                        ExSpan.Length);
+                        span.Length);
                 } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                     return ExSpanHelpers.IndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, short>(value0),
                         ExUnsafe.BitCast<T, short>(value1),
-                        ExSpan.Length);
+                        span.Length);
                 }
             }
 
-            return ExSpanHelpers.IndexOfAnyExcept(ref ExMemoryMarshal.GetReference(ExSpan), value0, value1, ExSpan.Length);
+            return ExSpanHelpers.IndexOfAnyExcept(ref ExMemoryMarshal.GetReference(span), value0, value1, span.Length);
         }
 
         /// <summary>Searches for the first index of any value other than the specified <paramref name="value0"/> or <paramref name="value1"/>.</summary>
@@ -727,28 +727,28 @@ namespace Zyl.ExSpans {
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int IndexOfAnyExcept<T>(this ReadOnlyExSpan<T> span, T value0, T value1, IEqualityComparer<T>? comparer = null) {
-            if (typeof(T).IsValueType && (comparer is null || comparer == EqualityComparer<T>.Default)) {
+            if (TypeHelper.IsValueType<T>() && (comparer is null || comparer == EqualityComparer<T>.Default)) {
                 if (TypeHelper.IsBitwiseEquatable<T>()) {
                     if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                         return ExSpanHelpers.IndexOfAnyExceptValueType(
-                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                             ExUnsafe.BitCast<T, byte>(value0),
                             ExUnsafe.BitCast<T, byte>(value1),
-                            ExSpan.Length);
+                            span.Length);
                     } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                         return ExSpanHelpers.IndexOfAnyExceptValueType(
-                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span)),
                             ExUnsafe.BitCast<T, short>(value0),
                             ExUnsafe.BitCast<T, short>(value1),
-                            ExSpan.Length);
+                            span.Length);
                     }
                 }
 
                 return IndexOfAnyExceptDefaultComparer(span, value0, value1);
                 static int IndexOfAnyExceptDefaultComparer(ReadOnlyExSpan<T> span, T value0, T value1) {
-                    for (int i = 0; i < ExSpan.Length; i++) {
-                        if (!EqualityComparer<T>.Default.Equals(ExSpan[i], value0) &&
-                            !EqualityComparer<T>.Default.Equals(ExSpan[i], value1)) {
+                    for (int i = 0; i < span.Length; i++) {
+                        if (!EqualityComparer<T>.Default.Equals(span[i], value0) &&
+                            !EqualityComparer<T>.Default.Equals(span[i], value1)) {
                             return i;
                         }
                     }
@@ -760,9 +760,9 @@ namespace Zyl.ExSpans {
                 static int IndexOfAnyExceptComparer(ReadOnlyExSpan<T> span, T value0, T value1, IEqualityComparer<T>? comparer) {
                     comparer ??= EqualityComparer<T>.Default;
 
-                    for (int i = 0; i < ExSpan.Length; i++) {
-                        if (!comparer.Equals(ExSpan[i], value0) &&
-                            !comparer.Equals(ExSpan[i], value1)) {
+                    for (int i = 0; i < span.Length; i++) {
+                        if (!comparer.Equals(span[i], value0) &&
+                            !comparer.Equals(span[i], value1)) {
                             return i;
                         }
                     }
@@ -787,22 +787,22 @@ namespace Zyl.ExSpans {
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.IndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, byte>(value0),
                         ExUnsafe.BitCast<T, byte>(value1),
                         ExUnsafe.BitCast<T, byte>(value2),
-                        ExSpan.Length);
+                        span.Length);
                 } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                     return ExSpanHelpers.IndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, short>(value0),
                         ExUnsafe.BitCast<T, short>(value1),
                         ExUnsafe.BitCast<T, short>(value2),
-                        ExSpan.Length);
+                        span.Length);
                 }
             }
 
-            return ExSpanHelpers.IndexOfAnyExcept(ref ExMemoryMarshal.GetReference(ExSpan), value0, value1, value2, ExSpan.Length);
+            return ExSpanHelpers.IndexOfAnyExcept(ref ExMemoryMarshal.GetReference(span), value0, value1, value2, span.Length);
         }
 
         /// <summary>Searches for the first index of any value other than the specified <paramref name="value0"/>, <paramref name="value1"/>, or <paramref name="value2"/>.</summary>
@@ -818,31 +818,31 @@ namespace Zyl.ExSpans {
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int IndexOfAnyExcept<T>(this ReadOnlyExSpan<T> span, T value0, T value1, T value2, IEqualityComparer<T>? comparer = null) {
-            if (typeof(T).IsValueType && (comparer is null || comparer == EqualityComparer<T>.Default)) {
+            if (TypeHelper.IsValueType<T>() && (comparer is null || comparer == EqualityComparer<T>.Default)) {
                 if (TypeHelper.IsBitwiseEquatable<T>()) {
                     if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                         return ExSpanHelpers.IndexOfAnyExceptValueType(
-                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                             ExUnsafe.BitCast<T, byte>(value0),
                             ExUnsafe.BitCast<T, byte>(value1),
                             ExUnsafe.BitCast<T, byte>(value2),
-                            ExSpan.Length);
+                            span.Length);
                     } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                         return ExSpanHelpers.IndexOfAnyExceptValueType(
-                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span)),
                             ExUnsafe.BitCast<T, short>(value0),
                             ExUnsafe.BitCast<T, short>(value1),
                             ExUnsafe.BitCast<T, short>(value2),
-                            ExSpan.Length);
+                            span.Length);
                     }
                 }
 
                 return IndexOfAnyExceptDefaultComparer(span, value0, value1, value2);
                 static int IndexOfAnyExceptDefaultComparer(ReadOnlyExSpan<T> span, T value0, T value1, T value2) {
-                    for (int i = 0; i < ExSpan.Length; i++) {
-                        if (!EqualityComparer<T>.Default.Equals(ExSpan[i], value0) &&
-                            !EqualityComparer<T>.Default.Equals(ExSpan[i], value1) &&
-                            !EqualityComparer<T>.Default.Equals(ExSpan[i], value2)) {
+                    for (int i = 0; i < span.Length; i++) {
+                        if (!EqualityComparer<T>.Default.Equals(span[i], value0) &&
+                            !EqualityComparer<T>.Default.Equals(span[i], value1) &&
+                            !EqualityComparer<T>.Default.Equals(span[i], value2)) {
                             return i;
                         }
                     }
@@ -853,10 +853,10 @@ namespace Zyl.ExSpans {
                 return IndexOfAnyExceptComparer(span, value0, value1, value2, comparer);
                 static int IndexOfAnyExceptComparer(ReadOnlyExSpan<T> span, T value0, T value1, T value2, IEqualityComparer<T>? comparer) {
                     comparer ??= EqualityComparer<T>.Default;
-                    for (int i = 0; i < ExSpan.Length; i++) {
-                        if (!comparer.Equals(ExSpan[i], value0) &&
-                            !comparer.Equals(ExSpan[i], value1) &&
-                            !comparer.Equals(ExSpan[i], value2)) {
+                    for (int i = 0; i < span.Length; i++) {
+                        if (!comparer.Equals(span[i], value0) &&
+                            !comparer.Equals(span[i], value1) &&
+                            !comparer.Equals(span[i], value2)) {
                             return i;
                         }
                     }
@@ -871,24 +871,24 @@ namespace Zyl.ExSpans {
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.IndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, byte>(value0),
                         ExUnsafe.BitCast<T, byte>(value1),
                         ExUnsafe.BitCast<T, byte>(value2),
                         ExUnsafe.BitCast<T, byte>(value3),
-                        ExSpan.Length);
+                        span.Length);
                 } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                     return ExSpanHelpers.IndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, short>(value0),
                         ExUnsafe.BitCast<T, short>(value1),
                         ExUnsafe.BitCast<T, short>(value2),
                         ExUnsafe.BitCast<T, short>(value3),
-                        ExSpan.Length);
+                        span.Length);
                 }
             }
 
-            return ExSpanHelpers.IndexOfAnyExcept(ref ExMemoryMarshal.GetReference(ExSpan), value0, value1, value2, value3, ExSpan.Length);
+            return ExSpanHelpers.IndexOfAnyExcept(ref ExMemoryMarshal.GetReference(span), value0, value1, value2, value3, span.Length);
         }
 
         /// <summary>Searches for the first index of any value other than the specified <paramref name="values"/>.</summary>
@@ -904,8 +904,8 @@ namespace Zyl.ExSpans {
                 case 0:
                     // If the ExSpan is empty, we want to return -1.
                     // If the ExSpan is non-empty, we want to return the index of the first char that's not in the empty set,
-                    // which is every character, and so the first char in the ExSpan.
-                    return ExSpan.IsEmpty ? -1 : 0;
+                    // which is every character, and so the first char in the span.
+                    return span.IsEmpty ? -1 : 0;
 
                 case 1:
                     return IndexOfAnyExcept(span, values[0]);
@@ -925,37 +925,37 @@ namespace Zyl.ExSpans {
                             ref byte valuesRef = ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(values));
 
                             return ExSpanHelpers.IndexOfAnyExceptValueType(
-                                ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                                ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                                 valuesRef,
                                 Unsafe.Add(ref valuesRef, 1),
                                 Unsafe.Add(ref valuesRef, 2),
                                 Unsafe.Add(ref valuesRef, 3),
                                 Unsafe.Add(ref valuesRef, 4),
-                                ExSpan.Length);
+                                span.Length);
                         } else if (Unsafe.SizeOf<T>() == sizeof(short) && values.Length == 5) {
                             ref short valuesRef = ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(values));
 
                             return ExSpanHelpers.IndexOfAnyExceptValueType(
-                                ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                                ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span)),
                                 valuesRef,
                                 Unsafe.Add(ref valuesRef, 1),
                                 Unsafe.Add(ref valuesRef, 2),
                                 Unsafe.Add(ref valuesRef, 3),
                                 Unsafe.Add(ref valuesRef, 4),
-                                ExSpan.Length);
+                                span.Length);
                         }
                     }
 
                     if (TypeHelper.IsBitwiseEquatable<T>() && Unsafe.SizeOf<T>() == sizeof(char)) {
                         return ProbabilisticMap.IndexOfAnyExcept(
-                            ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(ExSpan)),
-                            ExSpan.Length,
+                            ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(span)),
+                            span.Length,
                             ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(values)),
                             values.Length);
                     }
 
-                    for (int i = 0; i < ExSpan.Length; i++) {
-                        if (!values.Contains(ExSpan[i])) {
+                    for (int i = 0; i < span.Length; i++) {
+                        if (!values.Contains(span[i])) {
                             return i;
                         }
                     }
@@ -976,7 +976,7 @@ namespace Zyl.ExSpans {
         public static unsafe int IndexOfAnyExcept<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> values, IEqualityComparer<T>? comparer = null) {
             switch (values.Length) {
                 case 0:
-                    return ExSpan.IsEmpty ? -1 : 0;
+                    return span.IsEmpty ? -1 : 0;
 
                 case 1:
                     return IndexOfAnyExcept(span, values[0], comparer);
@@ -988,8 +988,8 @@ namespace Zyl.ExSpans {
                     return IndexOfAnyExcept(span, values[0], values[1], values[2], comparer);
 
                 default:
-                    for (int i = 0; i < ExSpan.Length; i++) {
-                        if (!values.Contains(ExSpan[i], comparer)) {
+                    for (int i = 0; i < span.Length; i++) {
+                        if (!values.Contains(span[i], comparer)) {
                             return i;
                         }
                     }
@@ -1092,28 +1092,28 @@ namespace Zyl.ExSpans {
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, byte>(value),
-                        ExSpan.Length);
+                        span.Length);
                 } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                     return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, short>(value),
-                        ExSpan.Length);
+                        span.Length);
                 } else if (Unsafe.SizeOf<T>() == sizeof(int)) {
                     return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, int>(value),
-                        ExSpan.Length);
+                        span.Length);
                 } else if (Unsafe.SizeOf<T>() == sizeof(long)) {
                     return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, long>(value),
-                        ExSpan.Length);
+                        span.Length);
                 }
             }
 
-            return ExSpanHelpers.LastIndexOfAnyExcept(ref ExMemoryMarshal.GetReference(ExSpan), value, ExSpan.Length);
+            return ExSpanHelpers.LastIndexOfAnyExcept(ref ExMemoryMarshal.GetReference(span), value, span.Length);
         }
 
         /// <summary>Searches for the last index of any value other than the specified <paramref name="value"/>.</summary>
@@ -1127,35 +1127,35 @@ namespace Zyl.ExSpans {
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int LastIndexOfAnyExcept<T>(this ReadOnlyExSpan<T> span, T value, IEqualityComparer<T>? comparer = null) {
-            if (typeof(T).IsValueType && (comparer is null || comparer == EqualityComparer<T>.Default)) {
+            if (TypeHelper.IsValueType<T>() && (comparer is null || comparer == EqualityComparer<T>.Default)) {
                 if (TypeHelper.IsBitwiseEquatable<T>()) {
                     if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                         return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                             ExUnsafe.BitCast<T, byte>(value),
-                            ExSpan.Length);
+                            span.Length);
                     } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                         return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span)),
                             ExUnsafe.BitCast<T, short>(value),
-                            ExSpan.Length);
+                            span.Length);
                     } else if (Unsafe.SizeOf<T>() == sizeof(int)) {
                         return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                            ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(span)),
                             ExUnsafe.BitCast<T, int>(value),
-                            ExSpan.Length);
+                            span.Length);
                     } else if (Unsafe.SizeOf<T>() == sizeof(long)) {
                         return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                            ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(span)),
                             ExUnsafe.BitCast<T, long>(value),
-                            ExSpan.Length);
+                            span.Length);
                     }
                 }
 
                 return LastIndexOfAnyExceptDefaultComparer(span, value);
                 static int LastIndexOfAnyExceptDefaultComparer(ReadOnlyExSpan<T> span, T value) {
-                    for (int i = ExSpan.Length - 1; i >= 0; i--) {
-                        if (!EqualityComparer<T>.Default.Equals(ExSpan[i], value)) {
+                    for (int i = span.Length - 1; i >= 0; i--) {
+                        if (!EqualityComparer<T>.Default.Equals(span[i], value)) {
                             return i;
                         }
                     }
@@ -1167,8 +1167,8 @@ namespace Zyl.ExSpans {
                 static int LastIndexOfAnyExceptComparer(ReadOnlyExSpan<T> span, T value, IEqualityComparer<T>? comparer) {
                     comparer ??= EqualityComparer<T>.Default;
 
-                    for (int i = ExSpan.Length - 1; i >= 0; i--) {
-                        if (!comparer.Equals(ExSpan[i], value)) {
+                    for (int i = span.Length - 1; i >= 0; i--) {
+                        if (!comparer.Equals(span[i], value)) {
                             return i;
                         }
                     }
@@ -1192,20 +1192,20 @@ namespace Zyl.ExSpans {
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, byte>(value0),
                         ExUnsafe.BitCast<T, byte>(value1),
-                        ExSpan.Length);
+                        span.Length);
                 } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                     return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, short>(value0),
                         ExUnsafe.BitCast<T, short>(value1),
-                        ExSpan.Length);
+                        span.Length);
                 }
             }
 
-            return ExSpanHelpers.LastIndexOfAnyExcept(ref ExMemoryMarshal.GetReference(ExSpan), value0, value1, ExSpan.Length);
+            return ExSpanHelpers.LastIndexOfAnyExcept(ref ExMemoryMarshal.GetReference(span), value0, value1, span.Length);
         }
 
         /// <summary>Searches for the last index of any value other than the specified <paramref name="value0"/> or <paramref name="value1"/>.</summary>
@@ -1220,28 +1220,28 @@ namespace Zyl.ExSpans {
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int LastIndexOfAnyExcept<T>(this ReadOnlyExSpan<T> span, T value0, T value1, IEqualityComparer<T>? comparer = null) {
-            if (typeof(T).IsValueType && (comparer is null || comparer == EqualityComparer<T>.Default)) {
+            if (TypeHelper.IsValueType<T>() && (comparer is null || comparer == EqualityComparer<T>.Default)) {
                 if (TypeHelper.IsBitwiseEquatable<T>()) {
                     if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                         return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                             ExUnsafe.BitCast<T, byte>(value0),
                             ExUnsafe.BitCast<T, byte>(value1),
-                            ExSpan.Length);
+                            span.Length);
                     } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                         return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span)),
                             ExUnsafe.BitCast<T, short>(value0),
                             ExUnsafe.BitCast<T, short>(value1),
-                            ExSpan.Length);
+                            span.Length);
                     }
                 }
 
                 return LastIndexOfAnyExceptDefaultComparer(span, value0, value1);
                 static int LastIndexOfAnyExceptDefaultComparer(ReadOnlyExSpan<T> span, T value0, T value1) {
-                    for (int i = ExSpan.Length - 1; i >= 0; i--) {
-                        if (!EqualityComparer<T>.Default.Equals(ExSpan[i], value0) &&
-                            !EqualityComparer<T>.Default.Equals(ExSpan[i], value1)) {
+                    for (int i = span.Length - 1; i >= 0; i--) {
+                        if (!EqualityComparer<T>.Default.Equals(span[i], value0) &&
+                            !EqualityComparer<T>.Default.Equals(span[i], value1)) {
                             return i;
                         }
                     }
@@ -1253,9 +1253,9 @@ namespace Zyl.ExSpans {
                 static int LastIndexOfAnyExceptComparer(ReadOnlyExSpan<T> span, T value0, T value1, IEqualityComparer<T>? comparer) {
                     comparer ??= EqualityComparer<T>.Default;
 
-                    for (int i = ExSpan.Length - 1; i >= 0; i--) {
-                        if (!comparer.Equals(ExSpan[i], value0) &&
-                            !comparer.Equals(ExSpan[i], value1)) {
+                    for (int i = span.Length - 1; i >= 0; i--) {
+                        if (!comparer.Equals(span[i], value0) &&
+                            !comparer.Equals(span[i], value1)) {
                             return i;
                         }
                     }
@@ -1280,22 +1280,22 @@ namespace Zyl.ExSpans {
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, byte>(value0),
                         ExUnsafe.BitCast<T, byte>(value1),
                         ExUnsafe.BitCast<T, byte>(value2),
-                        ExSpan.Length);
+                        span.Length);
                 } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                     return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, short>(value0),
                         ExUnsafe.BitCast<T, short>(value1),
                         ExUnsafe.BitCast<T, short>(value2),
-                        ExSpan.Length);
+                        span.Length);
                 }
             }
 
-            return ExSpanHelpers.LastIndexOfAnyExcept(ref ExMemoryMarshal.GetReference(ExSpan), value0, value1, value2, ExSpan.Length);
+            return ExSpanHelpers.LastIndexOfAnyExcept(ref ExMemoryMarshal.GetReference(span), value0, value1, value2, span.Length);
         }
 
         /// <summary>Searches for the last index of any value other than the specified <paramref name="value0"/>, <paramref name="value1"/>, or <paramref name="value2"/>.</summary>
@@ -1311,31 +1311,31 @@ namespace Zyl.ExSpans {
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int LastIndexOfAnyExcept<T>(this ReadOnlyExSpan<T> span, T value0, T value1, T value2, IEqualityComparer<T>? comparer = null) {
-            if (typeof(T).IsValueType && (comparer is null || comparer == EqualityComparer<T>.Default)) {
+            if (TypeHelper.IsValueType<T>() && (comparer is null || comparer == EqualityComparer<T>.Default)) {
                 if (TypeHelper.IsBitwiseEquatable<T>()) {
                     if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                         return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                             ExUnsafe.BitCast<T, byte>(value0),
                             ExUnsafe.BitCast<T, byte>(value1),
                             ExUnsafe.BitCast<T, byte>(value2),
-                            ExSpan.Length);
+                            span.Length);
                     } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                         return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span)),
                             ExUnsafe.BitCast<T, short>(value0),
                             ExUnsafe.BitCast<T, short>(value1),
                             ExUnsafe.BitCast<T, short>(value2),
-                            ExSpan.Length);
+                            span.Length);
                     }
                 }
 
                 return LastIndexOfAnyExceptDefaultComparer(span, value0, value1, value2);
                 static int LastIndexOfAnyExceptDefaultComparer(ReadOnlyExSpan<T> span, T value0, T value1, T value2) {
-                    for (int i = ExSpan.Length - 1; i >= 0; i--) {
-                        if (!EqualityComparer<T>.Default.Equals(ExSpan[i], value0) &&
-                            !EqualityComparer<T>.Default.Equals(ExSpan[i], value1) &&
-                            !EqualityComparer<T>.Default.Equals(ExSpan[i], value2)) {
+                    for (int i = span.Length - 1; i >= 0; i--) {
+                        if (!EqualityComparer<T>.Default.Equals(span[i], value0) &&
+                            !EqualityComparer<T>.Default.Equals(span[i], value1) &&
+                            !EqualityComparer<T>.Default.Equals(span[i], value2)) {
                             return i;
                         }
                     }
@@ -1347,10 +1347,10 @@ namespace Zyl.ExSpans {
                 static int LastIndexOfAnyExceptComparer(ReadOnlyExSpan<T> span, T value0, T value1, T value2, IEqualityComparer<T>? comparer) {
                     comparer ??= EqualityComparer<T>.Default;
 
-                    for (int i = ExSpan.Length - 1; i >= 0; i--) {
-                        if (!comparer.Equals(ExSpan[i], value0) &&
-                            !comparer.Equals(ExSpan[i], value1) &&
-                            !comparer.Equals(ExSpan[i], value2)) {
+                    for (int i = span.Length - 1; i >= 0; i--) {
+                        if (!comparer.Equals(span[i], value0) &&
+                            !comparer.Equals(span[i], value1) &&
+                            !comparer.Equals(span[i], value2)) {
                             return i;
                         }
                     }
@@ -1365,24 +1365,24 @@ namespace Zyl.ExSpans {
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, byte>(value0),
                         ExUnsafe.BitCast<T, byte>(value1),
                         ExUnsafe.BitCast<T, byte>(value2),
                         ExUnsafe.BitCast<T, byte>(value3),
-                        ExSpan.Length);
+                        span.Length);
                 } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                     return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, short>(value0),
                         ExUnsafe.BitCast<T, short>(value1),
                         ExUnsafe.BitCast<T, short>(value2),
                         ExUnsafe.BitCast<T, short>(value3),
-                        ExSpan.Length);
+                        span.Length);
                 }
             }
 
-            return ExSpanHelpers.LastIndexOfAnyExcept(ref ExMemoryMarshal.GetReference(ExSpan), value0, value1, value2, value3, ExSpan.Length);
+            return ExSpanHelpers.LastIndexOfAnyExcept(ref ExMemoryMarshal.GetReference(span), value0, value1, value2, value3, span.Length);
         }
 
         /// <summary>Searches for the last index of any value other than the specified <paramref name="values"/>.</summary>
@@ -1398,9 +1398,9 @@ namespace Zyl.ExSpans {
                 case 0:
                     // If the ExSpan is empty, we want to return -1.
                     // If the ExSpan is non-empty, we want to return the index of the last char that's not in the empty set,
-                    // which is every character, and so the last char in the ExSpan.
-                    // Either way, we want to return ExSpan.Length - 1.
-                    return ExSpan.Length - 1;
+                    // which is every character, and so the last char in the span.
+                    // Either way, we want to return span.Length - 1.
+                    return span.Length - 1;
 
                 case 1:
                     return LastIndexOfAnyExcept(span, values[0]);
@@ -1420,37 +1420,37 @@ namespace Zyl.ExSpans {
                             ref byte valuesRef = ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(values));
 
                             return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                                ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                                ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                                 valuesRef,
                                 Unsafe.Add(ref valuesRef, 1),
                                 Unsafe.Add(ref valuesRef, 2),
                                 Unsafe.Add(ref valuesRef, 3),
                                 Unsafe.Add(ref valuesRef, 4),
-                                ExSpan.Length);
+                                span.Length);
                         } else if (Unsafe.SizeOf<T>() == sizeof(short) && values.Length == 5) {
                             ref short valuesRef = ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(values));
 
                             return ExSpanHelpers.LastIndexOfAnyExceptValueType(
-                                ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                                ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span)),
                                 valuesRef,
                                 Unsafe.Add(ref valuesRef, 1),
                                 Unsafe.Add(ref valuesRef, 2),
                                 Unsafe.Add(ref valuesRef, 3),
                                 Unsafe.Add(ref valuesRef, 4),
-                                ExSpan.Length);
+                                span.Length);
                         }
                     }
 
                     if (TypeHelper.IsBitwiseEquatable<T>() && Unsafe.SizeOf<T>() == sizeof(char)) {
                         return ProbabilisticMap.LastIndexOfAnyExcept(
-                            ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(ExSpan)),
-                            ExSpan.Length,
+                            ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(span)),
+                            span.Length,
                             ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(values)),
                             values.Length);
                     }
 
-                    for (int i = ExSpan.Length - 1; i >= 0; i--) {
-                        if (!values.Contains(ExSpan[i])) {
+                    for (int i = span.Length - 1; i >= 0; i--) {
+                        if (!values.Contains(span[i])) {
                             return i;
                         }
                     }
@@ -1471,7 +1471,7 @@ namespace Zyl.ExSpans {
         public static unsafe int LastIndexOfAnyExcept<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> values, IEqualityComparer<T>? comparer = null) {
             switch (values.Length) {
                 case 0:
-                    return ExSpan.Length - 1;
+                    return span.Length - 1;
 
                 case 1:
                     return LastIndexOfAnyExcept(span, values[0], comparer);
@@ -1483,8 +1483,8 @@ namespace Zyl.ExSpans {
                     return LastIndexOfAnyExcept(span, values[0], values[1], values[2], comparer);
 
                 default:
-                    for (int i = ExSpan.Length - 1; i >= 0; i--) {
-                        if (!values.Contains(ExSpan[i], comparer)) {
+                    for (int i = span.Length - 1; i >= 0; i--) {
+                        if (!values.Contains(span[i], comparer)) {
                             return i;
                         }
                     }
@@ -1534,38 +1534,38 @@ namespace Zyl.ExSpans {
             if (Vector128.IsHardwareAccelerated) {
                 if (lowInclusive is byte or sbyte) {
                     return ExSpanHelpers.IndexOfAnyInRangeUnsignedNumber(
-                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, byte>(lowInclusive),
                         ExUnsafe.BitCast<T, byte>(highInclusive),
-                        ExSpan.Length);
+                        span.Length);
                 }
 
                 if (lowInclusive is short or ushort or char) {
                     return ExSpanHelpers.IndexOfAnyInRangeUnsignedNumber(
-                        ref Unsafe.As<T, ushort>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, ushort>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, ushort>(lowInclusive),
                         ExUnsafe.BitCast<T, ushort>(highInclusive),
-                        ExSpan.Length);
+                        span.Length);
                 }
 
                 if (lowInclusive is int or uint || (IntPtr.Size == 4 && (lowInclusive is nint or nuint))) {
                     return ExSpanHelpers.IndexOfAnyInRangeUnsignedNumber(
-                        ref Unsafe.As<T, uint>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, uint>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, uint>(lowInclusive),
                         ExUnsafe.BitCast<T, uint>(highInclusive),
-                        ExSpan.Length);
+                        span.Length);
                 }
 
                 if (lowInclusive is long or ulong || (IntPtr.Size == 8 && (lowInclusive is nint or nuint))) {
                     return ExSpanHelpers.IndexOfAnyInRangeUnsignedNumber(
-                        ref Unsafe.As<T, ulong>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, ulong>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, ulong>(lowInclusive),
                         ExUnsafe.BitCast<T, ulong>(highInclusive),
-                        ExSpan.Length);
+                        span.Length);
                 }
             }
 
-            return ExSpanHelpers.IndexOfAnyInRange(ref ExMemoryMarshal.GetReference(ExSpan), lowInclusive, highInclusive, ExSpan.Length);
+            return ExSpanHelpers.IndexOfAnyInRange(ref ExMemoryMarshal.GetReference(span), lowInclusive, highInclusive, span.Length);
         }
 
         /// <inheritdoc cref="IndexOfAnyExceptInRange{T}(ReadOnlyExSpan{T}, T, T)"/>
@@ -1592,38 +1592,38 @@ namespace Zyl.ExSpans {
             if (Vector128.IsHardwareAccelerated) {
                 if (lowInclusive is byte or sbyte) {
                     return ExSpanHelpers.IndexOfAnyExceptInRangeUnsignedNumber(
-                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, byte>(lowInclusive),
                         ExUnsafe.BitCast<T, byte>(highInclusive),
-                        ExSpan.Length);
+                        span.Length);
                 }
 
                 if (lowInclusive is short or ushort or char) {
                     return ExSpanHelpers.IndexOfAnyExceptInRangeUnsignedNumber(
-                        ref Unsafe.As<T, ushort>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, ushort>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, ushort>(lowInclusive),
                         ExUnsafe.BitCast<T, ushort>(highInclusive),
-                        ExSpan.Length);
+                        span.Length);
                 }
 
                 if (lowInclusive is int or uint || (IntPtr.Size == 4 && (lowInclusive is nint or nuint))) {
                     return ExSpanHelpers.IndexOfAnyExceptInRangeUnsignedNumber(
-                        ref Unsafe.As<T, uint>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, uint>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, uint>(lowInclusive),
                         ExUnsafe.BitCast<T, uint>(highInclusive),
-                        ExSpan.Length);
+                        span.Length);
                 }
 
                 if (lowInclusive is long or ulong || (IntPtr.Size == 8 && (lowInclusive is nint or nuint))) {
                     return ExSpanHelpers.IndexOfAnyExceptInRangeUnsignedNumber(
-                        ref Unsafe.As<T, ulong>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, ulong>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, ulong>(lowInclusive),
                         ExUnsafe.BitCast<T, ulong>(highInclusive),
-                        ExSpan.Length);
+                        span.Length);
                 }
             }
 
-            return ExSpanHelpers.IndexOfAnyExceptInRange(ref ExMemoryMarshal.GetReference(ExSpan), lowInclusive, highInclusive, ExSpan.Length);
+            return ExSpanHelpers.IndexOfAnyExceptInRange(ref ExMemoryMarshal.GetReference(span), lowInclusive, highInclusive, span.Length);
         }
 
         /// <inheritdoc cref="LastIndexOfAnyInRange{T}(ReadOnlyExSpan{T}, T, T)"/>
@@ -1650,38 +1650,38 @@ namespace Zyl.ExSpans {
             if (Vector128.IsHardwareAccelerated) {
                 if (lowInclusive is byte or sbyte) {
                     return ExSpanHelpers.LastIndexOfAnyInRangeUnsignedNumber(
-                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, byte>(lowInclusive),
                         ExUnsafe.BitCast<T, byte>(highInclusive),
-                        ExSpan.Length);
+                        span.Length);
                 }
 
                 if (lowInclusive is short or ushort or char) {
                     return ExSpanHelpers.LastIndexOfAnyInRangeUnsignedNumber(
-                        ref Unsafe.As<T, ushort>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, ushort>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, ushort>(lowInclusive),
                         ExUnsafe.BitCast<T, ushort>(highInclusive),
-                        ExSpan.Length);
+                        span.Length);
                 }
 
                 if (lowInclusive is int or uint || (IntPtr.Size == 4 && (lowInclusive is nint or nuint))) {
                     return ExSpanHelpers.LastIndexOfAnyInRangeUnsignedNumber(
-                        ref Unsafe.As<T, uint>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, uint>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, uint>(lowInclusive),
                         ExUnsafe.BitCast<T, uint>(highInclusive),
-                        ExSpan.Length);
+                        span.Length);
                 }
 
                 if (lowInclusive is long or ulong || (IntPtr.Size == 8 && (lowInclusive is nint or nuint))) {
                     return ExSpanHelpers.LastIndexOfAnyInRangeUnsignedNumber(
-                        ref Unsafe.As<T, ulong>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, ulong>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, ulong>(lowInclusive),
                         ExUnsafe.BitCast<T, ulong>(highInclusive),
-                        ExSpan.Length);
+                        span.Length);
                 }
             }
 
-            return ExSpanHelpers.LastIndexOfAnyInRange(ref ExMemoryMarshal.GetReference(ExSpan), lowInclusive, highInclusive, ExSpan.Length);
+            return ExSpanHelpers.LastIndexOfAnyInRange(ref ExMemoryMarshal.GetReference(span), lowInclusive, highInclusive, span.Length);
         }
 
         /// <inheritdoc cref="LastIndexOfAnyExceptInRange{T}(ReadOnlyExSpan{T}, T, T)"/>
@@ -1708,38 +1708,38 @@ namespace Zyl.ExSpans {
             if (Vector128.IsHardwareAccelerated) {
                 if (lowInclusive is byte or sbyte) {
                     return ExSpanHelpers.LastIndexOfAnyExceptInRangeUnsignedNumber(
-                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, byte>(lowInclusive),
                         ExUnsafe.BitCast<T, byte>(highInclusive),
-                        ExSpan.Length);
+                        span.Length);
                 }
 
                 if (lowInclusive is short or ushort or char) {
                     return ExSpanHelpers.LastIndexOfAnyExceptInRangeUnsignedNumber(
-                        ref Unsafe.As<T, ushort>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, ushort>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, ushort>(lowInclusive),
                         ExUnsafe.BitCast<T, ushort>(highInclusive),
-                        ExSpan.Length);
+                        span.Length);
                 }
 
                 if (lowInclusive is int or uint || (IntPtr.Size == 4 && (lowInclusive is nint or nuint))) {
                     return ExSpanHelpers.LastIndexOfAnyExceptInRangeUnsignedNumber(
-                        ref Unsafe.As<T, uint>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, uint>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, uint>(lowInclusive),
                         ExUnsafe.BitCast<T, uint>(highInclusive),
-                        ExSpan.Length);
+                        span.Length);
                 }
 
                 if (lowInclusive is long or ulong || (IntPtr.Size == 8 && (lowInclusive is nint or nuint))) {
                     return ExSpanHelpers.LastIndexOfAnyExceptInRangeUnsignedNumber(
-                        ref Unsafe.As<T, ulong>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, ulong>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, ulong>(lowInclusive),
                         ExUnsafe.BitCast<T, ulong>(highInclusive),
-                        ExSpan.Length);
+                        span.Length);
                 }
             }
 
-            return ExSpanHelpers.LastIndexOfAnyExceptInRange(ref ExMemoryMarshal.GetReference(ExSpan), lowInclusive, highInclusive, ExSpan.Length);
+            return ExSpanHelpers.LastIndexOfAnyExceptInRange(ref ExMemoryMarshal.GetReference(span), lowInclusive, highInclusive, span.Length);
         }
 
         /// <summary>Throws an <see cref="ArgumentNullException"/> for <paramref name="lowInclusive"/> or <paramref name="highInclusive"/> being null.</summary>
@@ -1769,6 +1769,7 @@ namespace Zyl.ExSpans {
         [OverloadResolutionPriority(-1)]
         public static int SequenceCompareTo<T>(this ExSpan<T> span, ReadOnlyExSpan<T> other) where T : IComparable<T>? =>
             SequenceCompareTo((ReadOnlyExSpan<T>)span, other);
+#endif // TODO
 
         /// <summary>
         /// Searches for the specified value and returns the index of its first occurrence. If not found, returns -1. Values are compared using IEquatable{T}.Equals(T).
@@ -1776,34 +1777,34 @@ namespace Zyl.ExSpans {
         /// <param name="span">The span to search.</param>
         /// <param name="value">The value to search for.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe int IndexOf<T>(this ReadOnlyExSpan<T> span, T value) where T : IEquatable<T>? {
+        public static TSize IndexOf<T>(this ReadOnlyExSpan<T> span, T value) where T : IEquatable<T>? {
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte))
                     return ExSpanHelpers.IndexOfValueType(
-                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, byte>(value),
-                        ExSpan.Length);
+                        span.Length);
 
                 if (Unsafe.SizeOf<T>() == sizeof(short))
                     return ExSpanHelpers.IndexOfValueType(
-                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, short>(value),
-                        ExSpan.Length);
+                        span.Length);
 
                 if (Unsafe.SizeOf<T>() == sizeof(int))
                     return ExSpanHelpers.IndexOfValueType(
-                        ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, int>(value),
-                        ExSpan.Length);
+                        span.Length);
 
                 if (Unsafe.SizeOf<T>() == sizeof(long))
                     return ExSpanHelpers.IndexOfValueType(
-                        ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, long>(value),
-                        ExSpan.Length);
+                        span.Length);
             }
 
-            return ExSpanHelpers.IndexOf(ref ExMemoryMarshal.GetReference(ExSpan), value, ExSpan.Length);
+            return ExSpanHelpers.IndexOf(ref ExMemoryMarshal.GetReference(span), value, span.Length);
         }
 
         /// <summary>
@@ -1813,55 +1814,55 @@ namespace Zyl.ExSpans {
         /// <param name="value">The value to search for.</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe int IndexOf<T>(this ReadOnlyExSpan<T> span, T value, IEqualityComparer<T>? comparer = null) {
-            if (typeof(T).IsValueType && (comparer is null || comparer == EqualityComparer<T>.Default)) {
+        public static TSize IndexOf<T>(this ReadOnlyExSpan<T> span, T value, IEqualityComparer<T>? comparer = null) {
+            if (TypeHelper.IsValueType<T>() && (comparer is null || comparer == EqualityComparer<T>.Default)) {
                 if (TypeHelper.IsBitwiseEquatable<T>()) {
                     if (Unsafe.SizeOf<T>() == sizeof(byte))
                         return ExSpanHelpers.IndexOfValueType(
-                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                             ExUnsafe.BitCast<T, byte>(value),
-                            ExSpan.Length);
+                            span.Length);
 
                     if (Unsafe.SizeOf<T>() == sizeof(short))
                         return ExSpanHelpers.IndexOfValueType(
-                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span)),
                             ExUnsafe.BitCast<T, short>(value),
-                            ExSpan.Length);
+                            span.Length);
 
                     if (Unsafe.SizeOf<T>() == sizeof(int))
                         return ExSpanHelpers.IndexOfValueType(
-                            ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(span)),
                             ExUnsafe.BitCast<T, int>(value),
-                            ExSpan.Length);
+                            span.Length);
 
                     if (Unsafe.SizeOf<T>() == sizeof(long))
                         return ExSpanHelpers.IndexOfValueType(
-                            ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(span)),
                             ExUnsafe.BitCast<T, long>(value),
-                            ExSpan.Length);
+                            span.Length);
                 }
 
                 return IndexOfDefaultComparer(span, value);
-                static int IndexOfDefaultComparer(ReadOnlyExSpan<T> span, T value) {
-                    for (int i = 0; i < ExSpan.Length; i++) {
-                        if (EqualityComparer<T>.Default.Equals(ExSpan[i], value)) {
+                static TSize IndexOfDefaultComparer(ReadOnlyExSpan<T> span, T value) {
+                    for (TSize i = (TSize)0; i.LessThan(span.Length); i += 1) {
+                        if (EqualityComparer<T>.Default.Equals(span[i], value)) {
                             return i;
                         }
                     }
 
-                    return -1;
+                    return (TSize)(int)-1;
                 }
             } else {
                 return IndexOfComparer(span, value, comparer);
-                static int IndexOfComparer(ReadOnlyExSpan<T> span, T value, IEqualityComparer<T>? comparer) {
+                static TSize IndexOfComparer(ReadOnlyExSpan<T> span, T value, IEqualityComparer<T>? comparer) {
                     comparer ??= EqualityComparer<T>.Default;
-                    for (int i = 0; i < ExSpan.Length; i++) {
-                        if (comparer.Equals(ExSpan[i], value)) {
+                    for (TSize i = (TSize)0; i.LessThan(span.Length); i += 1) {
+                        if (comparer.Equals(span[i], value)) {
                             return i;
                         }
                     }
 
-                    return -1;
+                    return (TSize)(int)-1;
                 }
             }
         }
@@ -1872,26 +1873,27 @@ namespace Zyl.ExSpans {
         /// <param name="span">The span to search.</param>
         /// <param name="value">The sequence to search for.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe int IndexOf<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> value) where T : IEquatable<T>? {
+        public static TSize IndexOf<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> value) where T : IEquatable<T>? {
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte))
                     return ExSpanHelpers.IndexOf(
-                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
-                        ExSpan.Length,
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
+                        span.Length,
                         ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(value)),
                         value.Length);
 
                 if (Unsafe.SizeOf<T>() == sizeof(char))
                     return ExSpanHelpers.IndexOf(
-                        ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(ExSpan)),
-                        ExSpan.Length,
+                        ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(span)),
+                        span.Length,
                         ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(value)),
                         value.Length);
             }
 
-            return ExSpanHelpers.IndexOf(ref ExMemoryMarshal.GetReference(ExSpan), ExSpan.Length, ref ExMemoryMarshal.GetReference(value), value.Length);
+            return ExSpanHelpers.IndexOf(ref ExMemoryMarshal.GetReference(span), span.Length, ref ExMemoryMarshal.GetReference(value), value.Length);
         }
 
+#if TODO
         /// <summary>
         /// Searches for the specified sequence and returns the index of its first occurrence. If not found, returns -1. Values are compared using IEquatable{T}.Equals(T).
         /// </summary>
@@ -1899,47 +1901,47 @@ namespace Zyl.ExSpans {
         /// <param name="value">The sequence to search for.</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe int IndexOf<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> value, IEqualityComparer<T>? comparer = null) {
+        public static TSize IndexOf<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> value, IEqualityComparer<T>? comparer = null) {
             if (TypeHelper.IsBitwiseEquatable<T>() && (comparer is null || comparer == EqualityComparer<T>.Default)) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte))
                     return ExSpanHelpers.IndexOf(
-                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
-                        ExSpan.Length,
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
+                        span.Length,
                         ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(value)),
                         value.Length);
 
                 if (Unsafe.SizeOf<T>() == sizeof(char))
                     return ExSpanHelpers.IndexOf(
-                        ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(ExSpan)),
-                        ExSpan.Length,
+                        ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(span)),
+                        span.Length,
                         ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(value)),
                         value.Length);
             }
 
             return IndexOfComparer(span, value, comparer);
-            static int IndexOfComparer(ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> value, IEqualityComparer<T>? comparer) {
-                if (value.Length == 0) {
-                    return 0;
+            static TSize IndexOfComparer(ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> value, IEqualityComparer<T>? comparer) {
+                if (value.Length == (TSize)0) {
+                    return (TSize)0;
                 }
 
                 comparer ??= EqualityComparer<T>.Default;
 
-                int total = 0;
-                while (!ExSpan.IsEmpty) {
-                    int pos = ExSpan.IndexOf(value[0], comparer);
-                    if (pos < 0) {
+                TSize total = 0;
+                while (!span.IsEmpty) {
+                    TSize pos = span.IndexOf(value[(TSize)0], comparer);
+                    if (pos.LessThan(0)) {
                         break;
                     }
 
-                    if (ExSpan.Slice(pos + 1).StartsWith(value.Slice(1), comparer)) {
-                        return total + pos;
+                    if (span.Slice(pos + 1).StartsWith(value.Slice((TSize)1), comparer)) {
+                        return total.Add(pos);
                     }
 
-                    total += pos + 1;
-                    ExSpan = ExSpan.Slice(pos + 1);
+                    total = total.Add(pos + 1);
+                    span = span.Slice(pos + 1);
                 }
 
-                return -1;
+                return (TSize)(int)-1;
             }
         }
 
@@ -1953,28 +1955,28 @@ namespace Zyl.ExSpans {
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.LastIndexOfValueType(
-                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, byte>(value),
-                        ExSpan.Length);
+                        span.Length);
                 } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                     return ExSpanHelpers.LastIndexOfValueType(
-                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, short>(value),
-                        ExSpan.Length);
+                        span.Length);
                 } else if (Unsafe.SizeOf<T>() == sizeof(int)) {
                     return ExSpanHelpers.LastIndexOfValueType(
-                        ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, int>(value),
-                        ExSpan.Length);
+                        span.Length);
                 } else if (Unsafe.SizeOf<T>() == sizeof(long)) {
                     return ExSpanHelpers.LastIndexOfValueType(
-                        ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, long>(value),
-                        ExSpan.Length);
+                        span.Length);
                 }
             }
 
-            return ExSpanHelpers.LastIndexOf(ref ExMemoryMarshal.GetReference(ExSpan), value, ExSpan.Length);
+            return ExSpanHelpers.LastIndexOf(ref ExMemoryMarshal.GetReference(span), value, span.Length);
         }
 
         /// <summary>
@@ -1985,35 +1987,35 @@ namespace Zyl.ExSpans {
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int LastIndexOf<T>(this ReadOnlyExSpan<T> span, T value, IEqualityComparer<T>? comparer = null) {
-            if (typeof(T).IsValueType && (comparer is null || comparer == EqualityComparer<T>.Default)) {
+            if (TypeHelper.IsValueType<T>() && (comparer is null || comparer == EqualityComparer<T>.Default)) {
                 if (TypeHelper.IsBitwiseEquatable<T>()) {
                     if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                         return ExSpanHelpers.LastIndexOfValueType(
-                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                             ExUnsafe.BitCast<T, byte>(value),
-                            ExSpan.Length);
+                            span.Length);
                     } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                         return ExSpanHelpers.LastIndexOfValueType(
-                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span)),
                             ExUnsafe.BitCast<T, short>(value),
-                            ExSpan.Length);
+                            span.Length);
                     } else if (Unsafe.SizeOf<T>() == sizeof(int)) {
                         return ExSpanHelpers.LastIndexOfValueType(
-                            ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(span)),
                             ExUnsafe.BitCast<T, int>(value),
-                            ExSpan.Length);
+                            span.Length);
                     } else if (Unsafe.SizeOf<T>() == sizeof(long)) {
                         return ExSpanHelpers.LastIndexOfValueType(
-                            ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(span)),
                             ExUnsafe.BitCast<T, long>(value),
-                            ExSpan.Length);
+                            span.Length);
                     }
                 }
 
                 return LastIndexOfDefaultComparer(span, value);
                 static int LastIndexOfDefaultComparer(ReadOnlyExSpan<T> span, T value) {
-                    for (int i = ExSpan.Length - 1; i >= 0; i--) {
-                        if (EqualityComparer<T>.Default.Equals(ExSpan[i], value)) {
+                    for (int i = span.Length - 1; i >= 0; i--) {
+                        if (EqualityComparer<T>.Default.Equals(span[i], value)) {
                             return i;
                         }
                     }
@@ -2025,8 +2027,8 @@ namespace Zyl.ExSpans {
                 static int LastIndexOfComparer(ReadOnlyExSpan<T> span, T value, IEqualityComparer<T>? comparer) {
                     comparer ??= EqualityComparer<T>.Default;
 
-                    for (int i = ExSpan.Length - 1; i >= 0; i--) {
-                        if (comparer.Equals(ExSpan[i], value)) {
+                    for (int i = span.Length - 1; i >= 0; i--) {
+                        if (comparer.Equals(span[i], value)) {
                             return i;
                         }
                     }
@@ -2046,21 +2048,21 @@ namespace Zyl.ExSpans {
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.LastIndexOf(
-                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
-                        ExSpan.Length,
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
+                        span.Length,
                         ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(value)),
                         value.Length);
                 }
                 if (Unsafe.SizeOf<T>() == sizeof(char)) {
                     return ExSpanHelpers.LastIndexOf(
-                        ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(ExSpan)),
-                        ExSpan.Length,
+                        ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(span)),
+                        span.Length,
                         ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(value)),
                         value.Length);
                 }
             }
 
-            return ExSpanHelpers.LastIndexOf(ref ExMemoryMarshal.GetReference(ExSpan), ExSpan.Length, ref ExMemoryMarshal.GetReference(value), value.Length);
+            return ExSpanHelpers.LastIndexOf(ref ExMemoryMarshal.GetReference(span), span.Length, ref ExMemoryMarshal.GetReference(value), value.Length);
         }
 
         /// <summary>
@@ -2074,15 +2076,15 @@ namespace Zyl.ExSpans {
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.LastIndexOf(
-                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
-                        ExSpan.Length,
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
+                        span.Length,
                         ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(value)),
                         value.Length);
                 }
                 if (Unsafe.SizeOf<T>() == sizeof(char)) {
                     return ExSpanHelpers.LastIndexOf(
-                        ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(ExSpan)),
-                        ExSpan.Length,
+                        ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(span)),
+                        span.Length,
                         ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(value)),
                         value.Length);
                 }
@@ -2091,19 +2093,19 @@ namespace Zyl.ExSpans {
             return LastIndexOfComparer(span, value, comparer);
             static int LastIndexOfComparer(ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> value, IEqualityComparer<T>? comparer) {
                 if (value.Length == 0) {
-                    return ExSpan.Length;
+                    return span.Length;
                 }
 
                 comparer ??= EqualityComparer<T>.Default;
 
-                int pos = ExSpan.Length;
+                int pos = span.Length;
                 while (true) {
-                    pos = ExSpan.Slice(0, pos).LastIndexOf(value[0], comparer);
+                    pos = span.Slice(0, pos).LastIndexOf(value[0], comparer);
                     if (pos < 0) {
                         break;
                     }
 
-                    if (ExSpan.Slice(pos + 1).StartsWith(value.Slice(1), comparer)) {
+                    if (span.Slice(pos + 1).StartsWith(value.Slice(1), comparer)) {
                         return pos;
                     }
                 }
@@ -2176,20 +2178,20 @@ namespace Zyl.ExSpans {
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.IndexOfAnyValueType(
-                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, byte>(value0),
                         ExUnsafe.BitCast<T, byte>(value1),
-                        ExSpan.Length);
+                        span.Length);
                 } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                     return ExSpanHelpers.IndexOfAnyValueType(
-                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, short>(value0),
                         ExUnsafe.BitCast<T, short>(value1),
-                        ExSpan.Length);
+                        span.Length);
                 }
             }
 
-            return ExSpanHelpers.IndexOfAny(ref ExMemoryMarshal.GetReference(ExSpan), value0, value1, ExSpan.Length);
+            return ExSpanHelpers.IndexOfAny(ref ExMemoryMarshal.GetReference(span), value0, value1, span.Length);
         }
 
         /// <summary>
@@ -2201,28 +2203,28 @@ namespace Zyl.ExSpans {
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int IndexOfAny<T>(this ReadOnlyExSpan<T> span, T value0, T value1, IEqualityComparer<T>? comparer = null) {
-            if (typeof(T).IsValueType && (comparer is null || comparer == EqualityComparer<T>.Default)) {
+            if (TypeHelper.IsValueType<T>() && (comparer is null || comparer == EqualityComparer<T>.Default)) {
                 if (TypeHelper.IsBitwiseEquatable<T>()) {
                     if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                         return ExSpanHelpers.IndexOfAnyValueType(
-                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                             ExUnsafe.BitCast<T, byte>(value0),
                             ExUnsafe.BitCast<T, byte>(value1),
-                            ExSpan.Length);
+                            span.Length);
                     } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                         return ExSpanHelpers.IndexOfAnyValueType(
-                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span)),
                             ExUnsafe.BitCast<T, short>(value0),
                             ExUnsafe.BitCast<T, short>(value1),
-                            ExSpan.Length);
+                            span.Length);
                     }
                 }
 
                 return IndexOfAnyDefaultComparer(span, value0, value1);
                 static int IndexOfAnyDefaultComparer(ReadOnlyExSpan<T> span, T value0, T value1) {
-                    for (int i = 0; i < ExSpan.Length; i++) {
-                        if (EqualityComparer<T>.Default.Equals(ExSpan[i], value0) ||
-                            EqualityComparer<T>.Default.Equals(ExSpan[i], value1)) {
+                    for (int i = 0; i < span.Length; i++) {
+                        if (EqualityComparer<T>.Default.Equals(span[i], value0) ||
+                            EqualityComparer<T>.Default.Equals(span[i], value1)) {
                             return i;
                         }
                     }
@@ -2233,9 +2235,9 @@ namespace Zyl.ExSpans {
                 return IndexOfAnyComparer(span, value0, value1, comparer);
                 static int IndexOfAnyComparer(ReadOnlyExSpan<T> span, T value0, T value1, IEqualityComparer<T>? comparer) {
                     comparer ??= EqualityComparer<T>.Default;
-                    for (int i = 0; i < ExSpan.Length; i++) {
-                        if (comparer.Equals(ExSpan[i], value0) ||
-                            comparer.Equals(ExSpan[i], value1)) {
+                    for (int i = 0; i < span.Length; i++) {
+                        if (comparer.Equals(span[i], value0) ||
+                            comparer.Equals(span[i], value1)) {
                             return i;
                         }
                     }
@@ -2257,22 +2259,22 @@ namespace Zyl.ExSpans {
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.IndexOfAnyValueType(
-                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, byte>(value0),
                         ExUnsafe.BitCast<T, byte>(value1),
                         ExUnsafe.BitCast<T, byte>(value2),
-                        ExSpan.Length);
+                        span.Length);
                 } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                     return ExSpanHelpers.IndexOfAnyValueType(
-                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, short>(value0),
                         ExUnsafe.BitCast<T, short>(value1),
                         ExUnsafe.BitCast<T, short>(value2),
-                        ExSpan.Length);
+                        span.Length);
                 }
             }
 
-            return ExSpanHelpers.IndexOfAny(ref ExMemoryMarshal.GetReference(ExSpan), value0, value1, value2, ExSpan.Length);
+            return ExSpanHelpers.IndexOfAny(ref ExMemoryMarshal.GetReference(span), value0, value1, value2, span.Length);
         }
 
         /// <summary>
@@ -2285,31 +2287,31 @@ namespace Zyl.ExSpans {
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int IndexOfAny<T>(this ReadOnlyExSpan<T> span, T value0, T value1, T value2, IEqualityComparer<T>? comparer = null) {
-            if (typeof(T).IsValueType && (comparer is null || comparer == EqualityComparer<T>.Default)) {
+            if (TypeHelper.IsValueType<T>() && (comparer is null || comparer == EqualityComparer<T>.Default)) {
                 if (TypeHelper.IsBitwiseEquatable<T>()) {
                     if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                         return ExSpanHelpers.IndexOfAnyValueType(
-                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                             ExUnsafe.BitCast<T, byte>(value0),
                             ExUnsafe.BitCast<T, byte>(value1),
                             ExUnsafe.BitCast<T, byte>(value2),
-                            ExSpan.Length);
+                            span.Length);
                     } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                         return ExSpanHelpers.IndexOfAnyValueType(
-                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span)),
                             ExUnsafe.BitCast<T, short>(value0),
                             ExUnsafe.BitCast<T, short>(value1),
                             ExUnsafe.BitCast<T, short>(value2),
-                            ExSpan.Length);
+                            span.Length);
                     }
                 }
 
                 return IndexOfAnyDefaultComparer(span, value0, value1, value2);
                 static int IndexOfAnyDefaultComparer(ReadOnlyExSpan<T> span, T value0, T value1, T value2) {
-                    for (int i = 0; i < ExSpan.Length; i++) {
-                        if (EqualityComparer<T>.Default.Equals(ExSpan[i], value0) ||
-                            EqualityComparer<T>.Default.Equals(ExSpan[i], value1) ||
-                            EqualityComparer<T>.Default.Equals(ExSpan[i], value2)) {
+                    for (int i = 0; i < span.Length; i++) {
+                        if (EqualityComparer<T>.Default.Equals(span[i], value0) ||
+                            EqualityComparer<T>.Default.Equals(span[i], value1) ||
+                            EqualityComparer<T>.Default.Equals(span[i], value2)) {
                             return i;
                         }
                     }
@@ -2320,10 +2322,10 @@ namespace Zyl.ExSpans {
                 return IndexOfAnyComparer(span, value0, value1, value2, comparer);
                 static int IndexOfAnyComparer(ReadOnlyExSpan<T> span, T value0, T value1, T value2, IEqualityComparer<T>? comparer) {
                     comparer ??= EqualityComparer<T>.Default;
-                    for (int i = 0; i < ExSpan.Length; i++) {
-                        if (comparer.Equals(ExSpan[i], value0) ||
-                            comparer.Equals(ExSpan[i], value1) ||
-                            comparer.Equals(ExSpan[i], value2)) {
+                    for (int i = 0; i < span.Length; i++) {
+                        if (comparer.Equals(span[i], value0) ||
+                            comparer.Equals(span[i], value1) ||
+                            comparer.Equals(span[i], value2)) {
                             return i;
                         }
                     }
@@ -2342,21 +2344,21 @@ namespace Zyl.ExSpans {
         public static unsafe int IndexOfAny<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> values) where T : IEquatable<T>? {
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte)) {
-                    ref byte ExSpanRef = ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan));
+                    ref byte ExSpanRef = ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span));
                     ref byte valueRef = ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(values));
                     switch (values.Length) {
                         case 0:
                             return -1;
 
                         case 1:
-                            return ExSpanHelpers.IndexOfValueType(ref ExSpanRef, valueRef, ExSpan.Length);
+                            return ExSpanHelpers.IndexOfValueType(ref ExSpanRef, valueRef, span.Length);
 
                         case 2:
                             return ExSpanHelpers.IndexOfAnyValueType(
                                 ref ExSpanRef,
                                 valueRef,
                                 Unsafe.Add(ref valueRef, 1),
-                                ExSpan.Length);
+                                span.Length);
 
                         case 3:
                             return ExSpanHelpers.IndexOfAnyValueType(
@@ -2364,7 +2366,7 @@ namespace Zyl.ExSpans {
                                 valueRef,
                                 Unsafe.Add(ref valueRef, 1),
                                 Unsafe.Add(ref valueRef, 2),
-                                ExSpan.Length);
+                                span.Length);
 
                         case 4:
                             return ExSpanHelpers.IndexOfAnyValueType(
@@ -2373,7 +2375,7 @@ namespace Zyl.ExSpans {
                                 Unsafe.Add(ref valueRef, 1),
                                 Unsafe.Add(ref valueRef, 2),
                                 Unsafe.Add(ref valueRef, 3),
-                                ExSpan.Length);
+                                span.Length);
 
                         case 5:
                             return ExSpanHelpers.IndexOfAnyValueType(
@@ -2383,34 +2385,34 @@ namespace Zyl.ExSpans {
                                 Unsafe.Add(ref valueRef, 2),
                                 Unsafe.Add(ref valueRef, 3),
                                 Unsafe.Add(ref valueRef, 4),
-                                ExSpan.Length);
+                                span.Length);
                     }
                 }
 
                 if (Unsafe.SizeOf<T>() == sizeof(short)) {
-                    ref short ExSpanRef = ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan));
+                    ref short ExSpanRef = ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span));
                     ref short valueRef = ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(values));
                     return values.Length switch {
                         0 => -1,
-                        1 => ExSpanHelpers.IndexOfValueType(ref ExSpanRef, valueRef, ExSpan.Length),
+                        1 => ExSpanHelpers.IndexOfValueType(ref ExSpanRef, valueRef, span.Length),
                         2 => ExSpanHelpers.IndexOfAnyValueType(
                                 ref ExSpanRef,
                                 valueRef,
                                 Unsafe.Add(ref valueRef, 1),
-                                ExSpan.Length),
+                                span.Length),
                         3 => ExSpanHelpers.IndexOfAnyValueType(
                                  ref ExSpanRef,
                                  valueRef,
                                  Unsafe.Add(ref valueRef, 1),
                                  Unsafe.Add(ref valueRef, 2),
-                                 ExSpan.Length),
+                                 span.Length),
                         4 => ExSpanHelpers.IndexOfAnyValueType(
                                  ref ExSpanRef,
                                  valueRef,
                                  Unsafe.Add(ref valueRef, 1),
                                  Unsafe.Add(ref valueRef, 2),
                                  Unsafe.Add(ref valueRef, 3),
-                                 ExSpan.Length),
+                                 span.Length),
                         5 => ExSpanHelpers.IndexOfAnyValueType(
                                  ref ExSpanRef,
                                  valueRef,
@@ -2418,13 +2420,13 @@ namespace Zyl.ExSpans {
                                  Unsafe.Add(ref valueRef, 2),
                                  Unsafe.Add(ref valueRef, 3),
                                  Unsafe.Add(ref valueRef, 4),
-                                 ExSpan.Length),
-                        _ => ProbabilisticMap.IndexOfAny(ref Unsafe.As<short, char>(ref ExSpanRef), ExSpan.Length, ref Unsafe.As<short, char>(ref valueRef), values.Length),
+                                 span.Length),
+                        _ => ProbabilisticMap.IndexOfAny(ref Unsafe.As<short, char>(ref ExSpanRef), span.Length, ref Unsafe.As<short, char>(ref valueRef), values.Length),
                     };
                 }
             }
 
-            return ExSpanHelpers.IndexOfAny(ref ExMemoryMarshal.GetReference(ExSpan), ExSpan.Length, ref ExMemoryMarshal.GetReference(values), values.Length);
+            return ExSpanHelpers.IndexOfAny(ref ExMemoryMarshal.GetReference(span), span.Length, ref ExMemoryMarshal.GetReference(values), values.Length);
         }
 
         /// <summary>
@@ -2450,8 +2452,8 @@ namespace Zyl.ExSpans {
                 default:
                     comparer ??= EqualityComparer<T>.Default;
 
-                    for (int i = 0; i < ExSpan.Length; i++) {
-                        if (values.Contains(ExSpan[i], comparer)) {
+                    for (int i = 0; i < span.Length; i++) {
+                        if (values.Contains(span[i], comparer)) {
                             return i;
                         }
                     }
@@ -2544,20 +2546,20 @@ namespace Zyl.ExSpans {
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.LastIndexOfAnyValueType(
-                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, byte>(value0),
                         ExUnsafe.BitCast<T, byte>(value1),
-                        ExSpan.Length);
+                        span.Length);
                 } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                     return ExSpanHelpers.LastIndexOfAnyValueType(
-                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, short>(value0),
                         ExUnsafe.BitCast<T, short>(value1),
-                        ExSpan.Length);
+                        span.Length);
                 }
             }
 
-            return ExSpanHelpers.LastIndexOfAny(ref ExMemoryMarshal.GetReference(ExSpan), value0, value1, ExSpan.Length);
+            return ExSpanHelpers.LastIndexOfAny(ref ExMemoryMarshal.GetReference(span), value0, value1, span.Length);
         }
 
         /// <summary>
@@ -2569,28 +2571,28 @@ namespace Zyl.ExSpans {
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int LastIndexOfAny<T>(this ReadOnlyExSpan<T> span, T value0, T value1, IEqualityComparer<T>? comparer = null) {
-            if (typeof(T).IsValueType && (comparer is null || comparer == EqualityComparer<T>.Default)) {
+            if (TypeHelper.IsValueType<T>() && (comparer is null || comparer == EqualityComparer<T>.Default)) {
                 if (TypeHelper.IsBitwiseEquatable<T>()) {
                     if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                         return ExSpanHelpers.LastIndexOfAnyValueType(
-                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                             ExUnsafe.BitCast<T, byte>(value0),
                             ExUnsafe.BitCast<T, byte>(value1),
-                            ExSpan.Length);
+                            span.Length);
                     } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                         return ExSpanHelpers.LastIndexOfAnyValueType(
-                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span)),
                             ExUnsafe.BitCast<T, short>(value0),
                             ExUnsafe.BitCast<T, short>(value1),
-                            ExSpan.Length);
+                            span.Length);
                     }
                 }
 
                 return LastIndexOfAnyDefaultComparer(span, value0, value1);
                 static int LastIndexOfAnyDefaultComparer(ReadOnlyExSpan<T> span, T value0, T value1) {
-                    for (int i = ExSpan.Length - 1; i >= 0; i--) {
-                        if (EqualityComparer<T>.Default.Equals(ExSpan[i], value0) ||
-                            EqualityComparer<T>.Default.Equals(ExSpan[i], value1)) {
+                    for (int i = span.Length - 1; i >= 0; i--) {
+                        if (EqualityComparer<T>.Default.Equals(span[i], value0) ||
+                            EqualityComparer<T>.Default.Equals(span[i], value1)) {
                             return i;
                         }
                     }
@@ -2602,9 +2604,9 @@ namespace Zyl.ExSpans {
                 static int LastIndexOfAnyComparer(ReadOnlyExSpan<T> span, T value0, T value1, IEqualityComparer<T>? comparer) {
                     comparer ??= EqualityComparer<T>.Default;
 
-                    for (int i = ExSpan.Length - 1; i >= 0; i--) {
-                        if (comparer.Equals(ExSpan[i], value0) ||
-                            comparer.Equals(ExSpan[i], value1)) {
+                    for (int i = span.Length - 1; i >= 0; i--) {
+                        if (comparer.Equals(span[i], value0) ||
+                            comparer.Equals(span[i], value1)) {
                             return i;
                         }
                     }
@@ -2626,22 +2628,22 @@ namespace Zyl.ExSpans {
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.LastIndexOfAnyValueType(
-                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, byte>(value0),
                         ExUnsafe.BitCast<T, byte>(value1),
                         ExUnsafe.BitCast<T, byte>(value2),
-                        ExSpan.Length);
+                        span.Length);
                 } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                     return ExSpanHelpers.LastIndexOfAnyValueType(
-                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, short>(value0),
                         ExUnsafe.BitCast<T, short>(value1),
                         ExUnsafe.BitCast<T, short>(value2),
-                        ExSpan.Length);
+                        span.Length);
                 }
             }
 
-            return ExSpanHelpers.LastIndexOfAny(ref ExMemoryMarshal.GetReference(ExSpan), value0, value1, value2, ExSpan.Length);
+            return ExSpanHelpers.LastIndexOfAny(ref ExMemoryMarshal.GetReference(span), value0, value1, value2, span.Length);
         }
 
         /// <summary>
@@ -2654,31 +2656,31 @@ namespace Zyl.ExSpans {
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int LastIndexOfAny<T>(this ReadOnlyExSpan<T> span, T value0, T value1, T value2, IEqualityComparer<T>? comparer = null) {
-            if (typeof(T).IsValueType && (comparer is null || comparer == EqualityComparer<T>.Default)) {
+            if (TypeHelper.IsValueType<T>() && (comparer is null || comparer == EqualityComparer<T>.Default)) {
                 if (TypeHelper.IsBitwiseEquatable<T>()) {
                     if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                         return ExSpanHelpers.LastIndexOfAnyValueType(
-                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                             ExUnsafe.BitCast<T, byte>(value0),
                             ExUnsafe.BitCast<T, byte>(value1),
                             ExUnsafe.BitCast<T, byte>(value2),
-                            ExSpan.Length);
+                            span.Length);
                     } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                         return ExSpanHelpers.LastIndexOfAnyValueType(
-                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span)),
                             ExUnsafe.BitCast<T, short>(value0),
                             ExUnsafe.BitCast<T, short>(value1),
                             ExUnsafe.BitCast<T, short>(value2),
-                            ExSpan.Length);
+                            span.Length);
                     }
                 }
 
                 return LastIndexOfAnyDefaultComparer(span, value0, value1, value2);
                 static int LastIndexOfAnyDefaultComparer(ReadOnlyExSpan<T> span, T value0, T value1, T value2) {
-                    for (int i = ExSpan.Length - 1; i >= 0; i--) {
-                        if (EqualityComparer<T>.Default.Equals(ExSpan[i], value0) ||
-                            EqualityComparer<T>.Default.Equals(ExSpan[i], value1) ||
-                            EqualityComparer<T>.Default.Equals(ExSpan[i], value2)) {
+                    for (int i = span.Length - 1; i >= 0; i--) {
+                        if (EqualityComparer<T>.Default.Equals(span[i], value0) ||
+                            EqualityComparer<T>.Default.Equals(span[i], value1) ||
+                            EqualityComparer<T>.Default.Equals(span[i], value2)) {
                             return i;
                         }
                     }
@@ -2690,10 +2692,10 @@ namespace Zyl.ExSpans {
                 static int LastIndexOfAnyComparer(ReadOnlyExSpan<T> span, T value0, T value1, T value2, IEqualityComparer<T>? comparer) {
                     comparer ??= EqualityComparer<T>.Default;
 
-                    for (int i = ExSpan.Length - 1; i >= 0; i--) {
-                        if (comparer.Equals(ExSpan[i], value0) ||
-                            comparer.Equals(ExSpan[i], value1) ||
-                            comparer.Equals(ExSpan[i], value2)) {
+                    for (int i = span.Length - 1; i >= 0; i--) {
+                        if (comparer.Equals(span[i], value0) ||
+                            comparer.Equals(span[i], value1) ||
+                            comparer.Equals(span[i], value2)) {
                             return i;
                         }
                     }
@@ -2712,21 +2714,21 @@ namespace Zyl.ExSpans {
         public static unsafe int LastIndexOfAny<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> values) where T : IEquatable<T>? {
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte)) {
-                    ref byte ExSpanRef = ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan));
+                    ref byte ExSpanRef = ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span));
                     ref byte valueRef = ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(values));
                     switch (values.Length) {
                         case 0:
                             return -1;
 
                         case 1:
-                            return ExSpanHelpers.LastIndexOfValueType(ref ExSpanRef, valueRef, ExSpan.Length);
+                            return ExSpanHelpers.LastIndexOfValueType(ref ExSpanRef, valueRef, span.Length);
 
                         case 2:
                             return ExSpanHelpers.LastIndexOfAnyValueType(
                                 ref ExSpanRef,
                                 valueRef,
                                 Unsafe.Add(ref valueRef, 1),
-                                ExSpan.Length);
+                                span.Length);
 
                         case 3:
                             return ExSpanHelpers.LastIndexOfAnyValueType(
@@ -2734,7 +2736,7 @@ namespace Zyl.ExSpans {
                                 valueRef,
                                 Unsafe.Add(ref valueRef, 1),
                                 Unsafe.Add(ref valueRef, 2),
-                                ExSpan.Length);
+                                span.Length);
 
                         case 4:
                             return ExSpanHelpers.LastIndexOfAnyValueType(
@@ -2743,7 +2745,7 @@ namespace Zyl.ExSpans {
                                 Unsafe.Add(ref valueRef, 1),
                                 Unsafe.Add(ref valueRef, 2),
                                 Unsafe.Add(ref valueRef, 3),
-                                ExSpan.Length);
+                                span.Length);
 
                         case 5:
                             return ExSpanHelpers.LastIndexOfAnyValueType(
@@ -2753,34 +2755,34 @@ namespace Zyl.ExSpans {
                                 Unsafe.Add(ref valueRef, 2),
                                 Unsafe.Add(ref valueRef, 3),
                                 Unsafe.Add(ref valueRef, 4),
-                                ExSpan.Length);
+                                span.Length);
                     }
                 }
 
                 if (Unsafe.SizeOf<T>() == sizeof(short)) {
-                    ref short ExSpanRef = ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan));
+                    ref short ExSpanRef = ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span));
                     ref short valueRef = ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(values));
                     return values.Length switch {
                         0 => -1,
-                        1 => ExSpanHelpers.LastIndexOfValueType(ref ExSpanRef, valueRef, ExSpan.Length),
+                        1 => ExSpanHelpers.LastIndexOfValueType(ref ExSpanRef, valueRef, span.Length),
                         2 => ExSpanHelpers.LastIndexOfAnyValueType(
                                  ref ExSpanRef,
                                  valueRef,
                                  Unsafe.Add(ref valueRef, 1),
-                                 ExSpan.Length),
+                                 span.Length),
                         3 => ExSpanHelpers.LastIndexOfAnyValueType(
                                  ref ExSpanRef,
                                  valueRef,
                                  Unsafe.Add(ref valueRef, 1),
                                  Unsafe.Add(ref valueRef, 2),
-                                 ExSpan.Length),
+                                 span.Length),
                         4 => ExSpanHelpers.LastIndexOfAnyValueType(
                                  ref ExSpanRef,
                                  valueRef,
                                  Unsafe.Add(ref valueRef, 1),
                                  Unsafe.Add(ref valueRef, 2),
                                  Unsafe.Add(ref valueRef, 3),
-                                 ExSpan.Length),
+                                 span.Length),
                         5 => ExSpanHelpers.LastIndexOfAnyValueType(
                                  ref ExSpanRef,
                                  valueRef,
@@ -2788,13 +2790,13 @@ namespace Zyl.ExSpans {
                                  Unsafe.Add(ref valueRef, 2),
                                  Unsafe.Add(ref valueRef, 3),
                                  Unsafe.Add(ref valueRef, 4),
-                                 ExSpan.Length),
-                        _ => ProbabilisticMap.LastIndexOfAny(ref Unsafe.As<short, char>(ref ExSpanRef), ExSpan.Length, ref Unsafe.As<short, char>(ref valueRef), values.Length),
+                                 span.Length),
+                        _ => ProbabilisticMap.LastIndexOfAny(ref Unsafe.As<short, char>(ref ExSpanRef), span.Length, ref Unsafe.As<short, char>(ref valueRef), values.Length),
                     };
                 }
             }
 
-            return ExSpanHelpers.LastIndexOfAny(ref ExMemoryMarshal.GetReference(ExSpan), ExSpan.Length, ref ExMemoryMarshal.GetReference(values), values.Length);
+            return ExSpanHelpers.LastIndexOfAny(ref ExMemoryMarshal.GetReference(span), span.Length, ref ExMemoryMarshal.GetReference(values), values.Length);
         }
 
         /// <summary>
@@ -2820,8 +2822,8 @@ namespace Zyl.ExSpans {
                 default:
                     comparer ??= EqualityComparer<T>.Default;
 
-                    for (int i = ExSpan.Length - 1; i >= 0; i--) {
-                        if (values.Contains(ExSpan[i], comparer)) {
+                    for (int i = span.Length - 1; i >= 0; i--) {
+                        if (values.Contains(span[i], comparer)) {
                             return i;
                         }
                     }
@@ -2920,7 +2922,7 @@ namespace Zyl.ExSpans {
         /// <param name="other">The second sequence to compare (要比较的第二个序列).</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         /// <returns>true if the two sequences are equal; otherwise, false (如果两个序列相等, 则 true; 否则 false).</returns>
-        public static unsafe bool SequenceEqual<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> other, IEqualityComparer<T>? comparer = null) {
+        public static bool SequenceEqual<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> other, IEqualityComparer<T>? comparer = null) {
             // If the spans differ in length, they're not equal.
             if (span.Length != other.Length) {
                 return false;
@@ -2998,40 +3000,40 @@ namespace Zyl.ExSpans {
 
             if (typeof(T) == typeof(byte))
                 return ExSpanHelpers.SequenceCompareTo(
-                    ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
-                    ExSpan.Length,
+                    ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
+                    span.Length,
                     ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(other)),
                     other.Length);
 
             if (typeof(T) == typeof(char))
                 return ExSpanHelpers.SequenceCompareTo(
-                    ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(ExSpan)),
-                    ExSpan.Length,
+                    ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(span)),
+                    span.Length,
                     ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(other)),
                     other.Length);
 
-            return ExSpanHelpers.SequenceCompareTo(ref ExMemoryMarshal.GetReference(ExSpan), ExSpan.Length, ref ExMemoryMarshal.GetReference(other), other.Length);
+            return ExSpanHelpers.SequenceCompareTo(ref ExMemoryMarshal.GetReference(span), span.Length, ref ExMemoryMarshal.GetReference(other), other.Length);
         }
 
         /// <summary>
         /// Determines the relative order of the sequences being compared by comparing the elements using IComparable{T}.CompareTo(T).
         /// </summary>
         public static unsafe int SequenceCompareTo<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> other, IComparer<T>? comparer = null) {
-            int minLength = Math.Min(ExSpan.Length, other.Length);
+            int minLength = Math.Min(span.Length, other.Length);
             comparer ??= Comparer<T>.Default;
 
             for (int i = 0; i < minLength; i++) {
-                int c = comparer.Compare(ExSpan[i], other[i]);
+                int c = comparer.Compare(span[i], other[i]);
                 if (c != 0) {
                     return c;
                 }
             }
 
-            return ExSpan.Length.CompareTo(other.Length);
+            return span.Length.CompareTo(other.Length);
         }
 
         /// <summary>
-        /// Determines whether the specified sequence appears at the start of the ExSpan.
+        /// Determines whether the specified sequence appears at the start of the span.
         /// </summary>
         [Intrinsic] // Unrolled and vectorized for half-constant input
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -3040,36 +3042,36 @@ namespace Zyl.ExSpans {
             StartsWith((ReadOnlyExSpan<T>)span, value);
 
         /// <summary>
-        /// Determines whether the specified sequence appears at the start of the ExSpan.
+        /// Determines whether the specified sequence appears at the start of the span.
         /// </summary>
         [Intrinsic] // Unrolled and vectorized for half-constant input
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe bool StartsWith<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> value) where T : IEquatable<T>? {
             int valueLength = value.Length;
             if (TypeHelper.IsBitwiseEquatable<T>()) {
-                return valueLength <= ExSpan.Length &&
+                return valueLength <= span.Length &&
                 ExSpanHelpers.SequenceEqual(
-                    ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                    ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                     ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(value)),
                     ((uint)valueLength) * (nuint)Unsafe.SizeOf<T>());  // If this multiplication overflows, the ExSpan we got overflows the entire address range. There's no happy outcome for this api in such a case so we choose not to take the overhead of checking.
             }
 
-            return valueLength <= ExSpan.Length && ExSpanHelpers.SequenceEqual(ref ExMemoryMarshal.GetReference(ExSpan), ref ExMemoryMarshal.GetReference(value), valueLength);
+            return valueLength <= span.Length && ExSpanHelpers.SequenceEqual(ref ExMemoryMarshal.GetReference(span), ref ExMemoryMarshal.GetReference(value), valueLength);
         }
 
         /// <summary>
-        /// Determines whether a specified sequence appears at the start of a read-only ExSpan.
+        /// Determines whether a specified sequence appears at the start of a read-only span.
         /// </summary>
-        /// <param name="span">The source ExSpan.</param>
+        /// <param name="span">The source span.</param>
         /// <param name="value">The sequence to compare to the start of <paramref name="span"/>.</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe bool StartsWith<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> value, IEqualityComparer<T>? comparer = null) =>
-            value.Length <= ExSpan.Length &&
-            SequenceEqual(ExSpan.Slice(0, value.Length), value, comparer);
+            value.Length <= span.Length &&
+            SequenceEqual(span.Slice(0, value.Length), value, comparer);
 
         /// <summary>
-        /// Determines whether the specified sequence appears at the end of the ExSpan.
+        /// Determines whether the specified sequence appears at the end of the span.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [Intrinsic] // Unrolled and vectorized for half-constant input
@@ -3078,93 +3080,93 @@ namespace Zyl.ExSpans {
             EndsWith((ReadOnlyExSpan<T>)span, value);
 
         /// <summary>
-        /// Determines whether the specified sequence appears at the end of the ExSpan.
+        /// Determines whether the specified sequence appears at the end of the span.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [Intrinsic] // Unrolled and vectorized for half-constant input
         public static unsafe bool EndsWith<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> value) where T : IEquatable<T>? {
-            int ExSpanLength = ExSpan.Length;
+            int ExSpanLength = span.Length;
             int valueLength = value.Length;
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 return valueLength <= ExSpanLength &&
                 ExSpanHelpers.SequenceEqual(
-                    ref Unsafe.As<T, byte>(ref Unsafe.Add(ref ExMemoryMarshal.GetReference(ExSpan), (nint)(uint)(ExSpanLength - valueLength) /* force zero-extension */)),
+                    ref Unsafe.As<T, byte>(ref Unsafe.Add(ref ExMemoryMarshal.GetReference(span), (nint)(uint)(ExSpanLength - valueLength) /* force zero-extension */)),
                     ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(value)),
                     ((uint)valueLength) * (nuint)Unsafe.SizeOf<T>());  // If this multiplication overflows, the ExSpan we got overflows the entire address range. There's no happy outcome for this api in such a case so we choose not to take the overhead of checking.
             }
 
             return valueLength <= ExSpanLength &&
                 ExSpanHelpers.SequenceEqual(
-                    ref Unsafe.Add(ref ExMemoryMarshal.GetReference(ExSpan), (nint)(uint)(ExSpanLength - valueLength) /* force zero-extension */),
+                    ref Unsafe.Add(ref ExMemoryMarshal.GetReference(span), (nint)(uint)(ExSpanLength - valueLength) /* force zero-extension */),
                     ref ExMemoryMarshal.GetReference(value),
                     valueLength);
         }
 
         /// <summary>
-        /// Determines whether the specified sequence appears at the end of the read-only ExSpan.
+        /// Determines whether the specified sequence appears at the end of the read-only span.
         /// </summary>
-        /// <param name="span">The source ExSpan.</param>
+        /// <param name="span">The source span.</param>
         /// <param name="value">The sequence to compare to the end of <paramref name="span"/>.</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe bool EndsWith<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> value, IEqualityComparer<T>? comparer = null) =>
-            value.Length <= ExSpan.Length &&
-            SequenceEqual(ExSpan.Slice(ExSpan.Length - value.Length), value, comparer);
+            value.Length <= span.Length &&
+            SequenceEqual(span.Slice(span.Length - value.Length), value, comparer);
 
         /// <summary>
-        /// Determines whether the specified value appears at the start of the ExSpan.
+        /// Determines whether the specified value appears at the start of the span.
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="value">The value to compare.</param>
-        /// <typeparam name="T">The type of elements in the ExSpan.</typeparam>
+        /// <typeparam name="T">The type of elements in the span.</typeparam>
         /// <returns><see langword="true" /> if <paramref name="value" /> matches the beginning of <paramref name="span" />; otherwise, <see langword="false" />.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool StartsWith<T>(this ReadOnlyExSpan<T> span, T value) where T : IEquatable<T>? =>
-            ExSpan.Length != 0 && (ExSpan[0]?.Equals(value) ?? (object?)value is null);
+            span.Length != 0 && (span[0]?.Equals(value) ?? (object?)value is null);
 
         /// <summary>
-        /// Determines whether the specified value appears at the start of the ExSpan.
+        /// Determines whether the specified value appears at the start of the span.
         /// </summary>
-        /// <typeparam name="T">The type of elements in the ExSpan.</typeparam>
+        /// <typeparam name="T">The type of elements in the span.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="value">The value to compare.</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         /// <returns><see langword="true" /> if <paramref name="value" /> matches the beginning of <paramref name="span" />; otherwise, <see langword="false" />.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool StartsWith<T>(this ReadOnlyExSpan<T> span, T value, IEqualityComparer<T>? comparer = null) =>
-            ExSpan.Length != 0 &&
-            (comparer is null ? EqualityComparer<T>.Default.Equals(ExSpan[0], value) : comparer.Equals(ExSpan[0], value));
+            span.Length != 0 &&
+            (comparer is null ? EqualityComparer<T>.Default.Equals(span[0], value) : comparer.Equals(span[0], value));
 
         /// <summary>
-        /// Determines whether the specified value appears at the end of the ExSpan.
+        /// Determines whether the specified value appears at the end of the span.
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="value">The value to compare.</param>
-        /// <typeparam name="T">The type of the elements in the ExSpan.</typeparam>
+        /// <typeparam name="T">The type of the elements in the span.</typeparam>
         /// <returns><see langword="true" /> if <paramref name="value" /> matches the end of <paramref name="span" />; otherwise, <see langword="false" />.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool EndsWith<T>(this ReadOnlyExSpan<T> span, T value) where T : IEquatable<T>? =>
-            ExSpan.Length != 0 && (ExSpan[^1]?.Equals(value) ?? (object?)value is null);
+            span.Length != 0 && (span[^1]?.Equals(value) ?? (object?)value is null);
 
         /// <summary>
-        /// Determines whether the specified value appears at the end of the ExSpan.
+        /// Determines whether the specified value appears at the end of the span.
         /// </summary>
-        /// <typeparam name="T">The type of the elements in the ExSpan.</typeparam>
+        /// <typeparam name="T">The type of the elements in the span.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="value">The value to compare.</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         /// <returns><see langword="true" /> if <paramref name="value" /> matches the end of <paramref name="span" />; otherwise, <see langword="false" />.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool EndsWith<T>(this ReadOnlyExSpan<T> span, T value, IEqualityComparer<T>? comparer = null) =>
-            ExSpan.Length != 0 &&
-            (comparer is null ? EqualityComparer<T>.Default.Equals(ExSpan[^1], value) : comparer.Equals(ExSpan[^1], value));
+            span.Length != 0 &&
+            (comparer is null ? EqualityComparer<T>.Default.Equals(span[^1], value) : comparer.Equals(span[^1], value));
 
         /// <summary>
-        /// Reverses the sequence of the elements in the entire ExSpan.
+        /// Reverses the sequence of the elements in the entire span.
         /// </summary>
         public static void Reverse<T>(this ExSpan<T> ExSpan) {
-            if (ExSpan.Length > 1) {
-                ExSpanHelpers.Reverse(ref ExMemoryMarshal.GetReference(ExSpan), (nuint)ExSpan.Length);
+            if (span.Length > 1) {
+                ExSpanHelpers.Reverse(ref ExMemoryMarshal.GetReference(span), (nuint)span.Length);
             }
         }
 
@@ -3279,7 +3281,7 @@ namespace Zyl.ExSpans {
         }
 
         /// <summary>
-        /// Copies the contents of the array into the ExSpan. If the source
+        /// Copies the contents of the array into the span. If the source
         /// and destinations overlap, this method behaves as if the original values in
         /// a temporary location before the destination is overwritten.
         /// </summary>
@@ -3456,15 +3458,15 @@ namespace Zyl.ExSpans {
         /// Determines whether two sequences overlap in memory.
         /// </summary>
         public static unsafe bool Overlaps<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> other) {
-            if (ExSpan.IsEmpty || other.IsEmpty) {
+            if (span.IsEmpty || other.IsEmpty) {
                 return false;
             }
 
             nint byteOffset = Unsafe.ByteOffset(
-                ref ExMemoryMarshal.GetReference(ExSpan),
+                ref ExMemoryMarshal.GetReference(span),
                 ref ExMemoryMarshal.GetReference(other));
 
-            return (nuint)byteOffset < (nuint)((nint)ExSpan.Length * Unsafe.SizeOf<T>()) ||
+            return (nuint)byteOffset < (nuint)((nint)span.Length * Unsafe.SizeOf<T>()) ||
                     (nuint)byteOffset > (nuint)(-((nint)other.Length * Unsafe.SizeOf<T>()));
         }
 
@@ -3472,16 +3474,16 @@ namespace Zyl.ExSpans {
         /// Determines whether two sequences overlap in memory and outputs the element offset.
         /// </summary>
         public static unsafe bool Overlaps<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> other, out int elementOffset) {
-            if (ExSpan.IsEmpty || other.IsEmpty) {
+            if (span.IsEmpty || other.IsEmpty) {
                 elementOffset = 0;
                 return false;
             }
 
             nint byteOffset = Unsafe.ByteOffset(
-                ref ExMemoryMarshal.GetReference(ExSpan),
+                ref ExMemoryMarshal.GetReference(span),
                 ref ExMemoryMarshal.GetReference(other));
 
-            if ((nuint)byteOffset < (nuint)((nint)ExSpan.Length * Unsafe.SizeOf<T>()) ||
+            if ((nuint)byteOffset < (nuint)((nint)span.Length * Unsafe.SizeOf<T>()) ||
                 (nuint)byteOffset > (nuint)(-((nint)other.Length * Unsafe.SizeOf<T>()))) {
                 if (byteOffset % Unsafe.SizeOf<T>() != 0)
                     ThrowHelper.ThrowArgumentException_OverlapAlignmentMismatch();
@@ -3498,7 +3500,7 @@ namespace Zyl.ExSpans {
         /// Searches an entire sorted <see cref="ExSpan{T}"/> for a value
         /// using the specified <see cref="IComparable{T}"/> generic interface.
         /// </summary>
-        /// <typeparam name="T">The element type of the ExSpan.</typeparam>
+        /// <typeparam name="T">The element type of the span.</typeparam>
         /// <param name="span">The sorted <see cref="ExSpan{T}"/> to search.</param>
         /// <param name="comparable">The <see cref="IComparable{T}"/> to use when comparing.</param>
         /// <returns>
@@ -3519,7 +3521,7 @@ namespace Zyl.ExSpans {
         /// Searches an entire sorted <see cref="ExSpan{T}"/> for a value
         /// using the specified <typeparamref name="TComparable"/> generic type.
         /// </summary>
-        /// <typeparam name="T">The element type of the ExSpan.</typeparam>
+        /// <typeparam name="T">The element type of the span.</typeparam>
         /// <typeparam name="TComparable">The specific type of <see cref="IComparable{T}"/>.</typeparam>
         /// <param name="span">The sorted <see cref="ExSpan{T}"/> to search.</param>
         /// <param name="comparable">The <typeparamref name="TComparable"/> to use when comparing.</param>
@@ -3543,7 +3545,7 @@ namespace Zyl.ExSpans {
         /// Searches an entire sorted <see cref="ExSpan{T}"/> for the specified <paramref name="value"/>
         /// using the specified <typeparamref name="TComparer"/> generic type.
         /// </summary>
-        /// <typeparam name="T">The element type of the ExSpan.</typeparam>
+        /// <typeparam name="T">The element type of the span.</typeparam>
         /// <typeparam name="TComparer">The specific type of <see cref="IComparer{T}"/>.</typeparam>
         /// <param name="span">The sorted <see cref="ExSpan{T}"/> to search.</param>
         /// <param name="value">The object to locate. The value can be null for reference types.</param>
@@ -3568,7 +3570,7 @@ namespace Zyl.ExSpans {
         /// Searches an entire sorted <see cref="ReadOnlyExSpan{T}"/> for a value
         /// using the specified <see cref="IComparable{T}"/> generic interface.
         /// </summary>
-        /// <typeparam name="T">The element type of the ExSpan.</typeparam>
+        /// <typeparam name="T">The element type of the span.</typeparam>
         /// <param name="span">The sorted <see cref="ReadOnlyExSpan{T}"/> to search.</param>
         /// <param name="comparable">The <see cref="IComparable{T}"/> to use when comparing.</param>
         /// <returns>
@@ -3589,7 +3591,7 @@ namespace Zyl.ExSpans {
         /// Searches an entire sorted <see cref="ReadOnlyExSpan{T}"/> for a value
         /// using the specified <typeparamref name="TComparable"/> generic type.
         /// </summary>
-        /// <typeparam name="T">The element type of the ExSpan.</typeparam>
+        /// <typeparam name="T">The element type of the span.</typeparam>
         /// <typeparam name="TComparable">The specific type of <see cref="IComparable{T}"/>.</typeparam>
         /// <param name="span">The sorted <see cref="ReadOnlyExSpan{T}"/> to search.</param>
         /// <param name="comparable">The <typeparamref name="TComparable"/> to use when comparing.</param>
@@ -3613,7 +3615,7 @@ namespace Zyl.ExSpans {
         /// Searches an entire sorted <see cref="ReadOnlyExSpan{T}"/> for the specified <paramref name="value"/>
         /// using the specified <typeparamref name="TComparer"/> generic type.
         /// </summary>
-        /// <typeparam name="T">The element type of the ExSpan.</typeparam>
+        /// <typeparam name="T">The element type of the span.</typeparam>
         /// <typeparam name="TComparer">The specific type of <see cref="IComparer{T}"/>.</typeparam>
         /// <param name="span">The sorted <see cref="ReadOnlyExSpan{T}"/> to search.</param>
         /// <param name="value">The object to locate. The value can be null for reference types.</param>
@@ -3643,7 +3645,7 @@ namespace Zyl.ExSpans {
         /// Sorts the elements in the entire <see cref="ExSpan{T}" /> using the <see cref="IComparable{T}" /> implementation
         /// of each element of the <see cref= "ExSpan{T}" />
         /// </summary>
-        /// <typeparam name="T">The type of the elements of the ExSpan.</typeparam>
+        /// <typeparam name="T">The type of the elements of the span.</typeparam>
         /// <param name="span">The <see cref="ExSpan{T}"/> to sort.</param>
         /// <exception cref="InvalidOperationException">
         /// One or more elements in <paramref name="span"/> do not implement the <see cref="IComparable{T}" /> interface.
@@ -3654,7 +3656,7 @@ namespace Zyl.ExSpans {
         /// <summary>
         /// Sorts the elements in the entire <see cref="ExSpan{T}" /> using the <typeparamref name="TComparer" />.
         /// </summary>
-        /// <typeparam name="T">The type of the elements of the ExSpan.</typeparam>
+        /// <typeparam name="T">The type of the elements of the span.</typeparam>
         /// <typeparam name="TComparer">The type of the comparer to use to compare elements.</typeparam>
         /// <param name="span">The <see cref="ExSpan{T}"/> to sort.</param>
         /// <param name="comparer">
@@ -3669,7 +3671,7 @@ namespace Zyl.ExSpans {
         /// The implementation of <paramref name="comparer"/> caused an error during the sort.
         /// </exception>
         public static void Sort<T, TComparer>(this ExSpan<T> span, TComparer comparer) where TComparer : IComparer<T>? {
-            if (ExSpan.Length > 1) {
+            if (span.Length > 1) {
                 ArraySortHelper<T>.Default.Sort(span, comparer); // value-type comparer will be boxed
             }
         }
@@ -3677,7 +3679,7 @@ namespace Zyl.ExSpans {
         /// <summary>
         /// Sorts the elements in the entire <see cref="ExSpan{T}" /> using the specified <see cref="Comparison{T}" />.
         /// </summary>
-        /// <typeparam name="T">The type of the elements of the ExSpan.</typeparam>
+        /// <typeparam name="T">The type of the elements of the span.</typeparam>
         /// <param name="span">The <see cref="ExSpan{T}"/> to sort.</param>
         /// <param name="comparison">The <see cref="Comparison{T}"/> to use when comparing elements.</param>
         /// <exception cref="ArgumentNullException"><paramref name="comparison"/> is null.</exception>
@@ -3685,7 +3687,7 @@ namespace Zyl.ExSpans {
             if (comparison == null)
                 ThrowHelper.ThrowArgumentNullException(ExceptionArgument.comparison);
 
-            if (ExSpan.Length > 1) {
+            if (span.Length > 1) {
                 ArraySortHelper<T>.Sort(span, comparison);
             }
         }
@@ -3695,8 +3697,8 @@ namespace Zyl.ExSpans {
         /// based on the keys in the first <see cref="ExSpan{TKey}" /> using the <see cref="IComparable{T}" />
         /// implementation of each key.
         /// </summary>
-        /// <typeparam name="TKey">The type of the elements of the key ExSpan.</typeparam>
-        /// <typeparam name="TValue">The type of the elements of the items ExSpan.</typeparam>
+        /// <typeparam name="TKey">The type of the elements of the key span.</typeparam>
+        /// <typeparam name="TValue">The type of the elements of the items span.</typeparam>
         /// <param name="keys">The span that contains the keys to sort.</param>
         /// <param name="items">The span that contains the items that correspond to the keys in <paramref name="keys"/>.</param>
         /// <exception cref="ArgumentException">
@@ -3712,8 +3714,8 @@ namespace Zyl.ExSpans {
         /// Sorts a pair of ExSpans (one containing the keys and the other containing the corresponding items)
         /// based on the keys in the first <see cref="ExSpan{TKey}" /> using the specified comparer.
         /// </summary>
-        /// <typeparam name="TKey">The type of the elements of the key ExSpan.</typeparam>
-        /// <typeparam name="TValue">The type of the elements of the items ExSpan.</typeparam>
+        /// <typeparam name="TKey">The type of the elements of the key span.</typeparam>
+        /// <typeparam name="TValue">The type of the elements of the items span.</typeparam>
         /// <typeparam name="TComparer">The type of the comparer to use to compare elements.</typeparam>
         /// <param name="keys">The span that contains the keys to sort.</param>
         /// <param name="items">The span that contains the items that correspond to the keys in <paramref name="keys"/>.</param>
@@ -3741,8 +3743,8 @@ namespace Zyl.ExSpans {
         /// Sorts a pair of ExSpans (one containing the keys and the other containing the corresponding items)
         /// based on the keys in the first <see cref="ExSpan{TKey}" /> using the specified comparison.
         /// </summary>
-        /// <typeparam name="TKey">The type of the elements of the key ExSpan.</typeparam>
-        /// <typeparam name="TValue">The type of the elements of the items ExSpan.</typeparam>
+        /// <typeparam name="TKey">The type of the elements of the key span.</typeparam>
+        /// <typeparam name="TValue">The type of the elements of the items span.</typeparam>
         /// <param name="keys">The span that contains the keys to sort.</param>
         /// <param name="items">The span that contains the items that correspond to the keys in <paramref name="keys"/>.</param>
         /// <param name="comparison">The <see cref="Comparison{T}"/> to use when comparing elements.</param>
@@ -3764,17 +3766,17 @@ namespace Zyl.ExSpans {
         /// <summary>
         /// Replaces all occurrences of <paramref name="oldValue"/> with <paramref name="newValue"/>.
         /// </summary>
-        /// <typeparam name="T">The type of the elements in the ExSpan.</typeparam>
+        /// <typeparam name="T">The type of the elements in the span.</typeparam>
         /// <param name="span">The span in which the elements should be replaced.</param>
         /// <param name="oldValue">The value to be replaced with <paramref name="newValue"/>.</param>
         /// <param name="newValue">The value to replace all occurrences of <paramref name="oldValue"/>.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void Replace<T>(this ExSpan<T> span, T oldValue, T newValue) where T : IEquatable<T>? {
-            nuint length = (uint)ExSpan.Length;
+            nuint length = (uint)span.Length;
 
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte)) {
-                    ref byte src = ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan));
+                    ref byte src = ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span));
                     ExSpanHelpers.ReplaceValueType(
                         ref src,
                         ref src,
@@ -3784,7 +3786,7 @@ namespace Zyl.ExSpans {
                     return;
                 } else if (Unsafe.SizeOf<T>() == sizeof(ushort)) {
                     // Use ushort rather than short, as this avoids a sign-extending move.
-                    ref ushort src = ref Unsafe.As<T, ushort>(ref ExMemoryMarshal.GetReference(ExSpan));
+                    ref ushort src = ref Unsafe.As<T, ushort>(ref ExMemoryMarshal.GetReference(span));
                     ExSpanHelpers.ReplaceValueType(
                         ref src,
                         ref src,
@@ -3793,7 +3795,7 @@ namespace Zyl.ExSpans {
                         length);
                     return;
                 } else if (Unsafe.SizeOf<T>() == sizeof(int)) {
-                    ref int src = ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(ExSpan));
+                    ref int src = ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(span));
                     ExSpanHelpers.ReplaceValueType(
                         ref src,
                         ref src,
@@ -3802,7 +3804,7 @@ namespace Zyl.ExSpans {
                         length);
                     return;
                 } else if (Unsafe.SizeOf<T>() == sizeof(long)) {
-                    ref long src = ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(ExSpan));
+                    ref long src = ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(span));
                     ExSpanHelpers.ReplaceValueType(
                         ref src,
                         ref src,
@@ -3813,67 +3815,67 @@ namespace Zyl.ExSpans {
                 }
             }
 
-            ref T src2 = ref ExMemoryMarshal.GetReference(ExSpan);
+            ref T src2 = ref ExMemoryMarshal.GetReference(span);
             ExSpanHelpers.Replace(ref src2, ref src2, oldValue, newValue, length);
         }
 
         /// <summary>
         /// Replaces all occurrences of <paramref name="oldValue"/> with <paramref name="newValue"/>.
         /// </summary>
-        /// <typeparam name="T">The type of the elements in the ExSpan.</typeparam>
+        /// <typeparam name="T">The type of the elements in the span.</typeparam>
         /// <param name="span">The span in which the elements should be replaced.</param>
         /// <param name="oldValue">The value to be replaced with <paramref name="newValue"/>.</param>
         /// <param name="newValue">The value to replace all occurrences of <paramref name="oldValue"/>.</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void Replace<T>(this ExSpan<T> span, T oldValue, T newValue, IEqualityComparer<T>? comparer = null) {
-            if (typeof(T).IsValueType && (comparer is null || comparer == EqualityComparer<T>.Default)) {
+            if (TypeHelper.IsValueType<T>() && (comparer is null || comparer == EqualityComparer<T>.Default)) {
                 if (TypeHelper.IsBitwiseEquatable<T>()) {
                     if (Unsafe.SizeOf<T>() == sizeof(byte)) {
-                        ref byte src = ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan));
+                        ref byte src = ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span));
                         ExSpanHelpers.ReplaceValueType(
                             ref src,
                             ref src,
                             ExUnsafe.BitCast<T, byte>(oldValue),
                             ExUnsafe.BitCast<T, byte>(newValue),
-                            (uint)ExSpan.Length);
+                            (uint)span.Length);
                         return;
                     } else if (Unsafe.SizeOf<T>() == sizeof(ushort)) {
                         // Use ushort rather than short, as this avoids a sign-extending move.
-                        ref ushort src = ref Unsafe.As<T, ushort>(ref ExMemoryMarshal.GetReference(ExSpan));
+                        ref ushort src = ref Unsafe.As<T, ushort>(ref ExMemoryMarshal.GetReference(span));
                         ExSpanHelpers.ReplaceValueType(
                             ref src,
                             ref src,
                             ExUnsafe.BitCast<T, ushort>(oldValue),
                             ExUnsafe.BitCast<T, ushort>(newValue),
-                            (uint)ExSpan.Length);
+                            (uint)span.Length);
                         return;
                     } else if (Unsafe.SizeOf<T>() == sizeof(int)) {
-                        ref int src = ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(ExSpan));
+                        ref int src = ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(span));
                         ExSpanHelpers.ReplaceValueType(
                             ref src,
                             ref src,
                             ExUnsafe.BitCast<T, int>(oldValue),
                             ExUnsafe.BitCast<T, int>(newValue),
-                            (uint)ExSpan.Length);
+                            (uint)span.Length);
                         return;
                     } else if (Unsafe.SizeOf<T>() == sizeof(long)) {
-                        ref long src = ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(ExSpan));
+                        ref long src = ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(span));
                         ExSpanHelpers.ReplaceValueType(
                             ref src,
                             ref src,
                             ExUnsafe.BitCast<T, long>(oldValue),
                             ExUnsafe.BitCast<T, long>(newValue),
-                            (uint)ExSpan.Length);
+                            (uint)span.Length);
                         return;
                     }
                 }
 
                 ReplaceDefaultComparer(span, oldValue, newValue);
                 static void ReplaceDefaultComparer(ExSpan<T> span, T oldValue, T newValue) {
-                    for (int i = 0; i < ExSpan.Length; i++) {
-                        if (EqualityComparer<T>.Default.Equals(ExSpan[i], oldValue)) {
-                            ExSpan[i] = newValue;
+                    for (int i = 0; i < span.Length; i++) {
+                        if (EqualityComparer<T>.Default.Equals(span[i], oldValue)) {
+                            span[i] = newValue;
                         }
                     }
                 }
@@ -3881,9 +3883,9 @@ namespace Zyl.ExSpans {
                 ReplaceComparer(span, oldValue, newValue, comparer);
                 static void ReplaceComparer(ExSpan<T> span, T oldValue, T newValue, IEqualityComparer<T>? comparer) {
                     comparer ??= EqualityComparer<T>.Default;
-                    for (int i = 0; i < ExSpan.Length; i++) {
-                        if (comparer.Equals(ExSpan[i], oldValue)) {
-                            ExSpan[i] = newValue;
+                    for (int i = 0; i < span.Length; i++) {
+                        if (comparer.Equals(span[i], oldValue)) {
+                            span[i] = newValue;
                         }
                     }
                 }
@@ -3898,7 +3900,7 @@ namespace Zyl.ExSpans {
         /// <param name="destination">The span into which the copied and replaced values should be written.</param>
         /// <param name="oldValue">The value to be replaced with <paramref name="newValue"/>.</param>
         /// <param name="newValue">The value to replace all occurrences of <paramref name="oldValue"/>.</param>
-        /// <exception cref="ArgumentException">The <paramref name="destination"/> ExSpan was shorter than the <paramref name="source"/> ExSpan.</exception>
+        /// <exception cref="ArgumentException">The <paramref name="destination"/> ExSpan was shorter than the <paramref name="source"/> span.</exception>
         /// <exception cref="ArgumentException">The <paramref name="source"/> and <paramref name="destination"/> were overlapping but not referring to the same starting location.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void Replace<T>(this ReadOnlyExSpan<T> source, ExSpan<T> destination, T oldValue, T newValue) where T : IEquatable<T>? {
@@ -3970,7 +3972,7 @@ namespace Zyl.ExSpans {
         /// <param name="oldValue">The value to be replaced with <paramref name="newValue"/>.</param>
         /// <param name="newValue">The value to replace all occurrences of <paramref name="oldValue"/>.</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
-        /// <exception cref="ArgumentException">The <paramref name="destination"/> ExSpan was shorter than the <paramref name="source"/> ExSpan.</exception>
+        /// <exception cref="ArgumentException">The <paramref name="destination"/> ExSpan was shorter than the <paramref name="source"/> span.</exception>
         /// <exception cref="ArgumentException">The <paramref name="source"/> and <paramref name="destination"/> were overlapping but not referring to the same starting location.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void Replace<T>(this ReadOnlyExSpan<T> source, ExSpan<T> destination, T oldValue, T newValue, IEqualityComparer<T>? comparer = null) {
@@ -3993,7 +3995,7 @@ namespace Zyl.ExSpans {
                 ThrowHelper.ThrowArgumentException(ExceptionResource.InvalidOperation_ExSpanOverlappedOperation);
             }
 
-            if (typeof(T).IsValueType && (comparer is null || comparer == EqualityComparer<T>.Default)) {
+            if (TypeHelper.IsValueType<T>() && (comparer is null || comparer == EqualityComparer<T>.Default)) {
                 if (TypeHelper.IsBitwiseEquatable<T>()) {
                     if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                         ExSpanHelpers.ReplaceValueType(
@@ -4057,7 +4059,7 @@ namespace Zyl.ExSpans {
         /// <param name="destination">The span into which the copied and replaced values should be written.</param>
         /// <param name="values">The values to be replaced with <paramref name="newValue"/>.</param>
         /// <param name="newValue">The value to replace all occurrences of any of the elements in <paramref name="values"/>.</param>
-        /// <exception cref="ArgumentException">The <paramref name="destination"/> ExSpan was shorter than the <paramref name="source"/> ExSpan.</exception>
+        /// <exception cref="ArgumentException">The <paramref name="destination"/> ExSpan was shorter than the <paramref name="source"/> span.</exception>
         /// <exception cref="ArgumentException">
         /// The <paramref name="source"/> and <paramref name="destination"/> were overlapping but not referring to the same starting location.
         /// </exception>
@@ -4087,9 +4089,9 @@ namespace Zyl.ExSpans {
         /// <exception cref="ArgumentNullException"><paramref name="values"/> is <see langword="null"/>.</exception>
         public static void ReplaceAny<T>(this ExSpan<T> span, SearchValues<T> values, T newValue) where T : IEquatable<T>? {
             int pos;
-            while ((pos = ExSpan.IndexOfAny(values)) >= 0) {
-                ExSpan[pos] = newValue;
-                ExSpan = ExSpan.Slice(pos + 1);
+            while ((pos = span.IndexOfAny(values)) >= 0) {
+                span[pos] = newValue;
+                ExSpan = span.Slice(pos + 1);
             }
         }
 
@@ -4102,7 +4104,7 @@ namespace Zyl.ExSpans {
         /// <param name="destination">The span into which the copied and replaced values should be written.</param>
         /// <param name="values">The values to be excluded from replacement with <paramref name="newValue"/>.</param>
         /// <param name="newValue">The value to replace all occurrences of any elements other than those in <paramref name="values"/>.</param>
-        /// <exception cref="ArgumentException">The <paramref name="destination"/> ExSpan was shorter than the <paramref name="source"/> ExSpan.</exception>
+        /// <exception cref="ArgumentException">The <paramref name="destination"/> ExSpan was shorter than the <paramref name="source"/> span.</exception>
         /// <exception cref="ArgumentException">
         /// The <paramref name="source"/> and <paramref name="destination"/> were overlapping but not referring to the same starting location.
         /// </exception>
@@ -4131,9 +4133,9 @@ namespace Zyl.ExSpans {
         /// <exception cref="ArgumentNullException"><paramref name="values"/> is <see langword="null"/>.</exception>
         public static void ReplaceAnyExcept<T>(this ExSpan<T> span, SearchValues<T> values, T newValue) where T : IEquatable<T>? {
             int pos;
-            while ((pos = ExSpan.IndexOfAnyExcept(values)) >= 0) {
-                ExSpan[pos] = newValue;
-                ExSpan = ExSpan.Slice(pos + 1);
+            while ((pos = span.IndexOfAnyExcept(values)) >= 0) {
+                span[pos] = newValue;
+                ExSpan = span.Slice(pos + 1);
             }
         }
 
@@ -4163,10 +4165,10 @@ namespace Zyl.ExSpans {
         /// <returns>The length of the common prefix shared by the two ExSpans.  If there's no shared prefix, 0 is returned.</returns>
         public static unsafe int CommonPrefixLength<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> other) {
             if (TypeHelper.IsBitwiseEquatable<T>()) {
-                nuint length = Math.Min((nuint)(uint)ExSpan.Length, (nuint)(uint)other.Length);
+                nuint length = Math.Min((nuint)(uint)span.Length, (nuint)(uint)other.Length);
                 nuint size = (uint)Unsafe.SizeOf<T>();
                 nuint index = ExSpanHelpers.CommonPrefixLength(
-                    ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                    ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                     ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(other)),
                     length * size);
 
@@ -4190,13 +4192,13 @@ namespace Zyl.ExSpans {
 
             // Find the first element pairwise that is not equal, and return its index as the length
             // of the sequence before it that matches.
-            for (int i = 0; i < ExSpan.Length; i++) {
-                if (!EqualityComparer<T>.Default.Equals(ExSpan[i], other[i])) {
+            for (int i = 0; i < span.Length; i++) {
+                if (!EqualityComparer<T>.Default.Equals(span[i], other[i])) {
                     return i;
                 }
             }
 
-            return ExSpan.Length;
+            return span.Length;
         }
 
         /// <summary>Determines the length of any common prefix shared between <paramref name="span"/> and <paramref name="other"/>.</summary>
@@ -4208,7 +4210,7 @@ namespace Zyl.ExSpans {
         public static int CommonPrefixLength<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> other, IEqualityComparer<T>? comparer) {
             // If the comparer is null or the default, and T is a value type, we want to use EqualityComparer<T>.Default.Equals
             // directly to enable devirtualization.  The non-comparer overload already does so, so just use it.
-            if (typeof(T).IsValueType && (comparer is null || comparer == EqualityComparer<T>.Default)) {
+            if (TypeHelper.IsValueType<T>() && (comparer is null || comparer == EqualityComparer<T>.Default)) {
                 return CommonPrefixLength(span, other);
             }
 
@@ -4218,24 +4220,24 @@ namespace Zyl.ExSpans {
 
             // Ensure we have a comparer, then compare the ExSpans.
             comparer ??= EqualityComparer<T>.Default;
-            for (int i = 0; i < ExSpan.Length; i++) {
-                if (!comparer.Equals(ExSpan[i], other[i])) {
+            for (int i = 0; i < span.Length; i++) {
+                if (!comparer.Equals(span[i], other[i])) {
                     return i;
                 }
             }
 
-            return ExSpan.Length;
+            return span.Length;
         }
 
         /// <summary>Determines if one ExSpan is longer than the other, and slices the longer one to match the length of the shorter.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void SliceLongerExSpanToMatchShorterLength<T>(ref ReadOnlyExSpan<T> span, ref ReadOnlyExSpan<T> other) {
-            if (other.Length > ExSpan.Length) {
-                other = other.Slice(0, ExSpan.Length);
-            } else if (ExSpan.Length > other.Length) {
-                ExSpan = ExSpan.Slice(0, other.Length);
+            if (other.Length > span.Length) {
+                other = other.Slice(0, span.Length);
+            } else if (span.Length > other.Length) {
+                ExSpan = span.Slice(0, other.Length);
             }
-            Debug.Assert(ExSpan.Length == other.Length);
+            Debug.Assert(span.Length == other.Length);
         }
 
         /// <summary>
@@ -4243,19 +4245,19 @@ namespace Zyl.ExSpans {
         /// using the provided separator character.
         /// </summary>
         /// <typeparam name="T">The type of the elements.</typeparam>
-        /// <param name="source">The source ExSpan to be enumerated.</param>
-        /// <param name="separator">The separator character to be used to split the provided ExSpan.</param>
+        /// <param name="source">The source span to be enumerated.</param>
+        /// <param name="separator">The separator character to be used to split the provided span.</param>
         /// <returns>Returns a <see cref="ExSpanSplitEnumerator{T}"/>.</returns>
         public static ExSpanSplitEnumerator<T> Split<T>(this ReadOnlyExSpan<T> source, T separator) where T : IEquatable<T> =>
             new ExSpanSplitEnumerator<T>(source, separator);
 
         /// <summary>
         /// Returns a type that allows for enumeration of each element within a split ExSpan
-        /// using the provided separator ExSpan.
+        /// using the provided separator span.
         /// </summary>
         /// <typeparam name="T">The type of the elements.</typeparam>
-        /// <param name="source">The source ExSpan to be enumerated.</param>
-        /// <param name="separator">The separator ExSpan to be used to split the provided ExSpan.</param>
+        /// <param name="source">The source span to be enumerated.</param>
+        /// <param name="separator">The separator ExSpan to be used to split the provided span.</param>
         /// <returns>Returns a <see cref="ExSpanSplitEnumerator{T}"/>.</returns>
         public static ExSpanSplitEnumerator<T> Split<T>(this ReadOnlyExSpan<T> source, ReadOnlyExSpan<T> separator) where T : IEquatable<T> =>
             new ExSpanSplitEnumerator<T>(source, separator, treatAsSingleSeparator: true);
@@ -4265,15 +4267,15 @@ namespace Zyl.ExSpans {
         /// using any of the provided elements.
         /// </summary>
         /// <typeparam name="T">The type of the elements.</typeparam>
-        /// <param name="source">The source ExSpan to be enumerated.</param>
-        /// <param name="separators">The separators to be used to split the provided ExSpan.</param>
+        /// <param name="source">The source span to be enumerated.</param>
+        /// <param name="separators">The separators to be used to split the provided span.</param>
         /// <returns>Returns a <see cref="ExSpanSplitEnumerator{T}"/>.</returns>
         /// <remarks>
         /// If <typeparamref name="T"/> is <see cref="char"/> and if <paramref name="separators"/> is empty,
         /// all Unicode whitespace characters are used as the separators. This matches the behavior of when
         /// <see cref="string.Split(char[])"/> and related overloads are used with an empty separator array,
         /// or when <see cref="SplitAny(ReadOnlyExSpan{char}, ExSpan{Range}, ReadOnlyExSpan{char}, StringSplitOptions)"/>
-        /// is used with an empty separator ExSpan.
+        /// is used with an empty separator span.
         /// </remarks>
         public static ExSpanSplitEnumerator<T> SplitAny<T>(this ReadOnlyExSpan<T> source, [UnscopedRef] params ReadOnlyExSpan<T> separators) where T : IEquatable<T> =>
             new ExSpanSplitEnumerator<T>(source, separators);
@@ -4283,8 +4285,8 @@ namespace Zyl.ExSpans {
         /// using the provided <see cref="ExSpanSplitEnumerator{T}"/>.
         /// </summary>
         /// <typeparam name="T">The type of the elements.</typeparam>
-        /// <param name="source">The source ExSpan to be enumerated.</param>
-        /// <param name="separators">The <see cref="ExSpanSplitEnumerator{T}"/> to be used to split the provided ExSpan.</param>
+        /// <param name="source">The source span to be enumerated.</param>
+        /// <param name="separators">The <see cref="ExSpanSplitEnumerator{T}"/> to be used to split the provided span.</param>
         /// <returns>Returns a <see cref="ExSpanSplitEnumerator{T}"/>.</returns>
         /// <remarks>
         /// Unlike <see cref="SplitAny{T}(ReadOnlyExSpan{T}, ReadOnlyExSpan{T})"/>, the <paramref name="separators"/> is not checked for being empty.
@@ -4299,7 +4301,7 @@ namespace Zyl.ExSpans {
         /// Parses the source <see cref="ReadOnlyExSpan{Char}"/> for the specified <paramref name="separator"/>, populating the <paramref name="destination"/> ExSpan
         /// with <see cref="Range"/> instances representing the regions between the separators.
         /// </summary>
-        /// <param name="source">The source ExSpan to parse.</param>
+        /// <param name="source">The source span to parse.</param>
         /// <param name="destination">The destination ExSpan into which the resulting ranges are written.</param>
         /// <param name="separator">A character that delimits the regions in this instance.</param>
         /// <param name="options">A bitwise combination of the enumeration values that specifies whether to trim whitespace and include empty ranges.</param>
@@ -4332,7 +4334,7 @@ namespace Zyl.ExSpans {
         /// Parses the source <see cref="ReadOnlyExSpan{Char}"/> for the specified <paramref name="separator"/>, populating the <paramref name="destination"/> ExSpan
         /// with <see cref="Range"/> instances representing the regions between the separators.
         /// </summary>
-        /// <param name="source">The source ExSpan to parse.</param>
+        /// <param name="source">The source span to parse.</param>
         /// <param name="destination">The destination ExSpan into which the resulting ranges are written.</param>
         /// <param name="separator">A character that delimits the regions in this instance.</param>
         /// <param name="options">A bitwise combination of the enumeration values that specifies whether to trim whitespace and include empty ranges.</param>
@@ -4383,7 +4385,7 @@ namespace Zyl.ExSpans {
         /// Parses the source <see cref="ReadOnlyExSpan{Char}"/> for one of the specified <paramref name="separators"/>, populating the <paramref name="destination"/> ExSpan
         /// with <see cref="Range"/> instances representing the regions between the separators.
         /// </summary>
-        /// <param name="source">The source ExSpan to parse.</param>
+        /// <param name="source">The source span to parse.</param>
         /// <param name="destination">The destination ExSpan into which the resulting ranges are written.</param>
         /// <param name="separators">Any number of characters that may delimit the regions in this instance. If empty, all Unicode whitespace characters are used as the separators.</param>
         /// <param name="options">A bitwise combination of the enumeration values that specifies whether to trim whitespace and include empty ranges.</param>
@@ -4422,7 +4424,7 @@ namespace Zyl.ExSpans {
         /// Parses the source <see cref="ReadOnlyExSpan{Char}"/> for one of the specified <paramref name="separators"/>, populating the <paramref name="destination"/> ExSpan
         /// with <see cref="Range"/> instances representing the regions between the separators.
         /// </summary>
-        /// <param name="source">The source ExSpan to parse.</param>
+        /// <param name="source">The source span to parse.</param>
         /// <param name="destination">The destination ExSpan into which the resulting ranges are written.</param>
         /// <param name="separators">Any number of strings that may delimit the regions in this instance.  If empty, all Unicode whitespace characters are used as the separators.</param>
         /// <param name="options">A bitwise combination of the enumeration values that specifies whether to trim whitespace and include empty ranges.</param>
@@ -4458,7 +4460,7 @@ namespace Zyl.ExSpans {
         }
 
         /// <summary>Core implementation for all of the Split{Any}AsRanges methods.</summary>
-        /// <param name="source">The source ExSpan to parse.</param>
+        /// <param name="source">The source span to parse.</param>
         /// <param name="destination">The destination ExSpan into which the resulting ranges are written.</param>
         /// <param name="separatorOrSeparators">Either a single separator (one or more characters in length) or multiple individual 1-character separators.</param>
         /// <param name="stringSeparators">Strings to use as separators instead of <paramref name="separatorOrSeparators"/>.</param>
@@ -4596,7 +4598,7 @@ namespace Zyl.ExSpans {
         }
 
         /// <summary>Counts the number of times the specified <paramref name="value"/> occurs in the <paramref name="span"/>.</summary>
-        /// <typeparam name="T">The element type of the ExSpan.</typeparam>
+        /// <typeparam name="T">The element type of the span.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="value">The value for which to search.</param>
         /// <returns>The number of times <paramref name="value"/> was found in the <paramref name="span"/>.</returns>
@@ -4605,7 +4607,7 @@ namespace Zyl.ExSpans {
             Count((ReadOnlyExSpan<T>)span, value);
 
         /// <summary>Counts the number of times the specified <paramref name="value"/> occurs in the <paramref name="span"/>.</summary>
-        /// <typeparam name="T">The element type of the ExSpan.</typeparam>
+        /// <typeparam name="T">The element type of the span.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="value">The value for which to search.</param>
         /// <returns>The number of times <paramref name="value"/> was found in the <paramref name="span"/>.</returns>
@@ -4614,71 +4616,71 @@ namespace Zyl.ExSpans {
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.CountValueType(
-                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, byte>(value),
-                        ExSpan.Length);
+                        span.Length);
                 } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                     return ExSpanHelpers.CountValueType(
-                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, short>(value),
-                        ExSpan.Length);
+                        span.Length);
                 } else if (Unsafe.SizeOf<T>() == sizeof(int)) {
                     return ExSpanHelpers.CountValueType(
-                        ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, int>(value),
-                        ExSpan.Length);
+                        span.Length);
                 } else if (Unsafe.SizeOf<T>() == sizeof(long)) {
                     return ExSpanHelpers.CountValueType(
-                        ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                        ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(span)),
                         ExUnsafe.BitCast<T, long>(value),
-                        ExSpan.Length);
+                        span.Length);
                 }
             }
 
             return ExSpanHelpers.Count(
-                ref ExMemoryMarshal.GetReference(ExSpan),
+                ref ExMemoryMarshal.GetReference(span),
                 value,
-                ExSpan.Length);
+                span.Length);
         }
 
         /// <summary>Counts the number of times the specified <paramref name="value"/> occurs in the <paramref name="span"/>.</summary>
-        /// <typeparam name="T">The element type of the ExSpan.</typeparam>
+        /// <typeparam name="T">The element type of the span.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="value">The value for which to search.</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         /// <returns>The number of times <paramref name="value"/> was found in the <paramref name="span"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe int Count<T>(this ReadOnlyExSpan<T> span, T value, IEqualityComparer<T>? comparer = null) {
-            if (typeof(T).IsValueType && (comparer is null || comparer == EqualityComparer<T>.Default)) {
+            if (TypeHelper.IsValueType<T>() && (comparer is null || comparer == EqualityComparer<T>.Default)) {
                 if (TypeHelper.IsBitwiseEquatable<T>()) {
                     if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                         return ExSpanHelpers.CountValueType(
-                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                             ExUnsafe.BitCast<T, byte>(value),
-                            ExSpan.Length);
+                            span.Length);
                     } else if (Unsafe.SizeOf<T>() == sizeof(short)) {
                         return ExSpanHelpers.CountValueType(
-                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span)),
                             ExUnsafe.BitCast<T, short>(value),
-                            ExSpan.Length);
+                            span.Length);
                     } else if (Unsafe.SizeOf<T>() == sizeof(int)) {
                         return ExSpanHelpers.CountValueType(
-                            ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(span)),
                             ExUnsafe.BitCast<T, int>(value),
-                            ExSpan.Length);
+                            span.Length);
                     } else if (Unsafe.SizeOf<T>() == sizeof(long)) {
                         return ExSpanHelpers.CountValueType(
-                            ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(ExSpan)),
+                            ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(span)),
                             ExUnsafe.BitCast<T, long>(value),
-                            ExSpan.Length);
+                            span.Length);
                     }
                 }
 
                 return CountDefaultComparer(span, value);
                 static int CountDefaultComparer(ReadOnlyExSpan<T> span, T value) {
                     int count = 0;
-                    for (int i = 0; i < ExSpan.Length; i++) {
-                        if (EqualityComparer<T>.Default.Equals(ExSpan[i], value)) {
+                    for (int i = 0; i < span.Length; i++) {
+                        if (EqualityComparer<T>.Default.Equals(span[i], value)) {
                             count++;
                         }
                     }
@@ -4691,8 +4693,8 @@ namespace Zyl.ExSpans {
                     comparer ??= EqualityComparer<T>.Default;
 
                     int count = 0;
-                    for (int i = 0; i < ExSpan.Length; i++) {
-                        if (comparer.Equals(ExSpan[i], value)) {
+                    for (int i = 0; i < span.Length; i++) {
+                        if (comparer.Equals(span[i], value)) {
                             count++;
                         }
                     }
@@ -4703,7 +4705,7 @@ namespace Zyl.ExSpans {
         }
 
         /// <summary>Counts the number of times the specified <paramref name="value"/> occurs in the <paramref name="span"/>.</summary>
-        /// <typeparam name="T">The element type of the ExSpan.</typeparam>
+        /// <typeparam name="T">The element type of the span.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="value">The value for which to search.</param>
         /// <returns>The number of times <paramref name="value"/> was found in the <paramref name="span"/>.</returns>
@@ -4712,7 +4714,7 @@ namespace Zyl.ExSpans {
             Count((ReadOnlyExSpan<T>)span, value);
 
         /// <summary>Counts the number of times the specified <paramref name="value"/> occurs in the <paramref name="span"/>.</summary>
-        /// <typeparam name="T">The element type of the ExSpan.</typeparam>
+        /// <typeparam name="T">The element type of the span.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="value">The value for which to search.</param>
         /// <returns>The number of times <paramref name="value"/> was found in the <paramref name="span"/>.</returns>
@@ -4728,8 +4730,8 @@ namespace Zyl.ExSpans {
                     int count = 0;
 
                     int pos;
-                    while ((pos = ExSpan.IndexOf(value)) >= 0) {
-                        ExSpan = ExSpan.Slice(pos + value.Length);
+                    while ((pos = span.IndexOf(value)) >= 0) {
+                        ExSpan = span.Slice(pos + value.Length);
                         count++;
                     }
 
@@ -4738,7 +4740,7 @@ namespace Zyl.ExSpans {
         }
 
         /// <summary>Counts the number of times the specified <paramref name="value"/> occurs in the <paramref name="span"/>.</summary>
-        /// <typeparam name="T">The element type of the ExSpan.</typeparam>
+        /// <typeparam name="T">The element type of the span.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="value">The value for which to search.</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
@@ -4755,8 +4757,8 @@ namespace Zyl.ExSpans {
                     int count = 0;
 
                     int pos;
-                    while ((pos = ExSpan.IndexOf(value, comparer)) >= 0) {
-                        ExSpan = ExSpan.Slice(pos + value.Length);
+                    while ((pos = span.IndexOf(value, comparer)) >= 0) {
+                        ExSpan = span.Slice(pos + value.Length);
                         count++;
                     }
 
@@ -4765,7 +4767,7 @@ namespace Zyl.ExSpans {
         }
 
         /// <summary>Counts the number of times any of the specified <paramref name="values"/> occurs in the <paramref name="span"/>.</summary>
-        /// <typeparam name="T">The element type of the ExSpan.</typeparam>
+        /// <typeparam name="T">The element type of the span.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values for which to search.</param>
         /// <returns>The number of times any of the <typeparamref name="T"/> elements in <paramref name="values"/> was found in the <paramref name="span"/>.</returns>
@@ -4775,16 +4777,16 @@ namespace Zyl.ExSpans {
             int count = 0;
 
             int pos;
-            while ((pos = ExSpan.IndexOfAny(values)) >= 0) {
+            while ((pos = span.IndexOfAny(values)) >= 0) {
                 count++;
-                ExSpan = ExSpan.Slice(pos + 1);
+                ExSpan = span.Slice(pos + 1);
             }
 
             return count;
         }
 
         /// <summary>Counts the number of times any of the specified <paramref name="values"/> occurs in the <paramref name="span"/>.</summary>
-        /// <typeparam name="T">The element type of the ExSpan.</typeparam>
+        /// <typeparam name="T">The element type of the span.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values for which to search.</param>
         /// <returns>The number of times any of the <typeparamref name="T"/> elements in <paramref name="values"/> was found in the <paramref name="span"/>.</returns>
@@ -4793,16 +4795,16 @@ namespace Zyl.ExSpans {
             int count = 0;
 
             int pos;
-            while ((pos = ExSpan.IndexOfAny(values)) >= 0) {
+            while ((pos = span.IndexOfAny(values)) >= 0) {
                 count++;
-                ExSpan = ExSpan.Slice(pos + 1);
+                ExSpan = span.Slice(pos + 1);
             }
 
             return count;
         }
 
         /// <summary>Counts the number of times any of the specified <paramref name="values"/> occurs in the <paramref name="span"/>.</summary>
-        /// <typeparam name="T">The element type of the ExSpan.</typeparam>
+        /// <typeparam name="T">The element type of the span.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values for which to search.</param>
         /// <param name="comparer">
@@ -4815,19 +4817,19 @@ namespace Zyl.ExSpans {
             int count = 0;
 
             int pos;
-            while ((pos = ExSpan.IndexOfAny(values, comparer)) >= 0) {
+            while ((pos = span.IndexOfAny(values, comparer)) >= 0) {
                 count++;
-                ExSpan = ExSpan.Slice(pos + 1);
+                ExSpan = span.Slice(pos + 1);
             }
 
             return count;
         }
 
 
-        /// <summary>Writes the specified interpolated string to the character ExSpan.</summary>
+        /// <summary>Writes the specified interpolated string to the character span.</summary>
         /// <param name="destination">The span to which the interpolated string should be formatted.</param>
         /// <param name="handler">The interpolated string.</param>
-        /// <param name="charsWritten">The number of characters written to the ExSpan.</param>
+        /// <param name="charsWritten">The number of characters written to the span.</param>
         /// <returns>true if the entire interpolated string could be formatted successfully; otherwise, false.</returns>
         public static bool TryWrite(this ExSpan<char> destination, [InterpolatedStringHandlerArgument(nameof(destination))] ref TryWriteInterpolatedStringHandler handler, out int charsWritten) {
             // The span argument isn't used directly in the method; rather, it'll be used by the compiler to create the handler.
@@ -4841,11 +4843,11 @@ namespace Zyl.ExSpans {
             return false;
         }
 
-        /// <summary>Writes the specified interpolated string to the character ExSpan.</summary>
+        /// <summary>Writes the specified interpolated string to the character span.</summary>
         /// <param name="destination">The span to which the interpolated string should be formatted.</param>
         /// <param name="provider">An object that supplies culture-specific formatting information.</param>
         /// <param name="handler">The interpolated string.</param>
-        /// <param name="charsWritten">The number of characters written to the ExSpan.</param>
+        /// <param name="charsWritten">The number of characters written to the span.</param>
         /// <returns>true if the entire interpolated string could be formatted successfully; otherwise, false.</returns>
         public static bool TryWrite(this ExSpan<char> destination, IFormatProvider? provider, [InterpolatedStringHandlerArgument(nameof(destination), nameof(provider))] ref TryWriteInterpolatedStringHandler handler, out int charsWritten) =>
             // The provider is passed to the handler by the compiler, so the actual implementation of the method
@@ -4860,7 +4862,7 @@ namespace Zyl.ExSpans {
         /// <param name="destination">The span to which the string should be formatted.</param>
         /// <param name="provider">An object that supplies culture-specific formatting information.</param>
         /// <param name="format">A <see cref="CompositeFormat"/>.</param>
-        /// <param name="charsWritten">The number of characters written to the ExSpan.</param>
+        /// <param name="charsWritten">The number of characters written to the span.</param>
         /// <param name="arg0">The first object to format.</param>
         /// <returns><see langword="true"/> if the entire interpolated string could be formatted successfully; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="format"/> is null.</exception>
@@ -4880,7 +4882,7 @@ namespace Zyl.ExSpans {
         /// <param name="destination">The span to which the string should be formatted.</param>
         /// <param name="provider">An object that supplies culture-specific formatting information.</param>
         /// <param name="format">A <see cref="CompositeFormat"/>.</param>
-        /// <param name="charsWritten">The number of characters written to the ExSpan.</param>
+        /// <param name="charsWritten">The number of characters written to the span.</param>
         /// <param name="arg0">The first object to format.</param>
         /// <param name="arg1">The second object to format.</param>
         /// <returns><see langword="true"/> if the entire interpolated string could be formatted successfully; otherwise, <see langword="false"/>.</returns>
@@ -4902,7 +4904,7 @@ namespace Zyl.ExSpans {
         /// <param name="destination">The span to which the string should be formatted.</param>
         /// <param name="provider">An object that supplies culture-specific formatting information.</param>
         /// <param name="format">A <see cref="CompositeFormat"/>.</param>
-        /// <param name="charsWritten">The number of characters written to the ExSpan.</param>
+        /// <param name="charsWritten">The number of characters written to the span.</param>
         /// <param name="arg0">The first object to format.</param>
         /// <param name="arg1">The second object to format.</param>
         /// <param name="arg2">The third object to format.</param>
@@ -4922,7 +4924,7 @@ namespace Zyl.ExSpans {
         /// <param name="destination">The span to which the string should be formatted.</param>
         /// <param name="provider">An object that supplies culture-specific formatting information.</param>
         /// <param name="format">A <see cref="CompositeFormat"/>.</param>
-        /// <param name="charsWritten">The number of characters written to the ExSpan.</param>
+        /// <param name="charsWritten">The number of characters written to the span.</param>
         /// <param name="args">An array of objects to format.</param>
         /// <returns><see langword="true"/> if the entire interpolated string could be formatted successfully; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="format"/> is null.</exception>
@@ -4941,7 +4943,7 @@ namespace Zyl.ExSpans {
         /// <param name="destination">The span to which the string should be formatted.</param>
         /// <param name="provider">An object that supplies culture-specific formatting information.</param>
         /// <param name="format">A <see cref="CompositeFormat"/>.</param>
-        /// <param name="charsWritten">The number of characters written to the ExSpan.</param>
+        /// <param name="charsWritten">The number of characters written to the span.</param>
         /// <param name="args">A ExSpan of objects to format.</param>
         /// <returns><see langword="true"/> if the entire interpolated string could be formatted successfully; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="format"/> is null.</exception>
@@ -5026,16 +5028,16 @@ namespace Zyl.ExSpans {
             /// <summary>The index in <see cref="_source"/> from which the next separator search should start.</summary>
             private int _startNext = 0;
 
-            /// <summary>Gets an enumerator that allows for iteration over the split ExSpan.</summary>
-            /// <returns>Returns a <see cref="ExSpanSplitEnumerator{T}"/> that can be used to iterate over the split ExSpan.</returns>
+            /// <summary>Gets an enumerator that allows for iteration over the split span.</summary>
+            /// <returns>Returns a <see cref="ExSpanSplitEnumerator{T}"/> that can be used to iterate over the split span.</returns>
             public ExSpanSplitEnumerator<T> GetEnumerator() => this;
 
-            /// <summary>Gets the source ExSpan being enumerated.</summary>
+            /// <summary>Gets the source span being enumerated.</summary>
             /// <returns>Returns the <see cref="ReadOnlyExSpan{T}"/> that was provided when creating this enumerator.</returns>
             public readonly ReadOnlyExSpan<T> Source => _source;
 
             /// <summary>Gets the current element of the enumeration.</summary>
-            /// <returns>Returns a <see cref="Range"/> instance that indicates the bounds of the current element withing the source ExSpan.</returns>
+            /// <returns>Returns a <see cref="Range"/> instance that indicates the bounds of the current element withing the source span.</returns>
             public Range Current => new Range(_startCurrent, _endCurrent);
 
             /// <summary>Initializes the enumerator for <see cref="ExSpanSplitEnumeratorMode.SearchValues"/>.</summary>

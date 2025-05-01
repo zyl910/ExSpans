@@ -23,7 +23,7 @@ namespace Zyl.ExSpans {
     partial class ExSpanHelpers {
 
         // Unrolled for small sizes
-        internal static unsafe void Fill<T>(ref T refData, nuint numElements, T value) {
+        internal static void Fill<T>(ref T refData, nuint numElements, T value) {
             // Early checks to see if it's even possible to vectorize - JIT will turn these checks into consts.
             // - T cannot contain references (GC can't track references in vectors)
             // - Vectorization must be hardware-accelerated
@@ -196,7 +196,7 @@ namespace Zyl.ExSpans {
             }
         }
 
-        public static nint IndexOf<T>(ref T searchSpace, int searchSpaceLength, ref T value, nint valueLength) where T : IEquatable<T>? {
+        public static nint IndexOf<T>(ref T searchSpace, nint searchSpaceLength, ref T value, nint valueLength) where T : IEquatable<T>? {
             Debug.Assert(searchSpaceLength >= 0);
             Debug.Assert(valueLength >= 0);
 
