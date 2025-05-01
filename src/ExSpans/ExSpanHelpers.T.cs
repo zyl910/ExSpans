@@ -1,4 +1,8 @@
-﻿using System;
+﻿#if NET7_0_OR_GREATER
+#define GENERIC_MATH // C# 11 - Generic math support. https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-11#generic-math-support
+#endif // NET7_0_OR_GREATER
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
@@ -8,6 +12,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics;
 #endif // NETCOREAPP3_0_OR_GREATER
 using System.Text;
+using Zyl.ExSpans.Extensions;
 using Zyl.ExSpans.Impl;
 using Zyl.ExSpans.Reflection;
 using Zyl.VectorTraits;
@@ -1169,9 +1174,9 @@ namespace Zyl.ExSpans {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static bool ContainsValueType<T>(ref T searchSpace, T value, nint length) where T : struct, IEquatable<T>
-#if NET7_0_OR_GREATER
+#if GENERIC_MATH
                 , INumber<T>
-#endif // NET7_0_OR_GREATER
+#endif // GENERIC_MATH
                 {
             //if (PackedSpanHelpers.PackedIndexOfIsSupported && typeof(T) == typeof(short) && PackedSpanHelpers.CanUsePackedIndexOf(value)) {
             //    return PackedSpanHelpers.Contains(ref Unsafe.As<T, short>(ref searchSpace), Unsafe.BitCast<T, short>(value), length);
@@ -1181,9 +1186,9 @@ namespace Zyl.ExSpans {
         }
 
         internal static bool NonPackedContainsValueType<T>(ref T searchSpace, T value, nint length) where T : struct, IEquatable<T>
-#if NET7_0_OR_GREATER
+#if GENERIC_MATH
                 , INumber<T>
-#endif // NET7_0_OR_GREATER
+#endif // GENERIC_MATH
                 {
             Debug.Assert(length >= 0, "Expected non-negative length");
             Debug.Assert(value is byte or short or int or long, "Expected caller to normalize to one of these types");
@@ -1337,96 +1342,73 @@ namespace Zyl.ExSpans {
             return false;
         }
 
-#if TODO
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int IndexOfChar(ref char searchSpace, char value, int length)
+        internal static nint IndexOfChar(ref char searchSpace, char value, nint length)
             => IndexOfValueType(ref Unsafe.As<char, short>(ref searchSpace), (short)value, length);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int NonPackedIndexOfChar(ref char searchSpace, char value, int length) =>
+        internal static nint NonPackedIndexOfChar(ref char searchSpace, char value, nint length) =>
             NonPackedIndexOfValueType<short, DontNegate<short>>(ref Unsafe.As<char, short>(ref searchSpace), (short)value, length);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int IndexOfValueType<T>(ref T searchSpace, T value, int length) where T : struct, INumber<T>
+        internal static nint IndexOfValueType<T>(ref T searchSpace, T value, nint length) where T : struct, IEquatable<T>
+#if GENERIC_MATH
+                , INumber<T>
+#endif // GENERIC_MATH
             => IndexOfValueType<T, DontNegate<T>>(ref searchSpace, value, length);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int IndexOfAnyExceptValueType<T>(ref T searchSpace, T value, int length) where T : struct, INumber<T>
+        internal static nint IndexOfAnyExceptValueType<T>(ref T searchSpace, T value, nint length) where T : struct, IEquatable<T>
+#if GENERIC_MATH
+                , INumber<T>
+#endif // GENERIC_MATH
             => IndexOfValueType<T, Negate<T>>(ref searchSpace, value, length);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static int IndexOfValueType<TValue, TNegator>(ref TValue searchSpace, TValue value, int length)
-            where TValue : struct, INumber<TValue>
+        private static nint IndexOfValueType<TValue, TNegator>(ref TValue searchSpace, TValue value, nint length)
+            where TValue : struct, IEquatable<TValue>
+#if GENERIC_MATH
+                , INumber<TValue>
+#endif // GENERIC_MATH
             where TNegator : struct, INegator<TValue> {
-            if (PackedSpanHelpers.PackedIndexOfIsSupported && typeof(TValue) == typeof(short) && PackedSpanHelpers.CanUsePackedIndexOf(value)) {
-                return typeof(TNegator) == typeof(DontNegate<short>)
-                    ? PackedSpanHelpers.IndexOf(ref Unsafe.As<TValue, char>(ref searchSpace), Unsafe.BitCast<TValue, char>(value), length)
-                    : PackedSpanHelpers.IndexOfAnyExcept(ref Unsafe.As<TValue, char>(ref searchSpace), Unsafe.BitCast<TValue, char>(value), length);
-            }
+            //if (PackedSpanHelpers.PackedIndexOfIsSupported && typeof(TValue) == typeof(short) && PackedSpanHelpers.CanUsePackedIndexOf(value)) {
+            //    return typeof(TNegator) == typeof(DontNegate<short>)
+            //        ? PackedSpanHelpers.IndexOf(ref Unsafe.As<TValue, char>(ref searchSpace), Unsafe.BitCast<TValue, char>(value), length)
+            //        : PackedSpanHelpers.IndexOfAnyExcept(ref Unsafe.As<TValue, char>(ref searchSpace), Unsafe.BitCast<TValue, char>(value), length);
+            //}
 
             return NonPackedIndexOfValueType<TValue, TNegator>(ref searchSpace, value, length);
         }
 
-        internal static int NonPackedIndexOfValueType<TValue, TNegator>(ref TValue searchSpace, TValue value, int length)
-            where TValue : struct, INumber<TValue>
-            where TNegator : struct, INegator<TValue> {
+        internal static nint NonPackedIndexOfValueType<TValue,
+#if GENERIC_MATH
+                TNegator
+#else
+                TNegatorType
+#endif // GENERIC_MATH
+            >(ref TValue searchSpace, TValue value, nint length)
+            where TValue : struct, IEquatable<TValue>
+#if GENERIC_MATH
+                , INumber<TValue>
+#endif // GENERIC_MATH
+            where
+#if GENERIC_MATH
+                TNegator
+#else
+                TNegatorType
+#endif // GENERIC_MATH
+                : struct, INegator<TValue>
+            {
+#if GENERIC_MATH
+#else
+            TNegatorType TNegator = default;
+#endif // GENERIC_MATH
             Debug.Assert(length >= 0, "Expected non-negative length");
             Debug.Assert(value is byte or short or int or long, "Expected caller to normalize to one of these types");
 
-            if (!Vector128.IsHardwareAccelerated || length < Vector128<TValue>.Count) {
-                nuint offset = 0;
-
-                while (length >= 8) {
-                    length -= 8;
-
-                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset) == value)) goto Found;
-                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset + 1) == value)) goto Found1;
-                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset + 2) == value)) goto Found2;
-                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset + 3) == value)) goto Found3;
-                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset + 4) == value)) goto Found4;
-                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset + 5) == value)) goto Found5;
-                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset + 6) == value)) goto Found6;
-                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset + 7) == value)) goto Found7;
-
-                    offset += 8;
-                }
-
-                if (length >= 4) {
-                    length -= 4;
-
-                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset) == value)) goto Found;
-                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset + 1) == value)) goto Found1;
-                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset + 2) == value)) goto Found2;
-                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset + 3) == value)) goto Found3;
-
-                    offset += 4;
-                }
-
-                while (length > 0) {
-                    length -= 1;
-
-                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset) == value)) goto Found;
-
-                    offset += 1;
-                }
-                return -1;
-            Found7:
-                return (int)(offset + 7);
-            Found6:
-                return (int)(offset + 6);
-            Found5:
-                return (int)(offset + 5);
-            Found4:
-                return (int)(offset + 4);
-            Found3:
-                return (int)(offset + 3);
-            Found2:
-                return (int)(offset + 2);
-            Found1:
-                return (int)(offset + 1);
-            Found:
-                return (int)(offset);
-            } else if (Vector512.IsHardwareAccelerated && length >= Vector512<TValue>.Count) {
+            if (false) {
+#if NET8_0_OR_GREATER
+            } else if (Vector512.IsHardwareAccelerated && length >= Vector512<TValue>.Count && Vector512<byte>.Count >= Vector<byte>.Count) {
                 Vector512<TValue> current, values = Vector512.Create(value);
                 ref TValue currentSearchSpace = ref searchSpace;
                 ref TValue oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, length - Vector512<TValue>.Count);
@@ -1444,13 +1426,40 @@ namespace Zyl.ExSpans {
                 while (!Unsafe.IsAddressGreaterThan(ref currentSearchSpace, ref oneVectorAwayFromEnd));
 
                 // If any elements remain, process the last vector in the search space.
-                if ((uint)length % Vector512<TValue>.Count != 0) {
+                if ((nuint)length % (nuint)Vector512<TValue>.Count != 0) {
                     current = Vector512.LoadUnsafe(ref oneVectorAwayFromEnd);
 
                     if (TNegator.HasMatch(values, current)) {
                         return ComputeFirstIndex(ref searchSpace, ref oneVectorAwayFromEnd, TNegator.GetMatchMask(values, current));
                     }
                 }
+#endif // NET8_0_OR_GREATER
+            } else if (Vector.IsHardwareAccelerated && length >= Vector<TValue>.Count) {
+                Vector<TValue> current, values = Vectors.Create(value);
+                ref TValue currentSearchSpace = ref searchSpace;
+                ref TValue oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, length - Vector<TValue>.Count);
+
+                // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
+                do {
+                    current = VectorHelper.LoadUnsafe(ref currentSearchSpace);
+
+                    if (TNegator.HasMatch(values, current)) {
+                        return ComputeFirstIndex(ref searchSpace, ref currentSearchSpace, TNegator.GetMatchMask(values, current));
+                    }
+
+                    currentSearchSpace = ref ExUnsafe.Add(ref currentSearchSpace, Vector<TValue>.Count);
+                }
+                while (!Unsafe.IsAddressGreaterThan(ref currentSearchSpace, ref oneVectorAwayFromEnd));
+
+                // If any elements remain, process the last vector in the search space.
+                if ((nuint)length % (nuint)Vector<TValue>.Count != 0) {
+                    current = VectorHelper.LoadUnsafe(ref oneVectorAwayFromEnd);
+
+                    if (TNegator.HasMatch(values, current)) {
+                        return ComputeFirstIndex(ref searchSpace, ref oneVectorAwayFromEnd, TNegator.GetMatchMask(values, current));
+                    }
+                }
+#if NET7_0_OR_GREATER
             } else if (Vector256.IsHardwareAccelerated && length >= Vector256<TValue>.Count) {
                 Vector256<TValue> equals, values = Vector256.Create(value);
                 ref TValue currentSearchSpace = ref searchSpace;
@@ -1469,7 +1478,7 @@ namespace Zyl.ExSpans {
                 while (!Unsafe.IsAddressGreaterThan(ref currentSearchSpace, ref oneVectorAwayFromEnd));
 
                 // If any elements remain, process the last vector in the search space.
-                if ((uint)length % Vector256<TValue>.Count != 0) {
+                if ((nuint)length % (nuint)Vector256<TValue>.Count != 0) {
                     equals = TNegator.NegateIfNeeded(Vector256.Equals(values, Vector256.LoadUnsafe(ref oneVectorAwayFromEnd)));
                     if (equals != Vector256<TValue>.Zero) {
                         return ComputeFirstIndex(ref searchSpace, ref oneVectorAwayFromEnd, equals);
@@ -1493,17 +1502,73 @@ namespace Zyl.ExSpans {
                 while (!Unsafe.IsAddressGreaterThan(ref currentSearchSpace, ref oneVectorAwayFromEnd));
 
                 // If any elements remain, process the first vector in the search space.
-                if ((uint)length % Vector128<TValue>.Count != 0) {
+                if ((nuint)length % (nuint)Vector128<TValue>.Count != 0) {
                     equals = TNegator.NegateIfNeeded(Vector128.Equals(values, Vector128.LoadUnsafe(ref oneVectorAwayFromEnd)));
                     if (equals != Vector128<TValue>.Zero) {
                         return ComputeFirstIndex(ref searchSpace, ref oneVectorAwayFromEnd, equals);
                     }
                 }
+#endif // NET7_0_OR_GREATER
             }
 
-            return -1;
+            if (true) {
+                nint offset = 0;
+
+                while (length >= 8) {
+                    length -= 8;
+
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset).Equals(value))) goto Found;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset + 1).Equals(value))) goto Found1;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset + 2).Equals(value))) goto Found2;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset + 3).Equals(value))) goto Found3;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset + 4).Equals(value))) goto Found4;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset + 5).Equals(value))) goto Found5;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset + 6).Equals(value))) goto Found6;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset + 7).Equals(value))) goto Found7;
+
+                    offset += 8;
+                }
+
+                if (length >= 4) {
+                    length -= 4;
+
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset).Equals(value))) goto Found;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset + 1).Equals(value))) goto Found1;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset + 2).Equals(value))) goto Found2;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset + 3).Equals(value))) goto Found3;
+
+                    offset += 4;
+                }
+
+                while (length > 0) {
+                    length -= 1;
+
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset).Equals(value))) goto Found;
+
+                    offset += 1;
+                }
+                return -1;
+            Found7:
+                return (offset + 7);
+            Found6:
+                return (offset + 6);
+            Found5:
+                return (offset + 5);
+            Found4:
+                return (offset + 4);
+            Found3:
+                return (offset + 3);
+            Found2:
+                return (offset + 2);
+            Found1:
+                return (offset + 1);
+            Found:
+                return (offset);
+            }
+            //return -1;
         }
 
+#if TODO
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static int IndexOfAnyChar(ref char searchSpace, char value0, char value1, int length)
             => IndexOfAnyValueType(ref Unsafe.As<char, short>(ref searchSpace), (short)value0, (short)value1, length);
@@ -2966,49 +3031,73 @@ namespace Zyl.ExSpans {
 
             return -1;
         }
+#endif // TODO
 
+#if NET7_0_OR_GREATER
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static unsafe int ComputeFirstIndex<T>(ref T searchSpace, ref T current, Vector128<T> equals) where T : struct {
+        private static nint ComputeFirstIndex<T>(ref T searchSpace, ref T current, Vector128<T> equals) where T : struct {
             uint notEqualsElements = equals.ExtractMostSignificantBits();
             int index = BitOperations.TrailingZeroCount(notEqualsElements);
-            return index + (int)((nuint)Unsafe.ByteOffset(ref searchSpace, ref current) / (nuint)sizeof(T));
+            return index + Unsafe.ByteOffset(ref searchSpace, ref current) / Unsafe.SizeOf<T>();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static unsafe int ComputeFirstIndex<T>(ref T searchSpace, ref T current, Vector256<T> equals) where T : struct {
+        private static nint ComputeFirstIndex<T>(ref T searchSpace, ref T current, Vector256<T> equals) where T : struct {
             uint notEqualsElements = equals.ExtractMostSignificantBits();
             int index = BitOperations.TrailingZeroCount(notEqualsElements);
-            return index + (int)((nuint)Unsafe.ByteOffset(ref searchSpace, ref current) / (nuint)sizeof(T));
+            return index + Unsafe.ByteOffset(ref searchSpace, ref current) / Unsafe.SizeOf<T>();
         }
+#endif // NET7_0_OR_GREATER
 
+#if NET8_0_OR_GREATER
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static unsafe int ComputeFirstIndex<T>(ref T searchSpace, ref T current, Vector512<T> equals) where T : struct {
+        private static nint ComputeFirstIndex<T>(ref T searchSpace, ref T current, Vector512<T> equals) where T : struct {
             ulong notEqualsElements = equals.ExtractMostSignificantBits();
             int index = BitOperations.TrailingZeroCount(notEqualsElements);
-            return index + (int)((nuint)Unsafe.ByteOffset(ref searchSpace, ref current) / (nuint)sizeof(T));
+            return index + Unsafe.ByteOffset(ref searchSpace, ref current) / Unsafe.SizeOf<T>();
         }
+#endif // NET8_0_OR_GREATER
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static int ComputeLastIndex<T>(nint offset, Vector128<T> equals) where T : struct {
+        private static nint ComputeFirstIndex<T>(ref T searchSpace, ref T current, Vector<T> equals) where T : struct {
+            ulong notEqualsElements = equals.ExtractMostSignificantBits();
+            int index = MathBitOperations.TrailingZeroCount(notEqualsElements);
+            return index + Unsafe.ByteOffset(ref searchSpace, ref current).Div(Unsafe.SizeOf<T>());
+        }
+
+#if NET7_0_OR_GREATER
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static nint ComputeLastIndex<T>(nint offset, Vector128<T> equals) where T : struct {
             uint notEqualsElements = equals.ExtractMostSignificantBits();
             int index = 31 - BitOperations.LeadingZeroCount(notEqualsElements); // 31 = 32 (bits in Int32) - 1 (indexing from zero)
-            return (int)offset + index;
+            return offset + index;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static int ComputeLastIndex<T>(nint offset, Vector256<T> equals) where T : struct {
+        private static nint ComputeLastIndex<T>(nint offset, Vector256<T> equals) where T : struct {
             uint notEqualsElements = equals.ExtractMostSignificantBits();
             int index = 31 - BitOperations.LeadingZeroCount(notEqualsElements); // 31 = 32 (bits in Int32) - 1 (indexing from zero)
-            return (int)offset + index;
+            return offset + index;
         }
+#endif // NET7_0_OR_GREATER
 
+#if NET8_0_OR_GREATER
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static int ComputeLastIndex<T>(nint offset, Vector512<T> equals) where T : struct {
+        private static nint ComputeLastIndex<T>(nint offset, Vector512<T> equals) where T : struct {
             ulong notEqualsElements = equals.ExtractMostSignificantBits();
             int index = 63 - BitOperations.LeadingZeroCount(notEqualsElements); // 31 = 32 (bits in Int32) - 1 (indexing from zero)
-            return (int)offset + index;
+            return offset + index;
+        }
+#endif // NET8_0_OR_GREATER
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static nint ComputeLastIndex<T>(nint offset, Vector<T> equals) where T : struct {
+            ulong notEqualsElements = equals.ExtractMostSignificantBits();
+            int index = 63 - MathBitOperations.LeadingZeroCount(notEqualsElements); // 31 = 32 (bits in Int32) - 1 (indexing from zero)
+            return offset + index;
         }
 
+#if TODO
         internal static int IndexOfAnyInRange<T>(ref T searchSpace, T lowInclusive, T highInclusive, int length)
             where T : IComparable<T> {
             for (int i = 0; i < length; i++) {
@@ -3304,7 +3393,7 @@ namespace Zyl.ExSpans {
 
                     // Count the last vector and mask off the elements that were already counted (number of elements between oneVectorAwayFromEnd and current).
                     ulong mask = Vector512.Equals(Vector512.LoadUnsafe(ref oneVectorAwayFromEnd), targetVector).ExtractMostSignificantBits();
-                    mask >>= (int)((nuint)Unsafe.ByteOffset(ref oneVectorAwayFromEnd, ref current) / (uint)sizeof(T));
+                    mask >>= (int)((nuint)Unsafe.ByteOffset(ref oneVectorAwayFromEnd, ref current) / (uint)Unsafe.SizeOf<T>());
                     count += BitOperations.PopCount(mask);
                 } else if (Vector256.IsHardwareAccelerated && length >= Vector256<T>.Count) {
                     Vector256<T> targetVector = Vector256.Create(value);
@@ -3316,7 +3405,7 @@ namespace Zyl.ExSpans {
 
                     // Count the last vector and mask off the elements that were already counted (number of elements between oneVectorAwayFromEnd and current).
                     uint mask = Vector256.Equals(Vector256.LoadUnsafe(ref oneVectorAwayFromEnd), targetVector).ExtractMostSignificantBits();
-                    mask >>= (int)((nuint)Unsafe.ByteOffset(ref oneVectorAwayFromEnd, ref current) / (uint)sizeof(T));
+                    mask >>= (int)((nuint)Unsafe.ByteOffset(ref oneVectorAwayFromEnd, ref current) / (uint)Unsafe.SizeOf<T>());
                     count += BitOperations.PopCount(mask);
                 } else {
                     Vector128<T> targetVector = Vector128.Create(value);
@@ -3328,7 +3417,7 @@ namespace Zyl.ExSpans {
 
                     // Count the last vector and mask off the elements that were already counted (number of elements between oneVectorAwayFromEnd and current).
                     uint mask = Vector128.Equals(Vector128.LoadUnsafe(ref oneVectorAwayFromEnd), targetVector).ExtractMostSignificantBits();
-                    mask >>= (int)((nuint)Unsafe.ByteOffset(ref oneVectorAwayFromEnd, ref current) / (uint)sizeof(T));
+                    mask >>= (int)((nuint)Unsafe.ByteOffset(ref oneVectorAwayFromEnd, ref current) / (uint)Unsafe.SizeOf<T>());
                     count += BitOperations.PopCount(mask);
                 }
             } else {

@@ -14,7 +14,7 @@ using Zyl.ExSpans.Impl;
 using Zyl.VectorTraits;
 
 namespace Zyl.ExSpans {
-    partial class SpanHelpers {
+    partial class ExSpanHelpers {
 
         internal interface INegator<T> where T : struct {
 #if GENERIC_MATH
