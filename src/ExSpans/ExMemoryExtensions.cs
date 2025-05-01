@@ -156,7 +156,6 @@ namespace Zyl.ExSpans {
             return ExSpanHelpers.Contains(ref ExMemoryMarshal.GetReference(span), value, span.Length);
         }
 
-#if TODO
         /// <summary>
         /// Searches for the specified value and returns true if found. If not found, returns false.
         /// </summary>
@@ -166,8 +165,9 @@ namespace Zyl.ExSpans {
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Contains<T>(this ReadOnlyExSpan<T> span, T value, IEqualityComparer<T>? comparer = null) =>
-            IndexOf(span, value, comparer) >= 0;
+            IndexOf(span, value, comparer).GreaterThanOrEqual(0);
 
+#if TODO
         /// <inheritdoc cref="ContainsAny{T}(ReadOnlyExSpan{T}, T, T)"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [OverloadResolutionPriority(-1)]
@@ -1893,7 +1893,6 @@ namespace Zyl.ExSpans {
             return ExSpanHelpers.IndexOf(ref ExMemoryMarshal.GetReference(span), span.Length, ref ExMemoryMarshal.GetReference(value), value.Length);
         }
 
-#if TODO
         /// <summary>
         /// Searches for the specified sequence and returns the index of its first occurrence. If not found, returns -1. Values are compared using IEquatable{T}.Equals(T).
         /// </summary>
@@ -1926,7 +1925,7 @@ namespace Zyl.ExSpans {
 
                 comparer ??= EqualityComparer<T>.Default;
 
-                TSize total = 0;
+                TSize total = (TSize)0;
                 while (!span.IsEmpty) {
                     TSize pos = span.IndexOf(value[(TSize)0], comparer);
                     if (pos.LessThan(0)) {
@@ -1945,6 +1944,7 @@ namespace Zyl.ExSpans {
             }
         }
 
+#if TODO
         /// <summary>
         /// Searches for the specified value and returns the index of its last occurrence. If not found, returns -1. Values are compared using IEquatable{T}.Equals(T).
         /// </summary>
@@ -3031,11 +3031,12 @@ namespace Zyl.ExSpans {
 
             return span.Length.CompareTo(other.Length);
         }
+#endif // TODO
 
         /// <summary>
         /// Determines whether the specified sequence appears at the start of the span.
         /// </summary>
-        [Intrinsic] // Unrolled and vectorized for half-constant input
+        //[Intrinsic] // Unrolled and vectorized for half-constant input
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [OverloadResolutionPriority(-1)]
         public static bool StartsWith<T>(this ExSpan<T> span, ReadOnlyExSpan<T> value) where T : IEquatable<T>? =>
@@ -3044,19 +3045,19 @@ namespace Zyl.ExSpans {
         /// <summary>
         /// Determines whether the specified sequence appears at the start of the span.
         /// </summary>
-        [Intrinsic] // Unrolled and vectorized for half-constant input
+        //[Intrinsic] // Unrolled and vectorized for half-constant input
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe bool StartsWith<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> value) where T : IEquatable<T>? {
-            int valueLength = value.Length;
+        public static bool StartsWith<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> value) where T : IEquatable<T>? {
+            TSize valueLength = value.Length;
             if (TypeHelper.IsBitwiseEquatable<T>()) {
-                return valueLength <= span.Length &&
+                return valueLength.LessThanOrEqual(span.Length) &&
                 ExSpanHelpers.SequenceEqual(
                     ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                     ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(value)),
                     ((uint)valueLength) * (nuint)Unsafe.SizeOf<T>());  // If this multiplication overflows, the ExSpan we got overflows the entire address range. There's no happy outcome for this api in such a case so we choose not to take the overhead of checking.
             }
 
-            return valueLength <= span.Length && ExSpanHelpers.SequenceEqual(ref ExMemoryMarshal.GetReference(span), ref ExMemoryMarshal.GetReference(value), valueLength);
+            return valueLength.LessThanOrEqual(span.Length) && ExSpanHelpers.SequenceEqual(ref ExMemoryMarshal.GetReference(span), ref ExMemoryMarshal.GetReference(value), valueLength.ToUIntPtr());
         }
 
         /// <summary>
@@ -3066,10 +3067,11 @@ namespace Zyl.ExSpans {
         /// <param name="value">The sequence to compare to the start of <paramref name="span"/>.</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe bool StartsWith<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> value, IEqualityComparer<T>? comparer = null) =>
-            value.Length <= span.Length &&
-            SequenceEqual(span.Slice(0, value.Length), value, comparer);
+        public static bool StartsWith<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> value, IEqualityComparer<T>? comparer = null) =>
+            value.Length.LessThanOrEqual(span.Length) &&
+            SequenceEqual(span.Slice((TSize)0, value.Length), value, comparer);
 
+#if TODO
         /// <summary>
         /// Determines whether the specified sequence appears at the end of the span.
         /// </summary>
@@ -3112,6 +3114,7 @@ namespace Zyl.ExSpans {
         public static unsafe bool EndsWith<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> value, IEqualityComparer<T>? comparer = null) =>
             value.Length <= span.Length &&
             SequenceEqual(span.Slice(span.Length - value.Length), value, comparer);
+#endif // TODO
 
         /// <summary>
         /// Determines whether the specified value appears at the start of the span.
@@ -3122,7 +3125,7 @@ namespace Zyl.ExSpans {
         /// <returns><see langword="true" /> if <paramref name="value" /> matches the beginning of <paramref name="span" />; otherwise, <see langword="false" />.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool StartsWith<T>(this ReadOnlyExSpan<T> span, T value) where T : IEquatable<T>? =>
-            span.Length != 0 && (span[0]?.Equals(value) ?? (object?)value is null);
+            span.Length != (TSize)0 && (span[(TSize)0]?.Equals(value) ?? (object?)value is null);
 
         /// <summary>
         /// Determines whether the specified value appears at the start of the span.
@@ -3134,9 +3137,10 @@ namespace Zyl.ExSpans {
         /// <returns><see langword="true" /> if <paramref name="value" /> matches the beginning of <paramref name="span" />; otherwise, <see langword="false" />.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool StartsWith<T>(this ReadOnlyExSpan<T> span, T value, IEqualityComparer<T>? comparer = null) =>
-            span.Length != 0 &&
-            (comparer is null ? EqualityComparer<T>.Default.Equals(span[0], value) : comparer.Equals(span[0], value));
+            span.Length != (TSize)0 &&
+            (comparer is null ? EqualityComparer<T>.Default.Equals(span[(TSize)0], value) : comparer.Equals(span[(TSize)0], value));
 
+#if TODO
         /// <summary>
         /// Determines whether the specified value appears at the end of the span.
         /// </summary>
