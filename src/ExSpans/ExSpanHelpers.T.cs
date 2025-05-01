@@ -196,8 +196,7 @@ namespace Zyl.ExSpans {
             }
         }
 
-#if TODO
-        public static int IndexOf<T>(ref T searchSpace, int searchSpaceLength, ref T value, int valueLength) where T : IEquatable<T>? {
+        public static nint IndexOf<T>(ref T searchSpace, int searchSpaceLength, ref T value, nint valueLength) where T : IEquatable<T>? {
             Debug.Assert(searchSpaceLength >= 0);
             Debug.Assert(valueLength >= 0);
 
@@ -206,30 +205,29 @@ namespace Zyl.ExSpans {
 
             T valueHead = value;
             ref T valueTail = ref ExUnsafe.Add(ref value, 1);
-            int valueTailLength = valueLength - 1;
+            nint valueTailLength = valueLength - 1;
 
-            int index = 0;
+            nint index = 0;
             while (true) {
                 Debug.Assert(0 <= index && index <= searchSpaceLength); // Ensures no deceptive underflows in the computation of "remainingSearchSpaceLength".
-                int remainingSearchSpaceLength = searchSpaceLength - index - valueTailLength;
+                nint remainingSearchSpaceLength = searchSpaceLength - index - valueTailLength;
                 if (remainingSearchSpaceLength <= 0)
                     break;  // The unsearched portion is now shorter than the sequence we're looking for. So it can't be there.
 
                 // Do a quick search for the first element of "value".
-                int relativeIndex = IndexOf(ref ExUnsafe.Add(ref searchSpace, index), valueHead, remainingSearchSpaceLength);
+                nint relativeIndex = IndexOf(ref ExUnsafe.Add(ref searchSpace, index), valueHead, remainingSearchSpaceLength);
                 if (relativeIndex < 0)
                     break;
                 index += relativeIndex;
 
                 // Found the first element of "value". See if the tail matches.
-                if (SequenceEqual(ref ExUnsafe.Add(ref searchSpace, index + 1), ref valueTail, valueTailLength))
+                if (SequenceEqual(ref ExUnsafe.Add(ref searchSpace, index + 1), ref valueTail, valueTailLength.ToUIntPtr()))
                     return index;  // The tail matched. Return a successful find.
 
                 index++;
             }
             return -1;
         }
-#endif // TODO
 
         // Adapted from IndexOf(...)
         public static bool Contains<T>(ref T searchSpace, T value, nint length) where T : IEquatable<T>? {
@@ -293,8 +291,7 @@ namespace Zyl.ExSpans {
             return true;
         }
 
-#if TODO
-        public static int IndexOf<T>(ref T searchSpace, T value, int length) where T : IEquatable<T>? {
+        public static nint IndexOf<T>(ref T searchSpace, T value, nint length) where T : IEquatable<T>? {
             Debug.Assert(length >= 0);
 
             nint index = 0; // Use nint for arithmetic to avoid unnecessary 64->32->64 truncations
@@ -304,7 +301,7 @@ namespace Zyl.ExSpans {
                 while (length >= 8) {
                     length -= 8;
 
-                    if (value.Equals(ExUnsafe.Add(ref searchSpace, index)))
+                    if (value!.Equals(ExUnsafe.Add(ref searchSpace, index)))
                         goto Found;
                     if (value.Equals(ExUnsafe.Add(ref searchSpace, index + 1)))
                         goto Found1;
@@ -327,7 +324,7 @@ namespace Zyl.ExSpans {
                 if (length >= 4) {
                     length -= 4;
 
-                    if (value.Equals(ExUnsafe.Add(ref searchSpace, index)))
+                    if (value!.Equals(ExUnsafe.Add(ref searchSpace, index)))
                         goto Found;
                     if (value.Equals(ExUnsafe.Add(ref searchSpace, index + 1)))
                         goto Found1;
@@ -340,7 +337,7 @@ namespace Zyl.ExSpans {
                 }
 
                 while (length > 0) {
-                    if (value.Equals(ExUnsafe.Add(ref searchSpace, index)))
+                    if (value!.Equals(ExUnsafe.Add(ref searchSpace, index)))
                         goto Found;
 
                     index += 1;
@@ -357,23 +354,24 @@ namespace Zyl.ExSpans {
             return -1;
 
         Found: // Workaround for https://github.com/dotnet/runtime/issues/8795
-            return (int)index;
+            return index;
         Found1:
-            return (int)(index + 1);
+            return index + 1;
         Found2:
-            return (int)(index + 2);
+            return index + 2;
         Found3:
-            return (int)(index + 3);
+            return index + 3;
         Found4:
-            return (int)(index + 4);
+            return index + 4;
         Found5:
-            return (int)(index + 5);
+            return index + 5;
         Found6:
-            return (int)(index + 6);
+            return index + 6;
         Found7:
-            return (int)(index + 7);
+            return index + 7;
         }
 
+#if TODO
         public static int IndexOfAny<T>(ref T searchSpace, T value0, T value1, int length) where T : IEquatable<T>? {
             Debug.Assert(length >= 0);
 
