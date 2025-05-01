@@ -3071,12 +3071,11 @@ namespace Zyl.ExSpans {
             value.Length.LessThanOrEqual(span.Length) &&
             SequenceEqual(span.Slice((TSize)0, value.Length), value, comparer);
 
-#if TODO
         /// <summary>
         /// Determines whether the specified sequence appears at the end of the span.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [Intrinsic] // Unrolled and vectorized for half-constant input
+        //[Intrinsic] // Unrolled and vectorized for half-constant input
         [OverloadResolutionPriority(-1)]
         public static bool EndsWith<T>(this ExSpan<T> span, ReadOnlyExSpan<T> value) where T : IEquatable<T>? =>
             EndsWith((ReadOnlyExSpan<T>)span, value);
@@ -3085,23 +3084,23 @@ namespace Zyl.ExSpans {
         /// Determines whether the specified sequence appears at the end of the span.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [Intrinsic] // Unrolled and vectorized for half-constant input
-        public static unsafe bool EndsWith<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> value) where T : IEquatable<T>? {
-            int ExSpanLength = span.Length;
-            int valueLength = value.Length;
+        //[Intrinsic] // Unrolled and vectorized for half-constant input
+        public static bool EndsWith<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> value) where T : IEquatable<T>? {
+            TSize ExSpanLength = span.Length;
+            TSize valueLength = value.Length;
             if (TypeHelper.IsBitwiseEquatable<T>()) {
-                return valueLength <= ExSpanLength &&
+                return valueLength.LessThanOrEqual(ExSpanLength) &&
                 ExSpanHelpers.SequenceEqual(
-                    ref Unsafe.As<T, byte>(ref Unsafe.Add(ref ExMemoryMarshal.GetReference(span), (nint)(uint)(ExSpanLength - valueLength) /* force zero-extension */)),
+                    ref Unsafe.As<T, byte>(ref Unsafe.Add(ref ExMemoryMarshal.GetReference(span), ExSpanLength.Subtract(valueLength) /* force zero-extension */)),
                     ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(value)),
-                    ((uint)valueLength) * (nuint)Unsafe.SizeOf<T>());  // If this multiplication overflows, the ExSpan we got overflows the entire address range. There's no happy outcome for this api in such a case so we choose not to take the overhead of checking.
+                    (valueLength.ToUIntPtr().Multiply((nuint)Unsafe.SizeOf<T>())));  // If this multiplication overflows, the ExSpan we got overflows the entire address range. There's no happy outcome for this api in such a case so we choose not to take the overhead of checking.
             }
 
-            return valueLength <= ExSpanLength &&
+            return valueLength.LessThanOrEqual(ExSpanLength) &&
                 ExSpanHelpers.SequenceEqual(
-                    ref Unsafe.Add(ref ExMemoryMarshal.GetReference(span), (nint)(uint)(ExSpanLength - valueLength) /* force zero-extension */),
+                    ref Unsafe.Add(ref ExMemoryMarshal.GetReference(span), ExSpanLength.Subtract(valueLength) /* force zero-extension */),
                     ref ExMemoryMarshal.GetReference(value),
-                    valueLength);
+                    valueLength.ToUIntPtr());
         }
 
         /// <summary>
@@ -3111,10 +3110,9 @@ namespace Zyl.ExSpans {
         /// <param name="value">The sequence to compare to the end of <paramref name="span"/>.</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe bool EndsWith<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> value, IEqualityComparer<T>? comparer = null) =>
-            value.Length <= span.Length &&
-            SequenceEqual(span.Slice(span.Length - value.Length), value, comparer);
-#endif // TODO
+        public static bool EndsWith<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> value, IEqualityComparer<T>? comparer = null) =>
+            value.Length.LessThanOrEqual( span.Length) &&
+            SequenceEqual(span.Slice(span.Length.Subtract(value.Length)), value, comparer);
 
         /// <summary>
         /// Determines whether the specified value appears at the start of the span.
@@ -3140,7 +3138,6 @@ namespace Zyl.ExSpans {
             span.Length != (TSize)0 &&
             (comparer is null ? EqualityComparer<T>.Default.Equals(span[(TSize)0], value) : comparer.Equals(span[(TSize)0], value));
 
-#if TODO
         /// <summary>
         /// Determines whether the specified value appears at the end of the span.
         /// </summary>
@@ -3150,7 +3147,7 @@ namespace Zyl.ExSpans {
         /// <returns><see langword="true" /> if <paramref name="value" /> matches the end of <paramref name="span" />; otherwise, <see langword="false" />.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool EndsWith<T>(this ReadOnlyExSpan<T> span, T value) where T : IEquatable<T>? =>
-            span.Length != 0 && (span[^1]?.Equals(value) ?? (object?)value is null);
+            span.Length != (TSize)0 && (span[span.Length-1]?.Equals(value) ?? (object?)value is null);
 
         /// <summary>
         /// Determines whether the specified value appears at the end of the span.
@@ -3162,9 +3159,10 @@ namespace Zyl.ExSpans {
         /// <returns><see langword="true" /> if <paramref name="value" /> matches the end of <paramref name="span" />; otherwise, <see langword="false" />.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool EndsWith<T>(this ReadOnlyExSpan<T> span, T value, IEqualityComparer<T>? comparer = null) =>
-            span.Length != 0 &&
-            (comparer is null ? EqualityComparer<T>.Default.Equals(span[^1], value) : comparer.Equals(span[^1], value));
+            span.Length != (TSize)0 &&
+            (comparer is null ? EqualityComparer<T>.Default.Equals(span[span.Length - 1], value) : comparer.Equals(span[span.Length - 1], value));
 
+#if TODO
         /// <summary>
         /// Reverses the sequence of the elements in the entire span.
         /// </summary>
