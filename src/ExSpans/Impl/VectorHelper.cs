@@ -8,12 +8,41 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
+using Zyl.VectorTraits;
+using Zyl.VectorTraits.Extensions.SameW;
 
 namespace Zyl.ExSpans.Impl {
     /// <summary>
     /// <see cref="Vector"/> Helper.
     /// </summary>
     public static class VectorHelper {
+
+        /// <summary>
+        /// Extracts the most significant bit from each element in a vector.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements in the vector.</typeparam>
+        /// <param name="vector">The vector whose elements should have their most significant bit extracted.</param>
+        /// <returns>The packed most significant bits extracted from the elements in vector.</returns>
+        /// <exception cref="System.NotSupportedException">The type of vector (<typeparamref name="T"/>) is not supported.</exception>
+        [CLSCompliant(false)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ulong ExtractMostSignificantBits<T>(this Vector<T> vector) where T : struct {
+#if NETX_0_OR_GREATER
+            return Vector.ExtractMostSignificantBits(vector);
+#else
+            switch (Unsafe.SizeOf<T>()) {
+                case 8:
+                    return Vectors.ExtractMostSignificantBits(vector.AsInt64());
+                case 4:
+                    return Vectors.ExtractMostSignificantBits(vector.AsInt32());
+                case 2:
+                    return Vectors.ExtractMostSignificantBits(vector.AsInt16());
+                default:
+                    return Vectors.ExtractMostSignificantBits(vector.AsByte());
+            }
+
+#endif // NETX_0_OR_GREATER
+        }
 
         /// <summary>
         /// Loads a vector from the given source and element offset.
