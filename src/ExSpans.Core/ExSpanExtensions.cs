@@ -249,7 +249,7 @@ namespace Zyl.ExSpans {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ExSpan<T> AsExSpan<T>(this T[]? array, TSize start) {
             if (array == null) {
-                if (start != TSize.Zero)
+                if (start != (TSize)0)
                     ThrowHelper.ThrowArgumentOutOfRangeException();
                 return default;
             }

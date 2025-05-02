@@ -52,7 +52,7 @@ namespace Zyl.ExSpans {
 #if STRUCT_REF_FIELD
             _reference = ref ExMemoryMarshal.GetArrayDataReference(array);
 #else
-            _byteOffset = TSize.Zero;
+            _byteOffset = (TSize)0;
             _referenceSpan = new ReadOnlySpan<T>(array);
 #endif
         }
@@ -71,7 +71,7 @@ namespace Zyl.ExSpans {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ReadOnlyExSpan(T[]? array, TSize start, TSize length) {
             if (array == null) {
-                if (start != TSize.Zero || length != TSize.Zero)
+                if (start != (TSize)0 || length != (TSize)0)
                     ThrowHelper.ThrowArgumentOutOfRangeException();
                 this = default;
                 return; // returns default
@@ -133,7 +133,7 @@ namespace Zyl.ExSpans {
 #if STRUCT_REF_FIELD
             _reference = ref Unsafe.AsRef(in reference);
 #else
-            _byteOffset = TSize.Zero;
+            _byteOffset = (TSize)0;
             _referenceSpan = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.AsRef(in reference), 1); // Need NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
 #endif
         }
@@ -147,7 +147,7 @@ namespace Zyl.ExSpans {
 #if STRUCT_REF_FIELD
             _reference = ref Unsafe.AsRef(in reference);
 #else
-            _byteOffset = TSize.Zero;
+            _byteOffset = (TSize)0;
             _referenceSpan = MemoryMarshalHelper.CreateReadOnlySpanSaturating(ref Unsafe.AsRef(in reference), length); // Need NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
 #endif
         }
@@ -280,7 +280,7 @@ namespace Zyl.ExSpans {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             internal Enumerator(ReadOnlyExSpan<T> span) {
                 _span = span;
-                _index = TSize.Zero - 1;
+                _index = (TSize)0 - 1;
             }
 
             /// <summary>Advances the enumerator to the next element of the span (将枚举器推进到跨度的下一元素).</summary>
@@ -314,7 +314,7 @@ namespace Zyl.ExSpans {
 #else
             // Ensure that the native code has just one forward branch that is predicted-not-taken.
             ref T ret = ref Unsafe.NullRef<T>();
-            if (_length != TSize.Zero) {
+            if (_length != (TSize)0) {
                 unsafe {
                     if (_referenceSpan.IsEmpty) {
                         return ref Unsafe.AsRef<T>((void*)_byteOffset);
@@ -473,7 +473,7 @@ namespace Zyl.ExSpans {
         /// <exception cref="ArgumentOutOfRangeException">The <paramref name="maxLength"/> parameter must be greater than 0</exception>
         public T[] ToArray(int maxLength) {
             if (maxLength <= 0) throw new ArgumentOutOfRangeException(nameof(maxLength), "The maxLength parameter must be greater than 0!");
-            if (_length == TSize.Zero)
+            if (_length == (TSize)0)
                 return ArrayHelper.Empty<T>();
 
             int len = (IntPtrExtensions.LessThan(_length, (TSize)maxLength)) ? (int)_length : maxLength;

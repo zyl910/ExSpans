@@ -33,7 +33,7 @@ namespace Zyl.ExSpans {
         /// <seealso cref="MemoryMarshalHelper.GetSpanSaturatingLength"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static explicit operator ReadOnlySpan<T>(ReadOnlyExSpan<T> span) {
-            if (TSize.Zero == span.Length) return ReadOnlySpan<T>.Empty;
+            if ((TSize)0 == span.Length) return ReadOnlySpan<T>.Empty;
             int len = MemoryMarshalHelper.GetSpanSaturatingLength(span.Length);
 #if STRUCT_REF_FIELD
             return MemoryMarshal.CreateReadOnlySpan(ref Unsafe.AsRef(in span.GetPinnableReference()), len);
@@ -42,7 +42,7 @@ namespace Zyl.ExSpans {
                 unsafe {
                     return new ReadOnlySpan<T>((void*)span._byteOffset, len);
                 }
-            } else if (TSize.Zero == span._byteOffset) {
+            } else if ((TSize)0 == span._byteOffset) {
                 if (len >= span._referenceSpan.Length) {
                     return span._referenceSpan;
                 } else {

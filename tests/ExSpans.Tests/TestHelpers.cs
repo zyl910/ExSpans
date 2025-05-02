@@ -1,11 +1,11 @@
 ﻿#if SIZE_UINTPTR
-global using TSize = System.UIntPtr;
+global using TSize = nuint; //System.UIntPtr;
 global using TSize32 = System.UInt32;
 #else
-global using TSize = System.IntPtr;
+global using TSize = nint; //System.IntPtr;
 global using TSize32 = System.Int32;
 #endif // SIZE_UINTPTR
-global using TUSize = System.UIntPtr;
+global using TUSize = nuint; //System.UIntPtr;
 
 using System;
 using System.Collections.Generic;
