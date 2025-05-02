@@ -371,14 +371,15 @@ namespace Zyl.ExSpans {
             return index + 7;
         }
 
-#if TODO
-        public static int IndexOfAny<T>(ref T searchSpace, T value0, T value1, int length) where T : IEquatable<T>? {
+        public static nint IndexOfAny<T>(ref T searchSpace, T value0, T value1, nint length) where T : IEquatable<T>? {
             Debug.Assert(length >= 0);
 
             T lookUp;
-            int index = 0;
+            nint index = 0;
             if (default(T) != null || ((object?)value0 != null && (object?)value1 != null)) {
                 Debug.Assert(value0 is not null && value1 is not null);
+                if (value0 is null) throw new ArgumentNullException(nameof(value0));
+                if (value1 is null) throw new ArgumentNullException(nameof(value1));
 
                 while ((length - index) >= 8) {
                     lookUp = ExUnsafe.Add(ref searchSpace, index);
@@ -466,13 +467,16 @@ namespace Zyl.ExSpans {
             return index + 7;
         }
 
-        public static int IndexOfAny<T>(ref T searchSpace, T value0, T value1, T value2, int length) where T : IEquatable<T>? {
+        public static nint IndexOfAny<T>(ref T searchSpace, T value0, T value1, T value2, nint length) where T : IEquatable<T>? {
             Debug.Assert(length >= 0);
 
             T lookUp;
-            int index = 0;
+            nint index = 0;
             if (default(T) != null || ((object?)value0 != null && (object?)value1 != null && (object?)value2 != null)) {
                 Debug.Assert(value0 is not null && value1 is not null && value2 is not null);
+                if (value0 is null) throw new ArgumentNullException(nameof(value0));
+                if (value1 is null) throw new ArgumentNullException(nameof(value1));
+                if (value2 is null) throw new ArgumentNullException(nameof(value2));
 
                 while ((length - index) >= 8) {
                     lookUp = ExUnsafe.Add(ref searchSpace, index);
@@ -559,7 +563,7 @@ namespace Zyl.ExSpans {
             return index + 7;
         }
 
-        public static int IndexOfAny<T>(ref T searchSpace, int searchSpaceLength, ref T value, int valueLength) where T : IEquatable<T>? {
+        public static nint IndexOfAny<T>(ref T searchSpace, nint searchSpaceLength, ref T value, nint valueLength) where T : IEquatable<T>? {
             Debug.Assert(searchSpaceLength >= 0);
             Debug.Assert(valueLength >= 0);
 
@@ -577,14 +581,14 @@ namespace Zyl.ExSpans {
             // and when this is called in a loop, we want the entire loop to be bounded by O(n * l)
             // rather than O(n^2 * l).
 
-            if (typeof(T).IsValueType) {
+            if (TypeHelper.IsValueType<T>()) {
                 // Calling ValueType.Equals (devirtualized), which takes 'this' byref. We'll make
                 // a byval copy of the candidate from the search space in the outer loop, then in
                 // the inner loop we'll pass a ref (as 'this') to each element in the needle.
 
-                for (int i = 0; i < searchSpaceLength; i++) {
+                for (nint i = 0; i < searchSpaceLength; i++) {
                     T candidate = ExUnsafe.Add(ref searchSpace, i);
-                    for (int j = 0; j < valueLength; j++) {
+                    for (nint j = 0; j < valueLength; j++) {
                         if (ExUnsafe.Add(ref value, j)!.Equals(candidate)) {
                             return i;
                         }
@@ -594,16 +598,16 @@ namespace Zyl.ExSpans {
                 // Calling IEquatable<T>.Equals (virtual dispatch). We'll perform the null check
                 // in the outer loop instead of in the inner loop to save some branching.
 
-                for (int i = 0; i < searchSpaceLength; i++) {
+                for (nint i = 0; i < searchSpaceLength; i++) {
                     T candidate = ExUnsafe.Add(ref searchSpace, i);
                     if (candidate is not null) {
-                        for (int j = 0; j < valueLength; j++) {
+                        for (nint j = 0; j < valueLength; j++) {
                             if (candidate.Equals(ExUnsafe.Add(ref value, j))) {
                                 return i;
                             }
                         }
                     } else {
-                        for (int j = 0; j < valueLength; j++) {
+                        for (nint j = 0; j < valueLength; j++) {
                             if (ExUnsafe.Add(ref value, j) is null) {
                                 return i;
                             }
@@ -615,6 +619,7 @@ namespace Zyl.ExSpans {
             return -1; // not found
         }
 
+#if TODO
         public static int LastIndexOf<T>(ref T searchSpace, int searchSpaceLength, ref T value, int valueLength) where T : IEquatable<T>? {
             Debug.Assert(searchSpaceLength >= 0);
             Debug.Assert(valueLength >= 0);
@@ -922,7 +927,7 @@ namespace Zyl.ExSpans {
             // See comments in IndexOfAny(ref T, int, ref T, int) above regarding algorithmic complexity concerns.
             // This logic is similar, but it runs backward.
 
-            if (typeof(T).IsValueType) {
+            if (TypeHelper.IsValueType<T>()) {
                 for (int i = searchSpaceLength - 1; i >= 0; i--) {
                     T candidate = ExUnsafe.Add(ref searchSpace, i);
                     for (int j = 0; j < valueLength; j++) {
