@@ -1,12 +1,19 @@
 ﻿//#undef INVOKE_SPAN_METHOD
 
+#if NET7_0_OR_GREATER
+#define GENERIC_MATH // C# 11 - Generic math support. https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-11#generic-math-support
+#endif // NET7_0_OR_GREATER
+
 using System;
 using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+#if NETCOREAPP3_0_OR_GREATER
+using System.Runtime.Intrinsics;
+#endif // NETCOREAPP3_0_OR_GREATER
 using System.Text;
 using Zyl.ExSpans.Extensions;
 using Zyl.ExSpans.Impl;
@@ -468,7 +475,6 @@ namespace Zyl.ExSpans {
         }
 #endif // NET8_0_OR_GREATER
 
-#if TODO
         /// <summary>
         /// Searches for any value in the range between <paramref name="lowInclusive"/> and <paramref name="highInclusive"/>, inclusive, and returns true if found. If not found, returns false.
         /// </summary>
@@ -492,7 +498,6 @@ namespace Zyl.ExSpans {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool ContainsAnyExceptInRange<T>(this ReadOnlyExSpan<T> span, T lowInclusive, T highInclusive) where T : IComparable<T> =>
             IndexOfAnyExceptInRange(span, lowInclusive, highInclusive) >= 0;
-#endif // TODO
 
         /// <summary>
         /// Searches for the specified value and returns the index of its first occurrence. If not found, returns -1. Values are compared using IEquatable{T}.Equals(T).
@@ -1530,11 +1535,12 @@ namespace Zyl.ExSpans {
 
             return values.LastIndexOfAnyExcept(span);
         }
+#endif // TODO
 
         /// <inheritdoc cref="IndexOfAnyInRange{T}(ReadOnlyExSpan{T}, T, T)"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [OverloadResolutionPriority(-1)]
-        public static int IndexOfAnyInRange<T>(this ExSpan<T> span, T lowInclusive, T highInclusive) where T : IComparable<T> =>
+        public static TSize IndexOfAnyInRange<T>(this ExSpan<T> span, T lowInclusive, T highInclusive) where T : IComparable<T> =>
             IndexOfAnyInRange((ReadOnlyExSpan<T>)span, lowInclusive, highInclusive);
 
         /// <summary>Searches for the first index of any value in the range between <paramref name="lowInclusive"/> and <paramref name="highInclusive"/>, inclusive.</summary>
@@ -1547,11 +1553,12 @@ namespace Zyl.ExSpans {
         /// If all of the values are outside of the specified range, returns -1.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int IndexOfAnyInRange<T>(this ReadOnlyExSpan<T> span, T lowInclusive, T highInclusive) where T : IComparable<T> {
+        public static TSize IndexOfAnyInRange<T>(this ReadOnlyExSpan<T> span, T lowInclusive, T highInclusive) where T : IComparable<T> {
             if (lowInclusive is null || highInclusive is null) {
                 ThrowNullLowHighInclusive(lowInclusive, highInclusive);
             }
 
+#if GENERIC_MATH
             if (Vector128.IsHardwareAccelerated) {
                 if (lowInclusive is byte or sbyte) {
                     return ExSpanHelpers.IndexOfAnyInRangeUnsignedNumber(
@@ -1585,6 +1592,7 @@ namespace Zyl.ExSpans {
                         span.Length);
                 }
             }
+#endif // GENERIC_MATH
 
             return ExSpanHelpers.IndexOfAnyInRange(ref ExMemoryMarshal.GetReference(span), lowInclusive, highInclusive, span.Length);
         }
@@ -1592,7 +1600,7 @@ namespace Zyl.ExSpans {
         /// <inheritdoc cref="IndexOfAnyExceptInRange{T}(ReadOnlyExSpan{T}, T, T)"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [OverloadResolutionPriority(-1)]
-        public static int IndexOfAnyExceptInRange<T>(this ExSpan<T> span, T lowInclusive, T highInclusive) where T : IComparable<T> =>
+        public static TSize IndexOfAnyExceptInRange<T>(this ExSpan<T> span, T lowInclusive, T highInclusive) where T : IComparable<T> =>
             IndexOfAnyExceptInRange((ReadOnlyExSpan<T>)span, lowInclusive, highInclusive);
 
         /// <summary>Searches for the first index of any value outside of the range between <paramref name="lowInclusive"/> and <paramref name="highInclusive"/>, inclusive.</summary>
@@ -1605,11 +1613,12 @@ namespace Zyl.ExSpans {
         /// If all of the values are inside of the specified range, returns -1.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int IndexOfAnyExceptInRange<T>(this ReadOnlyExSpan<T> span, T lowInclusive, T highInclusive) where T : IComparable<T> {
+        public static TSize IndexOfAnyExceptInRange<T>(this ReadOnlyExSpan<T> span, T lowInclusive, T highInclusive) where T : IComparable<T> {
             if (lowInclusive is null || highInclusive is null) {
                 ThrowNullLowHighInclusive(lowInclusive, highInclusive);
             }
 
+#if GENERIC_MATH
             if (Vector128.IsHardwareAccelerated) {
                 if (lowInclusive is byte or sbyte) {
                     return ExSpanHelpers.IndexOfAnyExceptInRangeUnsignedNumber(
@@ -1643,10 +1652,12 @@ namespace Zyl.ExSpans {
                         span.Length);
                 }
             }
+#endif // GENERIC_MATH
 
             return ExSpanHelpers.IndexOfAnyExceptInRange(ref ExMemoryMarshal.GetReference(span), lowInclusive, highInclusive, span.Length);
         }
 
+#if TODO
         /// <inheritdoc cref="LastIndexOfAnyInRange{T}(ReadOnlyExSpan{T}, T, T)"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [OverloadResolutionPriority(-1)]
@@ -1762,6 +1773,7 @@ namespace Zyl.ExSpans {
 
             return ExSpanHelpers.LastIndexOfAnyExceptInRange(ref ExMemoryMarshal.GetReference(span), lowInclusive, highInclusive, span.Length);
         }
+#endif // TODO
 
         /// <summary>Throws an <see cref="ArgumentNullException"/> for <paramref name="lowInclusive"/> or <paramref name="highInclusive"/> being null.</summary>
         [DoesNotReturn]
@@ -1769,7 +1781,6 @@ namespace Zyl.ExSpans {
             Debug.Assert(lowInclusive is null || highInclusive is null);
             throw new ArgumentNullException(lowInclusive is null ? nameof(lowInclusive) : nameof(highInclusive));
         }
-#endif // TODO
 
         /// <summary>
         /// Determines whether a span and a read-only span are equal by comparing the elements using <see cref="IEquatable{T}.Equals(T)"/> (通过使用 <see cref="IEquatable{T}.Equals(T)"/> 比较元素, 确定跨度和只读跨度是否相等).
