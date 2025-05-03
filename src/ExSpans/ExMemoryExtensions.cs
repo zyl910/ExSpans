@@ -519,7 +519,6 @@ namespace Zyl.ExSpans {
         public static nint IndexOf<T>(this ExSpan<T> span, ReadOnlyExSpan<T> value) where T : IEquatable<T>? =>
             IndexOf((ReadOnlyExSpan<T>)span, value);
 
-#if TODO
         /// <summary>
         /// Searches for the specified value and returns the index of its last occurrence. If not found, returns -1. Values are compared using IEquatable{T}.Equals(T).
         /// </summary>
@@ -527,7 +526,7 @@ namespace Zyl.ExSpans {
         /// <param name="value">The value to search for.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [OverloadResolutionPriority(-1)]
-        public static int LastIndexOf<T>(this ExSpan<T> span, T value) where T : IEquatable<T>? =>
+        public static TSize LastIndexOf<T>(this ExSpan<T> span, T value) where T : IEquatable<T>? =>
             LastIndexOf((ReadOnlyExSpan<T>)span, value);
 
         /// <summary>
@@ -537,9 +536,8 @@ namespace Zyl.ExSpans {
         /// <param name="value">The sequence to search for.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [OverloadResolutionPriority(-1)]
-        public static int LastIndexOf<T>(this ExSpan<T> span, ReadOnlyExSpan<T> value) where T : IEquatable<T>? =>
+        public static TSize LastIndexOf<T>(this ExSpan<T> span, ReadOnlyExSpan<T> value) where T : IEquatable<T>? =>
             LastIndexOf((ReadOnlyExSpan<T>)span, value);
-#endif // TODO
 
         /// <summary>Searches for the first index of any value other than the specified <paramref name="value"/>.</summary>
         /// <typeparam name="T">The type of the span and values.</typeparam>
@@ -1976,14 +1974,13 @@ namespace Zyl.ExSpans {
             }
         }
 
-#if TODO
         /// <summary>
         /// Searches for the specified value and returns the index of its last occurrence. If not found, returns -1. Values are compared using IEquatable{T}.Equals(T).
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="value">The value to search for.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe int LastIndexOf<T>(this ReadOnlyExSpan<T> span, T value) where T : IEquatable<T>? {
+        public static TSize LastIndexOf<T>(this ReadOnlyExSpan<T> span, T value) where T : IEquatable<T>? {
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.LastIndexOfValueType(
@@ -2018,7 +2015,7 @@ namespace Zyl.ExSpans {
         /// <param name="value">The value to search for.</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe int LastIndexOf<T>(this ReadOnlyExSpan<T> span, T value, IEqualityComparer<T>? comparer = null) {
+        public static TSize LastIndexOf<T>(this ReadOnlyExSpan<T> span, T value, IEqualityComparer<T>? comparer = null) {
             if (TypeHelper.IsValueType<T>() && (comparer is null || comparer == EqualityComparer<T>.Default)) {
                 if (TypeHelper.IsBitwiseEquatable<T>()) {
                     if (Unsafe.SizeOf<T>() == sizeof(byte)) {
@@ -2045,8 +2042,8 @@ namespace Zyl.ExSpans {
                 }
 
                 return LastIndexOfDefaultComparer(span, value);
-                static int LastIndexOfDefaultComparer(ReadOnlyExSpan<T> span, T value) {
-                    for (int i = span.Length - 1; i >= 0; i--) {
+                static TSize LastIndexOfDefaultComparer(ReadOnlyExSpan<T> span, T value) {
+                    for (TSize i = span.Length - 1; i >= 0; i--) {
                         if (EqualityComparer<T>.Default.Equals(span[i], value)) {
                             return i;
                         }
@@ -2056,10 +2053,10 @@ namespace Zyl.ExSpans {
                 }
             } else {
                 return LastIndexOfComparer(span, value, comparer);
-                static int LastIndexOfComparer(ReadOnlyExSpan<T> span, T value, IEqualityComparer<T>? comparer) {
+                static TSize LastIndexOfComparer(ReadOnlyExSpan<T> span, T value, IEqualityComparer<T>? comparer) {
                     comparer ??= EqualityComparer<T>.Default;
 
-                    for (int i = span.Length - 1; i >= 0; i--) {
+                    for (TSize i = span.Length - 1; i >= 0; i--) {
                         if (comparer.Equals(span[i], value)) {
                             return i;
                         }
@@ -2076,7 +2073,7 @@ namespace Zyl.ExSpans {
         /// <param name="span">The span to search.</param>
         /// <param name="value">The sequence to search for.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe int LastIndexOf<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> value) where T : IEquatable<T>? {
+        public static TSize LastIndexOf<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> value) where T : IEquatable<T>? {
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.LastIndexOf(
@@ -2104,7 +2101,7 @@ namespace Zyl.ExSpans {
         /// <param name="value">The sequence to search for.</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe int LastIndexOf<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> value, IEqualityComparer<T>? comparer = null) {
+        public static TSize LastIndexOf<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> value, IEqualityComparer<T>? comparer = null) {
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.LastIndexOf(
@@ -2123,14 +2120,14 @@ namespace Zyl.ExSpans {
             }
 
             return LastIndexOfComparer(span, value, comparer);
-            static int LastIndexOfComparer(ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> value, IEqualityComparer<T>? comparer) {
+            static TSize LastIndexOfComparer(ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> value, IEqualityComparer<T>? comparer) {
                 if (value.Length == 0) {
                     return span.Length;
                 }
 
                 comparer ??= EqualityComparer<T>.Default;
 
-                int pos = span.Length;
+                TSize pos = span.Length;
                 while (true) {
                     pos = span.Slice(0, pos).LastIndexOf(value[0], comparer);
                     if (pos < 0) {
@@ -2145,7 +2142,6 @@ namespace Zyl.ExSpans {
                 return -1;
             }
         }
-#endif // TODO
 
         /// <summary>
         /// Searches for the first index of any of the specified values similar to calling IndexOf several times with the logical OR operator. If not found, returns -1.
