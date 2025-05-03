@@ -619,37 +619,36 @@ namespace Zyl.ExSpans {
             return -1; // not found
         }
 
-#if TODO
-        public static int LastIndexOf<T>(ref T searchSpace, int searchSpaceLength, ref T value, int valueLength) where T : IEquatable<T>? {
+        public static TSize LastIndexOf<T>(ref T searchSpace, TSize searchSpaceLength, ref T value, TSize valueLength) where T : IEquatable<T>? {
             Debug.Assert(searchSpaceLength >= 0);
             Debug.Assert(valueLength >= 0);
 
             if (valueLength == 0)
                 return searchSpaceLength;  // A zero-length sequence is always treated as "found" at the end of the search space.
 
-            int valueTailLength = valueLength - 1;
+            TSize valueTailLength = valueLength - 1;
             if (valueTailLength == 0) {
                 return LastIndexOf(ref searchSpace, value, searchSpaceLength);
             }
 
-            int index = 0;
+            TSize index = 0;
 
             T valueHead = value;
             ref T valueTail = ref ExUnsafe.Add(ref value, 1);
 
             while (true) {
                 Debug.Assert(0 <= index && index <= searchSpaceLength); // Ensures no deceptive underflows in the computation of "remainingSearchSpaceLength".
-                int remainingSearchSpaceLength = searchSpaceLength - index - valueTailLength;
+                TSize remainingSearchSpaceLength = searchSpaceLength - index - valueTailLength;
                 if (remainingSearchSpaceLength <= 0)
                     break;  // The unsearched portion is now shorter than the sequence we're looking for. So it can't be there.
 
                 // Do a quick search for the first element of "value".
-                int relativeIndex = LastIndexOf(ref searchSpace, valueHead, remainingSearchSpaceLength);
+                TSize relativeIndex = LastIndexOf(ref searchSpace, valueHead, remainingSearchSpaceLength);
                 if (relativeIndex < 0)
                     break;
 
                 // Found the first element of "value". See if the tail matches.
-                if (SequenceEqual(ref ExUnsafe.Add(ref searchSpace, relativeIndex + 1), ref valueTail, valueTailLength))
+                if (SequenceEqual(ref ExUnsafe.Add(ref searchSpace, relativeIndex + 1), ref valueTail, valueTailLength.ToUIntPtr()))
                     return relativeIndex;  // The tail matched. Return a successful find.
 
                 index += remainingSearchSpaceLength - relativeIndex;
@@ -657,11 +656,12 @@ namespace Zyl.ExSpans {
             return -1;
         }
 
-        public static int LastIndexOf<T>(ref T searchSpace, T value, int length) where T : IEquatable<T>? {
+        public static TSize LastIndexOf<T>(ref T searchSpace, T value, TSize length) where T : IEquatable<T>? {
             Debug.Assert(length >= 0);
 
             if (default(T) != null || (object?)value != null) {
                 Debug.Assert(value is not null);
+                if (value is null) throw new ArgumentNullException(nameof(value));
 
                 while (length >= 8) {
                     length -= 8;
@@ -731,6 +731,7 @@ namespace Zyl.ExSpans {
             return length + 7;
         }
 
+#if TODO
         public static int LastIndexOfAny<T>(ref T searchSpace, T value0, T value1, int length) where T : IEquatable<T>? {
             Debug.Assert(length >= 0);
 
@@ -1274,7 +1275,7 @@ namespace Zyl.ExSpans {
                         return true;
                     }
                 }
-            } else {
+            } else if (Vector128.IsHardwareAccelerated && length >= Vector128<T>.Count) {
                 Vector128<T> equals, values = Vector128.Create(value);
                 ref T currentSearchSpace = ref searchSpace;
                 ref T oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, (uint)(length - Vector128<T>.Count));
@@ -1356,14 +1357,14 @@ namespace Zyl.ExSpans {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static nint IndexOfValueType<T>(ref T searchSpace, T value, nint length) where T : struct, IEquatable<T>
 #if GENERIC_MATH
-                , INumber<T>
+            , INumber<T>
 #endif // GENERIC_MATH
             => IndexOfValueType<T, DontNegate<T>>(ref searchSpace, value, length);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static nint IndexOfAnyExceptValueType<T>(ref T searchSpace, T value, nint length) where T : struct, IEquatable<T>
 #if GENERIC_MATH
-                , INumber<T>
+            , INumber<T>
 #endif // GENERIC_MATH
             => IndexOfValueType<T, Negate<T>>(ref searchSpace, value, length);
 
@@ -1371,7 +1372,7 @@ namespace Zyl.ExSpans {
         private static nint IndexOfValueType<TValue, TNegator>(ref TValue searchSpace, TValue value, nint length)
             where TValue : struct, IEquatable<TValue>
 #if GENERIC_MATH
-                , INumber<TValue>
+            , INumber<TValue>
 #endif // GENERIC_MATH
             where TNegator : struct, INegator<TValue> {
             //if (PackedSpanHelpers.PackedIndexOfIsSupported && typeof(TValue) == typeof(short) && PackedSpanHelpers.CanUsePackedIndexOf(value)) {
@@ -1385,22 +1386,22 @@ namespace Zyl.ExSpans {
 
         internal static nint NonPackedIndexOfValueType<TValue,
 #if GENERIC_MATH
-                TNegator
+            TNegator
 #else
-                TNegatorType
+            TNegatorType
 #endif // GENERIC_MATH
-                >(ref TValue searchSpace, TValue value, nint length)
-                where TValue : struct, IEquatable<TValue>
+            >(ref TValue searchSpace, TValue value, nint length)
+            where TValue : struct, IEquatable<TValue>
 #if GENERIC_MATH
-                , INumber<TValue>
+            , INumber<TValue>
 #endif // GENERIC_MATH
-                where
+            where
 #if GENERIC_MATH
-                TNegator
+            TNegator
 #else
-                TNegatorType
+            TNegatorType
 #endif // GENERIC_MATH
-                : struct, INegator<TValue> {
+            : struct, INegator<TValue> {
 #if GENERIC_MATH
 #else
             TNegatorType TNegator = default;
@@ -1486,7 +1487,7 @@ namespace Zyl.ExSpans {
                         return ComputeFirstIndex(ref searchSpace, ref oneVectorAwayFromEnd, equals);
                     }
                 }
-            } else {
+            } else if (Vector128.IsHardwareAccelerated && length >= Vector128<TValue>.Count) {
                 Vector128<TValue> equals, values = Vector128.Create(value);
                 ref TValue currentSearchSpace = ref searchSpace;
                 ref TValue oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, length - Vector128<TValue>.Count);
@@ -1728,7 +1729,7 @@ namespace Zyl.ExSpans {
                         return ComputeFirstIndex(ref searchSpace, ref oneVectorAwayFromEnd, equals);
                     }
                 }
-            } else {
+            } else if (Vector128.IsHardwareAccelerated && length >= Vector128<TValue>.Count) {
                 Vector128<TValue> equals, current, values0 = Vector128.Create(value0), values1 = Vector128.Create(value1);
                 ref TValue currentSearchSpace = ref searchSpace;
                 ref TValue oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, length - Vector128<TValue>.Count);
@@ -1970,7 +1971,7 @@ namespace Zyl.ExSpans {
                         return ComputeFirstIndex(ref searchSpace, ref oneVectorAwayFromEnd, equals);
                     }
                 }
-            } else {
+            } else if (Vector128.IsHardwareAccelerated && length >= Vector128<TValue>.Count) {
                 Vector128<TValue> equals, current, values0 = Vector128.Create(value0), values1 = Vector128.Create(value1), values2 = Vector128.Create(value2);
                 ref TValue currentSearchSpace = ref searchSpace;
                 ref TValue oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, length - Vector128<TValue>.Count);
@@ -2202,7 +2203,7 @@ namespace Zyl.ExSpans {
                         return ComputeFirstIndex(ref searchSpace, ref oneVectorAwayFromEnd, equals);
                     }
                 }
-            } else {
+            } else if (Vector128.IsHardwareAccelerated && length >= Vector128<TValue>.Count) {
                 Vector128<TValue> equals, current, values0 = Vector128.Create(value0), values1 = Vector128.Create(value1), values2 = Vector128.Create(value2), values3 = Vector128.Create(value3);
                 ref TValue currentSearchSpace = ref searchSpace;
                 ref TValue oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, length - Vector128<TValue>.Count);
@@ -2404,7 +2405,7 @@ namespace Zyl.ExSpans {
                         return ComputeFirstIndex(ref searchSpace, ref oneVectorAwayFromEnd, equals);
                     }
                 }
-            } else {
+            } else if (Vector128.IsHardwareAccelerated && length >= Vector128<TValue>.Count) {
                 Vector128<TValue> equals, current, values0 = Vector128.Create(value0), values1 = Vector128.Create(value1),
                     values2 = Vector128.Create(value2), values3 = Vector128.Create(value3), values4 = Vector128.Create(value4);
                 ref TValue currentSearchSpace = ref searchSpace;
@@ -2478,35 +2479,166 @@ namespace Zyl.ExSpans {
             //return -1;
         }
 
-#if TODO
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int LastIndexOfValueType<T>(ref T searchSpace, T value, int length) where T : struct, INumber<T>
+        internal static TSize LastIndexOfValueType<T>(ref T searchSpace, T value, TSize length) where T : struct, IEquatable<T>
+#if GENERIC_MATH
+            , INumber<T>
+#endif // GENERIC_MATH
             => LastIndexOfValueType<T, DontNegate<T>>(ref searchSpace, value, length);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int LastIndexOfAnyExceptValueType<T>(ref T searchSpace, T value, int length) where T : struct, INumber<T>
+        internal static TSize LastIndexOfAnyExceptValueType<T>(ref T searchSpace, T value, TSize length) where T : struct, IEquatable<T>
+#if GENERIC_MATH
+            , INumber<T>
+#endif // GENERIC_MATH
             => LastIndexOfValueType<T, Negate<T>>(ref searchSpace, value, length);
 
-        private static int LastIndexOfValueType<TValue, TNegator>(ref TValue searchSpace, TValue value, int length)
-            where TValue : struct, INumber<TValue>
-            where TNegator : struct, INegator<TValue> {
+        private static TSize LastIndexOfValueType<TValue,
+#if GENERIC_MATH
+            TNegator
+#else
+            TNegatorType
+#endif // GENERIC_MATH
+            >(ref TValue searchSpace, TValue value, TSize length)
+            where TValue : struct, IEquatable<TValue>
+#if GENERIC_MATH
+                , INumber<TValue>
+#endif // GENERIC_MATH
+            where
+#if GENERIC_MATH
+            TNegator
+#else
+            TNegatorType
+#endif // GENERIC_MATH
+            : struct, INegator<TValue> {
+#if GENERIC_MATH
+#else
+            TNegatorType TNegator = default;
+#endif // GENERIC_MATH
             Debug.Assert(length >= 0, "Expected non-negative length");
             Debug.Assert(value is byte or short or int or long, "Expected caller to normalize to one of these types");
 
-            if (!Vector128.IsHardwareAccelerated || length < Vector128<TValue>.Count) {
-                nuint offset = (nuint)length - 1;
+            //if (false) {
+            //} else if (Vector512.IsHardwareAccelerated && length >= Vector512<TValue>.Count && Vector512<byte>.Count >= Vector<byte>.Count) {
+            //    return SimdImpl<Vector512<TValue>>(ref searchSpace, value, length);
+            //} else if (Vector256.IsHardwareAccelerated && length >= Vector256<TValue>.Count) {
+            //    return SimdImpl<Vector256<TValue>>(ref searchSpace, value, length);
+            //} else {
+            //    return SimdImpl<Vector128<TValue>>(ref searchSpace, value, length);
+            //}
+            //static int SimdImpl<TVector>(ref TValue searchSpace, TValue value, int length)
+            //    where TVector : struct, ISimdVector<TVector, TValue> {
+            //    TVector current;
+            //    TVector values = TVector.Create(value);
+            //    int offset = length - TVector.ElementCount;
+            //    // Loop until either we've finished all elements -or- there's one or less than a vector's-worth remaining.
+            //    while (offset > 0) {
+            //        current = TVectorHelper.LoadUnsafe(ref searchSpace, (uint)(offset));
+            //        if (TNegator.HasMatch(values, current)) {
+            //            return offset + TVector.LastIndexOfWhereAllBitsSet(TNegator.GetMatchMask(values, current));
+            //        }
+            //        offset -= TVector.ElementCount;
+            //    }
+            //    // Process the first vector in the search space.
+            //    current = TVectorHelper.LoadUnsafe(ref searchSpace);
+            //    if (TNegator.HasMatch(values, current)) {
+            //        return TVector.LastIndexOfWhereAllBitsSet(TNegator.GetMatchMask(values, current));
+            //    }
+            //    return -1;
+            //}
+            if (false) {
+#if NET8_0_OR_GREATER
+            } else if (Vector512.IsHardwareAccelerated && length >= Vector512<TValue>.Count && Vector512<byte>.Count >= Vector<byte>.Count) {
+                Vector512<TValue> current;
+                Vector512<TValue> values = Vector512.Create(value);
+                TSize offset = length - Vector512<TValue>.Count;
+                // Loop until either we've finished all elements -or- there's one or less than a vector's-worth remaining.
+                while (offset > 0) {
+                    current = Vector512.LoadUnsafe(ref searchSpace, offset.ToUIntPtr());
+                    if (TNegator.HasMatch(values, current)) {
+                        return offset + Vector512Helper.LastIndexOfWhereAllBitsSet(TNegator.GetMatchMask(values, current));
+                    }
+                    offset -= Vector512<TValue>.Count;
+                }
+                // Process the first vector in the search space.
+                current = Vector512.LoadUnsafe(ref searchSpace);
+                if (TNegator.HasMatch(values, current)) {
+                    return Vector512Helper.LastIndexOfWhereAllBitsSet(TNegator.GetMatchMask(values, current));
+                }
+                return -1;
+#endif // NET8_0_OR_GREATER
+            } else if (Vector.IsHardwareAccelerated && length >= Vector<TValue>.Count) {
+                Vector<TValue> current;
+                Vector<TValue> values = Vectors.Create(value);
+                TSize offset = length - Vector<TValue>.Count;
+                // Loop until either we've finished all elements -or- there's one or less than a vector's-worth remaining.
+                while (offset > 0) {
+                    current = VectorHelper.LoadUnsafe(ref searchSpace, offset.ToUIntPtr());
+                    if (TNegator.HasMatch(values, current)) {
+                        return offset + VectorHelper.LastIndexOfWhereAllBitsSet(TNegator.GetMatchMask(values, current));
+                    }
+                    offset -= Vector<TValue>.Count;
+                }
+                // Process the first vector in the search space.
+                current = VectorHelper.LoadUnsafe(ref searchSpace);
+                if (TNegator.HasMatch(values, current)) {
+                    return VectorHelper.LastIndexOfWhereAllBitsSet(TNegator.GetMatchMask(values, current));
+                }
+                return -1;
+#if NET7_0_OR_GREATER
+            } else if (Vector256.IsHardwareAccelerated && length >= Vector256<TValue>.Count) {
+                Vector256<TValue> current;
+                Vector256<TValue> values = Vector256.Create(value);
+                TSize offset = length - Vector256<TValue>.Count;
+                // Loop until either we've finished all elements -or- there's one or less than a vector's-worth remaining.
+                while (offset > 0) {
+                    current = Vector256.LoadUnsafe(ref searchSpace, offset.ToUIntPtr());
+                    if (TNegator.HasMatch(values, current)) {
+                        return offset + Vector256Helper.LastIndexOfWhereAllBitsSet(TNegator.GetMatchMask(values, current));
+                    }
+                    offset -= Vector256<TValue>.Count;
+                }
+                // Process the first vector in the search space.
+                current = Vector256.LoadUnsafe(ref searchSpace);
+                if (TNegator.HasMatch(values, current)) {
+                    return Vector256Helper.LastIndexOfWhereAllBitsSet(TNegator.GetMatchMask(values, current));
+                }
+                return -1;
+            } else if (Vector128.IsHardwareAccelerated && length >= Vector128<TValue>.Count) {
+                Vector128<TValue> current;
+                Vector128<TValue> values = Vector128.Create(value);
+                TSize offset = length - Vector128<TValue>.Count;
+                // Loop until either we've finished all elements -or- there's one or less than a vector's-worth remaining.
+                while (offset > 0) {
+                    current = Vector128.LoadUnsafe(ref searchSpace, offset.ToUIntPtr());
+                    if (TNegator.HasMatch(values, current)) {
+                        return offset + Vector128Helper.LastIndexOfWhereAllBitsSet(TNegator.GetMatchMask(values, current));
+                    }
+                    offset -= Vector128<TValue>.Count;
+                }
+                // Process the first vector in the search space.
+                current = Vector128.LoadUnsafe(ref searchSpace);
+                if (TNegator.HasMatch(values, current)) {
+                    return Vector128Helper.LastIndexOfWhereAllBitsSet(TNegator.GetMatchMask(values, current));
+                }
+                return -1;
+#endif // NET7_0_OR_GREATER
+            }
+
+            if (true) {
+                TSize offset = length - 1;
 
                 while (length >= 8) {
                     length -= 8;
 
-                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset) == value)) goto Found;
-                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset - 1) == value)) goto FoundM1;
-                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset - 2) == value)) goto FoundM2;
-                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset - 3) == value)) goto FoundM3;
-                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset - 4) == value)) goto FoundM4;
-                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset - 5) == value)) goto FoundM5;
-                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset - 6) == value)) goto FoundM6;
-                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset - 7) == value)) goto FoundM7;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset).Equals(value))) goto Found;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset - 1).Equals(value))) goto FoundM1;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset - 2).Equals(value))) goto FoundM2;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset - 3).Equals(value))) goto FoundM3;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset - 4).Equals(value))) goto FoundM4;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset - 5).Equals(value))) goto FoundM5;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset - 6).Equals(value))) goto FoundM6;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset - 7).Equals(value))) goto FoundM7;
 
                     offset -= 8;
                 }
@@ -2514,10 +2646,10 @@ namespace Zyl.ExSpans {
                 if (length >= 4) {
                     length -= 4;
 
-                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset) == value)) goto Found;
-                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset - 1) == value)) goto FoundM1;
-                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset - 2) == value)) goto FoundM2;
-                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset - 3) == value)) goto FoundM3;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset).Equals(value))) goto Found;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset - 1).Equals(value))) goto FoundM1;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset - 2).Equals(value))) goto FoundM2;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset - 3).Equals(value))) goto FoundM3;
 
                     offset -= 4;
                 }
@@ -2525,65 +2657,32 @@ namespace Zyl.ExSpans {
                 while (length > 0) {
                     length -= 1;
 
-                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset) == value)) goto Found;
+                    if (TNegator.NegateIfNeeded(ExUnsafe.Add(ref searchSpace, offset).Equals(value))) goto Found;
 
                     offset -= 1;
                 }
                 return -1;
             FoundM7:
-                return (int)(offset - 7);
+                return offset - 7;
             FoundM6:
-                return (int)(offset - 6);
+                return offset - 6;
             FoundM5:
-                return (int)(offset - 5);
+                return offset - 5;
             FoundM4:
-                return (int)(offset - 4);
+                return offset - 4;
             FoundM3:
-                return (int)(offset - 3);
+                return offset - 3;
             FoundM2:
-                return (int)(offset - 2);
+                return offset - 2;
             FoundM1:
-                return (int)(offset - 1);
+                return offset - 1;
             Found:
-                return (int)(offset);
-            } else if (Vector512.IsHardwareAccelerated && length >= Vector512<TValue>.Count && Vector512<byte>.Count >= Vector<byte>.Count) {
-                return SimdImpl<Vector512<TValue>>(ref searchSpace, value, length);
-            } else if (Vector256.IsHardwareAccelerated && length >= Vector256<TValue>.Count) {
-                return SimdImpl<Vector256<TValue>>(ref searchSpace, value, length);
-            } else {
-                return SimdImpl<Vector128<TValue>>(ref searchSpace, value, length);
+                return offset;
             }
 
-            static int SimdImpl<TVector>(ref TValue searchSpace, TValue value, int length)
-                where TVector : struct, ISimdVector<TVector, TValue> {
-                TVector current;
-                TVector values = TVector.Create(value);
-
-                int offset = length - TVector.ElementCount;
-
-                // Loop until either we've finished all elements -or- there's one or less than a vector's-worth remaining.
-                while (offset > 0) {
-                    current = TVectorHelper.LoadUnsafe(ref searchSpace, (uint)(offset));
-
-                    if (TNegator.HasMatch(values, current)) {
-                        return offset + TVector.LastIndexOfWhereAllBitsSet(TNegator.GetMatchMask(values, current));
-                    }
-
-                    offset -= TVector.ElementCount;
-                }
-
-                // Process the first vector in the search space.
-
-                current = TVectorHelper.LoadUnsafe(ref searchSpace);
-
-                if (TNegator.HasMatch(values, current)) {
-                    return TVector.LastIndexOfWhereAllBitsSet(TNegator.GetMatchMask(values, current));
-                }
-
-                return -1;
-            }
         }
 
+#if TODO
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static int LastIndexOfAnyValueType<T>(ref T searchSpace, T value0, T value1, int length) where T : struct, INumber<T>
             => LastIndexOfAnyValueType<T, DontNegate<T>>(ref searchSpace, value0, value1, length);
