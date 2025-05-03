@@ -957,119 +957,119 @@ namespace Zyl.ExSpans {
 
             return -1; // not found
         }
-
-        internal static int IndexOfAnyExcept<T>(ref T searchSpace, T value0, int length) {
-            Debug.Assert(length >= 0, "Expected non-negative length");
-
-            for (int i = 0; i < length; i++) {
-                if (!EqualityComparer<T>.Default.Equals(ExUnsafe.Add(ref searchSpace, i), value0)) {
-                    return i;
-                }
-            }
-
-            return -1;
-        }
-
-        internal static int LastIndexOfAnyExcept<T>(ref T searchSpace, T value0, int length) {
-            Debug.Assert(length >= 0, "Expected non-negative length");
-
-            for (int i = length - 1; i >= 0; i--) {
-                if (!EqualityComparer<T>.Default.Equals(ExUnsafe.Add(ref searchSpace, i), value0)) {
-                    return i;
-                }
-            }
-
-            return -1;
-        }
-
-        internal static int IndexOfAnyExcept<T>(ref T searchSpace, T value0, T value1, int length) {
-            Debug.Assert(length >= 0, "Expected non-negative length");
-
-            for (int i = 0; i < length; i++) {
-                ref T current = ref ExUnsafe.Add(ref searchSpace, i);
-                if (!EqualityComparer<T>.Default.Equals(current, value0) && !EqualityComparer<T>.Default.Equals(current, value1)) {
-                    return i;
-                }
-            }
-
-            return -1;
-        }
-
-        internal static int LastIndexOfAnyExcept<T>(ref T searchSpace, T value0, T value1, int length) {
-            Debug.Assert(length >= 0, "Expected non-negative length");
-
-            for (int i = length - 1; i >= 0; i--) {
-                ref T current = ref ExUnsafe.Add(ref searchSpace, i);
-                if (!EqualityComparer<T>.Default.Equals(current, value0) && !EqualityComparer<T>.Default.Equals(current, value1)) {
-                    return i;
-                }
-            }
-
-            return -1;
-        }
-
-        internal static int IndexOfAnyExcept<T>(ref T searchSpace, T value0, T value1, T value2, int length) {
-            Debug.Assert(length >= 0, "Expected non-negative length");
-
-            for (int i = 0; i < length; i++) {
-                ref T current = ref ExUnsafe.Add(ref searchSpace, i);
-                if (!EqualityComparer<T>.Default.Equals(current, value0)
-                    && !EqualityComparer<T>.Default.Equals(current, value1)
-                    && !EqualityComparer<T>.Default.Equals(current, value2)) {
-                    return i;
-                }
-            }
-
-            return -1;
-        }
-
-        internal static int LastIndexOfAnyExcept<T>(ref T searchSpace, T value0, T value1, T value2, int length) {
-            Debug.Assert(length >= 0, "Expected non-negative length");
-
-            for (int i = length - 1; i >= 0; i--) {
-                ref T current = ref ExUnsafe.Add(ref searchSpace, i);
-                if (!EqualityComparer<T>.Default.Equals(current, value0)
-                    && !EqualityComparer<T>.Default.Equals(current, value1)
-                    && !EqualityComparer<T>.Default.Equals(current, value2)) {
-                    return i;
-                }
-            }
-
-            return -1;
-        }
-
-        internal static int IndexOfAnyExcept<T>(ref T searchSpace, T value0, T value1, T value2, T value3, int length) {
-            Debug.Assert(length >= 0, "Expected non-negative length");
-
-            for (int i = 0; i < length; i++) {
-                ref T current = ref ExUnsafe.Add(ref searchSpace, i);
-                if (!EqualityComparer<T>.Default.Equals(current, value0)
-                    && !EqualityComparer<T>.Default.Equals(current, value1)
-                    && !EqualityComparer<T>.Default.Equals(current, value2)
-                    && !EqualityComparer<T>.Default.Equals(current, value3)) {
-                    return i;
-                }
-            }
-
-            return -1;
-        }
-
-        internal static int LastIndexOfAnyExcept<T>(ref T searchSpace, T value0, T value1, T value2, T value3, int length) {
-            Debug.Assert(length >= 0, "Expected non-negative length");
-
-            for (int i = length - 1; i >= 0; i--) {
-                ref T current = ref ExUnsafe.Add(ref searchSpace, i);
-                if (!EqualityComparer<T>.Default.Equals(current, value0)
-                    && !EqualityComparer<T>.Default.Equals(current, value1)
-                    && !EqualityComparer<T>.Default.Equals(current, value2)
-                    && !EqualityComparer<T>.Default.Equals(current, value3)) {
-                    return i;
-                }
-            }
-
-            return -1;
-        }
 #endif // TODO
+
+        internal static TSize IndexOfAnyExcept<T>(ref T searchSpace, T value0, TSize length) {
+            Debug.Assert(length >= 0, "Expected non-negative length");
+
+            for (TSize i = 0; i < length; i++) {
+                if (!EqualityComparer<T>.Default.Equals(ExUnsafe.Add(ref searchSpace, i), value0)) {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        internal static TSize LastIndexOfAnyExcept<T>(ref T searchSpace, T value0, TSize length) {
+            Debug.Assert(length >= 0, "Expected non-negative length");
+
+            for (TSize i = length - 1; i >= 0; i--) {
+                if (!EqualityComparer<T>.Default.Equals(ExUnsafe.Add(ref searchSpace, i), value0)) {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        internal static TSize IndexOfAnyExcept<T>(ref T searchSpace, T value0, T value1, TSize length) {
+            Debug.Assert(length >= 0, "Expected non-negative length");
+
+            for (TSize i = 0; i < length; i++) {
+                ref T current = ref ExUnsafe.Add(ref searchSpace, i);
+                if (!EqualityComparer<T>.Default.Equals(current, value0) && !EqualityComparer<T>.Default.Equals(current, value1)) {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        internal static TSize LastIndexOfAnyExcept<T>(ref T searchSpace, T value0, T value1, TSize length) {
+            Debug.Assert(length >= 0, "Expected non-negative length");
+
+            for (TSize i = length - 1; i >= 0; i--) {
+                ref T current = ref ExUnsafe.Add(ref searchSpace, i);
+                if (!EqualityComparer<T>.Default.Equals(current, value0) && !EqualityComparer<T>.Default.Equals(current, value1)) {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        internal static TSize IndexOfAnyExcept<T>(ref T searchSpace, T value0, T value1, T value2, TSize length) {
+            Debug.Assert(length >= 0, "Expected non-negative length");
+
+            for (TSize i = 0; i < length; i++) {
+                ref T current = ref ExUnsafe.Add(ref searchSpace, i);
+                if (!EqualityComparer<T>.Default.Equals(current, value0)
+                    && !EqualityComparer<T>.Default.Equals(current, value1)
+                    && !EqualityComparer<T>.Default.Equals(current, value2)) {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        internal static TSize LastIndexOfAnyExcept<T>(ref T searchSpace, T value0, T value1, T value2, TSize length) {
+            Debug.Assert(length >= 0, "Expected non-negative length");
+
+            for (TSize i = length - 1; i >= 0; i--) {
+                ref T current = ref ExUnsafe.Add(ref searchSpace, i);
+                if (!EqualityComparer<T>.Default.Equals(current, value0)
+                    && !EqualityComparer<T>.Default.Equals(current, value1)
+                    && !EqualityComparer<T>.Default.Equals(current, value2)) {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        internal static TSize IndexOfAnyExcept<T>(ref T searchSpace, T value0, T value1, T value2, T value3, TSize length) {
+            Debug.Assert(length >= 0, "Expected non-negative length");
+
+            for (TSize i = 0; i < length; i++) {
+                ref T current = ref ExUnsafe.Add(ref searchSpace, i);
+                if (!EqualityComparer<T>.Default.Equals(current, value0)
+                    && !EqualityComparer<T>.Default.Equals(current, value1)
+                    && !EqualityComparer<T>.Default.Equals(current, value2)
+                    && !EqualityComparer<T>.Default.Equals(current, value3)) {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        internal static TSize LastIndexOfAnyExcept<T>(ref T searchSpace, T value0, T value1, T value2, T value3, TSize length) {
+            Debug.Assert(length >= 0, "Expected non-negative length");
+
+            for (TSize i = length - 1; i >= 0; i--) {
+                ref T current = ref ExUnsafe.Add(ref searchSpace, i);
+                if (!EqualityComparer<T>.Default.Equals(current, value0)
+                    && !EqualityComparer<T>.Default.Equals(current, value1)
+                    && !EqualityComparer<T>.Default.Equals(current, value2)
+                    && !EqualityComparer<T>.Default.Equals(current, value3)) {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
 
         public static bool SequenceEqual<T>(ref T first, ref T second, nuint length) where T : IEquatable<T>? {
             Debug.Assert(length >= 0);
