@@ -200,7 +200,6 @@ namespace Zyl.ExSpans {
             ContainsAny((ReadOnlyExSpan<char>)span, values);
 #endif // NET8_0_OR_GREATER
 
-#if TODO
         /// <inheritdoc cref="ContainsAnyExcept{T}(ReadOnlyExSpan{T}, T)"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [OverloadResolutionPriority(-1)]
@@ -225,12 +224,15 @@ namespace Zyl.ExSpans {
         public static bool ContainsAnyExcept<T>(this ExSpan<T> span, ReadOnlyExSpan<T> values) where T : IEquatable<T>? =>
             ContainsAnyExcept((ReadOnlyExSpan<T>)span, values);
 
+#if NET8_0_OR_GREATER && TODO // [TODO why] SearchValues.IndexOfAny is internal
         /// <inheritdoc cref="ContainsAnyExcept{T}(ReadOnlyExSpan{T}, SearchValues{T})"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [OverloadResolutionPriority(-1)]
         public static bool ContainsAnyExcept<T>(this ExSpan<T> span, SearchValues<T> values) where T : IEquatable<T>? =>
             ContainsAnyExcept((ReadOnlyExSpan<T>)span, values);
+#endif // NET8_0_OR_GREATER
 
+#if TODO
         /// <inheritdoc cref="ContainsAnyInRange{T}(ReadOnlyExSpan{T}, T, T)"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [OverloadResolutionPriority(-1)]
@@ -332,7 +334,6 @@ namespace Zyl.ExSpans {
             IndexOfAny(span, values) >= 0;
 #endif // NET8_0_OR_GREATER
 
-#if TODO
         /// <summary>
         /// Searches for any value other than the specified <paramref name="value"/>.
         /// </summary>
@@ -447,6 +448,7 @@ namespace Zyl.ExSpans {
         public static bool ContainsAnyExcept<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> values, IEqualityComparer<T>? comparer = null) =>
             IndexOfAnyExcept(span, values, comparer) >= 0;
 
+#if NET8_0_OR_GREATER && TODO // [TODO why] SearchValues.IndexOfAny is internal
         /// <summary>
         /// Searches for any value other than the specified <paramref name="values"/>.
         /// </summary>
@@ -464,7 +466,9 @@ namespace Zyl.ExSpans {
 
             return values.ContainsAnyExcept(span);
         }
+#endif // NET8_0_OR_GREATER
 
+#if TODO
         /// <summary>
         /// Searches for any value in the range between <paramref name="lowInclusive"/> and <paramref name="highInclusive"/>, inclusive, and returns true if found. If not found, returns false.
         /// </summary>
@@ -497,7 +501,7 @@ namespace Zyl.ExSpans {
         /// <param name="value">The value to search for.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [OverloadResolutionPriority(-1)]
-        public static TSize IndexOf<T>(this ExSpan<T> span, T value) where T : IEquatable<T>? =>
+        public static nint IndexOf<T>(this ExSpan<T> span, T value) where T : IEquatable<T>? =>
             IndexOf((ReadOnlyExSpan<T>)span, value);
 
         /// <summary>
@@ -507,7 +511,7 @@ namespace Zyl.ExSpans {
         /// <param name="value">The sequence to search for.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [OverloadResolutionPriority(-1)]
-        public static TSize IndexOf<T>(this ExSpan<T> span, ReadOnlyExSpan<T> value) where T : IEquatable<T>? =>
+        public static nint IndexOf<T>(this ExSpan<T> span, ReadOnlyExSpan<T> value) where T : IEquatable<T>? =>
             IndexOf((ReadOnlyExSpan<T>)span, value);
 
 #if TODO
