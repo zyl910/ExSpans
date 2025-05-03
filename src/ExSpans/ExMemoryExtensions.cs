@@ -488,6 +488,7 @@ namespace Zyl.ExSpans {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool ContainsAnyExceptInRange<T>(this ReadOnlyExSpan<T> span, T lowInclusive, T highInclusive) where T : IComparable<T> =>
             IndexOfAnyExceptInRange(span, lowInclusive, highInclusive) >= 0;
+#endif // TODO
 
         /// <summary>
         /// Searches for the specified value and returns the index of its first occurrence. If not found, returns -1. Values are compared using IEquatable{T}.Equals(T).
@@ -496,7 +497,7 @@ namespace Zyl.ExSpans {
         /// <param name="value">The value to search for.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [OverloadResolutionPriority(-1)]
-        public static int IndexOf<T>(this ExSpan<T> span, T value) where T : IEquatable<T>? =>
+        public static TSize IndexOf<T>(this ExSpan<T> span, T value) where T : IEquatable<T>? =>
             IndexOf((ReadOnlyExSpan<T>)span, value);
 
         /// <summary>
@@ -506,9 +507,10 @@ namespace Zyl.ExSpans {
         /// <param name="value">The sequence to search for.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [OverloadResolutionPriority(-1)]
-        public static int IndexOf<T>(this ExSpan<T> span, ReadOnlyExSpan<T> value) where T : IEquatable<T>? =>
+        public static TSize IndexOf<T>(this ExSpan<T> span, ReadOnlyExSpan<T> value) where T : IEquatable<T>? =>
             IndexOf((ReadOnlyExSpan<T>)span, value);
 
+#if TODO
         /// <summary>
         /// Searches for the specified value and returns the index of its last occurrence. If not found, returns -1. Values are compared using IEquatable{T}.Equals(T).
         /// </summary>
@@ -528,81 +530,84 @@ namespace Zyl.ExSpans {
         [OverloadResolutionPriority(-1)]
         public static int LastIndexOf<T>(this ExSpan<T> span, ReadOnlyExSpan<T> value) where T : IEquatable<T>? =>
             LastIndexOf((ReadOnlyExSpan<T>)span, value);
+#endif // TODO
 
         /// <summary>Searches for the first index of any value other than the specified <paramref name="value"/>.</summary>
-        /// <typeparam name="T">The type of the ExSpan and values.</typeparam>
+        /// <typeparam name="T">The type of the span and values.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="value">A value to avoid.</param>
         /// <returns>
-        /// The index in the ExSpan of the first occurrence of any value other than <paramref name="value"/>.
+        /// The index in the span of the first occurrence of any value other than <paramref name="value"/>.
         /// If all of the values are <paramref name="value"/>, returns -1.
         /// </returns>
         [OverloadResolutionPriority(-1)]
-        public static int IndexOfAnyExcept<T>(this ExSpan<T> span, T value) where T : IEquatable<T>? =>
+        public static TSize IndexOfAnyExcept<T>(this ExSpan<T> span, T value) where T : IEquatable<T>? =>
             IndexOfAnyExcept((ReadOnlyExSpan<T>)span, value);
 
         /// <summary>Searches for the first index of any value other than the specified <paramref name="value0"/> or <paramref name="value1"/>.</summary>
-        /// <typeparam name="T">The type of the ExSpan and values.</typeparam>
+        /// <typeparam name="T">The type of the span and values.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="value0">A value to avoid.</param>
         /// <param name="value1">A value to avoid</param>
         /// <returns>
-        /// The index in the ExSpan of the first occurrence of any value other than <paramref name="value0"/> and <paramref name="value1"/>.
+        /// The index in the span of the first occurrence of any value other than <paramref name="value0"/> and <paramref name="value1"/>.
         /// If all of the values are <paramref name="value0"/> or <paramref name="value1"/>, returns -1.
         /// </returns>
         [OverloadResolutionPriority(-1)]
-        public static int IndexOfAnyExcept<T>(this ExSpan<T> span, T value0, T value1) where T : IEquatable<T>? =>
+        public static TSize IndexOfAnyExcept<T>(this ExSpan<T> span, T value0, T value1) where T : IEquatable<T>? =>
             IndexOfAnyExcept((ReadOnlyExSpan<T>)span, value0, value1);
 
         /// <summary>Searches for the first index of any value other than the specified <paramref name="value0"/>, <paramref name="value1"/>, or <paramref name="value2"/>.</summary>
-        /// <typeparam name="T">The type of the ExSpan and values.</typeparam>
+        /// <typeparam name="T">The type of the span and values.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="value0">A value to avoid.</param>
         /// <param name="value1">A value to avoid</param>
         /// <param name="value2">A value to avoid</param>
         /// <returns>
-        /// The index in the ExSpan of the first occurrence of any value other than <paramref name="value0"/>, <paramref name="value1"/>, and <paramref name="value2"/>.
+        /// The index in the span of the first occurrence of any value other than <paramref name="value0"/>, <paramref name="value1"/>, and <paramref name="value2"/>.
         /// If all of the values are <paramref name="value0"/>, <paramref name="value1"/>, or <paramref name="value2"/>, returns -1.
         /// </returns>
         [OverloadResolutionPriority(-1)]
-        public static int IndexOfAnyExcept<T>(this ExSpan<T> span, T value0, T value1, T value2) where T : IEquatable<T>? =>
+        public static TSize IndexOfAnyExcept<T>(this ExSpan<T> span, T value0, T value1, T value2) where T : IEquatable<T>? =>
             IndexOfAnyExcept((ReadOnlyExSpan<T>)span, value0, value1, value2);
 
         /// <summary>Searches for the first index of any value other than the specified <paramref name="values"/>.</summary>
-        /// <typeparam name="T">The type of the ExSpan and values.</typeparam>
+        /// <typeparam name="T">The type of the span and values.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The values to avoid.</param>
         /// <returns>
-        /// The index in the ExSpan of the first occurrence of any value other than those in <paramref name="values"/>.
+        /// The index in the span of the first occurrence of any value other than those in <paramref name="values"/>.
         /// If all of the values are in <paramref name="values"/>, returns -1.
         /// </returns>
         [OverloadResolutionPriority(-1)]
-        public static int IndexOfAnyExcept<T>(this ExSpan<T> span, ReadOnlyExSpan<T> values) where T : IEquatable<T>? =>
+        public static TSize IndexOfAnyExcept<T>(this ExSpan<T> span, ReadOnlyExSpan<T> values) where T : IEquatable<T>? =>
             IndexOfAnyExcept((ReadOnlyExSpan<T>)span, values);
 
+#if NET8_0_OR_GREATER && TODO // [TODO why] SearchValues.IndexOfAny is internal
         /// <summary>Searches for the first index of any value other than the specified <paramref name="values"/>.</summary>
-        /// <typeparam name="T">The type of the ExSpan and values.</typeparam>
+        /// <typeparam name="T">The type of the span and values.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The values to avoid.</param>
         /// <returns>
-        /// The index in the ExSpan of the first occurrence of any value other than those in <paramref name="values"/>.
+        /// The index in the span of the first occurrence of any value other than those in <paramref name="values"/>.
         /// If all of the values are in <paramref name="values"/>, returns -1.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [OverloadResolutionPriority(-1)]
-        public static int IndexOfAnyExcept<T>(this ExSpan<T> span, SearchValues<T> values) where T : IEquatable<T>? =>
+        public static TSize IndexOfAnyExcept<T>(this ExSpan<T> span, SearchValues<T> values) where T : IEquatable<T>? =>
             IndexOfAnyExcept((ReadOnlyExSpan<T>)span, values);
+#endif // NET8_0_OR_GREATER
 
         /// <summary>Searches for the first index of any value other than the specified <paramref name="value"/>.</summary>
-        /// <typeparam name="T">The type of the ExSpan and values.</typeparam>
+        /// <typeparam name="T">The type of the span and values.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="value">A value to avoid.</param>
         /// <returns>
-        /// The index in the ExSpan of the first occurrence of any value other than <paramref name="value"/>.
+        /// The index in the span of the first occurrence of any value other than <paramref name="value"/>.
         /// If all of the values are <paramref name="value"/>, returns -1.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe int IndexOfAnyExcept<T>(this ReadOnlyExSpan<T> span, T value) where T : IEquatable<T>? {
+        public static TSize IndexOfAnyExcept<T>(this ReadOnlyExSpan<T> span, T value) where T : IEquatable<T>? {
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.IndexOfAnyExceptValueType(
@@ -631,16 +636,16 @@ namespace Zyl.ExSpans {
         }
 
         /// <summary>Searches for the first index of any value other than the specified <paramref name="value"/>.</summary>
-        /// <typeparam name="T">The type of the ExSpan and values.</typeparam>
+        /// <typeparam name="T">The type of the span and values.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="value">A value to avoid.</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         /// <returns>
-        /// The index in the ExSpan of the first occurrence of any value other than <paramref name="value"/>.
+        /// The index in the span of the first occurrence of any value other than <paramref name="value"/>.
         /// If all of the values are <paramref name="value"/>, returns -1.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe int IndexOfAnyExcept<T>(this ReadOnlyExSpan<T> span, T value, IEqualityComparer<T>? comparer = null) {
+        public static TSize IndexOfAnyExcept<T>(this ReadOnlyExSpan<T> span, T value, IEqualityComparer<T>? comparer = null) {
             if (TypeHelper.IsValueType<T>() && (comparer is null || comparer == EqualityComparer<T>.Default)) {
                 if (TypeHelper.IsBitwiseEquatable<T>()) {
                     if (Unsafe.SizeOf<T>() == sizeof(byte)) {
@@ -667,8 +672,8 @@ namespace Zyl.ExSpans {
                 }
 
                 return IndexOfAnyExceptDefaultComparer(span, value);
-                static int IndexOfAnyExceptDefaultComparer(ReadOnlyExSpan<T> span, T value) {
-                    for (int i = 0; i < span.Length; i++) {
+                static TSize IndexOfAnyExceptDefaultComparer(ReadOnlyExSpan<T> span, T value) {
+                    for (TSize i = 0; i < span.Length; i++) {
                         if (!EqualityComparer<T>.Default.Equals(span[i], value)) {
                             return i;
                         }
@@ -678,10 +683,10 @@ namespace Zyl.ExSpans {
                 }
             } else {
                 return IndexOfAnyExceptComparer(span, value, comparer);
-                static int IndexOfAnyExceptComparer(ReadOnlyExSpan<T> span, T value, IEqualityComparer<T>? comparer) {
+                static TSize IndexOfAnyExceptComparer(ReadOnlyExSpan<T> span, T value, IEqualityComparer<T>? comparer) {
                     comparer ??= EqualityComparer<T>.Default;
 
-                    for (int i = 0; i < span.Length; i++) {
+                    for (TSize i = 0; i < span.Length; i++) {
                         if (!comparer.Equals(span[i], value)) {
                             return i;
                         }
@@ -693,16 +698,16 @@ namespace Zyl.ExSpans {
         }
 
         /// <summary>Searches for the first index of any value other than the specified <paramref name="value0"/> or <paramref name="value1"/>.</summary>
-        /// <typeparam name="T">The type of the ExSpan and values.</typeparam>
+        /// <typeparam name="T">The type of the span and values.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="value0">A value to avoid.</param>
         /// <param name="value1">A value to avoid</param>
         /// <returns>
-        /// The index in the ExSpan of the first occurrence of any value other than <paramref name="value0"/> and <paramref name="value1"/>.
+        /// The index in the span of the first occurrence of any value other than <paramref name="value0"/> and <paramref name="value1"/>.
         /// If all of the values are <paramref name="value0"/> or <paramref name="value1"/>, returns -1.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe int IndexOfAnyExcept<T>(this ReadOnlyExSpan<T> span, T value0, T value1) where T : IEquatable<T>? {
+        public static TSize IndexOfAnyExcept<T>(this ReadOnlyExSpan<T> span, T value0, T value1) where T : IEquatable<T>? {
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.IndexOfAnyExceptValueType(
@@ -723,17 +728,17 @@ namespace Zyl.ExSpans {
         }
 
         /// <summary>Searches for the first index of any value other than the specified <paramref name="value0"/> or <paramref name="value1"/>.</summary>
-        /// <typeparam name="T">The type of the ExSpan and values.</typeparam>
+        /// <typeparam name="T">The type of the span and values.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="value0">A value to avoid.</param>
         /// <param name="value1">A value to avoid</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         /// <returns>
-        /// The index in the ExSpan of the first occurrence of any value other than <paramref name="value0"/> and <paramref name="value1"/>.
+        /// The index in the span of the first occurrence of any value other than <paramref name="value0"/> and <paramref name="value1"/>.
         /// If all of the values are <paramref name="value0"/> or <paramref name="value1"/>, returns -1.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe int IndexOfAnyExcept<T>(this ReadOnlyExSpan<T> span, T value0, T value1, IEqualityComparer<T>? comparer = null) {
+        public static TSize IndexOfAnyExcept<T>(this ReadOnlyExSpan<T> span, T value0, T value1, IEqualityComparer<T>? comparer = null) {
             if (TypeHelper.IsValueType<T>() && (comparer is null || comparer == EqualityComparer<T>.Default)) {
                 if (TypeHelper.IsBitwiseEquatable<T>()) {
                     if (Unsafe.SizeOf<T>() == sizeof(byte)) {
@@ -752,8 +757,8 @@ namespace Zyl.ExSpans {
                 }
 
                 return IndexOfAnyExceptDefaultComparer(span, value0, value1);
-                static int IndexOfAnyExceptDefaultComparer(ReadOnlyExSpan<T> span, T value0, T value1) {
-                    for (int i = 0; i < span.Length; i++) {
+                static TSize IndexOfAnyExceptDefaultComparer(ReadOnlyExSpan<T> span, T value0, T value1) {
+                    for (TSize i = 0; i < span.Length; i++) {
                         if (!EqualityComparer<T>.Default.Equals(span[i], value0) &&
                             !EqualityComparer<T>.Default.Equals(span[i], value1)) {
                             return i;
@@ -764,10 +769,10 @@ namespace Zyl.ExSpans {
                 }
             } else {
                 return IndexOfAnyExceptComparer(span, value0, value1, comparer);
-                static int IndexOfAnyExceptComparer(ReadOnlyExSpan<T> span, T value0, T value1, IEqualityComparer<T>? comparer) {
+                static TSize IndexOfAnyExceptComparer(ReadOnlyExSpan<T> span, T value0, T value1, IEqualityComparer<T>? comparer) {
                     comparer ??= EqualityComparer<T>.Default;
 
-                    for (int i = 0; i < span.Length; i++) {
+                    for (TSize i = 0; i < span.Length; i++) {
                         if (!comparer.Equals(span[i], value0) &&
                             !comparer.Equals(span[i], value1)) {
                             return i;
@@ -780,17 +785,17 @@ namespace Zyl.ExSpans {
         }
 
         /// <summary>Searches for the first index of any value other than the specified <paramref name="value0"/>, <paramref name="value1"/>, or <paramref name="value2"/>.</summary>
-        /// <typeparam name="T">The type of the ExSpan and values.</typeparam>
+        /// <typeparam name="T">The type of the span and values.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="value0">A value to avoid.</param>
         /// <param name="value1">A value to avoid</param>
         /// <param name="value2">A value to avoid</param>
         /// <returns>
-        /// The index in the ExSpan of the first occurrence of any value other than <paramref name="value0"/>, <paramref name="value1"/>, and <paramref name="value2"/>.
+        /// The index in the span of the first occurrence of any value other than <paramref name="value0"/>, <paramref name="value1"/>, and <paramref name="value2"/>.
         /// If all of the values are <paramref name="value0"/>, <paramref name="value1"/>, and <paramref name="value2"/>, returns -1.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe int IndexOfAnyExcept<T>(this ReadOnlyExSpan<T> span, T value0, T value1, T value2) where T : IEquatable<T>? {
+        public static TSize IndexOfAnyExcept<T>(this ReadOnlyExSpan<T> span, T value0, T value1, T value2) where T : IEquatable<T>? {
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.IndexOfAnyExceptValueType(
@@ -813,18 +818,18 @@ namespace Zyl.ExSpans {
         }
 
         /// <summary>Searches for the first index of any value other than the specified <paramref name="value0"/>, <paramref name="value1"/>, or <paramref name="value2"/>.</summary>
-        /// <typeparam name="T">The type of the ExSpan and values.</typeparam>
+        /// <typeparam name="T">The type of the span and values.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="value0">A value to avoid.</param>
         /// <param name="value1">A value to avoid</param>
         /// <param name="value2">A value to avoid</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         /// <returns>
-        /// The index in the ExSpan of the first occurrence of any value other than <paramref name="value0"/>, <paramref name="value1"/>, and <paramref name="value2"/>.
+        /// The index in the span of the first occurrence of any value other than <paramref name="value0"/>, <paramref name="value1"/>, and <paramref name="value2"/>.
         /// If all of the values are <paramref name="value0"/>, <paramref name="value1"/>, and <paramref name="value2"/>, returns -1.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe int IndexOfAnyExcept<T>(this ReadOnlyExSpan<T> span, T value0, T value1, T value2, IEqualityComparer<T>? comparer = null) {
+        public static TSize IndexOfAnyExcept<T>(this ReadOnlyExSpan<T> span, T value0, T value1, T value2, IEqualityComparer<T>? comparer = null) {
             if (TypeHelper.IsValueType<T>() && (comparer is null || comparer == EqualityComparer<T>.Default)) {
                 if (TypeHelper.IsBitwiseEquatable<T>()) {
                     if (Unsafe.SizeOf<T>() == sizeof(byte)) {
@@ -845,8 +850,8 @@ namespace Zyl.ExSpans {
                 }
 
                 return IndexOfAnyExceptDefaultComparer(span, value0, value1, value2);
-                static int IndexOfAnyExceptDefaultComparer(ReadOnlyExSpan<T> span, T value0, T value1, T value2) {
-                    for (int i = 0; i < span.Length; i++) {
+                static TSize IndexOfAnyExceptDefaultComparer(ReadOnlyExSpan<T> span, T value0, T value1, T value2) {
+                    for (TSize i = 0; i < span.Length; i++) {
                         if (!EqualityComparer<T>.Default.Equals(span[i], value0) &&
                             !EqualityComparer<T>.Default.Equals(span[i], value1) &&
                             !EqualityComparer<T>.Default.Equals(span[i], value2)) {
@@ -874,7 +879,7 @@ namespace Zyl.ExSpans {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static unsafe int IndexOfAnyExcept<T>(this ReadOnlyExSpan<T> span, T value0, T value1, T value2, T value3) where T : IEquatable<T>? {
+        private static TSize IndexOfAnyExcept<T>(this ReadOnlyExSpan<T> span, T value0, T value1, T value2, T value3) where T : IEquatable<T>? {
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.IndexOfAnyExceptValueType(
@@ -899,18 +904,18 @@ namespace Zyl.ExSpans {
         }
 
         /// <summary>Searches for the first index of any value other than the specified <paramref name="values"/>.</summary>
-        /// <typeparam name="T">The type of the ExSpan and values.</typeparam>
+        /// <typeparam name="T">The type of the span and values.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The values to avoid.</param>
         /// <returns>
-        /// The index in the ExSpan of the first occurrence of any value other than those in <paramref name="values"/>.
+        /// The index in the span of the first occurrence of any value other than those in <paramref name="values"/>.
         /// If all of the values are in <paramref name="values"/>, returns -1.
         /// </returns>
-        public static unsafe int IndexOfAnyExcept<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> values) where T : IEquatable<T>? {
+        public static TSize IndexOfAnyExcept<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> values) where T : IEquatable<T>? {
             switch (values.Length) {
                 case 0:
-                    // If the ExSpan is empty, we want to return -1.
-                    // If the ExSpan is non-empty, we want to return the index of the first char that's not in the empty set,
+                    // If the span is empty, we want to return -1.
+                    // If the span is non-empty, we want to return the index of the first char that's not in the empty set,
                     // which is every character, and so the first char in the span.
                     return span.IsEmpty ? -1 : 0;
 
@@ -953,6 +958,7 @@ namespace Zyl.ExSpans {
                         }
                     }
 
+#if NET8_0_OR_GREATER && TODO // [TODO why] ProbabilisticMap is internal
                     if (TypeHelper.IsBitwiseEquatable<T>() && Unsafe.SizeOf<T>() == sizeof(char)) {
                         return ProbabilisticMap.IndexOfAnyExcept(
                             ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(span)),
@@ -960,8 +966,9 @@ namespace Zyl.ExSpans {
                             ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(values)),
                             values.Length);
                     }
+#endif // NET8_0_OR_GREATER
 
-                    for (int i = 0; i < span.Length; i++) {
+                    for (TSize i = 0; i < span.Length; i++) {
                         if (!values.Contains(span[i])) {
                             return i;
                         }
@@ -972,15 +979,15 @@ namespace Zyl.ExSpans {
         }
 
         /// <summary>Searches for the first index of any value other than the specified <paramref name="values"/>.</summary>
-        /// <typeparam name="T">The type of the ExSpan and values.</typeparam>
+        /// <typeparam name="T">The type of the span and values.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The values to avoid.</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         /// <returns>
-        /// The index in the ExSpan of the first occurrence of any value other than those in <paramref name="values"/>.
+        /// The index in the span of the first occurrence of any value other than those in <paramref name="values"/>.
         /// If all of the values are in <paramref name="values"/>, returns -1.
         /// </returns>
-        public static unsafe int IndexOfAnyExcept<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> values, IEqualityComparer<T>? comparer = null) {
+        public static TSize IndexOfAnyExcept<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> values, IEqualityComparer<T>? comparer = null) {
             switch (values.Length) {
                 case 0:
                     return span.IsEmpty ? -1 : 0;
@@ -995,7 +1002,7 @@ namespace Zyl.ExSpans {
                     return IndexOfAnyExcept(span, values[0], values[1], values[2], comparer);
 
                 default:
-                    for (int i = 0; i < span.Length; i++) {
+                    for (TSize i = 0; i < span.Length; i++) {
                         if (!values.Contains(span[i], comparer)) {
                             return i;
                         }
@@ -1005,29 +1012,32 @@ namespace Zyl.ExSpans {
             }
         }
 
+#if NET8_0_OR_GREATER && TODO // [TODO why] SearchValues.IndexOfAny is internal
         /// <summary>Searches for the first index of any value other than the specified <paramref name="values"/>.</summary>
-        /// <typeparam name="T">The type of the ExSpan and values.</typeparam>
+        /// <typeparam name="T">The type of the span and values.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The values to avoid.</param>
         /// <returns>
-        /// The index in the ExSpan of the first occurrence of any value other than those in <paramref name="values"/>.
+        /// The index in the span of the first occurrence of any value other than those in <paramref name="values"/>.
         /// If all of the values are in <paramref name="values"/>, returns -1.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int IndexOfAnyExcept<T>(this ReadOnlyExSpan<T> span, SearchValues<T> values) where T : IEquatable<T>? {
+        public static TSize IndexOfAnyExcept<T>(this ReadOnlyExSpan<T> span, SearchValues<T> values) where T : IEquatable<T>? {
             if (values is null) {
                 throw new ArgumentNullException(nameof(values));
             }
 
             return values.IndexOfAnyExcept(span);
         }
+#endif // NET8_0_OR_GREATER
 
+#if TODO
         /// <summary>Searches for the last index of any value other than the specified <paramref name="value"/>.</summary>
-        /// <typeparam name="T">The type of the ExSpan and values.</typeparam>
+        /// <typeparam name="T">The type of the span and values.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="value">A value to avoid.</param>
         /// <returns>
-        /// The index in the ExSpan of the last occurrence of any value other than <paramref name="value"/>.
+        /// The index in the span of the last occurrence of any value other than <paramref name="value"/>.
         /// If all of the values are <paramref name="value"/>, returns -1.
         /// </returns>
         [OverloadResolutionPriority(-1)]
@@ -1035,12 +1045,12 @@ namespace Zyl.ExSpans {
             LastIndexOfAnyExcept((ReadOnlyExSpan<T>)span, value);
 
         /// <summary>Searches for the last index of any value other than the specified <paramref name="value0"/> or <paramref name="value1"/>.</summary>
-        /// <typeparam name="T">The type of the ExSpan and values.</typeparam>
+        /// <typeparam name="T">The type of the span and values.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="value0">A value to avoid.</param>
         /// <param name="value1">A value to avoid</param>
         /// <returns>
-        /// The index in the ExSpan of the last occurrence of any value other than <paramref name="value0"/> and <paramref name="value1"/>.
+        /// The index in the span of the last occurrence of any value other than <paramref name="value0"/> and <paramref name="value1"/>.
         /// If all of the values are <paramref name="value0"/> or <paramref name="value1"/>, returns -1.
         /// </returns>
         [OverloadResolutionPriority(-1)]
@@ -1048,13 +1058,13 @@ namespace Zyl.ExSpans {
             LastIndexOfAnyExcept((ReadOnlyExSpan<T>)span, value0, value1);
 
         /// <summary>Searches for the last index of any value other than the specified <paramref name="value0"/>, <paramref name="value1"/>, or <paramref name="value2"/>.</summary>
-        /// <typeparam name="T">The type of the ExSpan and values.</typeparam>
+        /// <typeparam name="T">The type of the span and values.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="value0">A value to avoid.</param>
         /// <param name="value1">A value to avoid</param>
         /// <param name="value2">A value to avoid</param>
         /// <returns>
-        /// The index in the ExSpan of the last occurrence of any value other than <paramref name="value0"/>, <paramref name="value1"/>, and <paramref name="value2"/>.
+        /// The index in the span of the last occurrence of any value other than <paramref name="value0"/>, <paramref name="value1"/>, and <paramref name="value2"/>.
         /// If all of the values are <paramref name="value0"/>, <paramref name="value1"/>, and <paramref name="value2"/>, returns -1.
         /// </returns>
         [OverloadResolutionPriority(-1)]
@@ -1062,11 +1072,11 @@ namespace Zyl.ExSpans {
             LastIndexOfAnyExcept((ReadOnlyExSpan<T>)span, value0, value1, value2);
 
         /// <summary>Searches for the last index of any value other than the specified <paramref name="values"/>.</summary>
-        /// <typeparam name="T">The type of the ExSpan and values.</typeparam>
+        /// <typeparam name="T">The type of the span and values.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The values to avoid.</param>
         /// <returns>
-        /// The index in the ExSpan of the last occurrence of any value other than those in <paramref name="values"/>.
+        /// The index in the span of the last occurrence of any value other than those in <paramref name="values"/>.
         /// If all of the values are in <paramref name="values"/>, returns -1.
         /// </returns>
         [OverloadResolutionPriority(-1)]
@@ -1074,11 +1084,11 @@ namespace Zyl.ExSpans {
             LastIndexOfAnyExcept((ReadOnlyExSpan<T>)span, values);
 
         /// <summary>Searches for the last index of any value other than the specified <paramref name="values"/>.</summary>
-        /// <typeparam name="T">The type of the ExSpan and values.</typeparam>
+        /// <typeparam name="T">The type of the span and values.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The values to avoid.</param>
         /// <returns>
-        /// The index in the ExSpan of the first occurrence of any value other than those in <paramref name="values"/>.
+        /// The index in the span of the first occurrence of any value other than those in <paramref name="values"/>.
         /// If all of the values are in <paramref name="values"/>, returns -1.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1087,11 +1097,11 @@ namespace Zyl.ExSpans {
             LastIndexOfAnyExcept((ReadOnlyExSpan<T>)span, values);
 
         /// <summary>Searches for the last index of any value other than the specified <paramref name="value"/>.</summary>
-        /// <typeparam name="T">The type of the ExSpan and values.</typeparam>
+        /// <typeparam name="T">The type of the span and values.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="value">A value to avoid.</param>
         /// <returns>
-        /// The index in the ExSpan of the last occurrence of any value other than <paramref name="value"/>.
+        /// The index in the span of the last occurrence of any value other than <paramref name="value"/>.
         /// If all of the values are <paramref name="value"/>, returns -1.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1124,12 +1134,12 @@ namespace Zyl.ExSpans {
         }
 
         /// <summary>Searches for the last index of any value other than the specified <paramref name="value"/>.</summary>
-        /// <typeparam name="T">The type of the ExSpan and values.</typeparam>
+        /// <typeparam name="T">The type of the span and values.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="value">A value to avoid.</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         /// <returns>
-        /// The index in the ExSpan of the last occurrence of any value other than <paramref name="value"/>.
+        /// The index in the span of the last occurrence of any value other than <paramref name="value"/>.
         /// If all of the values are <paramref name="value"/>, returns -1.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1186,12 +1196,12 @@ namespace Zyl.ExSpans {
         }
 
         /// <summary>Searches for the last index of any value other than the specified <paramref name="value0"/> or <paramref name="value1"/>.</summary>
-        /// <typeparam name="T">The type of the ExSpan and values.</typeparam>
+        /// <typeparam name="T">The type of the span and values.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="value0">A value to avoid.</param>
         /// <param name="value1">A value to avoid</param>
         /// <returns>
-        /// The index in the ExSpan of the last occurrence of any value other than <paramref name="value0"/> and <paramref name="value1"/>.
+        /// The index in the span of the last occurrence of any value other than <paramref name="value0"/> and <paramref name="value1"/>.
         /// If all of the values are <paramref name="value0"/> or <paramref name="value1"/>, returns -1.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1216,13 +1226,13 @@ namespace Zyl.ExSpans {
         }
 
         /// <summary>Searches for the last index of any value other than the specified <paramref name="value0"/> or <paramref name="value1"/>.</summary>
-        /// <typeparam name="T">The type of the ExSpan and values.</typeparam>
+        /// <typeparam name="T">The type of the span and values.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="value0">A value to avoid.</param>
         /// <param name="value1">A value to avoid</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         /// <returns>
-        /// The index in the ExSpan of the last occurrence of any value other than <paramref name="value0"/> and <paramref name="value1"/>.
+        /// The index in the span of the last occurrence of any value other than <paramref name="value0"/> and <paramref name="value1"/>.
         /// If all of the values are <paramref name="value0"/> or <paramref name="value1"/>, returns -1.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1273,13 +1283,13 @@ namespace Zyl.ExSpans {
         }
 
         /// <summary>Searches for the last index of any value other than the specified <paramref name="value0"/>, <paramref name="value1"/>, or <paramref name="value2"/>.</summary>
-        /// <typeparam name="T">The type of the ExSpan and values.</typeparam>
+        /// <typeparam name="T">The type of the span and values.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="value0">A value to avoid.</param>
         /// <param name="value1">A value to avoid</param>
         /// <param name="value2">A value to avoid</param>
         /// <returns>
-        /// The index in the ExSpan of the last occurrence of any value other than <paramref name="value0"/>, <paramref name="value1"/>, and <paramref name="value2"/>.
+        /// The index in the span of the last occurrence of any value other than <paramref name="value0"/>, <paramref name="value1"/>, and <paramref name="value2"/>.
         /// If all of the values are <paramref name="value0"/>, <paramref name="value1"/>, and <paramref name="value2"/>, returns -1.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1306,14 +1316,14 @@ namespace Zyl.ExSpans {
         }
 
         /// <summary>Searches for the last index of any value other than the specified <paramref name="value0"/>, <paramref name="value1"/>, or <paramref name="value2"/>.</summary>
-        /// <typeparam name="T">The type of the ExSpan and values.</typeparam>
+        /// <typeparam name="T">The type of the span and values.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="value0">A value to avoid.</param>
         /// <param name="value1">A value to avoid</param>
         /// <param name="value2">A value to avoid</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         /// <returns>
-        /// The index in the ExSpan of the last occurrence of any value other than <paramref name="value0"/>, <paramref name="value1"/>, and <paramref name="value2"/>.
+        /// The index in the span of the last occurrence of any value other than <paramref name="value0"/>, <paramref name="value1"/>, and <paramref name="value2"/>.
         /// If all of the values are <paramref name="value0"/>, <paramref name="value1"/>, and <paramref name="value2"/>, returns -1.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1393,18 +1403,18 @@ namespace Zyl.ExSpans {
         }
 
         /// <summary>Searches for the last index of any value other than the specified <paramref name="values"/>.</summary>
-        /// <typeparam name="T">The type of the ExSpan and values.</typeparam>
+        /// <typeparam name="T">The type of the span and values.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The values to avoid.</param>
         /// <returns>
-        /// The index in the ExSpan of the first occurrence of any value other than those in <paramref name="values"/>.
+        /// The index in the span of the first occurrence of any value other than those in <paramref name="values"/>.
         /// If all of the values are in <paramref name="values"/>, returns -1.
         /// </returns>
         public static unsafe int LastIndexOfAnyExcept<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> values) where T : IEquatable<T>? {
             switch (values.Length) {
                 case 0:
-                    // If the ExSpan is empty, we want to return -1.
-                    // If the ExSpan is non-empty, we want to return the index of the last char that's not in the empty set,
+                    // If the span is empty, we want to return -1.
+                    // If the span is non-empty, we want to return the index of the last char that's not in the empty set,
                     // which is every character, and so the last char in the span.
                     // Either way, we want to return span.Length - 1.
                     return span.Length - 1;
@@ -1467,12 +1477,12 @@ namespace Zyl.ExSpans {
         }
 
         /// <summary>Searches for the last index of any value other than the specified <paramref name="values"/>.</summary>
-        /// <typeparam name="T">The type of the ExSpan and values.</typeparam>
+        /// <typeparam name="T">The type of the span and values.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The values to avoid.</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         /// <returns>
-        /// The index in the ExSpan of the first occurrence of any value other than those in <paramref name="values"/>.
+        /// The index in the span of the first occurrence of any value other than those in <paramref name="values"/>.
         /// If all of the values are in <paramref name="values"/>, returns -1.
         /// </returns>
         public static unsafe int LastIndexOfAnyExcept<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> values, IEqualityComparer<T>? comparer = null) {
@@ -1501,11 +1511,11 @@ namespace Zyl.ExSpans {
         }
 
         /// <summary>Searches for the last index of any value other than the specified <paramref name="values"/>.</summary>
-        /// <typeparam name="T">The type of the ExSpan and values.</typeparam>
+        /// <typeparam name="T">The type of the span and values.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The values to avoid.</param>
         /// <returns>
-        /// The index in the ExSpan of the first occurrence of any value other than those in <paramref name="values"/>.
+        /// The index in the span of the first occurrence of any value other than those in <paramref name="values"/>.
         /// If all of the values are in <paramref name="values"/>, returns -1.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1524,12 +1534,12 @@ namespace Zyl.ExSpans {
             IndexOfAnyInRange((ReadOnlyExSpan<T>)span, lowInclusive, highInclusive);
 
         /// <summary>Searches for the first index of any value in the range between <paramref name="lowInclusive"/> and <paramref name="highInclusive"/>, inclusive.</summary>
-        /// <typeparam name="T">The type of the ExSpan and values.</typeparam>
+        /// <typeparam name="T">The type of the span and values.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="lowInclusive">A lower bound, inclusive, of the range for which to search.</param>
         /// <param name="highInclusive">A upper bound, inclusive, of the range for which to search.</param>
         /// <returns>
-        /// The index in the ExSpan of the first occurrence of any value in the specified range.
+        /// The index in the span of the first occurrence of any value in the specified range.
         /// If all of the values are outside of the specified range, returns -1.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1582,12 +1592,12 @@ namespace Zyl.ExSpans {
             IndexOfAnyExceptInRange((ReadOnlyExSpan<T>)span, lowInclusive, highInclusive);
 
         /// <summary>Searches for the first index of any value outside of the range between <paramref name="lowInclusive"/> and <paramref name="highInclusive"/>, inclusive.</summary>
-        /// <typeparam name="T">The type of the ExSpan and values.</typeparam>
+        /// <typeparam name="T">The type of the span and values.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="lowInclusive">A lower bound, inclusive, of the excluded range.</param>
         /// <param name="highInclusive">A upper bound, inclusive, of the excluded range.</param>
         /// <returns>
-        /// The index in the ExSpan of the first occurrence of any value outside of the specified range.
+        /// The index in the span of the first occurrence of any value outside of the specified range.
         /// If all of the values are inside of the specified range, returns -1.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1640,12 +1650,12 @@ namespace Zyl.ExSpans {
             LastIndexOfAnyInRange((ReadOnlyExSpan<T>)span, lowInclusive, highInclusive);
 
         /// <summary>Searches for the last index of any value in the range between <paramref name="lowInclusive"/> and <paramref name="highInclusive"/>, inclusive.</summary>
-        /// <typeparam name="T">The type of the ExSpan and values.</typeparam>
+        /// <typeparam name="T">The type of the span and values.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="lowInclusive">A lower bound, inclusive, of the range for which to search.</param>
         /// <param name="highInclusive">A upper bound, inclusive, of the range for which to search.</param>
         /// <returns>
-        /// The index in the ExSpan of the last occurrence of any value in the specified range.
+        /// The index in the span of the last occurrence of any value in the specified range.
         /// If all of the values are outside of the specified range, returns -1.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1698,12 +1708,12 @@ namespace Zyl.ExSpans {
             LastIndexOfAnyExceptInRange((ReadOnlyExSpan<T>)span, lowInclusive, highInclusive);
 
         /// <summary>Searches for the last index of any value outside of the range between <paramref name="lowInclusive"/> and <paramref name="highInclusive"/>, inclusive.</summary>
-        /// <typeparam name="T">The type of the ExSpan and values.</typeparam>
+        /// <typeparam name="T">The type of the span and values.</typeparam>
         /// <param name="span">The span to search.</param>
         /// <param name="lowInclusive">A lower bound, inclusive, of the excluded range.</param>
         /// <param name="highInclusive">A upper bound, inclusive, of the excluded range.</param>
         /// <returns>
-        /// The index in the ExSpan of the last occurrence of any value outside of the specified range.
+        /// The index in the span of the last occurrence of any value outside of the specified range.
         /// If all of the values are inside of the specified range, returns -1.
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -3068,7 +3078,7 @@ namespace Zyl.ExSpans {
                 ExSpanHelpers.SequenceEqual(
                     ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                     ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(value)),
-                    ((uint)valueLength) * (nuint)Unsafe.SizeOf<T>());  // If this multiplication overflows, the ExSpan we got overflows the entire address range. There's no happy outcome for this api in such a case so we choose not to take the overhead of checking.
+                    ((uint)valueLength) * (nuint)Unsafe.SizeOf<T>());  // If this multiplication overflows, the span we got overflows the entire address range. There's no happy outcome for this api in such a case so we choose not to take the overhead of checking.
             }
 
             return valueLength.LessThanOrEqual(span.Length) && ExSpanHelpers.SequenceEqual(ref ExMemoryMarshal.GetReference(span), ref ExMemoryMarshal.GetReference(value), valueLength.ToUIntPtr());
@@ -3107,7 +3117,7 @@ namespace Zyl.ExSpans {
                 ExSpanHelpers.SequenceEqual(
                     ref Unsafe.As<T, byte>(ref Unsafe.Add(ref ExMemoryMarshal.GetReference(span), ExSpanLength.Subtract(valueLength) /* force zero-extension */)),
                     ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(value)),
-                    (valueLength.ToUIntPtr().Multiply((nuint)Unsafe.SizeOf<T>())));  // If this multiplication overflows, the ExSpan we got overflows the entire address range. There's no happy outcome for this api in such a case so we choose not to take the overhead of checking.
+                    (valueLength.ToUIntPtr().Multiply((nuint)Unsafe.SizeOf<T>())));  // If this multiplication overflows, the span we got overflows the entire address range. There's no happy outcome for this api in such a case so we choose not to take the overhead of checking.
             }
 
             return valueLength.LessThanOrEqual(ExSpanLength) &&
@@ -3911,7 +3921,7 @@ namespace Zyl.ExSpans {
         /// <summary>
         /// Copies <paramref name="source"/> to <paramref name="destination"/>, replacing all occurrences of <paramref name="oldValue"/> with <paramref name="newValue"/>.
         /// </summary>
-        /// <typeparam name="T">The type of the elements in the ExSpans.</typeparam>
+        /// <typeparam name="T">The type of the elements in the spans.</typeparam>
         /// <param name="source">The span to copy.</param>
         /// <param name="destination">The span into which the copied and replaced values should be written.</param>
         /// <param name="oldValue">The value to be replaced with <paramref name="newValue"/>.</param>
@@ -3982,7 +3992,7 @@ namespace Zyl.ExSpans {
         /// <summary>
         /// Copies <paramref name="source"/> to <paramref name="destination"/>, replacing all occurrences of <paramref name="oldValue"/> with <paramref name="newValue"/>.
         /// </summary>
-        /// <typeparam name="T">The type of the elements in the ExSpans.</typeparam>
+        /// <typeparam name="T">The type of the elements in the spans.</typeparam>
         /// <param name="source">The span to copy.</param>
         /// <param name="destination">The span into which the copied and replaced values should be written.</param>
         /// <param name="oldValue">The value to be replaced with <paramref name="newValue"/>.</param>
@@ -4070,7 +4080,7 @@ namespace Zyl.ExSpans {
         /// Copies <paramref name="source"/> to <paramref name="destination"/>, replacing all occurrences of any of the
         /// elements in <paramref name="values"/> with <paramref name="newValue"/>.
         /// </summary>
-        /// <typeparam name="T">The type of the elements in the ExSpans.</typeparam>
+        /// <typeparam name="T">The type of the elements in the spans.</typeparam>
         /// <param name="source">The span to copy.</param>
         /// <param name="destination">The span into which the copied and replaced values should be written.</param>
         /// <param name="values">The values to be replaced with <paramref name="newValue"/>.</param>
@@ -4098,7 +4108,7 @@ namespace Zyl.ExSpans {
         /// Replaces in <paramref name="span"/> all occurrences of any of the
         /// elements in <paramref name="values"/> with <paramref name="newValue"/>.
         /// </summary>
-        /// <typeparam name="T">The type of the elements in the ExSpans.</typeparam>
+        /// <typeparam name="T">The type of the elements in the spans.</typeparam>
         /// <param name="span">The span to edit.</param>
         /// <param name="values">The values to be replaced with <paramref name="newValue"/>.</param>
         /// <param name="newValue">The value to replace all occurrences of any of the elements in <paramref name="values"/>.</param>
@@ -4115,7 +4125,7 @@ namespace Zyl.ExSpans {
         /// Copies <paramref name="source"/> to <paramref name="destination"/>, replacing all occurrences of any of the
         /// elements other than those in <paramref name="values"/> with <paramref name="newValue"/>.
         /// </summary>
-        /// <typeparam name="T">The type of the elements in the ExSpans.</typeparam>
+        /// <typeparam name="T">The type of the elements in the spans.</typeparam>
         /// <param name="source">The span to copy.</param>
         /// <param name="destination">The span into which the copied and replaced values should be written.</param>
         /// <param name="values">The values to be excluded from replacement with <paramref name="newValue"/>.</param>
@@ -4142,7 +4152,7 @@ namespace Zyl.ExSpans {
         /// <summary>
         /// Replaces in <paramref name="span"/> all elements, other than those in <paramref name="values"/>, with <paramref name="newValue"/>.
         /// </summary>
-        /// <typeparam name="T">The type of the elements in the ExSpans.</typeparam>
+        /// <typeparam name="T">The type of the elements in the spans.</typeparam>
         /// <param name="span">The span to edit.</param>
         /// <param name="values">The values to be excluded from replacement with <paramref name="newValue"/>.</param>
         /// <param name="newValue">The value to replace all occurrences of any elements other than those in <paramref name="values"/>.</param>
@@ -4156,7 +4166,7 @@ namespace Zyl.ExSpans {
         }
 
         /// <summary>Finds the length of any common prefix shared between <paramref name="span"/> and <paramref name="other"/>.</summary>
-        /// <typeparam name="T">The type of the elements in the ExSpans.</typeparam>
+        /// <typeparam name="T">The type of the elements in the spans.</typeparam>
         /// <param name="span">The first sequence to compare.</param>
         /// <param name="other">The second sequence to compare.</param>
         /// <returns>The length of the common prefix shared by the two ExSpans.  If there's no shared prefix, 0 is returned.</returns>
@@ -4165,7 +4175,7 @@ namespace Zyl.ExSpans {
             CommonPrefixLength((ReadOnlyExSpan<T>)span, other);
 
         /// <summary>Finds the length of any common prefix shared between <paramref name="span"/> and <paramref name="other"/>.</summary>
-        /// <typeparam name="T">The type of the elements in the ExSpans.</typeparam>
+        /// <typeparam name="T">The type of the elements in the spans.</typeparam>
         /// <param name="span">The first sequence to compare.</param>
         /// <param name="other">The second sequence to compare.</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
@@ -4175,7 +4185,7 @@ namespace Zyl.ExSpans {
             CommonPrefixLength((ReadOnlyExSpan<T>)span, other, comparer);
 
         /// <summary>Finds the length of any common prefix shared between <paramref name="span"/> and <paramref name="other"/>.</summary>
-        /// <typeparam name="T">The type of the elements in the ExSpans.</typeparam>
+        /// <typeparam name="T">The type of the elements in the spans.</typeparam>
         /// <param name="span">The first sequence to compare.</param>
         /// <param name="other">The second sequence to compare.</param>
         /// <returns>The length of the common prefix shared by the two ExSpans.  If there's no shared prefix, 0 is returned.</returns>
@@ -4202,7 +4212,7 @@ namespace Zyl.ExSpans {
                 return (int)(index / size);
             }
 
-            // Shrink one of the ExSpans if necessary to ensure they're both the same length. We can then iterate until
+            // Shrink one of the spans if necessary to ensure they're both the same length. We can then iterate until
             // the Length of one of them and at least have bounds checks removed from that one.
             SliceLongerExSpanToMatchShorterLength(ref span, ref other);
 
@@ -4230,11 +4240,11 @@ namespace Zyl.ExSpans {
                 return CommonPrefixLength(span, other);
             }
 
-            // Shrink one of the ExSpans if necessary to ensure they're both the same length. We can then iterate until
+            // Shrink one of the spans if necessary to ensure they're both the same length. We can then iterate until
             // the Length of one of them and at least have bounds checks removed from that one.
             SliceLongerExSpanToMatchShorterLength(ref span, ref other);
 
-            // Ensure we have a comparer, then compare the ExSpans.
+            // Ensure we have a comparer, then compare the spans.
             comparer ??= EqualityComparer<T>.Default;
             for (int i = 0; i < span.Length; i++) {
                 if (!comparer.Equals(span[i], other[i])) {
@@ -4332,7 +4342,7 @@ namespace Zyl.ExSpans {
         /// entirely whitespace, no ranges are written to the destination.
         /// </para>
         /// <para>
-        /// If the ExSpan does not contain <paramref name="separator"/>, or if <paramref name="destination"/>'s length is 1, a single range will be output containing the entire <paramref name="source"/>,
+        /// If the span does not contain <paramref name="separator"/>, or if <paramref name="destination"/>'s length is 1, a single range will be output containing the entire <paramref name="source"/>,
         /// subject to the processing implied by <paramref name="options"/>.
         /// </para>
         /// <para>
@@ -4365,7 +4375,7 @@ namespace Zyl.ExSpans {
         /// entirely whitespace, no ranges are written to the destination.
         /// </para>
         /// <para>
-        /// If the ExSpan does not contain <paramref name="separator"/>, or if <paramref name="destination"/>'s length is 1, a single range will be output containing the entire <paramref name="source"/>,
+        /// If the span does not contain <paramref name="separator"/>, or if <paramref name="destination"/>'s length is 1, a single range will be output containing the entire <paramref name="source"/>,
         /// subject to the processing implied by <paramref name="options"/>.
         /// </para>
         /// <para>
@@ -4416,7 +4426,7 @@ namespace Zyl.ExSpans {
         /// entirely whitespace, no ranges are written to the destination.
         /// </para>
         /// <para>
-        /// If the ExSpan does not contain any of the <paramref name="separators"/>, or if <paramref name="destination"/>'s length is 1, a single range will be output containing the entire <paramref name="source"/>,
+        /// If the span does not contain any of the <paramref name="separators"/>, or if <paramref name="destination"/>'s length is 1, a single range will be output containing the entire <paramref name="source"/>,
         /// subject to the processing implied by <paramref name="options"/>.
         /// </para>
         /// <para>
@@ -4455,7 +4465,7 @@ namespace Zyl.ExSpans {
         /// entirely whitespace, no ranges are written to the destination.
         /// </para>
         /// <para>
-        /// If the ExSpan does not contain any of the <paramref name="separators"/>, or if <paramref name="destination"/>'s length is 1, a single range will be output containing the entire <paramref name="source"/>,
+        /// If the span does not contain any of the <paramref name="separators"/>, or if <paramref name="destination"/>'s length is 1, a single range will be output containing the entire <paramref name="source"/>,
         /// subject to the processing implied by <paramref name="options"/>.
         /// </para>
         /// <para>
@@ -5234,7 +5244,7 @@ namespace Zyl.ExSpans {
 
             /// <summary>Writes the specified string to the handler.</summary>
             /// <param name="value">The string to write.</param>
-            /// <returns>true if the value could be formatted to the ExSpan; otherwise, false.</returns>
+            /// <returns>true if the value could be formatted to the span; otherwise, false.</returns>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public bool AppendLiteral(string value) {
                 if (value.TryCopyTo(_destination.Slice(_pos))) {
