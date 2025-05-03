@@ -168,7 +168,6 @@ namespace Zyl.ExSpans {
         public static bool Contains<T>(this ReadOnlyExSpan<T> span, T value, IEqualityComparer<T>? comparer = null) =>
             IndexOf(span, value, comparer).GreaterThanOrEqual(0);
 
-#if TODO
         /// <inheritdoc cref="ContainsAny{T}(ReadOnlyExSpan{T}, T, T)"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [OverloadResolutionPriority(-1)]
@@ -187,6 +186,7 @@ namespace Zyl.ExSpans {
         public static bool ContainsAny<T>(this ExSpan<T> span, ReadOnlyExSpan<T> values) where T : IEquatable<T>? =>
             ContainsAny((ReadOnlyExSpan<T>)span, values);
 
+#if NET8_0_OR_GREATER && TODO // [TODO why] SearchValues.IndexOfAny is internal
         /// <inheritdoc cref="ContainsAny{T}(ReadOnlyExSpan{T}, SearchValues{T})"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [OverloadResolutionPriority(-1)]
@@ -198,7 +198,9 @@ namespace Zyl.ExSpans {
         [OverloadResolutionPriority(-1)]
         public static bool ContainsAny(this ExSpan<char> span, SearchValues<string> values) =>
             ContainsAny((ReadOnlyExSpan<char>)span, values);
+#endif // NET8_0_OR_GREATER
 
+#if TODO
         /// <inheritdoc cref="ContainsAnyExcept{T}(ReadOnlyExSpan{T}, T)"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [OverloadResolutionPriority(-1)]
@@ -240,6 +242,7 @@ namespace Zyl.ExSpans {
         [OverloadResolutionPriority(-1)]
         public static bool ContainsAnyExceptInRange<T>(this ExSpan<T> span, T lowInclusive, T highInclusive) where T : IComparable<T> =>
             ContainsAnyExceptInRange((ReadOnlyExSpan<T>)span, lowInclusive, highInclusive);
+#endif // TODO
 
         /// <summary>
         /// Searches for any occurrence of the specified <paramref name="value0"/> or <paramref name="value1"/>, and returns true if found. If not found, returns false.
@@ -304,6 +307,7 @@ namespace Zyl.ExSpans {
         public static bool ContainsAny<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> values, IEqualityComparer<T>? comparer = null) =>
             IndexOfAny(span, values, comparer) >= 0;
 
+#if NET8_0_OR_GREATER && TODO // [TODO why] SearchValues.IndexOfAny is internal
         /// <summary>
         /// Searches for any occurrence of any of the specified <paramref name="values"/> and returns true if found. If not found, returns false.
         /// </summary>
@@ -315,7 +319,7 @@ namespace Zyl.ExSpans {
                 throw new ArgumentNullException(nameof(values));
             }
 
-            return values.ContainsAny(ExSpan);
+            return values.ContainsAny(span);
         }
 
         /// <summary>
@@ -326,7 +330,9 @@ namespace Zyl.ExSpans {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool ContainsAny(this ReadOnlyExSpan<char> span, SearchValues<string> values) =>
             IndexOfAny(span, values) >= 0;
+#endif // NET8_0_OR_GREATER
 
+#if TODO
         /// <summary>
         /// Searches for any value other than the specified <paramref name="value"/>.
         /// </summary>
@@ -456,7 +462,7 @@ namespace Zyl.ExSpans {
                 throw new ArgumentNullException(nameof(values));
             }
 
-            return values.ContainsAnyExcept(ExSpan);
+            return values.ContainsAnyExcept(span);
         }
 
         /// <summary>
@@ -1013,7 +1019,7 @@ namespace Zyl.ExSpans {
                 throw new ArgumentNullException(nameof(values));
             }
 
-            return values.IndexOfAnyExcept(ExSpan);
+            return values.IndexOfAnyExcept(span);
         }
 
         /// <summary>Searches for the last index of any value other than the specified <paramref name="value"/>.</summary>
@@ -1508,7 +1514,7 @@ namespace Zyl.ExSpans {
                 throw new ArgumentNullException(nameof(values));
             }
 
-            return values.LastIndexOfAnyExcept(ExSpan);
+            return values.LastIndexOfAnyExcept(span);
         }
 
         /// <inheritdoc cref="IndexOfAnyInRange{T}(ReadOnlyExSpan{T}, T, T)"/>
@@ -2851,7 +2857,7 @@ namespace Zyl.ExSpans {
                 throw new ArgumentNullException(nameof(values));
             }
 
-            return values.LastIndexOfAny(ExSpan);
+            return values.LastIndexOfAny(span);
         }
 #endif // TODO
 
