@@ -3332,16 +3332,15 @@ namespace Zyl.ExSpans {
 #endif // NET8_0_OR_GREATER
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static nint ComputeLastIndex<T>(nint offset, Vector<T> equals) where T : struct {
+        private static TSize ComputeLastIndex<T>(TSize offset, Vector<T> equals) where T : struct {
             ulong notEqualsElements = equals.ExtractMostSignificantBits();
             int index = 63 - MathBitOperations.LeadingZeroCount(notEqualsElements); // 31 = 32 (bits in Int32) - 1 (indexing from zero)
             return offset + index;
         }
 
-#if TODO
-        internal static int IndexOfAnyInRange<T>(ref T searchSpace, T lowInclusive, T highInclusive, int length)
+        internal static TSize IndexOfAnyInRange<T>(ref T searchSpace, T lowInclusive, T highInclusive, TSize length)
             where T : IComparable<T> {
-            for (int i = 0; i < length; i++) {
+            for (TSize i = 0; i < length; i++) {
                 ref T current = ref ExUnsafe.Add(ref searchSpace, i);
                 if ((lowInclusive.CompareTo(current) <= 0) && (highInclusive.CompareTo(current) >= 0)) {
                     return i;
@@ -3351,9 +3350,9 @@ namespace Zyl.ExSpans {
             return -1;
         }
 
-        internal static int IndexOfAnyExceptInRange<T>(ref T searchSpace, T lowInclusive, T highInclusive, int length)
+        internal static TSize IndexOfAnyExceptInRange<T>(ref T searchSpace, T lowInclusive, T highInclusive, TSize length)
             where T : IComparable<T> {
-            for (int i = 0; i < length; i++) {
+            for (TSize i = 0; i < length; i++) {
                 ref T current = ref ExUnsafe.Add(ref searchSpace, i);
                 if ((lowInclusive.CompareTo(current) > 0) || (highInclusive.CompareTo(current) < 0)) {
                     return i;
@@ -3363,93 +3362,40 @@ namespace Zyl.ExSpans {
             return -1;
         }
 
-        internal static int IndexOfAnyInRangeUnsignedNumber<T>(ref T searchSpace, T lowInclusive, T highInclusive, int length)
+#if GENERIC_MATH
+        internal static TSize IndexOfAnyInRangeUnsignedNumber<T>(ref T searchSpace, T lowInclusive, T highInclusive, TSize length)
             where T : struct, IUnsignedNumber<T>, IComparisonOperators<T, T, bool> =>
             IndexOfAnyInRangeUnsignedNumber<T, DontNegate<T>>(ref searchSpace, lowInclusive, highInclusive, length);
 
-        internal static int IndexOfAnyExceptInRangeUnsignedNumber<T>(ref T searchSpace, T lowInclusive, T highInclusive, int length)
+        internal static TSize IndexOfAnyExceptInRangeUnsignedNumber<T>(ref T searchSpace, T lowInclusive, T highInclusive, TSize length)
             where T : struct, IUnsignedNumber<T>, IComparisonOperators<T, T, bool> =>
             IndexOfAnyInRangeUnsignedNumber<T, Negate<T>>(ref searchSpace, lowInclusive, highInclusive, length);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static int IndexOfAnyInRangeUnsignedNumber<T, TNegator>(ref T searchSpace, T lowInclusive, T highInclusive, int length)
+        private static TSize IndexOfAnyInRangeUnsignedNumber<T, TNegator>(ref T searchSpace, T lowInclusive, T highInclusive, TSize length)
             where T : struct, IUnsignedNumber<T>, IComparisonOperators<T, T, bool>
             where TNegator : struct, INegator<T> {
-            if (PackedSpanHelpers.PackedIndexOfIsSupported && typeof(T) == typeof(ushort) && PackedSpanHelpers.CanUsePackedIndexOf(lowInclusive) && PackedSpanHelpers.CanUsePackedIndexOf(highInclusive) && highInclusive >= lowInclusive) {
-                ref char charSearchSpace = ref Unsafe.As<T, char>(ref searchSpace);
-                char charLowInclusive = Unsafe.BitCast<T, char>(lowInclusive);
-                char charRange = (char)(Unsafe.BitCast<T, char>(highInclusive) - charLowInclusive);
+            //if (PackedSpanHelpers.PackedIndexOfIsSupported && typeof(T) == typeof(ushort) && PackedSpanHelpers.CanUsePackedIndexOf(lowInclusive) && PackedSpanHelpers.CanUsePackedIndexOf(highInclusive) && highInclusive >= lowInclusive) {
+            //    ref char charSearchSpace = ref Unsafe.As<T, char>(ref searchSpace);
+            //    char charLowInclusive = Unsafe.BitCast<T, char>(lowInclusive);
+            //    char charRange = (char)(Unsafe.BitCast<T, char>(highInclusive) - charLowInclusive);
 
-                return typeof(TNegator) == typeof(DontNegate<ushort>)
-                    ? PackedSpanHelpers.IndexOfAnyInRange(ref charSearchSpace, charLowInclusive, charRange, length)
-                    : PackedSpanHelpers.IndexOfAnyExceptInRange(ref charSearchSpace, charLowInclusive, charRange, length);
-            }
+            //    return typeof(TNegator) == typeof(DontNegate<ushort>)
+            //        ? PackedSpanHelpers.IndexOfAnyInRange(ref charSearchSpace, charLowInclusive, charRange, length)
+            //        : PackedSpanHelpers.IndexOfAnyExceptInRange(ref charSearchSpace, charLowInclusive, charRange, length);
+            //}
 
             return NonPackedIndexOfAnyInRangeUnsignedNumber<T, TNegator>(ref searchSpace, lowInclusive, highInclusive, length);
         }
 
-        internal static int NonPackedIndexOfAnyInRangeUnsignedNumber<T, TNegator>(ref T searchSpace, T lowInclusive, T highInclusive, int length)
+        internal static TSize NonPackedIndexOfAnyInRangeUnsignedNumber<T, TNegator>(ref T searchSpace, T lowInclusive, T highInclusive, TSize length)
             where T : struct, IUnsignedNumber<T>, IComparisonOperators<T, T, bool>
             where TNegator : struct, INegator<T> {
             // T must be a type whose comparison operator semantics match that of Vector128/256.
 
-            if (!Vector128.IsHardwareAccelerated || length < Vector128<T>.Count) {
-                T rangeInclusive = highInclusive - lowInclusive;
-                for (int i = 0; i < length; i++) {
-                    ref T current = ref ExUnsafe.Add(ref searchSpace, i);
-                    if (TNegator.NegateIfNeeded((current - lowInclusive) <= rangeInclusive)) {
-                        return i;
-                    }
-                }
-            } else if (!Vector256.IsHardwareAccelerated || length < Vector256<T>.Count) {
-                Vector128<T> lowVector = Vector128.Create(lowInclusive);
-                Vector128<T> rangeVector = Vector128.Create(highInclusive - lowInclusive);
-                Vector128<T> inRangeVector;
-
-                ref T current = ref searchSpace;
-                ref T oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, (uint)(length - Vector128<T>.Count));
-
-                // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
-                do {
-                    inRangeVector = TNegator.NegateIfNeeded(Vector128.LessThanOrEqual(Vector128.LoadUnsafe(ref current) - lowVector, rangeVector));
-                    if (inRangeVector != Vector128<T>.Zero) {
-                        return ComputeFirstIndex(ref searchSpace, ref current, inRangeVector);
-                    }
-
-                    current = ref ExUnsafe.Add(ref current, Vector128<T>.Count);
-                }
-                while (Unsafe.IsAddressLessThan(ref current, ref oneVectorAwayFromEnd));
-
-                // Process the last vector in the search space (which might overlap with already processed elements).
-                inRangeVector = TNegator.NegateIfNeeded(Vector128.LessThanOrEqual(Vector128.LoadUnsafe(ref oneVectorAwayFromEnd) - lowVector, rangeVector));
-                if (inRangeVector != Vector128<T>.Zero) {
-                    return ComputeFirstIndex(ref searchSpace, ref oneVectorAwayFromEnd, inRangeVector);
-                }
-            } else if (!Vector512.IsHardwareAccelerated || length < (uint)Vector512<T>.Count) {
-                Vector256<T> lowVector = Vector256.Create(lowInclusive);
-                Vector256<T> rangeVector = Vector256.Create(highInclusive - lowInclusive);
-                Vector256<T> inRangeVector;
-
-                ref T current = ref searchSpace;
-                ref T oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, (uint)(length - Vector256<T>.Count));
-
-                // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
-                do {
-                    inRangeVector = TNegator.NegateIfNeeded(Vector256.LessThanOrEqual(Vector256.LoadUnsafe(ref current) - lowVector, rangeVector));
-                    if (inRangeVector != Vector256<T>.Zero) {
-                        return ComputeFirstIndex(ref searchSpace, ref current, inRangeVector);
-                    }
-
-                    current = ref ExUnsafe.Add(ref current, Vector256<T>.Count);
-                }
-                while (Unsafe.IsAddressLessThan(ref current, ref oneVectorAwayFromEnd));
-
-                // Process the last vector in the search space (which might overlap with already processed elements).
-                inRangeVector = TNegator.NegateIfNeeded(Vector256.LessThanOrEqual(Vector256.LoadUnsafe(ref oneVectorAwayFromEnd) - lowVector, rangeVector));
-                if (inRangeVector != Vector256<T>.Zero) {
-                    return ComputeFirstIndex(ref searchSpace, ref oneVectorAwayFromEnd, inRangeVector);
-                }
-            } else {
+            if (false) {
+#if NET8_0_OR_GREATER
+            } else if (Vector512.IsHardwareAccelerated && length >= Vector512<T>.Count && Vector512<byte>.Count >= Vector<byte>.Count) {
                 Vector512<T> lowVector = Vector512.Create(lowInclusive);
                 Vector512<T> rangeVector = Vector512.Create(highInclusive - lowInclusive);
                 Vector512<T> inRangeVector;
@@ -3473,11 +3419,95 @@ namespace Zyl.ExSpans {
                 if (inRangeVector != Vector512<T>.Zero) {
                     return ComputeFirstIndex(ref searchSpace, ref oneVectorAwayFromEnd, inRangeVector);
                 }
+#endif // NET8_0_OR_GREATER
+            } else if (Vector.IsHardwareAccelerated && length >= Vector<T>.Count) {
+                Vector<T> lowVector = Vectors.Create(lowInclusive);
+                Vector<T> rangeVector = Vectors.Create(highInclusive - lowInclusive);
+                Vector<T> inRangeVector;
+
+                ref T current = ref searchSpace;
+                ref T oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, (uint)(length - Vector<T>.Count));
+
+                // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
+                do {
+                    inRangeVector = TNegator.NegateIfNeeded(Vector.LessThanOrEqual(VectorHelper.LoadUnsafe(ref current) - lowVector, rangeVector));
+                    if (inRangeVector != Vector<T>.Zero) {
+                        return ComputeFirstIndex(ref searchSpace, ref current, inRangeVector);
+                    }
+
+                    current = ref ExUnsafe.Add(ref current, Vector<T>.Count);
+                }
+                while (Unsafe.IsAddressLessThan(ref current, ref oneVectorAwayFromEnd));
+
+                // Process the last vector in the search space (which might overlap with already processed elements).
+                inRangeVector = TNegator.NegateIfNeeded(Vector.LessThanOrEqual(VectorHelper.LoadUnsafe(ref oneVectorAwayFromEnd) - lowVector, rangeVector));
+                if (inRangeVector != Vector<T>.Zero) {
+                    return ComputeFirstIndex(ref searchSpace, ref oneVectorAwayFromEnd, inRangeVector);
+                }
+            } else if (Vector256.IsHardwareAccelerated && length >= Vector256<T>.Count) {
+                Vector256<T> lowVector = Vector256.Create(lowInclusive);
+                Vector256<T> rangeVector = Vector256.Create(highInclusive - lowInclusive);
+                Vector256<T> inRangeVector;
+
+                ref T current = ref searchSpace;
+                ref T oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, (uint)(length - Vector256<T>.Count));
+
+                // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
+                do {
+                    inRangeVector = TNegator.NegateIfNeeded(Vector256.LessThanOrEqual(Vector256.LoadUnsafe(ref current) - lowVector, rangeVector));
+                    if (inRangeVector != Vector256<T>.Zero) {
+                        return ComputeFirstIndex(ref searchSpace, ref current, inRangeVector);
+                    }
+
+                    current = ref ExUnsafe.Add(ref current, Vector256<T>.Count);
+                }
+                while (Unsafe.IsAddressLessThan(ref current, ref oneVectorAwayFromEnd));
+
+                // Process the last vector in the search space (which might overlap with already processed elements).
+                inRangeVector = TNegator.NegateIfNeeded(Vector256.LessThanOrEqual(Vector256.LoadUnsafe(ref oneVectorAwayFromEnd) - lowVector, rangeVector));
+                if (inRangeVector != Vector256<T>.Zero) {
+                    return ComputeFirstIndex(ref searchSpace, ref oneVectorAwayFromEnd, inRangeVector);
+                }
+            } else if (Vector128.IsHardwareAccelerated && length >= Vector128<T>.Count) {
+                Vector128<T> lowVector = Vector128.Create(lowInclusive);
+                Vector128<T> rangeVector = Vector128.Create(highInclusive - lowInclusive);
+                Vector128<T> inRangeVector;
+
+                ref T current = ref searchSpace;
+                ref T oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, (uint)(length - Vector128<T>.Count));
+
+                // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
+                do {
+                    inRangeVector = TNegator.NegateIfNeeded(Vector128.LessThanOrEqual(Vector128.LoadUnsafe(ref current) - lowVector, rangeVector));
+                    if (inRangeVector != Vector128<T>.Zero) {
+                        return ComputeFirstIndex(ref searchSpace, ref current, inRangeVector);
+                    }
+
+                    current = ref ExUnsafe.Add(ref current, Vector128<T>.Count);
+                }
+                while (Unsafe.IsAddressLessThan(ref current, ref oneVectorAwayFromEnd));
+
+                // Process the last vector in the search space (which might overlap with already processed elements).
+                inRangeVector = TNegator.NegateIfNeeded(Vector128.LessThanOrEqual(Vector128.LoadUnsafe(ref oneVectorAwayFromEnd) - lowVector, rangeVector));
+                if (inRangeVector != Vector128<T>.Zero) {
+                    return ComputeFirstIndex(ref searchSpace, ref oneVectorAwayFromEnd, inRangeVector);
+                }
             }
 
+            if (true) {
+                T rangeInclusive = highInclusive - lowInclusive;
+                for (TSize i = 0; i < length; i++) {
+                    ref T current = ref ExUnsafe.Add(ref searchSpace, i);
+                    if (TNegator.NegateIfNeeded((current - lowInclusive) <= rangeInclusive)) {
+                        return i;
+                    }
+                }
+            }
             return -1;
         }
+#endif // GENERIC_MATH
 
+#if TODO
         internal static int LastIndexOfAnyInRange<T>(ref T searchSpace, T lowInclusive, T highInclusive, int length)
             where T : IComparable<T> {
             for (int i = length - 1; i >= 0; i--) {
