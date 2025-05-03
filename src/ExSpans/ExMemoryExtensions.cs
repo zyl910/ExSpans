@@ -1,6 +1,7 @@
 ﻿//#undef INVOKE_SPAN_METHOD
 
 using System;
+using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
@@ -311,7 +312,7 @@ namespace Zyl.ExSpans {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool ContainsAny<T>(this ReadOnlyExSpan<T> span, SearchValues<T> values) where T : IEquatable<T>? {
             if (values is null) {
-                ThrowHelper.ThrowArgumentNullException(ExceptionArgument.values);
+                throw new ArgumentNullException(nameof(values));
             }
 
             return values.ContainsAny(ExSpan);
@@ -452,7 +453,7 @@ namespace Zyl.ExSpans {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool ContainsAnyExcept<T>(this ReadOnlyExSpan<T> span, SearchValues<T> values) where T : IEquatable<T>? {
             if (values is null) {
-                ThrowHelper.ThrowArgumentNullException(ExceptionArgument.values);
+                throw new ArgumentNullException(nameof(values));
             }
 
             return values.ContainsAnyExcept(ExSpan);
@@ -1009,7 +1010,7 @@ namespace Zyl.ExSpans {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int IndexOfAnyExcept<T>(this ReadOnlyExSpan<T> span, SearchValues<T> values) where T : IEquatable<T>? {
             if (values is null) {
-                ThrowHelper.ThrowArgumentNullException(ExceptionArgument.values);
+                throw new ArgumentNullException(nameof(values));
             }
 
             return values.IndexOfAnyExcept(ExSpan);
@@ -1504,7 +1505,7 @@ namespace Zyl.ExSpans {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int LastIndexOfAnyExcept<T>(this ReadOnlyExSpan<T> span, SearchValues<T> values) where T : IEquatable<T>? {
             if (values is null) {
-                ThrowHelper.ThrowArgumentNullException(ExceptionArgument.values);
+                throw new ArgumentNullException(nameof(values));
             }
 
             return values.LastIndexOfAnyExcept(ExSpan);
@@ -2113,6 +2114,7 @@ namespace Zyl.ExSpans {
                 return -1;
             }
         }
+#endif // TODO
 
         /// <summary>
         /// Searches for the first index of any of the specified values similar to calling IndexOf several times with the logical OR operator. If not found, returns -1.
@@ -2122,7 +2124,7 @@ namespace Zyl.ExSpans {
         /// <param name="value1">One of the values to search for.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [OverloadResolutionPriority(-1)]
-        public static int IndexOfAny<T>(this ExSpan<T> span, T value0, T value1) where T : IEquatable<T>? =>
+        public static TSize IndexOfAny<T>(this ExSpan<T> span, T value0, T value1) where T : IEquatable<T>? =>
             IndexOfAny((ReadOnlyExSpan<T>)span, value0, value1);
 
         /// <summary>
@@ -2134,7 +2136,7 @@ namespace Zyl.ExSpans {
         /// <param name="value2">One of the values to search for.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [OverloadResolutionPriority(-1)]
-        public static int IndexOfAny<T>(this ExSpan<T> span, T value0, T value1, T value2) where T : IEquatable<T>? =>
+        public static TSize IndexOfAny<T>(this ExSpan<T> span, T value0, T value1, T value2) where T : IEquatable<T>? =>
             IndexOfAny((ReadOnlyExSpan<T>)span, value0, value1, value2);
 
         /// <summary>
@@ -2144,9 +2146,10 @@ namespace Zyl.ExSpans {
         /// <param name="values">The set of values to search for.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [OverloadResolutionPriority(-1)]
-        public static int IndexOfAny<T>(this ExSpan<T> span, ReadOnlyExSpan<T> values) where T : IEquatable<T>? =>
+        public static TSize IndexOfAny<T>(this ExSpan<T> span, ReadOnlyExSpan<T> values) where T : IEquatable<T>? =>
             IndexOfAny((ReadOnlyExSpan<T>)span, values);
 
+#if NET8_0_OR_GREATER && TODO // [TODO why] SearchValues.IndexOfAny is internal
         /// <summary>
         /// Searches for the first index of any of the specified values similar to calling IndexOf several times with the logical OR operator. If not found, returns -1.
         /// </summary>
@@ -2154,7 +2157,7 @@ namespace Zyl.ExSpans {
         /// <param name="values">The set of values to search for.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [OverloadResolutionPriority(-1)]
-        public static int IndexOfAny<T>(this ExSpan<T> span, SearchValues<T> values) where T : IEquatable<T>? =>
+        public static TSize IndexOfAny<T>(this ExSpan<T> span, SearchValues<T> values) where T : IEquatable<T>? =>
             IndexOfAny((ReadOnlyExSpan<T>)span, values);
 
         /// <summary>
@@ -2164,8 +2167,9 @@ namespace Zyl.ExSpans {
         /// <param name="values">The set of values to search for.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [OverloadResolutionPriority(-1)]
-        public static int IndexOfAny(this ExSpan<char> span, SearchValues<string> values) =>
+        public static TSize IndexOfAny(this ExSpan<char> span, SearchValues<string> values) =>
             IndexOfAny((ReadOnlyExSpan<char>)span, values);
+#endif // NET8_0_OR_GREATER
 
         /// <summary>
         /// Searches for the first index of any of the specified values similar to calling IndexOf several times with the logical OR operator. If not found, returns -1.
@@ -2174,7 +2178,7 @@ namespace Zyl.ExSpans {
         /// <param name="value0">One of the values to search for.</param>
         /// <param name="value1">One of the values to search for.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe int IndexOfAny<T>(this ReadOnlyExSpan<T> span, T value0, T value1) where T : IEquatable<T>? {
+        public static TSize IndexOfAny<T>(this ReadOnlyExSpan<T> span, T value0, T value1) where T : IEquatable<T>? {
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.IndexOfAnyValueType(
@@ -2202,7 +2206,7 @@ namespace Zyl.ExSpans {
         /// <param name="value1">One of the values to search for.</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe int IndexOfAny<T>(this ReadOnlyExSpan<T> span, T value0, T value1, IEqualityComparer<T>? comparer = null) {
+        public static TSize IndexOfAny<T>(this ReadOnlyExSpan<T> span, T value0, T value1, IEqualityComparer<T>? comparer = null) {
             if (TypeHelper.IsValueType<T>() && (comparer is null || comparer == EqualityComparer<T>.Default)) {
                 if (TypeHelper.IsBitwiseEquatable<T>()) {
                     if (Unsafe.SizeOf<T>() == sizeof(byte)) {
@@ -2221,8 +2225,8 @@ namespace Zyl.ExSpans {
                 }
 
                 return IndexOfAnyDefaultComparer(span, value0, value1);
-                static int IndexOfAnyDefaultComparer(ReadOnlyExSpan<T> span, T value0, T value1) {
-                    for (int i = 0; i < span.Length; i++) {
+                static TSize IndexOfAnyDefaultComparer(ReadOnlyExSpan<T> span, T value0, T value1) {
+                    for (TSize i = 0; i < span.Length; i++) {
                         if (EqualityComparer<T>.Default.Equals(span[i], value0) ||
                             EqualityComparer<T>.Default.Equals(span[i], value1)) {
                             return i;
@@ -2233,9 +2237,9 @@ namespace Zyl.ExSpans {
                 }
             } else {
                 return IndexOfAnyComparer(span, value0, value1, comparer);
-                static int IndexOfAnyComparer(ReadOnlyExSpan<T> span, T value0, T value1, IEqualityComparer<T>? comparer) {
+                static TSize IndexOfAnyComparer(ReadOnlyExSpan<T> span, T value0, T value1, IEqualityComparer<T>? comparer) {
                     comparer ??= EqualityComparer<T>.Default;
-                    for (int i = 0; i < span.Length; i++) {
+                    for (TSize i = 0; i < span.Length; i++) {
                         if (comparer.Equals(span[i], value0) ||
                             comparer.Equals(span[i], value1)) {
                             return i;
@@ -2255,7 +2259,7 @@ namespace Zyl.ExSpans {
         /// <param name="value1">One of the values to search for.</param>
         /// <param name="value2">One of the values to search for.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe int IndexOfAny<T>(this ReadOnlyExSpan<T> span, T value0, T value1, T value2) where T : IEquatable<T>? {
+        public static TSize IndexOfAny<T>(this ReadOnlyExSpan<T> span, T value0, T value1, T value2) where T : IEquatable<T>? {
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     return ExSpanHelpers.IndexOfAnyValueType(
@@ -2286,7 +2290,7 @@ namespace Zyl.ExSpans {
         /// <param name="value2">One of the values to search for.</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe int IndexOfAny<T>(this ReadOnlyExSpan<T> span, T value0, T value1, T value2, IEqualityComparer<T>? comparer = null) {
+        public static TSize IndexOfAny<T>(this ReadOnlyExSpan<T> span, T value0, T value1, T value2, IEqualityComparer<T>? comparer = null) {
             if (TypeHelper.IsValueType<T>() && (comparer is null || comparer == EqualityComparer<T>.Default)) {
                 if (TypeHelper.IsBitwiseEquatable<T>()) {
                     if (Unsafe.SizeOf<T>() == sizeof(byte)) {
@@ -2307,8 +2311,8 @@ namespace Zyl.ExSpans {
                 }
 
                 return IndexOfAnyDefaultComparer(span, value0, value1, value2);
-                static int IndexOfAnyDefaultComparer(ReadOnlyExSpan<T> span, T value0, T value1, T value2) {
-                    for (int i = 0; i < span.Length; i++) {
+                static TSize IndexOfAnyDefaultComparer(ReadOnlyExSpan<T> span, T value0, T value1, T value2) {
+                    for (TSize i = 0; i < span.Length; i++) {
                         if (EqualityComparer<T>.Default.Equals(span[i], value0) ||
                             EqualityComparer<T>.Default.Equals(span[i], value1) ||
                             EqualityComparer<T>.Default.Equals(span[i], value2)) {
@@ -2320,9 +2324,9 @@ namespace Zyl.ExSpans {
                 }
             } else {
                 return IndexOfAnyComparer(span, value0, value1, value2, comparer);
-                static int IndexOfAnyComparer(ReadOnlyExSpan<T> span, T value0, T value1, T value2, IEqualityComparer<T>? comparer) {
+                static TSize IndexOfAnyComparer(ReadOnlyExSpan<T> span, T value0, T value1, T value2, IEqualityComparer<T>? comparer) {
                     comparer ??= EqualityComparer<T>.Default;
-                    for (int i = 0; i < span.Length; i++) {
+                    for (TSize i = 0; i < span.Length; i++) {
                         if (comparer.Equals(span[i], value0) ||
                             comparer.Equals(span[i], value1) ||
                             comparer.Equals(span[i], value2)) {
@@ -2341,28 +2345,28 @@ namespace Zyl.ExSpans {
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe int IndexOfAny<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> values) where T : IEquatable<T>? {
+        public static TSize IndexOfAny<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> values) where T : IEquatable<T>? {
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte)) {
-                    ref byte ExSpanRef = ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span));
+                    ref byte spanRef = ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span));
                     ref byte valueRef = ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(values));
                     switch (values.Length) {
                         case 0:
                             return -1;
 
                         case 1:
-                            return ExSpanHelpers.IndexOfValueType(ref ExSpanRef, valueRef, span.Length);
+                            return ExSpanHelpers.IndexOfValueType(ref spanRef, valueRef, span.Length);
 
                         case 2:
                             return ExSpanHelpers.IndexOfAnyValueType(
-                                ref ExSpanRef,
+                                ref spanRef,
                                 valueRef,
                                 Unsafe.Add(ref valueRef, 1),
                                 span.Length);
 
                         case 3:
                             return ExSpanHelpers.IndexOfAnyValueType(
-                                ref ExSpanRef,
+                                ref spanRef,
                                 valueRef,
                                 Unsafe.Add(ref valueRef, 1),
                                 Unsafe.Add(ref valueRef, 2),
@@ -2370,7 +2374,7 @@ namespace Zyl.ExSpans {
 
                         case 4:
                             return ExSpanHelpers.IndexOfAnyValueType(
-                                ref ExSpanRef,
+                                ref spanRef,
                                 valueRef,
                                 Unsafe.Add(ref valueRef, 1),
                                 Unsafe.Add(ref valueRef, 2),
@@ -2379,7 +2383,7 @@ namespace Zyl.ExSpans {
 
                         case 5:
                             return ExSpanHelpers.IndexOfAnyValueType(
-                                ref ExSpanRef,
+                                ref spanRef,
                                 valueRef,
                                 Unsafe.Add(ref valueRef, 1),
                                 Unsafe.Add(ref valueRef, 2),
@@ -2389,39 +2393,40 @@ namespace Zyl.ExSpans {
                     }
                 }
 
-                if (Unsafe.SizeOf<T>() == sizeof(short)) {
-                    ref short ExSpanRef = ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span));
+                if (Unsafe.SizeOf<T>() == sizeof(short) && values.Length<=5) {
+                    ref short spanRef = ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span));
                     ref short valueRef = ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(values));
                     return values.Length switch {
                         0 => -1,
-                        1 => ExSpanHelpers.IndexOfValueType(ref ExSpanRef, valueRef, span.Length),
+                        1 => ExSpanHelpers.IndexOfValueType(ref spanRef, valueRef, span.Length),
                         2 => ExSpanHelpers.IndexOfAnyValueType(
-                                ref ExSpanRef,
+                                ref spanRef,
                                 valueRef,
                                 Unsafe.Add(ref valueRef, 1),
                                 span.Length),
                         3 => ExSpanHelpers.IndexOfAnyValueType(
-                                 ref ExSpanRef,
+                                 ref spanRef,
                                  valueRef,
                                  Unsafe.Add(ref valueRef, 1),
                                  Unsafe.Add(ref valueRef, 2),
                                  span.Length),
                         4 => ExSpanHelpers.IndexOfAnyValueType(
-                                 ref ExSpanRef,
+                                 ref spanRef,
                                  valueRef,
                                  Unsafe.Add(ref valueRef, 1),
                                  Unsafe.Add(ref valueRef, 2),
                                  Unsafe.Add(ref valueRef, 3),
                                  span.Length),
                         5 => ExSpanHelpers.IndexOfAnyValueType(
-                                 ref ExSpanRef,
+                                 ref spanRef,
                                  valueRef,
                                  Unsafe.Add(ref valueRef, 1),
                                  Unsafe.Add(ref valueRef, 2),
                                  Unsafe.Add(ref valueRef, 3),
                                  Unsafe.Add(ref valueRef, 4),
                                  span.Length),
-                        _ => ProbabilisticMap.IndexOfAny(ref Unsafe.As<short, char>(ref ExSpanRef), span.Length, ref Unsafe.As<short, char>(ref valueRef), values.Length),
+                        //_ => ProbabilisticMap.IndexOfAny(ref Unsafe.As<short, char>(ref spanRef), span.Length, ref Unsafe.As<short, char>(ref valueRef), values.Length),
+                        _ => ExSpanHelpers.IndexOfAny(ref ExMemoryMarshal.GetReference(span), span.Length, ref ExMemoryMarshal.GetReference(values), values.Length),
                     };
                 }
             }
@@ -2435,7 +2440,7 @@ namespace Zyl.ExSpans {
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
-        public static int IndexOfAny<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> values, IEqualityComparer<T>? comparer = null) {
+        public static TSize IndexOfAny<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> values, IEqualityComparer<T>? comparer = null) {
             switch (values.Length) {
                 case 0:
                     return -1;
@@ -2462,6 +2467,7 @@ namespace Zyl.ExSpans {
             }
         }
 
+#if NET8_0_OR_GREATER && TODO // [TODO why] SearchValues.IndexOfAny is internal
         /// <summary>
         /// Searches for the first index of any of the specified values similar to calling IndexOf several times with the logical OR operator. If not found, returns -1.
         /// </summary>
@@ -2469,12 +2475,12 @@ namespace Zyl.ExSpans {
         /// <param name="values">The set of values to search for.</param>
         /// <returns>The first index of any of the specified values, or -1 if none are found.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int IndexOfAny<T>(this ReadOnlyExSpan<T> span, SearchValues<T> values) where T : IEquatable<T>? {
+        public static TSize IndexOfAny<T>(this ReadOnlyExSpan<T> span, SearchValues<T> values) where T : IEquatable<T>? {
             if (values is null) {
-                ThrowHelper.ThrowArgumentNullException(ExceptionArgument.values);
+                throw new ArgumentNullException(nameof(values));
             }
 
-            return values.IndexOfAny(ExSpan);
+            return values.IndexOfAny(span);
         }
 
         /// <summary>
@@ -2484,14 +2490,16 @@ namespace Zyl.ExSpans {
         /// <param name="values">The set of values to search for.</param>
         /// <returns>The first index of any of the specified values, or -1 if none are found.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int IndexOfAny(this ReadOnlyExSpan<char> span, SearchValues<string> values) {
+        public static TSize IndexOfAny(this ReadOnlyExSpan<char> span, SearchValues<string> values) {
             if (values is null) {
-                ThrowHelper.ThrowArgumentNullException(ExceptionArgument.values);
+                throw new ArgumentNullException(nameof(values));
             }
 
-            return values.IndexOfAnyMultiString(ExSpan);
+            return values.IndexOfAnyMultiString(span);
         }
+#endif // NET8_0_OR_GREATER
 
+#if TODO
         /// <summary>
         /// Searches for the last index of any of the specified values similar to calling LastIndexOf several times with the logical OR operator. If not found, returns -1.
         /// </summary>
@@ -2714,25 +2722,25 @@ namespace Zyl.ExSpans {
         public static unsafe int LastIndexOfAny<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> values) where T : IEquatable<T>? {
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte)) {
-                    ref byte ExSpanRef = ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span));
+                    ref byte spanRef = ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span));
                     ref byte valueRef = ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(values));
                     switch (values.Length) {
                         case 0:
                             return -1;
 
                         case 1:
-                            return ExSpanHelpers.LastIndexOfValueType(ref ExSpanRef, valueRef, span.Length);
+                            return ExSpanHelpers.LastIndexOfValueType(ref spanRef, valueRef, span.Length);
 
                         case 2:
                             return ExSpanHelpers.LastIndexOfAnyValueType(
-                                ref ExSpanRef,
+                                ref spanRef,
                                 valueRef,
                                 Unsafe.Add(ref valueRef, 1),
                                 span.Length);
 
                         case 3:
                             return ExSpanHelpers.LastIndexOfAnyValueType(
-                                ref ExSpanRef,
+                                ref spanRef,
                                 valueRef,
                                 Unsafe.Add(ref valueRef, 1),
                                 Unsafe.Add(ref valueRef, 2),
@@ -2740,7 +2748,7 @@ namespace Zyl.ExSpans {
 
                         case 4:
                             return ExSpanHelpers.LastIndexOfAnyValueType(
-                                ref ExSpanRef,
+                                ref spanRef,
                                 valueRef,
                                 Unsafe.Add(ref valueRef, 1),
                                 Unsafe.Add(ref valueRef, 2),
@@ -2749,7 +2757,7 @@ namespace Zyl.ExSpans {
 
                         case 5:
                             return ExSpanHelpers.LastIndexOfAnyValueType(
-                                ref ExSpanRef,
+                                ref spanRef,
                                 valueRef,
                                 Unsafe.Add(ref valueRef, 1),
                                 Unsafe.Add(ref valueRef, 2),
@@ -2760,38 +2768,38 @@ namespace Zyl.ExSpans {
                 }
 
                 if (Unsafe.SizeOf<T>() == sizeof(short)) {
-                    ref short ExSpanRef = ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span));
+                    ref short spanRef = ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span));
                     ref short valueRef = ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(values));
                     return values.Length switch {
                         0 => -1,
-                        1 => ExSpanHelpers.LastIndexOfValueType(ref ExSpanRef, valueRef, span.Length),
+                        1 => ExSpanHelpers.LastIndexOfValueType(ref spanRef, valueRef, span.Length),
                         2 => ExSpanHelpers.LastIndexOfAnyValueType(
-                                 ref ExSpanRef,
+                                 ref spanRef,
                                  valueRef,
                                  Unsafe.Add(ref valueRef, 1),
                                  span.Length),
                         3 => ExSpanHelpers.LastIndexOfAnyValueType(
-                                 ref ExSpanRef,
+                                 ref spanRef,
                                  valueRef,
                                  Unsafe.Add(ref valueRef, 1),
                                  Unsafe.Add(ref valueRef, 2),
                                  span.Length),
                         4 => ExSpanHelpers.LastIndexOfAnyValueType(
-                                 ref ExSpanRef,
+                                 ref spanRef,
                                  valueRef,
                                  Unsafe.Add(ref valueRef, 1),
                                  Unsafe.Add(ref valueRef, 2),
                                  Unsafe.Add(ref valueRef, 3),
                                  span.Length),
                         5 => ExSpanHelpers.LastIndexOfAnyValueType(
-                                 ref ExSpanRef,
+                                 ref spanRef,
                                  valueRef,
                                  Unsafe.Add(ref valueRef, 1),
                                  Unsafe.Add(ref valueRef, 2),
                                  Unsafe.Add(ref valueRef, 3),
                                  Unsafe.Add(ref valueRef, 4),
                                  span.Length),
-                        _ => ProbabilisticMap.LastIndexOfAny(ref Unsafe.As<short, char>(ref ExSpanRef), span.Length, ref Unsafe.As<short, char>(ref valueRef), values.Length),
+                        _ => ProbabilisticMap.LastIndexOfAny(ref Unsafe.As<short, char>(ref spanRef), span.Length, ref Unsafe.As<short, char>(ref valueRef), values.Length),
                     };
                 }
             }
@@ -2840,7 +2848,7 @@ namespace Zyl.ExSpans {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int LastIndexOfAny<T>(this ReadOnlyExSpan<T> span, SearchValues<T> values) where T : IEquatable<T>? {
             if (values is null) {
-                ThrowHelper.ThrowArgumentNullException(ExceptionArgument.values);
+                throw new ArgumentNullException(nameof(values));
             }
 
             return values.LastIndexOfAny(ExSpan);
