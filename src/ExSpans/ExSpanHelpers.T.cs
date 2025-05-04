@@ -2682,23 +2682,153 @@ namespace Zyl.ExSpans {
 
         }
 
-#if TODO
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int LastIndexOfAnyValueType<T>(ref T searchSpace, T value0, T value1, int length) where T : struct, INumber<T>
+        internal static TSize LastIndexOfAnyValueType<T>(ref T searchSpace, T value0, T value1, int length) where T : struct, IEquatable<T>
+#if GENERIC_MATH
+            , INumber<T>
+#endif // GENERIC_MATH
             => LastIndexOfAnyValueType<T, DontNegate<T>>(ref searchSpace, value0, value1, length);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int LastIndexOfAnyExceptValueType<T>(ref T searchSpace, T value0, T value1, int length) where T : struct, INumber<T>
+        internal static TSize LastIndexOfAnyExceptValueType<T>(ref T searchSpace, T value0, T value1, TSize length) where T : struct, IEquatable<T>
+#if GENERIC_MATH
+            , INumber<T>
+#endif // GENERIC_MATH
             => LastIndexOfAnyValueType<T, Negate<T>>(ref searchSpace, value0, value1, length);
 
-        private static int LastIndexOfAnyValueType<TValue, TNegator>(ref TValue searchSpace, TValue value0, TValue value1, int length)
-            where TValue : struct, INumber<TValue>
-            where TNegator : struct, INegator<TValue> {
+        private static TSize LastIndexOfAnyValueType<TValue,
+#if GENERIC_MATH
+            TNegator
+#else
+            TNegatorType
+#endif // GENERIC_MATH
+            >(ref TValue searchSpace, TValue value0, TValue value1, TSize length)
+            where TValue : struct, IEquatable<TValue>
+#if GENERIC_MATH
+            , INumber<TValue>
+#endif // GENERIC_MATH
+            where
+#if GENERIC_MATH
+            TNegator
+#else
+            TNegatorType
+#endif // GENERIC_MATH
+            : struct, INegator<TValue> {
+#if GENERIC_MATH
+#else
+            TNegatorType TNegator = default;
+#endif // GENERIC_MATH
             Debug.Assert(length >= 0, "Expected non-negative length");
             Debug.Assert(value0 is byte or short or int or long, "Expected caller to normalize to one of these types");
 
-            if (!Vector128.IsHardwareAccelerated || length < Vector128<TValue>.Count) {
-                nuint offset = (nuint)length - 1;
+            if (false) {
+#if NET8_0_OR_GREATER
+            } else if (Vector512.IsHardwareAccelerated && length >= Vector512<TValue>.Count && Vector512<byte>.Count >= Vector<byte>.Count) {
+                Vector512<TValue> equals, current, values0 = Vector512.Create(value0), values1 = Vector512.Create(value1);
+                TSize offset = length - Vector512<TValue>.Count;
+
+                // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
+                while (offset > 0) {
+                    current = Vector512.LoadUnsafe(ref searchSpace, offset.ToUIntPtr());
+                    equals = TNegator.NegateIfNeeded(Vector512.Equals(current, values0) | Vector512.Equals(current, values1));
+
+                    if (equals == Vector512<TValue>.Zero) {
+                        offset -= Vector512<TValue>.Count;
+                        continue;
+                    }
+
+                    return ComputeLastIndex(offset, equals);
+                }
+
+                // Process the first vector in the search space.
+
+                current = Vector512.LoadUnsafe(ref searchSpace);
+                equals = TNegator.NegateIfNeeded(Vector512.Equals(current, values0) | Vector512.Equals(current, values1));
+
+                if (equals != Vector512<TValue>.Zero) {
+                    return ComputeLastIndex(offset: 0, equals);
+                }
+#endif // NET8_0_OR_GREATER
+            } else if (Vector.IsHardwareAccelerated && length >= Vector<TValue>.Count) {
+                Vector<TValue> equals, current, values0 = Vectors.Create(value0), values1 = Vectors.Create(value1);
+                TSize offset = length - Vector<TValue>.Count;
+
+                // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
+                while (offset > 0) {
+                    current = VectorHelper.LoadUnsafe(ref searchSpace, offset.ToUIntPtr());
+                    equals = TNegator.NegateIfNeeded(Vector.Equals(current, values0) | Vector.Equals(current, values1));
+
+                    if (equals == Vector<TValue>.Zero) {
+                        offset -= Vector<TValue>.Count;
+                        continue;
+                    }
+
+                    return ComputeLastIndex(offset, equals);
+                }
+
+                // Process the first vector in the search space.
+
+                current = VectorHelper.LoadUnsafe(ref searchSpace);
+                equals = TNegator.NegateIfNeeded(Vector.Equals(current, values0) | Vector.Equals(current, values1));
+
+                if (equals != Vector<TValue>.Zero) {
+                    return ComputeLastIndex(offset: 0, equals);
+                }
+#if NET7_0_OR_GREATER
+            } else if (Vector256.IsHardwareAccelerated && length >= Vector256<TValue>.Count) {
+                Vector256<TValue> equals, current, values0 = Vector256.Create(value0), values1 = Vector256.Create(value1);
+                TSize offset = length - Vector256<TValue>.Count;
+
+                // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
+                while (offset > 0) {
+                    current = Vector256.LoadUnsafe(ref searchSpace, offset.ToUIntPtr());
+                    equals = TNegator.NegateIfNeeded(Vector256.Equals(current, values0) | Vector256.Equals(current, values1));
+
+                    if (equals == Vector256<TValue>.Zero) {
+                        offset -= Vector256<TValue>.Count;
+                        continue;
+                    }
+
+                    return ComputeLastIndex(offset, equals);
+                }
+
+                // Process the first vector in the search space.
+
+                current = Vector256.LoadUnsafe(ref searchSpace);
+                equals = TNegator.NegateIfNeeded(Vector256.Equals(current, values0) | Vector256.Equals(current, values1));
+
+                if (equals != Vector256<TValue>.Zero) {
+                    return ComputeLastIndex(offset: 0, equals);
+                }
+            } else if (Vector128.IsHardwareAccelerated && length >= Vector128<TValue>.Count) {
+                Vector128<TValue> equals, current, values0 = Vector128.Create(value0), values1 = Vector128.Create(value1);
+                TSize offset = length - Vector128<TValue>.Count;
+
+                // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
+                while (offset > 0) {
+                    current = Vector128.LoadUnsafe(ref searchSpace, offset.ToUIntPtr());
+                    equals = TNegator.NegateIfNeeded(Vector128.Equals(current, values0) | Vector128.Equals(current, values1));
+                    if (equals == Vector128<TValue>.Zero) {
+                        offset -= Vector128<TValue>.Count;
+                        continue;
+                    }
+
+                    return ComputeLastIndex(offset, equals);
+                }
+
+                // Process the first vector in the search space.
+
+                current = Vector128.LoadUnsafe(ref searchSpace);
+                equals = TNegator.NegateIfNeeded(Vector128.Equals(current, values0) | Vector128.Equals(current, values1));
+
+                if (equals != Vector128<TValue>.Zero) {
+                    return ComputeLastIndex(offset: 0, equals);
+                }
+#endif // NET7_0_OR_GREATER
+            }
+
+            if (true) {
+                TSize offset = length - 1;
                 TValue lookUp;
 
                 if (typeof(TValue) == typeof(byte)) // this optimization is beneficial only to byte
@@ -2754,29 +2884,74 @@ namespace Zyl.ExSpans {
                 }
                 return -1;
             FoundM7:
-                return (int)(offset - 7);
+                return offset - 7;
             FoundM6:
-                return (int)(offset - 6);
+                return offset - 6;
             FoundM5:
-                return (int)(offset - 5);
+                return offset - 5;
             FoundM4:
-                return (int)(offset - 4);
+                return offset - 4;
             FoundM3:
-                return (int)(offset - 3);
+                return offset - 3;
             FoundM2:
-                return (int)(offset - 2);
+                return offset - 2;
             FoundM1:
-                return (int)(offset - 1);
+                return offset - 1;
             Found:
-                return (int)(offset);
+                return offset;
+            }
+            //return -1;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static TSize LastIndexOfAnyValueType<T>(ref T searchSpace, T value0, T value1, T value2, TSize length) where T : struct, IEquatable<T>
+#if GENERIC_MATH
+            , INumber<T>
+#endif // GENERIC_MATH
+            => LastIndexOfAnyValueType<T, DontNegate<T>>(ref searchSpace, value0, value1, value2, length);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static TSize LastIndexOfAnyExceptValueType<T>(ref T searchSpace, T value0, T value1, T value2, TSize length) where T : struct, IEquatable<T>
+#if GENERIC_MATH
+            , INumber<T>
+#endif // GENERIC_MATH
+            => LastIndexOfAnyValueType<T, Negate<T>>(ref searchSpace, value0, value1, value2, length);
+
+        private static TSize LastIndexOfAnyValueType<TValue,
+#if GENERIC_MATH
+            TNegator
+#else
+            TNegatorType
+#endif // GENERIC_MATH
+            >(ref TValue searchSpace, TValue value0, TValue value1, TValue value2, TSize length)
+            where TValue : struct, IEquatable<TValue>
+#if GENERIC_MATH
+            , INumber<TValue>
+#endif // GENERIC_MATH
+            where
+#if GENERIC_MATH
+            TNegator
+#else
+            TNegatorType
+#endif // GENERIC_MATH
+            : struct, INegator<TValue> {
+#if GENERIC_MATH
+#else
+            TNegatorType TNegator = default;
+#endif // GENERIC_MATH
+            Debug.Assert(length >= 0, "Expected non-negative length");
+            Debug.Assert(value0 is byte or short or int or long, "Expected caller to normalize to one of these types");
+
+            if (false) {
+#if NET8_0_OR_GREATER
             } else if (Vector512.IsHardwareAccelerated && length >= Vector512<TValue>.Count && Vector512<byte>.Count >= Vector<byte>.Count) {
-                Vector512<TValue> equals, current, values0 = Vector512.Create(value0), values1 = Vector512.Create(value1);
+                Vector512<TValue> equals, current, values0 = Vector512.Create(value0), values1 = Vector512.Create(value1), values2 = Vector512.Create(value2);
                 nint offset = length - Vector512<TValue>.Count;
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 while (offset > 0) {
-                    current = Vector512.LoadUnsafe(ref searchSpace, (nuint)(offset));
-                    equals = TNegator.NegateIfNeeded(Vector512.Equals(current, values0) | Vector512.Equals(current, values1));
+                    current = Vector512.LoadUnsafe(ref searchSpace, offset.ToUIntPtr());
+                    equals = TNegator.NegateIfNeeded(Vector512.Equals(current, values0) | Vector512.Equals(current, values1) | Vector512.Equals(current, values2));
 
                     if (equals == Vector512<TValue>.Zero) {
                         offset -= Vector512<TValue>.Count;
@@ -2789,19 +2964,46 @@ namespace Zyl.ExSpans {
                 // Process the first vector in the search space.
 
                 current = Vector512.LoadUnsafe(ref searchSpace);
-                equals = TNegator.NegateIfNeeded(Vector512.Equals(current, values0) | Vector512.Equals(current, values1));
+                equals = TNegator.NegateIfNeeded(Vector512.Equals(current, values0) | Vector512.Equals(current, values1) | Vector512.Equals(current, values2));
 
                 if (equals != Vector512<TValue>.Zero) {
                     return ComputeLastIndex(offset: 0, equals);
                 }
+#endif // NET8_0_OR_GREATER
+            } else if (Vector.IsHardwareAccelerated && length >= Vector<TValue>.Count) {
+                Vector<TValue> equals, current, values0 = Vectors.Create(value0), values1 = Vectors.Create(value1), values2 = Vectors.Create(value2);
+                nint offset = length - Vector<TValue>.Count;
+
+                // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
+                while (offset > 0) {
+                    current = VectorHelper.LoadUnsafe(ref searchSpace, offset.ToUIntPtr());
+                    equals = TNegator.NegateIfNeeded(Vector.Equals(current, values0) | Vector.Equals(current, values1) | Vector.Equals(current, values2));
+
+                    if (equals == Vector<TValue>.Zero) {
+                        offset -= Vector<TValue>.Count;
+                        continue;
+                    }
+
+                    return ComputeLastIndex(offset, equals);
+                }
+
+                // Process the first vector in the search space.
+
+                current = VectorHelper.LoadUnsafe(ref searchSpace);
+                equals = TNegator.NegateIfNeeded(Vector.Equals(current, values0) | Vector.Equals(current, values1) | Vector.Equals(current, values2));
+
+                if (equals != Vector<TValue>.Zero) {
+                    return ComputeLastIndex(offset: 0, equals);
+                }
+#if NET7_0_OR_GREATER
             } else if (Vector256.IsHardwareAccelerated && length >= Vector256<TValue>.Count) {
-                Vector256<TValue> equals, current, values0 = Vector256.Create(value0), values1 = Vector256.Create(value1);
+                Vector256<TValue> equals, current, values0 = Vector256.Create(value0), values1 = Vector256.Create(value1), values2 = Vector256.Create(value2);
                 nint offset = length - Vector256<TValue>.Count;
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 while (offset > 0) {
-                    current = Vector256.LoadUnsafe(ref searchSpace, (nuint)(offset));
-                    equals = TNegator.NegateIfNeeded(Vector256.Equals(current, values0) | Vector256.Equals(current, values1));
+                    current = Vector256.LoadUnsafe(ref searchSpace, offset.ToUIntPtr());
+                    equals = TNegator.NegateIfNeeded(Vector256.Equals(current, values0) | Vector256.Equals(current, values1) | Vector256.Equals(current, values2));
 
                     if (equals == Vector256<TValue>.Zero) {
                         offset -= Vector256<TValue>.Count;
@@ -2814,19 +3016,20 @@ namespace Zyl.ExSpans {
                 // Process the first vector in the search space.
 
                 current = Vector256.LoadUnsafe(ref searchSpace);
-                equals = TNegator.NegateIfNeeded(Vector256.Equals(current, values0) | Vector256.Equals(current, values1));
+                equals = TNegator.NegateIfNeeded(Vector256.Equals(current, values0) | Vector256.Equals(current, values1) | Vector256.Equals(current, values2));
 
                 if (equals != Vector256<TValue>.Zero) {
                     return ComputeLastIndex(offset: 0, equals);
                 }
-            } else {
-                Vector128<TValue> equals, current, values0 = Vector128.Create(value0), values1 = Vector128.Create(value1);
+            } else if (Vector128.IsHardwareAccelerated && length >= Vector128<TValue>.Count) {
+                Vector128<TValue> equals, current, values0 = Vector128.Create(value0), values1 = Vector128.Create(value1), values2 = Vector128.Create(value2);
                 nint offset = length - Vector128<TValue>.Count;
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 while (offset > 0) {
-                    current = Vector128.LoadUnsafe(ref searchSpace, (nuint)(offset));
-                    equals = TNegator.NegateIfNeeded(Vector128.Equals(current, values0) | Vector128.Equals(current, values1));
+                    current = Vector128.LoadUnsafe(ref searchSpace, offset.ToUIntPtr());
+                    equals = TNegator.NegateIfNeeded(Vector128.Equals(current, values0) | Vector128.Equals(current, values1) | Vector128.Equals(current, values2));
+
                     if (equals == Vector128<TValue>.Zero) {
                         offset -= Vector128<TValue>.Count;
                         continue;
@@ -2838,32 +3041,16 @@ namespace Zyl.ExSpans {
                 // Process the first vector in the search space.
 
                 current = Vector128.LoadUnsafe(ref searchSpace);
-                equals = TNegator.NegateIfNeeded(Vector128.Equals(current, values0) | Vector128.Equals(current, values1));
+                equals = TNegator.NegateIfNeeded(Vector128.Equals(current, values0) | Vector128.Equals(current, values1) | Vector128.Equals(current, values2));
 
                 if (equals != Vector128<TValue>.Zero) {
                     return ComputeLastIndex(offset: 0, equals);
                 }
+#endif // NET7_0_OR_GREATER
             }
 
-            return -1;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int LastIndexOfAnyValueType<T>(ref T searchSpace, T value0, T value1, T value2, int length) where T : struct, INumber<T>
-            => LastIndexOfAnyValueType<T, DontNegate<T>>(ref searchSpace, value0, value1, value2, length);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int LastIndexOfAnyExceptValueType<T>(ref T searchSpace, T value0, T value1, T value2, int length) where T : struct, INumber<T>
-            => LastIndexOfAnyValueType<T, Negate<T>>(ref searchSpace, value0, value1, value2, length);
-
-        private static int LastIndexOfAnyValueType<TValue, TNegator>(ref TValue searchSpace, TValue value0, TValue value1, TValue value2, int length)
-            where TValue : struct, INumber<TValue>
-            where TNegator : struct, INegator<TValue> {
-            Debug.Assert(length >= 0, "Expected non-negative length");
-            Debug.Assert(value0 is byte or short or int or long, "Expected caller to normalize to one of these types");
-
-            if (!Vector128.IsHardwareAccelerated || length < Vector128<TValue>.Count) {
-                nuint offset = (nuint)length - 1;
+            if (true) {
+                TSize offset = length - 1;
                 TValue lookUp;
 
                 if (typeof(TValue) == typeof(byte)) // this optimization is beneficial only to byte
@@ -2919,30 +3106,75 @@ namespace Zyl.ExSpans {
                 }
                 return -1;
             FoundM7:
-                return (int)(offset - 7);
+                return offset - 7;
             FoundM6:
-                return (int)(offset - 6);
+                return offset - 6;
             FoundM5:
-                return (int)(offset - 5);
+                return offset - 5;
             FoundM4:
-                return (int)(offset - 4);
+                return offset - 4;
             FoundM3:
-                return (int)(offset - 3);
+                return offset - 3;
             FoundM2:
-                return (int)(offset - 2);
+                return offset - 2;
             FoundM1:
-                return (int)(offset - 1);
+                return offset - 1;
             Found:
-                return (int)(offset);
+                return offset;
+            }
+            //return -1;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static TSize LastIndexOfAnyValueType<T>(ref T searchSpace, T value0, T value1, T value2, T value3, TSize length) where T : struct, IEquatable<T>
+#if GENERIC_MATH
+            , INumber<T>
+#endif // GENERIC_MATH
+            => LastIndexOfAnyValueType<T, DontNegate<T>>(ref searchSpace, value0, value1, value2, value3, length);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static TSize LastIndexOfAnyExceptValueType<T>(ref T searchSpace, T value0, T value1, T value2, T value3, TSize length) where T : struct, IEquatable<T>
+#if GENERIC_MATH
+            , INumber<T>
+#endif // GENERIC_MATH
+            => LastIndexOfAnyValueType<T, Negate<T>>(ref searchSpace, value0, value1, value2, value3, length);
+
+        private static TSize LastIndexOfAnyValueType<TValue,
+#if GENERIC_MATH
+            TNegator
+#else
+            TNegatorType
+#endif // GENERIC_MATH
+            >(ref TValue searchSpace, TValue value0, TValue value1, TValue value2, TValue value3, TSize length)
+            where TValue : struct, IEquatable<TValue>
+#if GENERIC_MATH
+            , INumber<TValue>
+#endif // GENERIC_MATH
+            where
+#if GENERIC_MATH
+            TNegator
+#else
+            TNegatorType
+#endif // GENERIC_MATH
+            : struct, INegator<TValue> {
+#if GENERIC_MATH
+#else
+            TNegatorType TNegator = default;
+#endif // GENERIC_MATH
+            Debug.Assert(length >= 0, "Expected non-negative length");
+            Debug.Assert(value0 is byte or short or int or long, "Expected caller to normalize to one of these types");
+
+            if (false) {
+#if NET8_0_OR_GREATER
             } else if (Vector512.IsHardwareAccelerated && length >= Vector512<TValue>.Count && Vector512<byte>.Count >= Vector<byte>.Count) {
-                Vector512<TValue> equals, current, values0 = Vector512.Create(value0), values1 = Vector512.Create(value1), values2 = Vector512.Create(value2);
-                nint offset = length - Vector512<TValue>.Count;
+                Vector512<TValue> equals, current, values0 = Vector512.Create(value0), values1 = Vector512.Create(value1), values2 = Vector512.Create(value2), values3 = Vector512.Create(value3);
+                TSize offset = length - Vector512<TValue>.Count;
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 while (offset > 0) {
-                    current = Vector512.LoadUnsafe(ref searchSpace, (nuint)(offset));
-                    equals = TNegator.NegateIfNeeded(Vector512.Equals(current, values0) | Vector512.Equals(current, values1) | Vector512.Equals(current, values2));
-
+                    current = Vector512.LoadUnsafe(ref searchSpace, offset.ToUIntPtr());
+                    equals = TNegator.NegateIfNeeded(Vector512.Equals(current, values0) | Vector512.Equals(current, values1)
+                                            | Vector512.Equals(current, values2) | Vector512.Equals(current, values3));
                     if (equals == Vector512<TValue>.Zero) {
                         offset -= Vector512<TValue>.Count;
                         continue;
@@ -2954,20 +3186,47 @@ namespace Zyl.ExSpans {
                 // Process the first vector in the search space.
 
                 current = Vector512.LoadUnsafe(ref searchSpace);
-                equals = TNegator.NegateIfNeeded(Vector512.Equals(current, values0) | Vector512.Equals(current, values1) | Vector512.Equals(current, values2));
+                equals = TNegator.NegateIfNeeded(Vector512.Equals(current, values0) | Vector512.Equals(current, values1) | Vector512.Equals(current, values2) | Vector512.Equals(current, values3));
 
                 if (equals != Vector512<TValue>.Zero) {
                     return ComputeLastIndex(offset: 0, equals);
                 }
-            } else if (Vector256.IsHardwareAccelerated && length >= Vector256<TValue>.Count) {
-                Vector256<TValue> equals, current, values0 = Vector256.Create(value0), values1 = Vector256.Create(value1), values2 = Vector256.Create(value2);
-                nint offset = length - Vector256<TValue>.Count;
+#endif // NET8_0_OR_GREATER
+            } else if (Vector.IsHardwareAccelerated && length >= Vector<TValue>.Count) {
+                Vector<TValue> equals, current, values0 = Vectors.Create(value0), values1 = Vectors.Create(value1), values2 = Vectors.Create(value2), values3 = Vectors.Create(value3);
+                TSize offset = length - Vector<TValue>.Count;
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 while (offset > 0) {
-                    current = Vector256.LoadUnsafe(ref searchSpace, (nuint)(offset));
-                    equals = TNegator.NegateIfNeeded(Vector256.Equals(current, values0) | Vector256.Equals(current, values1) | Vector256.Equals(current, values2));
+                    current = VectorHelper.LoadUnsafe(ref searchSpace, offset.ToUIntPtr());
+                    equals = TNegator.NegateIfNeeded(Vector.Equals(current, values0) | Vector.Equals(current, values1)
+                                            | Vector.Equals(current, values2) | Vector.Equals(current, values3));
+                    if (equals == Vector<TValue>.Zero) {
+                        offset -= Vector<TValue>.Count;
+                        continue;
+                    }
 
+                    return ComputeLastIndex(offset, equals);
+                }
+
+                // Process the first vector in the search space.
+
+                current = VectorHelper.LoadUnsafe(ref searchSpace);
+                equals = TNegator.NegateIfNeeded(Vector.Equals(current, values0) | Vector.Equals(current, values1) | Vector.Equals(current, values2) | Vector.Equals(current, values3));
+
+                if (equals != Vector<TValue>.Zero) {
+                    return ComputeLastIndex(offset: 0, equals);
+                }
+#if NET7_0_OR_GREATER
+            } else if (Vector256.IsHardwareAccelerated && length >= Vector256<TValue>.Count) {
+                Vector256<TValue> equals, current, values0 = Vector256.Create(value0), values1 = Vector256.Create(value1), values2 = Vector256.Create(value2), values3 = Vector256.Create(value3);
+                TSize offset = length - Vector256<TValue>.Count;
+
+                // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
+                while (offset > 0) {
+                    current = Vector256.LoadUnsafe(ref searchSpace, offset.ToUIntPtr());
+                    equals = TNegator.NegateIfNeeded(Vector256.Equals(current, values0) | Vector256.Equals(current, values1)
+                                            | Vector256.Equals(current, values2) | Vector256.Equals(current, values3));
                     if (equals == Vector256<TValue>.Zero) {
                         offset -= Vector256<TValue>.Count;
                         continue;
@@ -2979,19 +3238,19 @@ namespace Zyl.ExSpans {
                 // Process the first vector in the search space.
 
                 current = Vector256.LoadUnsafe(ref searchSpace);
-                equals = TNegator.NegateIfNeeded(Vector256.Equals(current, values0) | Vector256.Equals(current, values1) | Vector256.Equals(current, values2));
+                equals = TNegator.NegateIfNeeded(Vector256.Equals(current, values0) | Vector256.Equals(current, values1) | Vector256.Equals(current, values2) | Vector256.Equals(current, values3));
 
                 if (equals != Vector256<TValue>.Zero) {
                     return ComputeLastIndex(offset: 0, equals);
                 }
-            } else {
-                Vector128<TValue> equals, current, values0 = Vector128.Create(value0), values1 = Vector128.Create(value1), values2 = Vector128.Create(value2);
-                nint offset = length - Vector128<TValue>.Count;
+            } else if (Vector128.IsHardwareAccelerated && length >= Vector128<TValue>.Count) {
+                Vector128<TValue> equals, current, values0 = Vector128.Create(value0), values1 = Vector128.Create(value1), values2 = Vector128.Create(value2), values3 = Vector128.Create(value3);
+                TSize offset = length - Vector128<TValue>.Count;
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 while (offset > 0) {
-                    current = Vector128.LoadUnsafe(ref searchSpace, (nuint)(offset));
-                    equals = TNegator.NegateIfNeeded(Vector128.Equals(current, values0) | Vector128.Equals(current, values1) | Vector128.Equals(current, values2));
+                    current = Vector128.LoadUnsafe(ref searchSpace, offset.ToUIntPtr());
+                    equals = TNegator.NegateIfNeeded(Vector128.Equals(current, values0) | Vector128.Equals(current, values1) | Vector128.Equals(current, values2) | Vector128.Equals(current, values3));
 
                     if (equals == Vector128<TValue>.Zero) {
                         offset -= Vector128<TValue>.Count;
@@ -3004,32 +3263,16 @@ namespace Zyl.ExSpans {
                 // Process the first vector in the search space.
 
                 current = Vector128.LoadUnsafe(ref searchSpace);
-                equals = TNegator.NegateIfNeeded(Vector128.Equals(current, values0) | Vector128.Equals(current, values1) | Vector128.Equals(current, values2));
+                equals = TNegator.NegateIfNeeded(Vector128.Equals(current, values0) | Vector128.Equals(current, values1) | Vector128.Equals(current, values2) | Vector128.Equals(current, values3));
 
                 if (equals != Vector128<TValue>.Zero) {
                     return ComputeLastIndex(offset: 0, equals);
                 }
+#endif // NET7_0_OR_GREATER
             }
 
-            return -1;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int LastIndexOfAnyValueType<T>(ref T searchSpace, T value0, T value1, T value2, T value3, int length) where T : struct, INumber<T>
-            => LastIndexOfAnyValueType<T, DontNegate<T>>(ref searchSpace, value0, value1, value2, value3, length);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int LastIndexOfAnyExceptValueType<T>(ref T searchSpace, T value0, T value1, T value2, T value3, int length) where T : struct, INumber<T>
-            => LastIndexOfAnyValueType<T, Negate<T>>(ref searchSpace, value0, value1, value2, value3, length);
-
-        private static int LastIndexOfAnyValueType<TValue, TNegator>(ref TValue searchSpace, TValue value0, TValue value1, TValue value2, TValue value3, int length)
-            where TValue : struct, INumber<TValue>
-            where TNegator : struct, INegator<TValue> {
-            Debug.Assert(length >= 0, "Expected non-negative length");
-            Debug.Assert(value0 is byte or short or int or long, "Expected caller to normalize to one of these types");
-
-            if (!Vector128.IsHardwareAccelerated || length < Vector128<TValue>.Count) {
-                nuint offset = (nuint)length - 1;
+            if (true) {
+                TSize offset = length - 1;
                 TValue lookUp;
 
                 while (length >= 4) {
@@ -3058,93 +3301,18 @@ namespace Zyl.ExSpans {
                 }
                 return -1;
             FoundM3:
-                return (int)(offset - 3);
+                return offset - 3;
             FoundM2:
-                return (int)(offset - 2);
+                return offset - 2;
             FoundM1:
-                return (int)(offset - 1);
+                return offset - 1;
             Found:
-                return (int)(offset);
-            } else if (Vector512.IsHardwareAccelerated && length >= Vector512<TValue>.Count && Vector512<byte>.Count >= Vector<byte>.Count) {
-                Vector512<TValue> equals, current, values0 = Vector512.Create(value0), values1 = Vector512.Create(value1), values2 = Vector512.Create(value2), values3 = Vector512.Create(value3);
-                nint offset = length - Vector512<TValue>.Count;
-
-                // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
-                while (offset > 0) {
-                    current = Vector512.LoadUnsafe(ref searchSpace, (nuint)(offset));
-                    equals = TNegator.NegateIfNeeded(Vector512.Equals(current, values0) | Vector512.Equals(current, values1)
-                                            | Vector512.Equals(current, values2) | Vector512.Equals(current, values3));
-                    if (equals == Vector512<TValue>.Zero) {
-                        offset -= Vector512<TValue>.Count;
-                        continue;
-                    }
-
-                    return ComputeLastIndex(offset, equals);
-                }
-
-                // Process the first vector in the search space.
-
-                current = Vector512.LoadUnsafe(ref searchSpace);
-                equals = TNegator.NegateIfNeeded(Vector512.Equals(current, values0) | Vector512.Equals(current, values1) | Vector512.Equals(current, values2) | Vector512.Equals(current, values3));
-
-                if (equals != Vector512<TValue>.Zero) {
-                    return ComputeLastIndex(offset: 0, equals);
-                }
-            } else if (Vector256.IsHardwareAccelerated && length >= Vector256<TValue>.Count) {
-                Vector256<TValue> equals, current, values0 = Vector256.Create(value0), values1 = Vector256.Create(value1), values2 = Vector256.Create(value2), values3 = Vector256.Create(value3);
-                nint offset = length - Vector256<TValue>.Count;
-
-                // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
-                while (offset > 0) {
-                    current = Vector256.LoadUnsafe(ref searchSpace, (nuint)(offset));
-                    equals = TNegator.NegateIfNeeded(Vector256.Equals(current, values0) | Vector256.Equals(current, values1)
-                                            | Vector256.Equals(current, values2) | Vector256.Equals(current, values3));
-                    if (equals == Vector256<TValue>.Zero) {
-                        offset -= Vector256<TValue>.Count;
-                        continue;
-                    }
-
-                    return ComputeLastIndex(offset, equals);
-                }
-
-                // Process the first vector in the search space.
-
-                current = Vector256.LoadUnsafe(ref searchSpace);
-                equals = TNegator.NegateIfNeeded(Vector256.Equals(current, values0) | Vector256.Equals(current, values1) | Vector256.Equals(current, values2) | Vector256.Equals(current, values3));
-
-                if (equals != Vector256<TValue>.Zero) {
-                    return ComputeLastIndex(offset: 0, equals);
-                }
-            } else {
-                Vector128<TValue> equals, current, values0 = Vector128.Create(value0), values1 = Vector128.Create(value1), values2 = Vector128.Create(value2), values3 = Vector128.Create(value3);
-                nint offset = length - Vector128<TValue>.Count;
-
-                // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
-                while (offset > 0) {
-                    current = Vector128.LoadUnsafe(ref searchSpace, (nuint)(offset));
-                    equals = TNegator.NegateIfNeeded(Vector128.Equals(current, values0) | Vector128.Equals(current, values1) | Vector128.Equals(current, values2) | Vector128.Equals(current, values3));
-
-                    if (equals == Vector128<TValue>.Zero) {
-                        offset -= Vector128<TValue>.Count;
-                        continue;
-                    }
-
-                    return ComputeLastIndex(offset, equals);
-                }
-
-                // Process the first vector in the search space.
-
-                current = Vector128.LoadUnsafe(ref searchSpace);
-                equals = TNegator.NegateIfNeeded(Vector128.Equals(current, values0) | Vector128.Equals(current, values1) | Vector128.Equals(current, values2) | Vector128.Equals(current, values3));
-
-                if (equals != Vector128<TValue>.Zero) {
-                    return ComputeLastIndex(offset: 0, equals);
-                }
+                return offset;
             }
-
-            return -1;
+            //return -1;
         }
 
+#if TODO
         public static void Replace<T>(ref T src, ref T dst, T oldValue, T newValue, nuint length) where T : IEquatable<T>? {
             if (default(T) is not null || oldValue is not null) {
                 Debug.Assert(oldValue is not null);
@@ -3242,57 +3410,57 @@ namespace Zyl.ExSpans {
                 }
             }
         }
+#endif // TODO
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int LastIndexOfAnyValueType<T>(ref T searchSpace, T value0, T value1, T value2, T value3, T value4, int length) where T : struct, INumber<T>
+        internal static TSize LastIndexOfAnyValueType<T>(ref T searchSpace, T value0, T value1, T value2, T value3, T value4, TSize length) where T : struct, IEquatable<T>
+#if GENERIC_MATH
+            , INumber<T>
+#endif // GENERIC_MATH
             => LastIndexOfAnyValueType<T, DontNegate<T>>(ref searchSpace, value0, value1, value2, value3, value4, length);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int LastIndexOfAnyExceptValueType<T>(ref T searchSpace, T value0, T value1, T value2, T value3, T value4, int length) where T : struct, INumber<T>
+        internal static TSize LastIndexOfAnyExceptValueType<T>(ref T searchSpace, T value0, T value1, T value2, T value3, T value4, TSize length) where T : struct, IEquatable<T>
+#if GENERIC_MATH
+            , INumber<T>
+#endif // GENERIC_MATH
             => LastIndexOfAnyValueType<T, Negate<T>>(ref searchSpace, value0, value1, value2, value3, value4, length);
 
-        private static int LastIndexOfAnyValueType<TValue, TNegator>(ref TValue searchSpace, TValue value0, TValue value1, TValue value2, TValue value3, TValue value4, int length)
-            where TValue : struct, INumber<TValue>
-            where TNegator : struct, INegator<TValue> {
+        private static TSize LastIndexOfAnyValueType<TValue,
+#if GENERIC_MATH
+            TNegator
+#else
+            TNegatorType
+#endif // GENERIC_MATH
+            >(ref TValue searchSpace, TValue value0, TValue value1, TValue value2, TValue value3, TValue value4, TSize length)
+            where TValue : struct, IEquatable<TValue>
+#if GENERIC_MATH
+            , INumber<TValue>
+#endif // GENERIC_MATH
+            where
+#if GENERIC_MATH
+            TNegator
+#else
+            TNegatorType
+#endif // GENERIC_MATH
+            : struct, INegator<TValue> {
+#if GENERIC_MATH
+#else
+            TNegatorType TNegator = default;
+#endif // GENERIC_MATH
             Debug.Assert(length >= 0, "Expected non-negative length");
             Debug.Assert(value0 is byte or short or int or long, "Expected caller to normalize to one of these types");
 
-            if (!Vector128.IsHardwareAccelerated || length < Vector128<TValue>.Count) {
-                nuint offset = (nuint)length - 1;
-                TValue lookUp;
-
-                while (length >= 4) {
-                    length -= 4;
-
-                    ref TValue current = ref ExUnsafe.Add(ref searchSpace, offset);
-                    lookUp = current;
-                    if (TNegator.NegateIfNeeded(lookUp.Equals(value0) || lookUp.Equals(value1) || lookUp.Equals(value2) || lookUp.Equals(value3) || lookUp.Equals(value4))) return (int)offset;
-                    lookUp = ExUnsafe.Add(ref current, -1);
-                    if (TNegator.NegateIfNeeded(lookUp.Equals(value0) || lookUp.Equals(value1) || lookUp.Equals(value2) || lookUp.Equals(value3) || lookUp.Equals(value4))) return (int)offset - 1;
-                    lookUp = ExUnsafe.Add(ref current, -2);
-                    if (TNegator.NegateIfNeeded(lookUp.Equals(value0) || lookUp.Equals(value1) || lookUp.Equals(value2) || lookUp.Equals(value3) || lookUp.Equals(value4))) return (int)offset - 2;
-                    lookUp = ExUnsafe.Add(ref current, -3);
-                    if (TNegator.NegateIfNeeded(lookUp.Equals(value0) || lookUp.Equals(value1) || lookUp.Equals(value2) || lookUp.Equals(value3) || lookUp.Equals(value4))) return (int)offset - 3;
-
-                    offset -= 4;
-                }
-
-                while (length > 0) {
-                    length -= 1;
-
-                    lookUp = ExUnsafe.Add(ref searchSpace, offset);
-                    if (TNegator.NegateIfNeeded(lookUp.Equals(value0) || lookUp.Equals(value1) || lookUp.Equals(value2) || lookUp.Equals(value3) || lookUp.Equals(value4))) return (int)offset;
-
-                    offset -= 1;
-                }
+            if (false) {
+#if NET8_0_OR_GREATER
             } else if (Vector512.IsHardwareAccelerated && length >= Vector512<TValue>.Count && Vector512<byte>.Count >= Vector<byte>.Count) {
                 Vector512<TValue> equals, current, values0 = Vector512.Create(value0), values1 = Vector512.Create(value1),
                     values2 = Vector512.Create(value2), values3 = Vector512.Create(value3), values4 = Vector512.Create(value4);
-                nint offset = length - Vector512<TValue>.Count;
+                TSize offset = length - Vector512<TValue>.Count;
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 while (offset > 0) {
-                    current = Vector512.LoadUnsafe(ref searchSpace, (nuint)(offset));
+                    current = Vector512.LoadUnsafe(ref searchSpace, offset.ToUIntPtr());
                     equals = TNegator.NegateIfNeeded(Vector512.Equals(current, values0) | Vector512.Equals(current, values1) | Vector512.Equals(current, values2)
                         | Vector512.Equals(current, values3) | Vector512.Equals(current, values4));
                     if (equals == Vector512<TValue>.Zero) {
@@ -3312,14 +3480,43 @@ namespace Zyl.ExSpans {
                 if (equals != Vector512<TValue>.Zero) {
                     return ComputeLastIndex(offset: 0, equals);
                 }
-            } else if (Vector256.IsHardwareAccelerated && length >= Vector256<TValue>.Count) {
-                Vector256<TValue> equals, current, values0 = Vector256.Create(value0), values1 = Vector256.Create(value1),
-                    values2 = Vector256.Create(value2), values3 = Vector256.Create(value3), values4 = Vector256.Create(value4);
-                nint offset = length - Vector256<TValue>.Count;
+#endif // NET8_0_OR_GREATER
+            } else if (Vector.IsHardwareAccelerated && length >= Vector<TValue>.Count) {
+                Vector<TValue> equals, current, values0 = Vectors.Create(value0), values1 = Vectors.Create(value1),
+                    values2 = Vectors.Create(value2), values3 = Vectors.Create(value3), values4 = Vectors.Create(value4);
+                TSize offset = length - Vector<TValue>.Count;
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 while (offset > 0) {
-                    current = Vector256.LoadUnsafe(ref searchSpace, (nuint)(offset));
+                    current = VectorHelper.LoadUnsafe(ref searchSpace, offset.ToUIntPtr());
+                    equals = TNegator.NegateIfNeeded(Vector.Equals(current, values0) | Vector.Equals(current, values1) | Vector.Equals(current, values2)
+                        | Vector.Equals(current, values3) | Vector.Equals(current, values4));
+                    if (equals == Vector<TValue>.Zero) {
+                        offset -= Vector<TValue>.Count;
+                        continue;
+                    }
+
+                    return ComputeLastIndex(offset, equals);
+                }
+
+                // Process the first vector in the search space.
+
+                current = VectorHelper.LoadUnsafe(ref searchSpace);
+                equals = TNegator.NegateIfNeeded(Vector.Equals(current, values0) | Vector.Equals(current, values1) | Vector.Equals(current, values2)
+                    | Vector.Equals(current, values3) | Vector.Equals(current, values4));
+
+                if (equals != Vector<TValue>.Zero) {
+                    return ComputeLastIndex(offset: 0, equals);
+                }
+#if NET7_0_OR_GREATER
+            } else if (Vector256.IsHardwareAccelerated && length >= Vector256<TValue>.Count) {
+                Vector256<TValue> equals, current, values0 = Vector256.Create(value0), values1 = Vector256.Create(value1),
+                    values2 = Vector256.Create(value2), values3 = Vector256.Create(value3), values4 = Vector256.Create(value4);
+                TSize offset = length - Vector256<TValue>.Count;
+
+                // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
+                while (offset > 0) {
+                    current = Vector256.LoadUnsafe(ref searchSpace, offset.ToUIntPtr());
                     equals = TNegator.NegateIfNeeded(Vector256.Equals(current, values0) | Vector256.Equals(current, values1) | Vector256.Equals(current, values2)
                         | Vector256.Equals(current, values3) | Vector256.Equals(current, values4));
                     if (equals == Vector256<TValue>.Zero) {
@@ -3339,14 +3536,14 @@ namespace Zyl.ExSpans {
                 if (equals != Vector256<TValue>.Zero) {
                     return ComputeLastIndex(offset: 0, equals);
                 }
-            } else {
+            } else if (Vector128.IsHardwareAccelerated && length >= Vector128<TValue>.Count) {
                 Vector128<TValue> equals, current, values0 = Vector128.Create(value0), values1 = Vector128.Create(value1),
                     values2 = Vector128.Create(value2), values3 = Vector128.Create(value3), values4 = Vector128.Create(value4);
-                nint offset = length - Vector128<TValue>.Count;
+                TSize offset = length - Vector128<TValue>.Count;
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 while (offset > 0) {
-                    current = Vector128.LoadUnsafe(ref searchSpace, (nuint)(offset));
+                    current = Vector128.LoadUnsafe(ref searchSpace, offset.ToUIntPtr());
                     equals = TNegator.NegateIfNeeded(Vector128.Equals(current, values0) | Vector128.Equals(current, values1) | Vector128.Equals(current, values2)
                         | Vector128.Equals(current, values3) | Vector128.Equals(current, values4));
 
@@ -3367,11 +3564,40 @@ namespace Zyl.ExSpans {
                 if (equals != Vector128<TValue>.Zero) {
                     return ComputeLastIndex(offset: 0, equals);
                 }
+#endif // NET7_0_OR_GREATER
             }
 
+            if (true) {
+                TSize offset = length - 1;
+                TValue lookUp;
+
+                while (length >= 4) {
+                    length -= 4;
+
+                    ref TValue current = ref ExUnsafe.Add(ref searchSpace, offset);
+                    lookUp = current;
+                    if (TNegator.NegateIfNeeded(lookUp.Equals(value0) || lookUp.Equals(value1) || lookUp.Equals(value2) || lookUp.Equals(value3) || lookUp.Equals(value4))) return offset;
+                    lookUp = ExUnsafe.Add(ref current, -1);
+                    if (TNegator.NegateIfNeeded(lookUp.Equals(value0) || lookUp.Equals(value1) || lookUp.Equals(value2) || lookUp.Equals(value3) || lookUp.Equals(value4))) return offset - 1;
+                    lookUp = ExUnsafe.Add(ref current, -2);
+                    if (TNegator.NegateIfNeeded(lookUp.Equals(value0) || lookUp.Equals(value1) || lookUp.Equals(value2) || lookUp.Equals(value3) || lookUp.Equals(value4))) return offset - 2;
+                    lookUp = ExUnsafe.Add(ref current, -3);
+                    if (TNegator.NegateIfNeeded(lookUp.Equals(value0) || lookUp.Equals(value1) || lookUp.Equals(value2) || lookUp.Equals(value3) || lookUp.Equals(value4))) return offset - 3;
+
+                    offset -= 4;
+                }
+
+                while (length > 0) {
+                    length -= 1;
+
+                    lookUp = ExUnsafe.Add(ref searchSpace, offset);
+                    if (TNegator.NegateIfNeeded(lookUp.Equals(value0) || lookUp.Equals(value1) || lookUp.Equals(value2) || lookUp.Equals(value3) || lookUp.Equals(value4))) return offset;
+
+                    offset -= 1;
+                }
+            }
             return -1;
         }
-#endif // TODO
 
 #if NET7_0_OR_GREATER
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
