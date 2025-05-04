@@ -10,6 +10,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 #if NETCOREAPP3_0_OR_GREATER
 using System.Runtime.Intrinsics;
@@ -1657,7 +1658,6 @@ namespace Zyl.ExSpans {
             return ExSpanHelpers.IndexOfAnyExceptInRange(ref ExMemoryMarshal.GetReference(span), lowInclusive, highInclusive, span.Length);
         }
 
-#if TODO
         /// <inheritdoc cref="LastIndexOfAnyInRange{T}(ReadOnlyExSpan{T}, T, T)"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [OverloadResolutionPriority(-1)]
@@ -1679,7 +1679,8 @@ namespace Zyl.ExSpans {
                 ThrowNullLowHighInclusive(lowInclusive, highInclusive);
             }
 
-            if (Vector128.IsHardwareAccelerated) {
+#if GENERIC_MATH
+            if (Vector.IsHardwareAccelerated) {
                 if (lowInclusive is byte or sbyte) {
                     return ExSpanHelpers.LastIndexOfAnyInRangeUnsignedNumber(
                         ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
@@ -1712,6 +1713,7 @@ namespace Zyl.ExSpans {
                         span.Length);
                 }
             }
+#endif // GENERIC_MATH
 
             return ExSpanHelpers.LastIndexOfAnyInRange(ref ExMemoryMarshal.GetReference(span), lowInclusive, highInclusive, span.Length);
         }
@@ -1737,7 +1739,8 @@ namespace Zyl.ExSpans {
                 ThrowNullLowHighInclusive(lowInclusive, highInclusive);
             }
 
-            if (Vector128.IsHardwareAccelerated) {
+#if GENERIC_MATH
+            if (Vector.IsHardwareAccelerated) {
                 if (lowInclusive is byte or sbyte) {
                     return ExSpanHelpers.LastIndexOfAnyExceptInRangeUnsignedNumber(
                         ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
@@ -1770,10 +1773,10 @@ namespace Zyl.ExSpans {
                         span.Length);
                 }
             }
+#endif // GENERIC_MATH
 
             return ExSpanHelpers.LastIndexOfAnyExceptInRange(ref ExMemoryMarshal.GetReference(span), lowInclusive, highInclusive, span.Length);
         }
-#endif // TODO
 
         /// <summary>Throws an <see cref="ArgumentNullException"/> for <paramref name="lowInclusive"/> or <paramref name="highInclusive"/> being null.</summary>
         [DoesNotReturn]
