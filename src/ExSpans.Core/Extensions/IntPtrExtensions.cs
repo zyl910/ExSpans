@@ -63,6 +63,36 @@ namespace Zyl.ExSpans.Extensions {
             return (nuint)(left / right);
         }
 
+#if NET5_0_OR_GREATER
+#else
+        /// <summary>
+        /// Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
+        /// </summary>
+        /// <param name="athis">The first object to compare.</param>
+        /// <param name="value">The second object to compare.</param>
+        /// <returns>A signed integer that indicates the relative values of x and y.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int CompareTo(this nint athis, nint value) {
+            if (athis < value) return -1;
+            if (athis > value) return 1;
+            return 0;
+        }
+
+        /// <summary>
+        /// Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
+        /// </summary>
+        /// <param name="athis">The first object to compare.</param>
+        /// <param name="value">The second object to compare.</param>
+        /// <returns>A signed integer that indicates the relative values of x and y.</returns>
+        [CLSCompliant(false)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int CompareTo(this nuint athis, nuint value) {
+            if (athis < value) return -1;
+            if (athis > value) return 1;
+            return 0;
+        }
+#endif // NET5_0_OR_GREATER
+
 //        /// <summary>
 //        /// Indicates whether the current object is equal to another object of the same type (指示当前对象是否等于同一类型的另一个对象).
 //        /// </summary>
