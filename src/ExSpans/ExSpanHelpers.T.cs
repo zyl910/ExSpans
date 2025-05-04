@@ -196,7 +196,7 @@ namespace Zyl.ExSpans {
             }
         }
 
-        public static nint IndexOf<T>(ref T searchSpace, nint searchSpaceLength, ref T value, nint valueLength) where T : IEquatable<T>? {
+        public static nint IndexOf<T>(ref T searchSpace, TSize searchSpaceLength, ref T value, nint valueLength) where T : IEquatable<T>? {
             Debug.Assert(searchSpaceLength >= 0);
             Debug.Assert(valueLength >= 0);
 
@@ -230,7 +230,7 @@ namespace Zyl.ExSpans {
         }
 
         // Adapted from IndexOf(...)
-        public static bool Contains<T>(ref T searchSpace, T value, nint length) where T : IEquatable<T>? {
+        public static bool Contains<T>(ref T searchSpace, T value, TSize length) where T : IEquatable<T>? {
             Debug.Assert(length >= 0);
 
             nint index = 0; // Use nint for arithmetic to avoid unnecessary 64->32->64 truncations
@@ -291,7 +291,7 @@ namespace Zyl.ExSpans {
             return true;
         }
 
-        public static nint IndexOf<T>(ref T searchSpace, T value, nint length) where T : IEquatable<T>? {
+        public static nint IndexOf<T>(ref T searchSpace, T value, TSize length) where T : IEquatable<T>? {
             Debug.Assert(length >= 0);
 
             nint index = 0; // Use nint for arithmetic to avoid unnecessary 64->32->64 truncations
@@ -371,7 +371,7 @@ namespace Zyl.ExSpans {
             return index + 7;
         }
 
-        public static nint IndexOfAny<T>(ref T searchSpace, T value0, T value1, nint length) where T : IEquatable<T>? {
+        public static nint IndexOfAny<T>(ref T searchSpace, T value0, T value1, TSize length) where T : IEquatable<T>? {
             Debug.Assert(length >= 0);
 
             T lookUp;
@@ -467,7 +467,7 @@ namespace Zyl.ExSpans {
             return index + 7;
         }
 
-        public static nint IndexOfAny<T>(ref T searchSpace, T value0, T value1, T value2, nint length) where T : IEquatable<T>? {
+        public static nint IndexOfAny<T>(ref T searchSpace, T value0, T value1, T value2, TSize length) where T : IEquatable<T>? {
             Debug.Assert(length >= 0);
 
             T lookUp;
@@ -563,7 +563,7 @@ namespace Zyl.ExSpans {
             return index + 7;
         }
 
-        public static nint IndexOfAny<T>(ref T searchSpace, nint searchSpaceLength, ref T value, nint valueLength) where T : IEquatable<T>? {
+        public static nint IndexOfAny<T>(ref T searchSpace, TSize searchSpaceLength, ref T value, nint valueLength) where T : IEquatable<T>? {
             Debug.Assert(searchSpaceLength >= 0);
             Debug.Assert(valueLength >= 0);
 
@@ -731,13 +731,14 @@ namespace Zyl.ExSpans {
             return length + 7;
         }
 
-#if TODO
-        public static int LastIndexOfAny<T>(ref T searchSpace, T value0, T value1, int length) where T : IEquatable<T>? {
+        public static TSize LastIndexOfAny<T>(ref T searchSpace, T value0, T value1, TSize length) where T : IEquatable<T>? {
             Debug.Assert(length >= 0);
 
             T lookUp;
             if (default(T) != null || ((object?)value0 != null && (object?)value1 != null)) {
                 Debug.Assert(value0 is not null && value1 is not null);
+                if (value0 is null) throw new ArgumentNullException(nameof(value0));
+                if (value1 is null) throw new ArgumentNullException(nameof(value1));
 
                 while (length >= 8) {
                     length -= 8;
@@ -825,12 +826,15 @@ namespace Zyl.ExSpans {
             return length + 7;
         }
 
-        public static int LastIndexOfAny<T>(ref T searchSpace, T value0, T value1, T value2, int length) where T : IEquatable<T>? {
+        public static TSize LastIndexOfAny<T>(ref T searchSpace, T value0, T value1, T value2, TSize length) where T : IEquatable<T>? {
             Debug.Assert(length >= 0);
 
             T lookUp;
             if (default(T) != null || ((object?)value0 != null && (object?)value1 != null && (object?)value2 != null)) {
                 Debug.Assert(value0 is not null && value1 is not null && value2 is not null);
+                if (value0 is null) throw new ArgumentNullException(nameof(value0));
+                if (value1 is null) throw new ArgumentNullException(nameof(value1));
+                if (value2 is null) throw new ArgumentNullException(nameof(value2));
 
                 while (length >= 8) {
                     length -= 8;
@@ -918,7 +922,7 @@ namespace Zyl.ExSpans {
             return length + 7;
         }
 
-        public static int LastIndexOfAny<T>(ref T searchSpace, int searchSpaceLength, ref T value, int valueLength) where T : IEquatable<T>? {
+        public static TSize LastIndexOfAny<T>(ref T searchSpace, TSize searchSpaceLength, ref T value, TSize valueLength) where T : IEquatable<T>? {
             Debug.Assert(searchSpaceLength >= 0);
             Debug.Assert(valueLength >= 0);
 
@@ -929,25 +933,25 @@ namespace Zyl.ExSpans {
             // This logic is similar, but it runs backward.
 
             if (TypeHelper.IsValueType<T>()) {
-                for (int i = searchSpaceLength - 1; i >= 0; i--) {
+                for (TSize i = searchSpaceLength - 1; i >= 0; i--) {
                     T candidate = ExUnsafe.Add(ref searchSpace, i);
-                    for (int j = 0; j < valueLength; j++) {
+                    for (TSize j = 0; j < valueLength; j++) {
                         if (ExUnsafe.Add(ref value, j)!.Equals(candidate)) {
                             return i;
                         }
                     }
                 }
             } else {
-                for (int i = searchSpaceLength - 1; i >= 0; i--) {
+                for (TSize i = searchSpaceLength - 1; i >= 0; i--) {
                     T candidate = ExUnsafe.Add(ref searchSpace, i);
                     if (candidate is not null) {
-                        for (int j = 0; j < valueLength; j++) {
+                        for (TSize j = 0; j < valueLength; j++) {
                             if (candidate.Equals(ExUnsafe.Add(ref value, j))) {
                                 return i;
                             }
                         }
                     } else {
-                        for (int j = 0; j < valueLength; j++) {
+                        for (TSize j = 0; j < valueLength; j++) {
                             if (ExUnsafe.Add(ref value, j) is null) {
                                 return i;
                             }
@@ -958,7 +962,6 @@ namespace Zyl.ExSpans {
 
             return -1; // not found
         }
-#endif // TODO
 
         internal static TSize IndexOfAnyExcept<T>(ref T searchSpace, T value0, TSize length) {
             Debug.Assert(length >= 0, "Expected non-negative length");
@@ -1177,7 +1180,7 @@ namespace Zyl.ExSpans {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static bool ContainsValueType<T>(ref T searchSpace, T value, nint length) where T : struct, IEquatable<T>
+        internal static bool ContainsValueType<T>(ref T searchSpace, T value, TSize length) where T : struct, IEquatable<T>
 #if GENERIC_MATH
                 , INumber<T>
 #endif // GENERIC_MATH
@@ -1189,7 +1192,7 @@ namespace Zyl.ExSpans {
             return NonPackedContainsValueType(ref searchSpace, value, length);
         }
 
-        internal static bool NonPackedContainsValueType<T>(ref T searchSpace, T value, nint length) where T : struct, IEquatable<T>
+        internal static bool NonPackedContainsValueType<T>(ref T searchSpace, T value, TSize length) where T : struct, IEquatable<T>
 #if GENERIC_MATH
                 , INumber<T>
 #endif // GENERIC_MATH
@@ -1347,29 +1350,29 @@ namespace Zyl.ExSpans {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static nint IndexOfChar(ref char searchSpace, char value, nint length)
+        internal static nint IndexOfChar(ref char searchSpace, char value, TSize length)
             => IndexOfValueType(ref Unsafe.As<char, short>(ref searchSpace), (short)value, length);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static nint NonPackedIndexOfChar(ref char searchSpace, char value, nint length) =>
+        internal static nint NonPackedIndexOfChar(ref char searchSpace, char value, TSize length) =>
             NonPackedIndexOfValueType<short, DontNegate<short>>(ref Unsafe.As<char, short>(ref searchSpace), (short)value, length);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static nint IndexOfValueType<T>(ref T searchSpace, T value, nint length) where T : struct, IEquatable<T>
+        internal static nint IndexOfValueType<T>(ref T searchSpace, T value, TSize length) where T : struct, IEquatable<T>
 #if GENERIC_MATH
             , INumber<T>
 #endif // GENERIC_MATH
             => IndexOfValueType<T, DontNegate<T>>(ref searchSpace, value, length);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static nint IndexOfAnyExceptValueType<T>(ref T searchSpace, T value, nint length) where T : struct, IEquatable<T>
+        internal static nint IndexOfAnyExceptValueType<T>(ref T searchSpace, T value, TSize length) where T : struct, IEquatable<T>
 #if GENERIC_MATH
             , INumber<T>
 #endif // GENERIC_MATH
             => IndexOfValueType<T, Negate<T>>(ref searchSpace, value, length);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static nint IndexOfValueType<TValue, TNegator>(ref TValue searchSpace, TValue value, nint length)
+        private static nint IndexOfValueType<TValue, TNegator>(ref TValue searchSpace, TValue value, TSize length)
             where TValue : struct, IEquatable<TValue>
 #if GENERIC_MATH
             , INumber<TValue>
@@ -1390,7 +1393,7 @@ namespace Zyl.ExSpans {
 #else
             TNegatorType
 #endif // GENERIC_MATH
-            >(ref TValue searchSpace, TValue value, nint length)
+            >(ref TValue searchSpace, TValue value, TSize length)
             where TValue : struct, IEquatable<TValue>
 #if GENERIC_MATH
             , INumber<TValue>
@@ -1572,25 +1575,25 @@ namespace Zyl.ExSpans {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static nint IndexOfAnyChar(ref char searchSpace, char value0, char value1, nint length)
+        internal static nint IndexOfAnyChar(ref char searchSpace, char value0, char value1, TSize length)
             => IndexOfAnyValueType(ref Unsafe.As<char, short>(ref searchSpace), (short)value0, (short)value1, length);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static nint IndexOfAnyValueType<T>(ref T searchSpace, T value0, T value1, nint length) where T : struct, IEquatable<T>
+        internal static nint IndexOfAnyValueType<T>(ref T searchSpace, T value0, T value1, TSize length) where T : struct, IEquatable<T>
 #if GENERIC_MATH
                 , INumber<T>
 #endif // GENERIC_MATH
             => IndexOfAnyValueType<T, DontNegate<T>>(ref searchSpace, value0, value1, length);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static nint IndexOfAnyExceptValueType<T>(ref T searchSpace, T value0, T value1, nint length) where T : struct, IEquatable<T>
+        internal static nint IndexOfAnyExceptValueType<T>(ref T searchSpace, T value0, T value1, TSize length) where T : struct, IEquatable<T>
 #if GENERIC_MATH
                 , INumber<T>
 #endif // GENERIC_MATH
             => IndexOfAnyValueType<T, Negate<T>>(ref searchSpace, value0, value1, length);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static nint IndexOfAnyValueType<TValue, TNegator>(ref TValue searchSpace, TValue value0, TValue value1, nint length)
+        private static nint IndexOfAnyValueType<TValue, TNegator>(ref TValue searchSpace, TValue value0, TValue value1, TSize length)
             where TValue : struct, IEquatable<TValue>
 #if GENERIC_MATH
                 , INumber<TValue>
@@ -1628,7 +1631,7 @@ namespace Zyl.ExSpans {
 #else
                 TNegatorType
 #endif // GENERIC_MATH
-            >(ref TValue searchSpace, TValue value0, TValue value1, nint length)
+            >(ref TValue searchSpace, TValue value0, TValue value1, TSize length)
             where TValue : struct, IEquatable<TValue>
 #if GENERIC_MATH
                 , INumber<TValue>
@@ -1835,21 +1838,21 @@ namespace Zyl.ExSpans {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static nint IndexOfAnyValueType<T>(ref T searchSpace, T value0, T value1, T value2, nint length) where T : struct, IEquatable<T>
+        internal static nint IndexOfAnyValueType<T>(ref T searchSpace, T value0, T value1, T value2, TSize length) where T : struct, IEquatable<T>
 #if GENERIC_MATH
                 , INumber<T>
 #endif // GENERIC_MATH
             => IndexOfAnyValueType<T, DontNegate<T>>(ref searchSpace, value0, value1, value2, length);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static nint IndexOfAnyExceptValueType<T>(ref T searchSpace, T value0, T value1, T value2, nint length) where T : struct, IEquatable<T>
+        internal static nint IndexOfAnyExceptValueType<T>(ref T searchSpace, T value0, T value1, T value2, TSize length) where T : struct, IEquatable<T>
 #if GENERIC_MATH
                 , INumber<T>
 #endif // GENERIC_MATH
             => IndexOfAnyValueType<T, Negate<T>>(ref searchSpace, value0, value1, value2, length);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static nint IndexOfAnyValueType<TValue, TNegator>(ref TValue searchSpace, TValue value0, TValue value1, TValue value2, nint length)
+        private static nint IndexOfAnyValueType<TValue, TNegator>(ref TValue searchSpace, TValue value0, TValue value1, TValue value2, TSize length)
             where TValue : struct, IEquatable<TValue>
 #if GENERIC_MATH
                 , INumber<TValue>
@@ -1870,7 +1873,7 @@ namespace Zyl.ExSpans {
 #else
                 TNegatorType
 #endif // GENERIC_MATH
-            >(ref TValue searchSpace, TValue value0, TValue value1, TValue value2, nint length)
+            >(ref TValue searchSpace, TValue value0, TValue value1, TValue value2, TSize length)
                 where TValue : struct, IEquatable<TValue>
 #if GENERIC_MATH
                 , INumber<TValue>
@@ -2077,14 +2080,14 @@ namespace Zyl.ExSpans {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static nint IndexOfAnyValueType<T>(ref T searchSpace, T value0, T value1, T value2, T value3, nint length) where T : struct, IEquatable<T>
+        internal static nint IndexOfAnyValueType<T>(ref T searchSpace, T value0, T value1, T value2, T value3, TSize length) where T : struct, IEquatable<T>
 #if GENERIC_MATH
                 , INumber<T>
 #endif // GENERIC_MATH
             => IndexOfAnyValueType<T, DontNegate<T>>(ref searchSpace, value0, value1, value2, value3, length);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static nint IndexOfAnyExceptValueType<T>(ref T searchSpace, T value0, T value1, T value2, T value3, nint length) where T : struct, IEquatable<T>
+        internal static nint IndexOfAnyExceptValueType<T>(ref T searchSpace, T value0, T value1, T value2, T value3, TSize length) where T : struct, IEquatable<T>
 #if GENERIC_MATH
                 , INumber<T>
 #endif // GENERIC_MATH
@@ -2096,7 +2099,7 @@ namespace Zyl.ExSpans {
 #else
                 TNegatorType
 #endif // GENERIC_MATH
-                >(ref TValue searchSpace, TValue value0, TValue value1, TValue value2, TValue value3, nint length)
+                >(ref TValue searchSpace, TValue value0, TValue value1, TValue value2, TValue value3, TSize length)
                 where TValue : struct, IEquatable<TValue>
 #if GENERIC_MATH
                 , INumber<TValue>
@@ -2276,14 +2279,14 @@ namespace Zyl.ExSpans {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static nint IndexOfAnyValueType<T>(ref T searchSpace, T value0, T value1, T value2, T value3, T value4, nint length) where T : struct, IEquatable<T>
+        internal static nint IndexOfAnyValueType<T>(ref T searchSpace, T value0, T value1, T value2, T value3, T value4, TSize length) where T : struct, IEquatable<T>
 #if GENERIC_MATH
                 , INumber<T>
 #endif // GENERIC_MATH
             => IndexOfAnyValueType<T, DontNegate<T>>(ref searchSpace, value0, value1, value2, value3, value4, length);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static nint IndexOfAnyExceptValueType<T>(ref T searchSpace, T value0, T value1, T value2, T value3, T value4, nint length) where T : struct, IEquatable<T>
+        internal static nint IndexOfAnyExceptValueType<T>(ref T searchSpace, T value0, T value1, T value2, T value3, T value4, TSize length) where T : struct, IEquatable<T>
 #if GENERIC_MATH
                 , INumber<T>
 #endif // GENERIC_MATH
@@ -2295,7 +2298,7 @@ namespace Zyl.ExSpans {
 #else
                 TNegatorType
 #endif // GENERIC_MATH
-                >(ref TValue searchSpace, TValue value0, TValue value1, TValue value2, TValue value3, TValue value4, nint length)
+                >(ref TValue searchSpace, TValue value0, TValue value1, TValue value2, TValue value3, TValue value4, TSize length)
             where TValue : struct, IEquatable<TValue>
 #if GENERIC_MATH
                 , INumber<TValue>
@@ -2526,7 +2529,7 @@ namespace Zyl.ExSpans {
             //} else {
             //    return SimdImpl<Vector128<TValue>>(ref searchSpace, value, length);
             //}
-            //static int SimdImpl<TVector>(ref TValue searchSpace, TValue value, int length)
+            //static int SimdImpl<TVector>(ref TValue searchSpace, TValue value, TSize length)
             //    where TVector : struct, ISimdVector<TVector, TValue> {
             //    TVector current;
             //    TVector values = TVector.Create(value);
@@ -2683,7 +2686,7 @@ namespace Zyl.ExSpans {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static TSize LastIndexOfAnyValueType<T>(ref T searchSpace, T value0, T value1, int length) where T : struct, IEquatable<T>
+        internal static TSize LastIndexOfAnyValueType<T>(ref T searchSpace, T value0, T value1, TSize length) where T : struct, IEquatable<T>
 #if GENERIC_MATH
             , INumber<T>
 #endif // GENERIC_MATH
@@ -3833,7 +3836,7 @@ namespace Zyl.ExSpans {
 #endif // GENERIC_MATH
 
 #if TODO
-        internal static int LastIndexOfAnyInRange<T>(ref T searchSpace, T lowInclusive, T highInclusive, int length)
+        internal static TSize LastIndexOfAnyInRange<T>(ref T searchSpace, T lowInclusive, T highInclusive, TSize length)
             where T : IComparable<T> {
             for (int i = length - 1; i >= 0; i--) {
                 ref T current = ref ExUnsafe.Add(ref searchSpace, i);
@@ -3845,7 +3848,7 @@ namespace Zyl.ExSpans {
             return -1;
         }
 
-        internal static int LastIndexOfAnyExceptInRange<T>(ref T searchSpace, T lowInclusive, T highInclusive, int length)
+        internal static TSize LastIndexOfAnyExceptInRange<T>(ref T searchSpace, T lowInclusive, T highInclusive, TSize length)
             where T : IComparable<T> {
             for (int i = length - 1; i >= 0; i--) {
                 ref T current = ref ExUnsafe.Add(ref searchSpace, i);
@@ -3857,15 +3860,15 @@ namespace Zyl.ExSpans {
             return -1;
         }
 
-        internal static int LastIndexOfAnyInRangeUnsignedNumber<T>(ref T searchSpace, T lowInclusive, T highInclusive, int length)
+        internal static TSize LastIndexOfAnyInRangeUnsignedNumber<T>(ref T searchSpace, T lowInclusive, T highInclusive, TSize length)
             where T : struct, IUnsignedNumber<T>, IComparisonOperators<T, T, bool> =>
             LastIndexOfAnyInRangeUnsignedNumber<T, DontNegate<T>>(ref searchSpace, lowInclusive, highInclusive, length);
 
-        internal static int LastIndexOfAnyExceptInRangeUnsignedNumber<T>(ref T searchSpace, T lowInclusive, T highInclusive, int length)
+        internal static TSize LastIndexOfAnyExceptInRangeUnsignedNumber<T>(ref T searchSpace, T lowInclusive, T highInclusive, TSize length)
             where T : struct, IUnsignedNumber<T>, IComparisonOperators<T, T, bool> =>
             LastIndexOfAnyInRangeUnsignedNumber<T, Negate<T>>(ref searchSpace, lowInclusive, highInclusive, length);
 
-        private static int LastIndexOfAnyInRangeUnsignedNumber<T, TNegator>(ref T searchSpace, T lowInclusive, T highInclusive, int length)
+        private static TSize LastIndexOfAnyInRangeUnsignedNumber<T, TNegator>(ref T searchSpace, T lowInclusive, T highInclusive, TSize length)
             where T : struct, IUnsignedNumber<T>, IComparisonOperators<T, T, bool>
             where TNegator : struct, INegator<T> {
             // T must be a type whose comparison operator semantics match that of Vector128/256.
@@ -3949,7 +3952,7 @@ namespace Zyl.ExSpans {
             return -1;
         }
 
-        public static int Count<T>(ref T current, T value, int length) where T : IEquatable<T>? {
+        public static int Count<T>(ref T current, T value, TSize length) where T : IEquatable<T>? {
             int count = 0;
 
             ref T end = ref ExUnsafe.Add(ref current, length);
@@ -3974,7 +3977,7 @@ namespace Zyl.ExSpans {
             return count;
         }
 
-        public static unsafe int CountValueType<T>(ref T current, T value, int length) where T : struct, IEquatable<T>? {
+        public static unsafe int CountValueType<T>(ref T current, T value, TSize length) where T : struct, IEquatable<T>? {
             int count = 0;
             ref T end = ref ExUnsafe.Add(ref current, length);
 
