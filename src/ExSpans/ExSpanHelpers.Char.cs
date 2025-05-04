@@ -422,7 +422,7 @@ namespace Zyl.ExSpans {
             }
         }
 
-        public static unsafe int SequenceCompareTo(ref char first, int firstLength, ref char second, int secondLength) {
+        public static int SequenceCompareTo(ref char first, int firstLength, ref char second, int secondLength) {
             Debug.Assert(firstLength >= 0);
             Debug.Assert(secondLength >= 0);
 
@@ -780,10 +780,11 @@ namespace Zyl.ExSpans {
             => (length - offset) & ~(Vector512<ushort>.Count - 1);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static unsafe nint UnalignedCountVector128(char* searchSpace) {
+        private static nint UnalignedCountVector128(char* searchSpace) {
             const int ElementsPerByte = sizeof(ushort) / sizeof(byte);
             return (nint)(uint)(-(int)searchSpace / ElementsPerByte) & (Vector128<ushort>.Count - 1);
         }
+#endif // TODO
 
         public static void Reverse(ref char buf, nuint length) {
             Debug.Assert(length > 1);
@@ -791,7 +792,9 @@ namespace Zyl.ExSpans {
             nint remainder = (nint)length;
             nint offset = 0;
 
-            if (Vector512.IsHardwareAccelerated && remainder >= Vector512<ushort>.Count * 2) {
+            if (false) {
+#if NET8_0_OR_GREATER
+            } else if (Vector512.IsHardwareAccelerated && remainder >= Vector512<ushort>.Count * 2) {
                 nint lastOffset = remainder - Vector512<ushort>.Count;
                 do {
                     ref ushort first = ref Unsafe.As<char, ushort>(ref Unsafe.Add(ref buf, offset));
@@ -822,6 +825,8 @@ namespace Zyl.ExSpans {
                 } while (lastOffset >= offset);
 
                 remainder = (lastOffset + Vector512<ushort>.Count - offset);
+#endif // NET8_0_OR_GREATER
+#if NET7_0_OR_GREATER
             }
             // overlapping has a positive performance benefit around 24 elements
             else if (Avx2.IsSupported && remainder >= (nint)(Vector256<ushort>.Count * 1.5)) {
@@ -893,6 +898,7 @@ namespace Zyl.ExSpans {
                 } while (lastOffset >= offset);
 
                 remainder = (lastOffset + Vector128<ushort>.Count - offset);
+#endif // NET7_0_OR_GREATER
             }
 
             // Store any remaining values one-by-one
@@ -900,7 +906,6 @@ namespace Zyl.ExSpans {
                 ReverseInner(ref Unsafe.Add(ref buf, offset), (nuint)remainder);
             }
         }
-#endif // TODO
 
     }
 }

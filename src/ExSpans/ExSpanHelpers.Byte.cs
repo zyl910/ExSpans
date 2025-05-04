@@ -1240,14 +1240,15 @@ namespace Zyl.ExSpans {
 
 #endif // NETCOREAPP3_0_OR_GREATER
 
-#if TODO
         public static void Reverse(ref byte buf, nuint length) {
             Debug.Assert(length > 1);
 
             nint remainder = (nint)length;
             nint offset = 0;
 
-            if (Vector512.IsHardwareAccelerated && remainder >= Vector512<byte>.Count * 2) {
+            if (false) {
+#if NET8_0_OR_GREATER
+            } else if (Vector512.IsHardwareAccelerated && remainder >= Vector512<byte>.Count * 2) {
                 nint lastOffset = remainder - Vector512<byte>.Count;
                 do {
                     // Load the values into vectors
@@ -1282,6 +1283,8 @@ namespace Zyl.ExSpans {
                 } while (lastOffset >= offset);
 
                 remainder = lastOffset + Vector512<byte>.Count - offset;
+#endif // NET8_0_OR_GREATER
+#if NET7_0_OR_GREATER
             } else if (Avx2.IsSupported && remainder >= (nint)(Vector256<byte>.Count * 1.5)) {
                 Vector256<byte> reverseMask = Vector256.Create(
                     (byte)15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, // first 128-bit lane
@@ -1355,6 +1358,7 @@ namespace Zyl.ExSpans {
                 } while (lastOffset >= offset);
 
                 remainder = lastOffset + Vector128<byte>.Count - offset;
+#endif // NET7_0_OR_GREATER
             }
 
             if (remainder >= sizeof(long)) {
@@ -1395,7 +1399,6 @@ namespace Zyl.ExSpans {
                 ReverseInner(ref Unsafe.Add(ref buf, offset), (nuint)remainder);
             }
         }
-#endif // TODO
 
 
     }

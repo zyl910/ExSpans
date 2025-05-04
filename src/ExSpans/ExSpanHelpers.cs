@@ -5,6 +5,8 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 #endif // NETCOREAPP3_0_OR_GREATER
+using Zyl.ExSpans.Impl;
+using Zyl.ExSpans.Reflection;
 
 namespace Zyl.ExSpans {
     /// <summary>
@@ -13,7 +15,7 @@ namespace Zyl.ExSpans {
     internal static partial class ExSpanHelpers {
 
 #if TODO
-        public static unsafe void ClearWithReferences(ref IntPtr ip, nuint pointerSizeLength) {
+        public static void ClearWithReferences(ref IntPtr ip, nuint pointerSizeLength) {
             Debug.Assert(Unsafe.IsOpportunisticallyAligned(ref ip, (uint)sizeof(IntPtr)), "Should've been aligned on natural word boundary.");
 
             // First write backward 8 natural words at a time.
@@ -78,6 +80,7 @@ namespace Zyl.ExSpans {
             // Write only element.
             ip = default;
         }
+#endif // TODO
 
         public static void Reverse(ref int buf, nuint length) {
             Debug.Assert(length > 1);
@@ -85,7 +88,9 @@ namespace Zyl.ExSpans {
             nint remainder = (nint)length;
             nint offset = 0;
 
-            if (Vector512.IsHardwareAccelerated && remainder >= Vector512<int>.Count * 2) {
+            if (false) {
+#if NET8_0_OR_GREATER
+            } else if (Vector512.IsHardwareAccelerated && remainder >= Vector512<int>.Count * 2) {
                 nint lastOffset = remainder - Vector512<int>.Count;
                 do {
                     // Load in values from beginning and end of the array.
@@ -112,6 +117,8 @@ namespace Zyl.ExSpans {
                 } while (lastOffset >= offset);
 
                 remainder = lastOffset + Vector512<int>.Count - offset;
+#endif // NET8_0_OR_GREATER
+#if NET7_0_OR_GREATER
             } else if (Avx2.IsSupported && remainder >= Vector256<int>.Count * 2) {
                 nint lastOffset = remainder - Vector256<int>.Count;
                 do {
@@ -166,6 +173,7 @@ namespace Zyl.ExSpans {
                 } while (lastOffset >= offset);
 
                 remainder = lastOffset + Vector128<int>.Count - offset;
+#endif // NET7_0_OR_GREATER
             }
 
             // Store any remaining values one-by-one
@@ -180,7 +188,9 @@ namespace Zyl.ExSpans {
             nint remainder = (nint)length;
             nint offset = 0;
 
-            if (Vector512.IsHardwareAccelerated && remainder >= Vector512<long>.Count * 2) {
+            if (false) {
+#if NET8_0_OR_GREATER
+            } else if (Vector512.IsHardwareAccelerated && remainder >= Vector512<long>.Count * 2) {
                 nint lastOffset = remainder - Vector512<long>.Count;
                 do {
                     // Load in values from beginning and end of the array.
@@ -207,6 +217,8 @@ namespace Zyl.ExSpans {
                 } while (lastOffset >= offset);
 
                 remainder = lastOffset + Vector512<long>.Count - offset;
+#endif // NET8_0_OR_GREATER
+#if NET7_0_OR_GREATER
             } else if (Avx2.IsSupported && remainder >= Vector256<long>.Count * 2) {
                 nint lastOffset = remainder - Vector256<long>.Count;
                 do {
@@ -261,6 +273,7 @@ namespace Zyl.ExSpans {
                 } while (lastOffset >= offset);
 
                 remainder = lastOffset + Vector128<long>.Count - offset;
+#endif // NET7_0_OR_GREATER
             }
 
             // Store any remaining values one-by-one
@@ -270,20 +283,20 @@ namespace Zyl.ExSpans {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe void Reverse<T>(ref T elements, nuint length) {
+        public static void Reverse<T>(ref T elements, nuint length) {
             Debug.Assert(length > 1);
 
-            if (!RuntimeHelpers.IsReferenceOrContainsReferences<T>()) {
-                if (sizeof(T) == sizeof(byte)) {
+            if (!TypeHelper.IsReferenceOrContainsReferences<T>()) {
+                if (Unsafe.SizeOf<T>() == sizeof(byte)) {
                     Reverse(ref Unsafe.As<T, byte>(ref elements), length);
                     return;
-                } else if (sizeof(T) == sizeof(char)) {
+                } else if (Unsafe.SizeOf<T>() == sizeof(char)) {
                     Reverse(ref Unsafe.As<T, char>(ref elements), length);
                     return;
-                } else if (sizeof(T) == sizeof(int)) {
+                } else if (Unsafe.SizeOf<T>() == sizeof(int)) {
                     Reverse(ref Unsafe.As<T, int>(ref elements), length);
                     return;
-                } else if (sizeof(T) == sizeof(long)) {
+                } else if (Unsafe.SizeOf<T>() == sizeof(long)) {
                     Reverse(ref Unsafe.As<T, long>(ref elements), length);
                     return;
                 }
@@ -291,13 +304,15 @@ namespace Zyl.ExSpans {
 
             ReverseInner(ref elements, length);
         }
+#if TODO
+#endif // TODO
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void ReverseInner<T>(ref T elements, nuint length) {
             Debug.Assert(length > 1);
 
             ref T first = ref elements;
-            ref T last = ref Unsafe.Subtract(ref Unsafe.Add(ref first, length), 1);
+            ref T last = ref Unsafe.Subtract(ref ExUnsafe.Add(ref first, length), 1);
             do {
                 T temp = first;
                 first = last;
@@ -306,7 +321,6 @@ namespace Zyl.ExSpans {
                 last = ref Unsafe.Subtract(ref last, 1);
             } while (Unsafe.IsAddressLessThan(ref first, ref last));
         }
-#endif // TODO
 
     }
 }
