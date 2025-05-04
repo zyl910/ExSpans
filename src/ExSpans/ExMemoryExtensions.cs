@@ -19,6 +19,7 @@ using System.Text;
 using Zyl.ExSpans.Extensions;
 using Zyl.ExSpans.Impl;
 using Zyl.ExSpans.Reflection;
+using Zyl.VectorTraits;
 
 namespace Zyl.ExSpans {
     /// <summary>
@@ -240,7 +241,6 @@ namespace Zyl.ExSpans {
             ContainsAnyExcept((ReadOnlyExSpan<T>)span, values);
 #endif // NET8_0_OR_GREATER
 
-#if GENERIC_MATH
         /// <inheritdoc cref="ContainsAnyInRange{T}(ReadOnlyExSpan{T}, T, T)"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [OverloadResolutionPriority(-1)]
@@ -252,7 +252,6 @@ namespace Zyl.ExSpans {
         [OverloadResolutionPriority(-1)]
         public static bool ContainsAnyExceptInRange<T>(this ExSpan<T> span, T lowInclusive, T highInclusive) where T : IComparable<T> =>
             ContainsAnyExceptInRange((ReadOnlyExSpan<T>)span, lowInclusive, highInclusive);
-#endif // GENERIC_MATH
 
         /// <summary>
         /// Searches for any occurrence of the specified <paramref name="value0"/> or <paramref name="value1"/>, and returns true if found. If not found, returns false.
@@ -1797,14 +1796,12 @@ namespace Zyl.ExSpans {
         public static bool SequenceEqual<T>(this ExSpan<T> span, ReadOnlyExSpan<T> other) where T : IEquatable<T>? =>
             SequenceEqual((ReadOnlyExSpan<T>)span, other);
 
-#if TODO
         /// <summary>
         /// Determines the relative order of the sequences being compared by comparing the elements using IComparable{T}.CompareTo(T).
         /// </summary>
         [OverloadResolutionPriority(-1)]
         public static int SequenceCompareTo<T>(this ExSpan<T> span, ReadOnlyExSpan<T> other) where T : IComparable<T>? =>
             SequenceCompareTo((ReadOnlyExSpan<T>)span, other);
-#endif // TODO
 
         /// <summary>
         /// Searches for the specified value and returns the index of its first occurrence. If not found, returns -1. Values are compared using IEquatable{T}.Equals(T).
@@ -3032,7 +3029,6 @@ namespace Zyl.ExSpans {
 #endif // INVOKE_SPAN_METHOD && NET6_0_OR_GREATER
         }
 
-#if TODO
         /// <summary>
         /// Determines the relative order of the sequences being compared by comparing the elements using IComparable{T}.CompareTo(T).
         /// </summary>
@@ -3062,7 +3058,7 @@ namespace Zyl.ExSpans {
         /// Determines the relative order of the sequences being compared by comparing the elements using IComparable{T}.CompareTo(T).
         /// </summary>
         public static TSize SequenceCompareTo<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> other, IComparer<T>? comparer = null) {
-            int minLength = Math.Min(span.Length, other.Length);
+            TSize minLength = BitMath.Min(span.Length, other.Length);
             comparer ??= Comparer<T>.Default;
 
             for (int i = 0; i < minLength; i++) {
@@ -3074,7 +3070,6 @@ namespace Zyl.ExSpans {
 
             return span.Length.CompareTo(other.Length);
         }
-#endif // TODO
 
         /// <summary>
         /// Determines whether the specified sequence appears at the start of the span.

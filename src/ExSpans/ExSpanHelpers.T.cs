@@ -1162,17 +1162,18 @@ namespace Zyl.ExSpans {
             return false;
         }
 
-        public static int SequenceCompareTo<T>(ref T first, int firstLength, ref T second, int secondLength)
+        public static int SequenceCompareTo<T>(ref T first, TSize firstLength, ref T second, TSize secondLength)
             where T : IComparable<T>? {
             Debug.Assert(firstLength >= 0);
             Debug.Assert(secondLength >= 0);
 
-            int minLength = firstLength;
+            TSize minLength = firstLength;
             if (minLength > secondLength)
                 minLength = secondLength;
-            for (int i = 0; i < minLength; i++) {
+            for (TSize i = 0; i < minLength; i++) {
                 T lookUp = ExUnsafe.Add(ref second, i);
                 int result = (ExUnsafe.Add(ref first, i)?.CompareTo(lookUp) ?? (((object?)lookUp is null) ? 0 : -1));
+                result.CompareTo(0);
                 if (result != 0)
                     return result;
             }
