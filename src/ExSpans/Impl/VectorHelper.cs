@@ -122,5 +122,54 @@ namespace Zyl.ExSpans.Impl {
 #endif // NET8_0_OR_GREATER
         }
 
+        /// <summary>
+        /// Stores a vector at the given destination.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements in the vector.</typeparam>
+        /// <param name="source">The vector that will be stored.</param>
+        /// <param name="destination">The destination at which source will be stored.</param>
+        /// <exception cref="System.NotSupportedException">The type of <paramref name="source"/> (<typeparamref name="T"/>) is not supported.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void StoreUnsafe<T>(
+#if !NET8_0_OR_GREATER
+            this
+#endif // NET8_0_OR_GREATER
+            Vector<T> source, ref T destination)
+#if VECTOR_WHERE_STRUCT
+                where T : struct
+#endif // VECTOR_WHERE_STRUCT
+                {
+#if NET8_0_OR_GREATER
+            Vector.StoreUnsafe(source, ref destination);
+#else
+            Unsafe.As<T, Vector<T>>(ref destination) = source;
+#endif // NET8_0_OR_GREATER
+        }
+
+        /// <summary>
+        /// Stores a vector at the given destination.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements in the vector.</typeparam>
+        /// <param name="source">The vector that will be stored.</param>
+        /// <param name="destination">The destination to which elementOffset will be added before the vector will be stored.</param>
+        /// <param name="elementOffset">The element offset from destination from which the vector will be stored.</param>
+        [CLSCompliant(false)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void StoreUnsafe<T>(
+#if !NET8_0_OR_GREATER
+            this
+#endif // NET8_0_OR_GREATER
+            Vector<T> source, ref T destination, nuint elementOffset)
+#if VECTOR_WHERE_STRUCT
+                where T : struct
+#endif // VECTOR_WHERE_STRUCT
+                {
+#if NET8_0_OR_GREATER
+            Vector.StoreUnsafe(source, ref destination, elementOffset);
+#else
+            Unsafe.As<T, Vector<T>>(ref ExUnsafe.Add(ref destination, elementOffset)) = source;
+#endif // NET8_0_OR_GREATER
+        }
+
     }
 }
