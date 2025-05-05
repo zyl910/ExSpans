@@ -14,6 +14,7 @@ namespace Zyl.ExSpans {
         internal static string Argument_SpansMustHaveSameLength => "Length of items must be same as length of keys.";
 
         internal static string InvalidOperation_IComparerFailed => "Failed to compare two elements in the array.";
+        internal static string InvalidOperation_SpanOverlappedOperation => "This operation is invalid on overlapping buffers.";
 
         internal static string NotSupported_CannotCallEqualsOnExSpan => "Calls to the Equals method are not supported.";
         internal static string NotSupported_CannotCallGetHashCodeOnExSpan => "Calls to the GetHashCode method are not supported.";

@@ -3823,7 +3823,6 @@ namespace Zyl.ExSpans {
             }
         }
 
-#if TODO
         /// <summary>
         /// Replaces all occurrences of <paramref name="oldValue"/> with <paramref name="newValue"/>.
         /// </summary>
@@ -3832,8 +3831,8 @@ namespace Zyl.ExSpans {
         /// <param name="oldValue">The value to be replaced with <paramref name="newValue"/>.</param>
         /// <param name="newValue">The value to replace all occurrences of <paramref name="oldValue"/>.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe void Replace<T>(this ExSpan<T> span, T oldValue, T newValue) where T : IEquatable<T>? {
-            nuint length = (uint)span.Length;
+        public static void Replace<T>(this ExSpan<T> span, T oldValue, T newValue) where T : IEquatable<T>? {
+            nuint length = (nuint)span.Length;
 
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte)) {
@@ -3889,7 +3888,7 @@ namespace Zyl.ExSpans {
         /// <param name="newValue">The value to replace all occurrences of <paramref name="oldValue"/>.</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe void Replace<T>(this ExSpan<T> span, T oldValue, T newValue, IEqualityComparer<T>? comparer = null) {
+        public static void Replace<T>(this ExSpan<T> span, T oldValue, T newValue, IEqualityComparer<T>? comparer = null) {
             if (TypeHelper.IsValueType<T>() && (comparer is null || comparer == EqualityComparer<T>.Default)) {
                 if (TypeHelper.IsBitwiseEquatable<T>()) {
                     if (Unsafe.SizeOf<T>() == sizeof(byte)) {
@@ -3899,7 +3898,7 @@ namespace Zyl.ExSpans {
                             ref src,
                             ExUnsafe.BitCast<T, byte>(oldValue),
                             ExUnsafe.BitCast<T, byte>(newValue),
-                            (uint)span.Length);
+                            (nuint)span.Length);
                         return;
                     } else if (Unsafe.SizeOf<T>() == sizeof(ushort)) {
                         // Use ushort rather than short, as this avoids a sign-extending move.
@@ -3909,7 +3908,7 @@ namespace Zyl.ExSpans {
                             ref src,
                             ExUnsafe.BitCast<T, ushort>(oldValue),
                             ExUnsafe.BitCast<T, ushort>(newValue),
-                            (uint)span.Length);
+                            (nuint)span.Length);
                         return;
                     } else if (Unsafe.SizeOf<T>() == sizeof(int)) {
                         ref int src = ref Unsafe.As<T, int>(ref ExMemoryMarshal.GetReference(span));
@@ -3918,7 +3917,7 @@ namespace Zyl.ExSpans {
                             ref src,
                             ExUnsafe.BitCast<T, int>(oldValue),
                             ExUnsafe.BitCast<T, int>(newValue),
-                            (uint)span.Length);
+                            (nuint)span.Length);
                         return;
                     } else if (Unsafe.SizeOf<T>() == sizeof(long)) {
                         ref long src = ref Unsafe.As<T, long>(ref ExMemoryMarshal.GetReference(span));
@@ -3927,14 +3926,14 @@ namespace Zyl.ExSpans {
                             ref src,
                             ExUnsafe.BitCast<T, long>(oldValue),
                             ExUnsafe.BitCast<T, long>(newValue),
-                            (uint)span.Length);
+                            (nuint)span.Length);
                         return;
                     }
                 }
 
                 ReplaceDefaultComparer(span, oldValue, newValue);
                 static void ReplaceDefaultComparer(ExSpan<T> span, T oldValue, T newValue) {
-                    for (int i = 0; i < span.Length; i++) {
+                    for (TSize i = 0; i < span.Length; i++) {
                         if (EqualityComparer<T>.Default.Equals(span[i], oldValue)) {
                             span[i] = newValue;
                         }
@@ -3944,7 +3943,7 @@ namespace Zyl.ExSpans {
                 ReplaceComparer(span, oldValue, newValue, comparer);
                 static void ReplaceComparer(ExSpan<T> span, T oldValue, T newValue, IEqualityComparer<T>? comparer) {
                     comparer ??= EqualityComparer<T>.Default;
-                    for (int i = 0; i < span.Length; i++) {
+                    for (TSize i = 0; i < span.Length; i++) {
                         if (comparer.Equals(span[i], oldValue)) {
                             span[i] = newValue;
                         }
@@ -3964,13 +3963,13 @@ namespace Zyl.ExSpans {
         /// <exception cref="ArgumentException">The <paramref name="destination"/> ExSpan was shorter than the <paramref name="source"/> span.</exception>
         /// <exception cref="ArgumentException">The <paramref name="source"/> and <paramref name="destination"/> were overlapping but not referring to the same starting location.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe void Replace<T>(this ReadOnlyExSpan<T> source, ExSpan<T> destination, T oldValue, T newValue) where T : IEquatable<T>? {
-            nuint length = (uint)source.Length;
+        public static void Replace<T>(this ReadOnlyExSpan<T> source, ExSpan<T> destination, T oldValue, T newValue) where T : IEquatable<T>? {
+            nuint length = (nuint)source.Length;
             if (length == 0) {
                 return;
             }
 
-            if (length > (uint)destination.Length) {
+            if (length > (nuint)destination.Length) {
                 ThrowHelper.ThrowArgumentException_DestinationTooShort();
             }
 
@@ -3981,7 +3980,7 @@ namespace Zyl.ExSpans {
             if (byteOffset != 0 &&
                 ((nuint)byteOffset < (nuint)((nint)source.Length * Unsafe.SizeOf<T>()) ||
                  (nuint)byteOffset > (nuint)(-((nint)destination.Length * Unsafe.SizeOf<T>())))) {
-                ThrowHelper.ThrowArgumentException(ExceptionResource.InvalidOperation_ExSpanOverlappedOperation);
+                ThrowHelper.ThrowArgumentException(ExceptionResource.InvalidOperation_SpanOverlappedOperation);
             }
 
             if (TypeHelper.IsBitwiseEquatable<T>()) {
@@ -4036,13 +4035,13 @@ namespace Zyl.ExSpans {
         /// <exception cref="ArgumentException">The <paramref name="destination"/> ExSpan was shorter than the <paramref name="source"/> span.</exception>
         /// <exception cref="ArgumentException">The <paramref name="source"/> and <paramref name="destination"/> were overlapping but not referring to the same starting location.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe void Replace<T>(this ReadOnlyExSpan<T> source, ExSpan<T> destination, T oldValue, T newValue, IEqualityComparer<T>? comparer = null) {
-            nuint length = (uint)source.Length;
+        public static void Replace<T>(this ReadOnlyExSpan<T> source, ExSpan<T> destination, T oldValue, T newValue, IEqualityComparer<T>? comparer = null) {
+            nuint length = (nuint)source.Length;
             if (length == 0) {
                 return;
             }
 
-            if (length > (uint)destination.Length) {
+            if (length > (nuint)destination.Length) {
                 ThrowHelper.ThrowArgumentException_DestinationTooShort();
             }
 
@@ -4053,7 +4052,7 @@ namespace Zyl.ExSpans {
             if (byteOffset != 0 &&
                 ((nuint)byteOffset < (nuint)((nint)source.Length * Unsafe.SizeOf<T>()) ||
                  (nuint)byteOffset > (nuint)(-((nint)destination.Length * Unsafe.SizeOf<T>())))) {
-                ThrowHelper.ThrowArgumentException(ExceptionResource.InvalidOperation_ExSpanOverlappedOperation);
+                ThrowHelper.ThrowArgumentException(ExceptionResource.InvalidOperation_SpanOverlappedOperation);
             }
 
             if (TypeHelper.IsValueType<T>() && (comparer is null || comparer == EqualityComparer<T>.Default)) {
@@ -4096,7 +4095,7 @@ namespace Zyl.ExSpans {
 
                 ReplaceDefaultComparer(source, destination, oldValue, newValue);
                 static void ReplaceDefaultComparer(ReadOnlyExSpan<T> source, ExSpan<T> destination, T oldValue, T newValue) {
-                    for (int i = 0; i < source.Length; i++) {
+                    for (TSize i = 0; i < source.Length; i++) {
                         destination[i] = EqualityComparer<T>.Default.Equals(source[i], oldValue) ? newValue : source[i];
                     }
                 }
@@ -4104,13 +4103,14 @@ namespace Zyl.ExSpans {
                 ReplaceComparer(source, destination, oldValue, newValue, comparer);
                 static void ReplaceComparer(ReadOnlyExSpan<T> source, ExSpan<T> destination, T oldValue, T newValue, IEqualityComparer<T>? comparer) {
                     comparer ??= EqualityComparer<T>.Default;
-                    for (int i = 0; i < source.Length; i++) {
+                    for (TSize i = 0; i < source.Length; i++) {
                         destination[i] = comparer.Equals(source[i], oldValue) ? newValue : source[i];
                     }
                 }
             }
         }
 
+#if TODO
         /// <summary>
         /// Copies <paramref name="source"/> to <paramref name="destination"/>, replacing all occurrences of any of the
         /// elements in <paramref name="values"/> with <paramref name="newValue"/>.
@@ -4132,7 +4132,7 @@ namespace Zyl.ExSpans {
 
             if (!Unsafe.AreSame(ref source._reference, ref destination._reference) &&
                 source.Overlaps(destination)) {
-                ThrowHelper.ThrowArgumentException(ExceptionResource.InvalidOperation_ExSpanOverlappedOperation);
+                ThrowHelper.ThrowArgumentException(ExceptionResource.InvalidOperation_SpanOverlappedOperation);
             }
 
             source.CopyTo(destination);
@@ -4177,7 +4177,7 @@ namespace Zyl.ExSpans {
 
             if (!Unsafe.AreSame(ref source._reference, ref destination._reference) &&
                 source.Overlaps(destination)) {
-                ThrowHelper.ThrowArgumentException(ExceptionResource.InvalidOperation_ExSpanOverlappedOperation);
+                ThrowHelper.ThrowArgumentException(ExceptionResource.InvalidOperation_SpanOverlappedOperation);
             }
 
             source.CopyTo(destination);

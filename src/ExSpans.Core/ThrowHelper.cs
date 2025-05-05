@@ -226,8 +226,10 @@ namespace Zyl.ExSpans {
                     return SR.Argument_AlignmentMustBePow2;
                 case ExceptionResource.ArgumentOutOfRange_NotGreaterThanBufferLength:
                     return SR.ArgumentOutOfRange_NotGreaterThanBufferLength;
+#endif // TODO
                 case ExceptionResource.InvalidOperation_SpanOverlappedOperation:
                     return SR.InvalidOperation_SpanOverlappedOperation;
+#if TODO
                 case ExceptionResource.InvalidOperation_TimeProviderNullLocalTimeZone:
                     return SR.InvalidOperation_TimeProviderNullLocalTimeZone;
                 case ExceptionResource.InvalidOperation_TimeProviderInvalidTimestampFrequency:
