@@ -10,5 +10,8 @@ global using MyCLSCompliantAttribute = Zyl.ExSpans.Impl.FakeCLSCompliantAttribut
 global using TUSize = nuint; //System.UIntPtr;
 
 using System;
+using System.Runtime.CompilerServices;
 
 [assembly: CLSCompliant(true)]
+
+[assembly: InternalsVisibleTo("ExSpans")]
