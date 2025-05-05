@@ -1095,13 +1095,94 @@ namespace Zyl.ExSpans {
             return firstLength - secondLength;
         }
 
-#if TODO
         public static nuint CommonPrefixLength(ref byte first, ref byte second, nuint length) {
             nuint i;
+            if (false) {
+#if NET8_0_OR_GREATER
+            } else if (Vector512.IsHardwareAccelerated && length >= (uint)Vector512<byte>.Count && Vector512<byte>.Count >= Vector<byte>.Count) {
+#endif // NET8_0_OR_GREATER
+            } else if (Vector.IsHardwareAccelerated && length >= (uint)Vector<byte>.Count && Vectors.ExtractMostSignificantBits_AcceleratedTypes.HasFlag(TypeCodeFlags.Byte)) {
+                ulong mask;
+                nuint lengthToExamine = length - (nuint)Vector<byte>.Count;
+
+                Vector<byte> maskVec;
+                i = 0;
+
+                while (i < lengthToExamine) {
+                    maskVec = Vector.Equals(
+                        VectorHelper.LoadUnsafe(ref first, i),
+                        VectorHelper.LoadUnsafe(ref second, i));
+
+                    mask = maskVec.ExtractMostSignificantBits();
+                    if (mask != 0xFFFF) {
+                        goto Found;
+                    }
+
+                    i += (nuint)Vector<byte>.Count;
+                }
+
+                // Do final compare as Vector<byte>.Count from end rather than start
+                i = lengthToExamine;
+                maskVec = Vector.Equals(
+                    VectorHelper.LoadUnsafe(ref first, i),
+                    VectorHelper.LoadUnsafe(ref second, i));
+
+                mask = maskVec.ExtractMostSignificantBits();
+                if (mask != 0xFFFF) {
+                    goto Found;
+                }
+
+                return length;
+
+            Found:
+                mask = ~mask;
+                return i + (uint)MathBitOperations.TrailingZeroCount(mask);
+#if NET7_0_OR_GREATER
+            } else if (Vector256.IsHardwareAccelerated && length >= (uint)Vector256<byte>.Count) {
+            } else if (Vector128.IsHardwareAccelerated && length >= (uint)Vector128<byte>.Count) {
+                Debug.Assert(length >= (uint)Vector128<byte>.Count);
+
+                uint mask;
+                nuint lengthToExamine = length - (nuint)Vector128<byte>.Count;
+
+                Vector128<byte> maskVec;
+                i = 0;
+
+                while (i < lengthToExamine) {
+                    maskVec = Vector128.Equals(
+                        Vector128.LoadUnsafe(ref first, i),
+                        Vector128.LoadUnsafe(ref second, i));
+
+                    mask = maskVec.ExtractMostSignificantBits();
+                    if (mask != 0xFFFF) {
+                        goto Found;
+                    }
+
+                    i += (nuint)Vector128<byte>.Count;
+                }
+
+                // Do final compare as Vector128<byte>.Count from end rather than start
+                i = lengthToExamine;
+                maskVec = Vector128.Equals(
+                    Vector128.LoadUnsafe(ref first, i),
+                    Vector128.LoadUnsafe(ref second, i));
+
+                mask = maskVec.ExtractMostSignificantBits();
+                if (mask != 0xFFFF) {
+                    goto Found;
+                }
+
+                return length;
+
+            Found:
+                mask = ~mask;
+                return i + uint.TrailingZeroCount(mask);
+#endif // NET7_0_OR_GREATER
+            }
 
             // It is ordered this way to match the default branch predictor rules, to don't have too much
             // overhead for short input-lengths.
-            if (!Vector128.IsHardwareAccelerated || length < (nuint)Vector128<byte>.Count) {
+            if (true) {
                 // To have kind of fast path for small inputs, we handle as much elements needed
                 // so that either we are done or can use the unrolled loop below.
                 i = length % 4;
@@ -1123,10 +1204,10 @@ namespace Zyl.ExSpans {
                 }
 
                 for (; (nint)i <= (nint)length - 4; i += 4) {
-                    if (Unsafe.Add(ref first, i + 0) != Unsafe.Add(ref second, i + 0)) goto Found0;
-                    if (Unsafe.Add(ref first, i + 1) != Unsafe.Add(ref second, i + 1)) goto Found1;
-                    if (Unsafe.Add(ref first, i + 2) != Unsafe.Add(ref second, i + 2)) goto Found2;
-                    if (Unsafe.Add(ref first, i + 3) != Unsafe.Add(ref second, i + 3)) goto Found3;
+                    if (ExUnsafe.Add(ref first, i + 0) != ExUnsafe.Add(ref second, i + 0)) goto Found0;
+                    if (ExUnsafe.Add(ref first, i + 1) != ExUnsafe.Add(ref second, i + 1)) goto Found1;
+                    if (ExUnsafe.Add(ref first, i + 2) != ExUnsafe.Add(ref second, i + 2)) goto Found2;
+                    if (ExUnsafe.Add(ref first, i + 3) != ExUnsafe.Add(ref second, i + 3)) goto Found3;
                 }
 
                 return length;
@@ -1139,46 +1220,7 @@ namespace Zyl.ExSpans {
             Found3:
                 return i + 3;
             }
-
-            Debug.Assert(length >= (uint)Vector128<byte>.Count);
-
-            uint mask;
-            nuint lengthToExamine = length - (nuint)Vector128<byte>.Count;
-
-            Vector128<byte> maskVec;
-            i = 0;
-
-            while (i < lengthToExamine) {
-                maskVec = Vector128.Equals(
-                    Vector128.LoadUnsafe(ref first, i),
-                    Vector128.LoadUnsafe(ref second, i));
-
-                mask = maskVec.ExtractMostSignificantBits();
-                if (mask != 0xFFFF) {
-                    goto Found;
-                }
-
-                i += (nuint)Vector128<byte>.Count;
-            }
-
-            // Do final compare as Vector128<byte>.Count from end rather than start
-            i = lengthToExamine;
-            maskVec = Vector128.Equals(
-                Vector128.LoadUnsafe(ref first, i),
-                Vector128.LoadUnsafe(ref second, i));
-
-            mask = maskVec.ExtractMostSignificantBits();
-            if (mask != 0xFFFF) {
-                goto Found;
-            }
-
-            return length;
-
-        Found:
-            mask = ~mask;
-            return i + uint.TrailingZeroCount(mask);
         }
-#endif // TODO
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static int LocateFirstFoundByte(ulong match)
