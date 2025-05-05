@@ -4110,7 +4110,7 @@ namespace Zyl.ExSpans {
             }
         }
 
-#if TODO
+#if NET8_0_OR_GREATER && TODO // [TODO why] SearchValues.IndexOfAny is internal
         /// <summary>
         /// Copies <paramref name="source"/> to <paramref name="destination"/>, replacing all occurrences of any of the
         /// elements in <paramref name="values"/> with <paramref name="newValue"/>.
@@ -4199,6 +4199,7 @@ namespace Zyl.ExSpans {
                 ExSpan = span.Slice(pos + 1);
             }
         }
+#endif // NET8_0_OR_GREATER
 
         /// <summary>Finds the length of any common prefix shared between <paramref name="span"/> and <paramref name="other"/>.</summary>
         /// <typeparam name="T">The type of the elements in the spans.</typeparam>
@@ -4206,7 +4207,7 @@ namespace Zyl.ExSpans {
         /// <param name="other">The second sequence to compare.</param>
         /// <returns>The length of the common prefix shared by the two ExSpans.  If there's no shared prefix, 0 is returned.</returns>
         [OverloadResolutionPriority(-1)]
-        public static int CommonPrefixLength<T>(this ExSpan<T> span, ReadOnlyExSpan<T> other) =>
+        public static TSize CommonPrefixLength<T>(this ExSpan<T> span, ReadOnlyExSpan<T> other) =>
             CommonPrefixLength((ReadOnlyExSpan<T>)span, other);
 
         /// <summary>Finds the length of any common prefix shared between <paramref name="span"/> and <paramref name="other"/>.</summary>
@@ -4216,7 +4217,7 @@ namespace Zyl.ExSpans {
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         /// <returns>The length of the common prefix shared by the two ExSpans.  If there's no shared prefix, 0 is returned.</returns>
         [OverloadResolutionPriority(-1)]
-        public static int CommonPrefixLength<T>(this ExSpan<T> span, ReadOnlyExSpan<T> other, IEqualityComparer<T>? comparer) =>
+        public static TSize CommonPrefixLength<T>(this ExSpan<T> span, ReadOnlyExSpan<T> other, IEqualityComparer<T>? comparer) =>
             CommonPrefixLength((ReadOnlyExSpan<T>)span, other, comparer);
 
         /// <summary>Finds the length of any common prefix shared between <paramref name="span"/> and <paramref name="other"/>.</summary>
@@ -4226,7 +4227,7 @@ namespace Zyl.ExSpans {
         /// <returns>The length of the common prefix shared by the two ExSpans.  If there's no shared prefix, 0 is returned.</returns>
         public static TSize CommonPrefixLength<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> other) {
             if (TypeHelper.IsBitwiseEquatable<T>()) {
-                nuint length = Math.Min((nuint)(uint)span.Length, (nuint)(uint)other.Length);
+                nuint length = BitMath.Min((nuint)span.Length, (nuint)other.Length);
                 nuint size = (uint)Unsafe.SizeOf<T>();
                 nuint index = ExSpanHelpers.CommonPrefixLength(
                     ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
@@ -4249,7 +4250,7 @@ namespace Zyl.ExSpans {
 
             // Shrink one of the spans if necessary to ensure they're both the same length. We can then iterate until
             // the Length of one of them and at least have bounds checks removed from that one.
-            SliceLongerExSpanToMatchShorterLength(ref span, ref other);
+            SliceLongerSpanToMatchShorterLength(ref span, ref other);
 
             // Find the first element pairwise that is not equal, and return its index as the length
             // of the sequence before it that matches.
@@ -4268,7 +4269,7 @@ namespace Zyl.ExSpans {
         /// <param name="other">The second sequence to compare.</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         /// <returns>The length of the common prefix shared by the two ExSpans.  If there's no shared prefix, 0 is returned.</returns>
-        public static int CommonPrefixLength<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> other, IEqualityComparer<T>? comparer) {
+        public static TSize CommonPrefixLength<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> other, IEqualityComparer<T>? comparer) {
             // If the comparer is null or the default, and T is a value type, we want to use EqualityComparer<T>.Default.Equals
             // directly to enable devirtualization.  The non-comparer overload already does so, so just use it.
             if (TypeHelper.IsValueType<T>() && (comparer is null || comparer == EqualityComparer<T>.Default)) {
@@ -4277,11 +4278,11 @@ namespace Zyl.ExSpans {
 
             // Shrink one of the spans if necessary to ensure they're both the same length. We can then iterate until
             // the Length of one of them and at least have bounds checks removed from that one.
-            SliceLongerExSpanToMatchShorterLength(ref span, ref other);
+            SliceLongerSpanToMatchShorterLength(ref span, ref other);
 
             // Ensure we have a comparer, then compare the spans.
             comparer ??= EqualityComparer<T>.Default;
-            for (int i = 0; i < span.Length; i++) {
+            for (TSize i = 0; i < span.Length; i++) {
                 if (!comparer.Equals(span[i], other[i])) {
                     return i;
                 }
@@ -4292,15 +4293,16 @@ namespace Zyl.ExSpans {
 
         /// <summary>Determines if one ExSpan is longer than the other, and slices the longer one to match the length of the shorter.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void SliceLongerExSpanToMatchShorterLength<T>(ref ReadOnlyExSpan<T> span, ref ReadOnlyExSpan<T> other) {
+        private static void SliceLongerSpanToMatchShorterLength<T>(ref ReadOnlyExSpan<T> span, ref ReadOnlyExSpan<T> other) {
             if (other.Length > span.Length) {
                 other = other.Slice(0, span.Length);
             } else if (span.Length > other.Length) {
-                ExSpan = span.Slice(0, other.Length);
+                span = span.Slice(0, other.Length);
             }
             Debug.Assert(span.Length == other.Length);
         }
 
+#if TODO
         /// <summary>
         /// Returns a type that allows for enumeration of each element within a split ExSpan
         /// using the provided separator character.
