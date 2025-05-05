@@ -4361,7 +4361,7 @@ namespace Zyl.ExSpans {
             new ExSpanSplitEnumerator<T>(source, separators);
 #endif // NET8_0_OR_GREATER
 
-#if TODO
+#if NET8_0_OR_GREATER && TODO // [TODO why] NRange need System.Numerics.Tensors.dll
         /// <summary>
         /// Parses the source <see cref="ReadOnlyExSpan{Char}"/> for the specified <paramref name="separator"/>, populating the <paramref name="destination"/> ExSpan
         /// with <see cref="Range"/> instances representing the regions between the separators.
@@ -4661,6 +4661,7 @@ namespace Zyl.ExSpans {
 
             return (startInclusive, endExclusive);
         }
+#endif // NET8_0_OR_GREATER
 
         /// <summary>Counts the number of times the specified <paramref name="value"/> occurs in the <paramref name="span"/>.</summary>
         /// <typeparam name="T">The element type of the span.</typeparam>
@@ -4668,7 +4669,7 @@ namespace Zyl.ExSpans {
         /// <param name="value">The value for which to search.</param>
         /// <returns>The number of times <paramref name="value"/> was found in the <paramref name="span"/>.</returns>
         [OverloadResolutionPriority(-1)]
-        public static int Count<T>(this ExSpan<T> span, T value) where T : IEquatable<T>? =>
+        public static TSize Count<T>(this ExSpan<T> span, T value) where T : IEquatable<T>? =>
             Count((ReadOnlyExSpan<T>)span, value);
 
         /// <summary>Counts the number of times the specified <paramref name="value"/> occurs in the <paramref name="span"/>.</summary>
@@ -4742,9 +4743,9 @@ namespace Zyl.ExSpans {
                 }
 
                 return CountDefaultComparer(span, value);
-                static int CountDefaultComparer(ReadOnlyExSpan<T> span, T value) {
-                    int count = 0;
-                    for (int i = 0; i < span.Length; i++) {
+                static TSize CountDefaultComparer(ReadOnlyExSpan<T> span, T value) {
+                    TSize count = 0;
+                    for (TSize i = 0; i < span.Length; i++) {
                         if (EqualityComparer<T>.Default.Equals(span[i], value)) {
                             count++;
                         }
@@ -4754,11 +4755,11 @@ namespace Zyl.ExSpans {
                 }
             } else {
                 return CountComparer(span, value, comparer);
-                static int CountComparer(ReadOnlyExSpan<T> span, T value, IEqualityComparer<T>? comparer) {
+                static TSize CountComparer(ReadOnlyExSpan<T> span, T value, IEqualityComparer<T>? comparer) {
                     comparer ??= EqualityComparer<T>.Default;
 
-                    int count = 0;
-                    for (int i = 0; i < span.Length; i++) {
+                    TSize count = 0;
+                    for (TSize i = 0; i < span.Length; i++) {
                         if (comparer.Equals(span[i], value)) {
                             count++;
                         }
@@ -4775,7 +4776,7 @@ namespace Zyl.ExSpans {
         /// <param name="value">The value for which to search.</param>
         /// <returns>The number of times <paramref name="value"/> was found in the <paramref name="span"/>.</returns>
         [OverloadResolutionPriority(-1)]
-        public static int Count<T>(this ExSpan<T> span, ReadOnlyExSpan<T> value) where T : IEquatable<T>? =>
+        public static TSize Count<T>(this ExSpan<T> span, ReadOnlyExSpan<T> value) where T : IEquatable<T>? =>
             Count((ReadOnlyExSpan<T>)span, value);
 
         /// <summary>Counts the number of times the specified <paramref name="value"/> occurs in the <paramref name="span"/>.</summary>
@@ -4783,7 +4784,7 @@ namespace Zyl.ExSpans {
         /// <param name="span">The span to search.</param>
         /// <param name="value">The value for which to search.</param>
         /// <returns>The number of times <paramref name="value"/> was found in the <paramref name="span"/>.</returns>
-        public static int Count<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> value) where T : IEquatable<T>? {
+        public static TSize Count<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> value) where T : IEquatable<T>? {
             switch (value.Length) {
                 case 0:
                     return 0;
@@ -4792,11 +4793,11 @@ namespace Zyl.ExSpans {
                     return Count(span, value[0]);
 
                 default:
-                    int count = 0;
+                    TSize count = 0;
 
-                    int pos;
+                    TSize pos;
                     while ((pos = span.IndexOf(value)) >= 0) {
-                        ExSpan = span.Slice(pos + value.Length);
+                        span = span.Slice(pos + value.Length);
                         count++;
                     }
 
@@ -4810,7 +4811,7 @@ namespace Zyl.ExSpans {
         /// <param name="value">The value for which to search.</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         /// <returns>The number of times <paramref name="value"/> was found in the <paramref name="span"/>.</returns>
-        public static int Count<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> value, IEqualityComparer<T>? comparer = null) {
+        public static TSize Count<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> value, IEqualityComparer<T>? comparer = null) {
             switch (value.Length) {
                 case 0:
                     return 0;
@@ -4819,11 +4820,11 @@ namespace Zyl.ExSpans {
                     return Count(span, value[0], comparer);
 
                 default:
-                    int count = 0;
+                    TSize count = 0;
 
-                    int pos;
+                    TSize pos;
                     while ((pos = span.IndexOf(value, comparer)) >= 0) {
-                        ExSpan = span.Slice(pos + value.Length);
+                        span = span.Slice(pos + value.Length);
                         count++;
                     }
 
@@ -4831,6 +4832,7 @@ namespace Zyl.ExSpans {
             }
         }
 
+#if TODO
         /// <summary>Counts the number of times any of the specified <paramref name="values"/> occurs in the <paramref name="span"/>.</summary>
         /// <typeparam name="T">The element type of the span.</typeparam>
         /// <param name="span">The span to search.</param>
