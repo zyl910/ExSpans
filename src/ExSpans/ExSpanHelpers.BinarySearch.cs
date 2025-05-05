@@ -1,28 +1,38 @@
-﻿using System;
+﻿#if NET9_0_OR_GREATER
+#define ALLOWS_REF_STRUCT // C# 13 - ref struct interface; allows ref struct. https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-13#ref-struct-interfaces
+#endif // NET9_0_OR_GREATER
+
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Zyl.ExSpans {
     partial class ExSpanHelpers {
 
-#if TODO
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int BinarySearch<T, TComparable>(
-            ReadOnlySpan<T> span, TComparable comparable)
-            where TComparable : IComparable<T>, allows ref struct {
+        public static TSize BinarySearch<T, TComparable>(
+            ReadOnlyExSpan<T> span, TComparable comparable)
+            where TComparable : IComparable<T>
+#if ALLOWS_REF_STRUCT
+            , allows ref struct
+#endif
+            {
             if (comparable == null)
-                ThrowHelper.ThrowArgumentNullException(ExceptionArgument.comparable);
+                throw new ArgumentNullException(nameof(comparable));
 
-            return BinarySearch(ref MemoryMarshal.GetReference(span), span.Length, comparable);
+            return BinarySearch(ref ExMemoryMarshal.GetReference(span), span.Length, comparable);
         }
 
-        public static int BinarySearch<T, TComparable>(
-            ref T spanStart, int length, TComparable comparable)
-            where TComparable : IComparable<T>, allows ref struct {
-            int lo = 0;
-            int hi = length - 1;
+        public static TSize BinarySearch<T, TComparable>(
+            ref T spanStart, TSize length, TComparable comparable)
+            where TComparable : IComparable<T>
+#if ALLOWS_REF_STRUCT
+            , allows ref struct
+#endif
+            {
+            TSize lo = 0;
+            TSize hi = length - 1;
             // If length == 0, hi == -1, and loop will not be entered
             while (lo <= hi) {
                 // PERF: `lo` or `hi` will never be negative inside the loop,
@@ -31,7 +41,7 @@ namespace Zyl.ExSpans {
                 //       and thus cannot overflow an uint.
                 //       Saves one subtraction per loop compared to
                 //       `int i = lo + ((hi - lo) >> 1);`
-                int i = (int)(((uint)hi + (uint)lo) >> 1);
+                TSize i = (TSize)(((TUSize)hi + (TUSize)lo) >> 1);
 
                 int c = comparable.CompareTo(Unsafe.Add(ref spanStart, i));
                 if (c == 0) {
@@ -50,8 +60,16 @@ namespace Zyl.ExSpans {
         }
 
         // Helper to allow sharing all code via IComparable<T> inlineable
-        internal readonly ref struct ComparerComparable<T, TComparer> : IComparable<T>
-            where TComparer : IComparer<T>, allows ref struct {
+        internal readonly
+#if ALLOWS_REF_STRUCT
+            ref
+#endif
+            struct ComparerComparable<T, TComparer> : IComparable<T>
+            where TComparer : IComparer<T>
+#if ALLOWS_REF_STRUCT
+            , allows ref struct
+#endif
+            {
             private readonly T _value;
             private readonly TComparer _comparer;
 
@@ -61,9 +79,8 @@ namespace Zyl.ExSpans {
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public int CompareTo(T? other) => _comparer.Compare(_value, other);
+            public int CompareTo(T? other) => _comparer.Compare(_value, other!);
         }
-#endif // TODO
 
     }
 }
