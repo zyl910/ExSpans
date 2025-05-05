@@ -9,6 +9,13 @@ namespace Zyl.ExSpans.Impl {
     /// </summary>
     public static class ArrayHelper {
 
+        /// <summary>
+        /// This is the threshold where Introspective sort switches to Insertion sort.
+        /// Empirically, 16 seems to speed up most cases without slowing down others, at least for integers.
+        /// Large value types may benefit from a smaller number.
+        /// </summary>
+        internal const int IntrosortSizeThreshold = 16; // Array.IntrosortSizeThreshold
+
 #if NETSTANDARD1_3_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET46_OR_GREATER
 #else
         private static class EmptyArray<T> {

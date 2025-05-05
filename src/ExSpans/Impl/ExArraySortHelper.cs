@@ -4,14 +4,18 @@ using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Zyl.VectorTraits.Numerics;
 
 #pragma warning disable CA1822
 
 namespace Zyl.ExSpans.Impl {
+#if NET5_0_OR_GREATER
+#else
+    using Half = float;
+#endif // NET5_0_OR_GREATER
 
     #region ExArraySortHelper for single arrays
 
-#if TODO
     internal sealed partial class ExArraySortHelper<T> {
         #region IExArraySortHelper<T> Members
 
@@ -45,7 +49,7 @@ namespace Zyl.ExSpans.Impl {
 
             // Add a try block here to detect bogus comparisons
             try {
-                IntrospectiveSort(keys, comparer);
+                IntrospectiveSort(keys, comparer!);
             } catch (IndexOutOfRangeException) {
                 ThrowHelper.ThrowArgumentException_BadComparer(comparer);
             } catch (Exception e) {
@@ -55,6 +59,7 @@ namespace Zyl.ExSpans.Impl {
 
         internal static int InternalBinarySearch(T[] array, int index, int length, T value, IComparer<T> comparer) {
             Debug.Assert(array != null, "Check the arguments in the caller!");
+            if (null==array) throw new ArgumentNullException(nameof(array));
             Debug.Assert(index >= 0 && length >= 0 && (array.Length - index >= length), "Check the arguments in the caller!");
 
             int lo = index;
@@ -97,7 +102,7 @@ namespace Zyl.ExSpans.Impl {
             Debug.Assert(comparer != null);
 
             if (keys.Length > 1) {
-                IntroSort(keys, 2 * (BitOperations.Log2((uint)keys.Length) + 1), comparer);
+                IntroSort(keys, 2 * (MathBitOperations.Log2((uint)keys.Length) + 1), comparer!);
             }
         }
 
@@ -108,10 +113,11 @@ namespace Zyl.ExSpans.Impl {
             Debug.Assert(!keys.IsEmpty);
             Debug.Assert(depthLimit >= 0);
             Debug.Assert(comparer != null);
+            if (null == comparer) throw new ArgumentNullException(nameof(comparer));
 
             int partitionSize = keys.Length;
             while (partitionSize > 1) {
-                if (partitionSize <= Array.IntrosortSizeThreshold) {
+                if (partitionSize <= ArrayHelper.IntrosortSizeThreshold) {
 
                     if (partitionSize == 2) {
                         SwapIfGreater(keys, comparer, 0, 1);
@@ -138,14 +144,15 @@ namespace Zyl.ExSpans.Impl {
                 int p = PickPivotAndPartition(keys.Slice(0, partitionSize), comparer);
 
                 // Note we've already partitioned around the pivot and do not have to move the pivot again.
-                IntroSort(keys[(p + 1)..partitionSize], depthLimit, comparer);
+                IntroSort(keys.Slice(p + 1, partitionSize), depthLimit, comparer);
                 partitionSize = p;
             }
         }
 
         private static int PickPivotAndPartition(Span<T> keys, Comparison<T> comparer) {
-            Debug.Assert(keys.Length >= Array.IntrosortSizeThreshold);
+            Debug.Assert(keys.Length >= ArrayHelper.IntrosortSizeThreshold);
             Debug.Assert(comparer != null);
+            if (null == comparer) throw new ArgumentNullException(nameof(comparer));
 
             int hi = keys.Length - 1;
 
@@ -180,6 +187,7 @@ namespace Zyl.ExSpans.Impl {
 
         private static void HeapSort(Span<T> keys, Comparison<T> comparer) {
             Debug.Assert(comparer != null);
+            if (null == comparer) throw new ArgumentNullException(nameof(comparer));
             Debug.Assert(!keys.IsEmpty);
 
             int n = keys.Length;
@@ -195,6 +203,7 @@ namespace Zyl.ExSpans.Impl {
 
         private static void DownHeap(Span<T> keys, int i, int n, Comparison<T> comparer) {
             Debug.Assert(comparer != null);
+            if (null == comparer) throw new ArgumentNullException(nameof(comparer));
 
             T d = keys[i - 1];
             while (i <= n >> 1) {
@@ -251,7 +260,7 @@ namespace Zyl.ExSpans.Impl {
                             keys = keys.Slice(nanLeft);
                         }
 
-                        IntroSort(keys, 2 * (BitOperations.Log2((uint)keys.Length) + 1));
+                        IntroSort(keys, 2 * (MathBitOperations.Log2((uint)keys.Length) + 1));
                     }
                 } else {
                     ExArraySortHelper<T>.IntrospectiveSort(keys, comparer.Compare);
@@ -265,6 +274,7 @@ namespace Zyl.ExSpans.Impl {
 
         public int BinarySearch(T[] array, int index, int length, T value, IComparer<T>? comparer) {
             Debug.Assert(array != null, "Check the arguments in the caller!");
+            if (null == array) throw new ArgumentNullException(nameof(array));
             Debug.Assert(index >= 0 && length >= 0 && (array.Length - index >= length), "Check the arguments in the caller!");
 
             try {
@@ -293,7 +303,7 @@ namespace Zyl.ExSpans.Impl {
                 if (array[i] == null) {
                     order = (value == null) ? 0 : -1;
                 } else {
-                    order = array[i].CompareTo(value);
+                    order = array[i].CompareTo(value!);
                 }
 
                 if (order == 0) {
@@ -337,7 +347,7 @@ namespace Zyl.ExSpans.Impl {
 
             int partitionSize = keys.Length;
             while (partitionSize > 1) {
-                if (partitionSize <= Array.IntrosortSizeThreshold) {
+                if (partitionSize <= ArrayHelper.IntrosortSizeThreshold) {
                     if (partitionSize == 2) {
                         SwapIfGreater(ref keys[0], ref keys[1]);
                         return;
@@ -367,13 +377,13 @@ namespace Zyl.ExSpans.Impl {
                 int p = PickPivotAndPartition(keys.Slice(0, partitionSize));
 
                 // Note we've already partitioned around the pivot and do not have to move the pivot again.
-                IntroSort(keys[(p + 1)..partitionSize], depthLimit);
+                IntroSort(keys.Slice(p + 1, partitionSize), depthLimit);
                 partitionSize = p;
             }
         }
 
-        private static unsafe int PickPivotAndPartition(Span<T> keys) {
-            Debug.Assert(keys.Length >= Array.IntrosortSizeThreshold);
+        private static int PickPivotAndPartition(Span<T> keys) {
+            Debug.Assert(keys.Length >= ArrayHelper.IntrosortSizeThreshold);
 
             // Use median-of-three to select a pivot. Grab a reference to the 0th, Length-1th, and Length/2th elements, and sort them.
             ref T zeroRef = ref MemoryMarshal.GetReference(keys);
@@ -411,7 +421,7 @@ namespace Zyl.ExSpans.Impl {
                 Swap(ref leftRef, ref nextToLastRef);
             }
 
-            return (int)((nint)Unsafe.ByteOffset(ref zeroRef, ref leftRef) / sizeof(T));
+            return (int)((nint)Unsafe.ByteOffset(ref zeroRef, ref leftRef) / Unsafe.SizeOf<T>());
         }
 
         private static void HeapSort(Span<T> keys) {
@@ -504,7 +514,6 @@ namespace Zyl.ExSpans.Impl {
             return left.CompareTo(right) > 0 ? true : false;
         }
     }
-#endif // TODO
 
     #endregion
 
@@ -571,7 +580,7 @@ namespace Zyl.ExSpans.Impl {
 
             int partitionSize = keys.Length;
             while (partitionSize > 1) {
-                if (partitionSize <= Array.IntrosortSizeThreshold) {
+                if (partitionSize <= ArrayHelper.IntrosortSizeThreshold) {
 
                     if (partitionSize == 2) {
                         SwapIfGreaterWithValues(keys, values, comparer, 0, 1);
@@ -604,7 +613,7 @@ namespace Zyl.ExSpans.Impl {
         }
 
         private static int PickPivotAndPartition(Span<TKey> keys, Span<TValue> values, IComparer<TKey> comparer) {
-            Debug.Assert(keys.Length >= Array.IntrosortSizeThreshold);
+            Debug.Assert(keys.Length >= ArrayHelper.IntrosortSizeThreshold);
             Debug.Assert(comparer != null);
 
             int hi = keys.Length - 1;
@@ -766,7 +775,7 @@ namespace Zyl.ExSpans.Impl {
 
             int partitionSize = keys.Length;
             while (partitionSize > 1) {
-                if (partitionSize <= Array.IntrosortSizeThreshold) {
+                if (partitionSize <= ArrayHelper.IntrosortSizeThreshold) {
 
                     if (partitionSize == 2) {
                         SwapIfGreaterWithValues(keys, values, 0, 1);
@@ -799,7 +808,7 @@ namespace Zyl.ExSpans.Impl {
         }
 
         private static int PickPivotAndPartition(Span<TKey> keys, Span<TValue> values) {
-            Debug.Assert(keys.Length >= Array.IntrosortSizeThreshold);
+            Debug.Assert(keys.Length >= ArrayHelper.IntrosortSizeThreshold);
 
             int hi = keys.Length - 1;
 
@@ -938,7 +947,6 @@ namespace Zyl.ExSpans.Impl {
 
     #endregion
 
-#if TODO
     /// <summary>Helper methods for use in array/span sorting routines.</summary>
     internal static class SortUtils {
         public static int MoveNansToFront<TKey, TValue>(Span<TKey> keys, Span<TValue> values) where TKey : notnull {
@@ -968,6 +976,5 @@ namespace Zyl.ExSpans.Impl {
             return left;
         }
     }
-#endif // TODO
 
 }
