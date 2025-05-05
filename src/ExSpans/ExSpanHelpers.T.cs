@@ -1258,7 +1258,7 @@ namespace Zyl.ExSpans {
             } else if (Vector256.IsHardwareAccelerated && length >= Vector256<T>.Count) {
                 Vector256<T> equals, values = Vector256.Create(value);
                 ref T currentSearchSpace = ref searchSpace;
-                ref T oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, (uint)(length - Vector256<T>.Count));
+                ref T oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, length - Vector256<T>.Count);
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 do {
@@ -1282,7 +1282,7 @@ namespace Zyl.ExSpans {
             } else if (Vector128.IsHardwareAccelerated && length >= Vector128<T>.Count) {
                 Vector128<T> equals, values = Vector128.Create(value);
                 ref T currentSearchSpace = ref searchSpace;
-                ref T oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, (uint)(length - Vector128<T>.Count));
+                ref T oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, length - Vector128<T>.Count);
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 do {
@@ -1833,7 +1833,7 @@ namespace Zyl.ExSpans {
             Found1:
                 return offset + 1;
             Found:
-                return (int)(offset);
+                return offset;
             }
             //return -1;
         }
@@ -2324,7 +2324,7 @@ namespace Zyl.ExSpans {
                 Vector512<TValue> equals, current, values0 = Vector512.Create(value0), values1 = Vector512.Create(value1),
                     values2 = Vector512.Create(value2), values3 = Vector512.Create(value3), values4 = Vector512.Create(value4);
                 ref TValue currentSearchSpace = ref searchSpace;
-                ref TValue oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, (uint)(length - Vector512<TValue>.Count));
+                ref TValue oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, length - Vector512<TValue>.Count);
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 do {
@@ -2354,7 +2354,7 @@ namespace Zyl.ExSpans {
                 Vector<TValue> equals, current, values0 = Vectors.Create(value0), values1 = Vectors.Create(value1),
                     values2 = Vectors.Create(value2), values3 = Vectors.Create(value3), values4 = Vectors.Create(value4);
                 ref TValue currentSearchSpace = ref searchSpace;
-                ref TValue oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, (uint)(length - Vector<TValue>.Count));
+                ref TValue oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, length - Vector<TValue>.Count);
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 do {
@@ -2384,7 +2384,7 @@ namespace Zyl.ExSpans {
                 Vector256<TValue> equals, current, values0 = Vector256.Create(value0), values1 = Vector256.Create(value1),
                     values2 = Vector256.Create(value2), values3 = Vector256.Create(value3), values4 = Vector256.Create(value4);
                 ref TValue currentSearchSpace = ref searchSpace;
-                ref TValue oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, (uint)(length - Vector256<TValue>.Count));
+                ref TValue oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, length - Vector256<TValue>.Count);
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 do {
@@ -2413,7 +2413,7 @@ namespace Zyl.ExSpans {
                 Vector128<TValue> equals, current, values0 = Vector128.Create(value0), values1 = Vector128.Create(value1),
                     values2 = Vector128.Create(value2), values3 = Vector128.Create(value3), values4 = Vector128.Create(value4);
                 ref TValue currentSearchSpace = ref searchSpace;
-                ref TValue oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, (uint)(length - Vector128<TValue>.Count));
+                ref TValue oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, length - Vector128<TValue>.Count);
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 do {
@@ -3749,7 +3749,7 @@ namespace Zyl.ExSpans {
                 Vector512<T> inRangeVector;
 
                 ref T current = ref searchSpace;
-                ref T oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, (uint)(length - Vector512<T>.Count));
+                ref T oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, length - Vector512<T>.Count);
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 do {
@@ -3774,7 +3774,7 @@ namespace Zyl.ExSpans {
                 Vector<T> inRangeVector;
 
                 ref T current = ref searchSpace;
-                ref T oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, (uint)(length - Vector<T>.Count));
+                ref T oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, length - Vector<T>.Count);
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 do {
@@ -3798,7 +3798,7 @@ namespace Zyl.ExSpans {
                 Vector256<T> inRangeVector;
 
                 ref T current = ref searchSpace;
-                ref T oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, (uint)(length - Vector256<T>.Count));
+                ref T oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, length - Vector256<T>.Count);
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 do {
@@ -3822,7 +3822,7 @@ namespace Zyl.ExSpans {
                 Vector128<T> inRangeVector;
 
                 ref T current = ref searchSpace;
-                ref T oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, (uint)(length - Vector128<T>.Count));
+                ref T oneVectorAwayFromEnd = ref ExUnsafe.Add(ref searchSpace, length - Vector128<T>.Count);
 
                 // Loop until either we've finished all elements or there's less than a vector's-worth remaining.
                 do {
@@ -4001,9 +4001,8 @@ namespace Zyl.ExSpans {
         }
 #endif // GENERIC_MATH
 
-#if TODO
-        public static int Count<T>(ref T current, T value, TSize length) where T : IEquatable<T>? {
-            int count = 0;
+        public static TSize Count<T>(ref T current, T value, TSize length) where T : IEquatable<T>? {
+            TSize count = 0;
 
             ref T end = ref ExUnsafe.Add(ref current, length);
             if (value is not null) {
@@ -4027,49 +4026,69 @@ namespace Zyl.ExSpans {
             return count;
         }
 
-        public static unsafe int CountValueType<T>(ref T current, T value, TSize length) where T : struct, IEquatable<T>? {
-            int count = 0;
+        public static TSize CountValueType<T>(ref T current, T value, TSize length) where T : struct, IEquatable<T>? {
+            TSize count = 0;
             ref T end = ref ExUnsafe.Add(ref current, length);
 
-            if (Vector128.IsHardwareAccelerated && length >= Vector128<T>.Count) {
-                if (Vector512.IsHardwareAccelerated && length >= Vector512<T>.Count) {
-                    Vector512<T> targetVector = Vector512.Create(value);
-                    ref T oneVectorAwayFromEnd = ref Unsafe.Subtract(ref end, Vector512<T>.Count);
-                    while (Unsafe.IsAddressLessThan(ref current, ref oneVectorAwayFromEnd)) {
-                        count += BitOperations.PopCount(Vector512.Equals(Vector512.LoadUnsafe(ref current), targetVector).ExtractMostSignificantBits());
-                        current = ref ExUnsafe.Add(ref current, Vector512<T>.Count);
-                    }
-
-                    // Count the last vector and mask off the elements that were already counted (number of elements between oneVectorAwayFromEnd and current).
-                    ulong mask = Vector512.Equals(Vector512.LoadUnsafe(ref oneVectorAwayFromEnd), targetVector).ExtractMostSignificantBits();
-                    mask >>= (int)((nuint)Unsafe.ByteOffset(ref oneVectorAwayFromEnd, ref current) / (uint)Unsafe.SizeOf<T>());
-                    count += BitOperations.PopCount(mask);
-                } else if (Vector256.IsHardwareAccelerated && length >= Vector256<T>.Count) {
-                    Vector256<T> targetVector = Vector256.Create(value);
-                    ref T oneVectorAwayFromEnd = ref Unsafe.Subtract(ref end, Vector256<T>.Count);
-                    while (Unsafe.IsAddressLessThan(ref current, ref oneVectorAwayFromEnd)) {
-                        count += BitOperations.PopCount(Vector256.Equals(Vector256.LoadUnsafe(ref current), targetVector).ExtractMostSignificantBits());
-                        current = ref ExUnsafe.Add(ref current, Vector256<T>.Count);
-                    }
-
-                    // Count the last vector and mask off the elements that were already counted (number of elements between oneVectorAwayFromEnd and current).
-                    uint mask = Vector256.Equals(Vector256.LoadUnsafe(ref oneVectorAwayFromEnd), targetVector).ExtractMostSignificantBits();
-                    mask >>= (int)((nuint)Unsafe.ByteOffset(ref oneVectorAwayFromEnd, ref current) / (uint)Unsafe.SizeOf<T>());
-                    count += BitOperations.PopCount(mask);
-                } else {
-                    Vector128<T> targetVector = Vector128.Create(value);
-                    ref T oneVectorAwayFromEnd = ref Unsafe.Subtract(ref end, Vector128<T>.Count);
-                    while (Unsafe.IsAddressLessThan(ref current, ref oneVectorAwayFromEnd)) {
-                        count += BitOperations.PopCount(Vector128.Equals(Vector128.LoadUnsafe(ref current), targetVector).ExtractMostSignificantBits());
-                        current = ref ExUnsafe.Add(ref current, Vector128<T>.Count);
-                    }
-
-                    // Count the last vector and mask off the elements that were already counted (number of elements between oneVectorAwayFromEnd and current).
-                    uint mask = Vector128.Equals(Vector128.LoadUnsafe(ref oneVectorAwayFromEnd), targetVector).ExtractMostSignificantBits();
-                    mask >>= (int)((nuint)Unsafe.ByteOffset(ref oneVectorAwayFromEnd, ref current) / (uint)Unsafe.SizeOf<T>());
-                    count += BitOperations.PopCount(mask);
+            if (false) {
+#if NET8_0_OR_GREATER
+            } else if (Vector512.IsHardwareAccelerated && length >= Vector512<T>.Count && Vector512<byte>.Count >= Vector<byte>.Count) {
+                Vector512<T> targetVector = Vector512.Create(value);
+                ref T oneVectorAwayFromEnd = ref Unsafe.Subtract(ref end, Vector512<T>.Count);
+                while (Unsafe.IsAddressLessThan(ref current, ref oneVectorAwayFromEnd)) {
+                    count += BitOperations.PopCount(Vector512.Equals(Vector512.LoadUnsafe(ref current), targetVector).ExtractMostSignificantBits());
+                    current = ref ExUnsafe.Add(ref current, Vector512<T>.Count);
                 }
-            } else {
+
+                // Count the last vector and mask off the elements that were already counted (number of elements between oneVectorAwayFromEnd and current).
+                ulong mask = Vector512.Equals(Vector512.LoadUnsafe(ref oneVectorAwayFromEnd), targetVector).ExtractMostSignificantBits();
+                mask >>= (int)((nuint)Unsafe.ByteOffset(ref oneVectorAwayFromEnd, ref current) / (uint)Unsafe.SizeOf<T>());
+                count += BitOperations.PopCount(mask);
+                return count;
+#endif // NET8_0_OR_GREATER
+            } else if (Vector.IsHardwareAccelerated && length >= Vector<T>.Count) {
+                Vector<T> targetVector = Vectors.Create(value);
+                ref T oneVectorAwayFromEnd = ref Unsafe.Subtract(ref end, Vector<T>.Count);
+                while (Unsafe.IsAddressLessThan(ref current, ref oneVectorAwayFromEnd)) {
+                    count += MathBitOperations.PopCount(Vector.Equals(VectorHelper.LoadUnsafe(ref current), targetVector).ExtractMostSignificantBits());
+                    current = ref ExUnsafe.Add(ref current, Vector<T>.Count);
+                }
+
+                // Count the last vector and mask off the elements that were already counted (number of elements between oneVectorAwayFromEnd and current).
+                ulong mask = Vector.Equals(VectorHelper.LoadUnsafe(ref oneVectorAwayFromEnd), targetVector).ExtractMostSignificantBits();
+                mask >>= (int)(Unsafe.ByteOffset(ref oneVectorAwayFromEnd, ref current).ToUIntPtr() / (uint)Unsafe.SizeOf<T>());
+                count += MathBitOperations.PopCount(mask);
+                return count;
+#if NET7_0_OR_GREATER
+            } else if (Vector256.IsHardwareAccelerated && length >= Vector256<T>.Count) {
+                Vector256<T> targetVector = Vector256.Create(value);
+                ref T oneVectorAwayFromEnd = ref Unsafe.Subtract(ref end, Vector256<T>.Count);
+                while (Unsafe.IsAddressLessThan(ref current, ref oneVectorAwayFromEnd)) {
+                    count += BitOperations.PopCount(Vector256.Equals(Vector256.LoadUnsafe(ref current), targetVector).ExtractMostSignificantBits());
+                    current = ref ExUnsafe.Add(ref current, Vector256<T>.Count);
+                }
+
+                // Count the last vector and mask off the elements that were already counted (number of elements between oneVectorAwayFromEnd and current).
+                uint mask = Vector256.Equals(Vector256.LoadUnsafe(ref oneVectorAwayFromEnd), targetVector).ExtractMostSignificantBits();
+                mask >>= (int)((nuint)Unsafe.ByteOffset(ref oneVectorAwayFromEnd, ref current) / (uint)Unsafe.SizeOf<T>());
+                count += BitOperations.PopCount(mask);
+                return count;
+            } else if (Vector128.IsHardwareAccelerated && length >= Vector128<T>.Count) {
+                Vector128<T> targetVector = Vector128.Create(value);
+                ref T oneVectorAwayFromEnd = ref Unsafe.Subtract(ref end, Vector128<T>.Count);
+                while (Unsafe.IsAddressLessThan(ref current, ref oneVectorAwayFromEnd)) {
+                    count += BitOperations.PopCount(Vector128.Equals(Vector128.LoadUnsafe(ref current), targetVector).ExtractMostSignificantBits());
+                    current = ref ExUnsafe.Add(ref current, Vector128<T>.Count);
+                }
+
+                // Count the last vector and mask off the elements that were already counted (number of elements between oneVectorAwayFromEnd and current).
+                uint mask = Vector128.Equals(Vector128.LoadUnsafe(ref oneVectorAwayFromEnd), targetVector).ExtractMostSignificantBits();
+                mask >>= (int)((nuint)Unsafe.ByteOffset(ref oneVectorAwayFromEnd, ref current) / (uint)Unsafe.SizeOf<T>());
+                count += BitOperations.PopCount(mask);
+                return count;
+#endif // NET7_0_OR_GREATER
+            }
+            if (true) {
                 while (Unsafe.IsAddressLessThan(ref current, ref end)) {
                     if (current.Equals(value)) {
                         count++;
@@ -4078,10 +4097,8 @@ namespace Zyl.ExSpans {
                     current = ref ExUnsafe.Add(ref current, 1);
                 }
             }
-
             return count;
         }
-#endif // TODO
 
     }
 }
