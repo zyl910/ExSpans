@@ -12,8 +12,17 @@ namespace Zyl.ExSpans {
 #endif // NET6_0_OR_GREATER
     internal static class ThrowHelper {
 
+        private static ArgumentException GetArgumentException(ExceptionResource resource) {
+            return new ArgumentException(GetResourceString(resource));
+        }
+
         private static InvalidOperationException GetInvalidOperationException(ExceptionResource resource) {
             return new InvalidOperationException(GetResourceString(resource));
+        }
+
+        [DoesNotReturn]
+        internal static void ThrowArgumentException(ExceptionResource resource) {
+            throw GetArgumentException(resource);
         }
 
         [DoesNotReturn]
@@ -205,8 +214,10 @@ namespace Zyl.ExSpans {
                     return SR.Rank_MultiDimNotSupported;
                 case ExceptionResource.Arg_TypeNotSupported:
                     return SR.Arg_TypeNotSupported;
+#endif // TODO
                 case ExceptionResource.Argument_SpansMustHaveSameLength:
                     return SR.Argument_SpansMustHaveSameLength;
+#if TODO
                 case ExceptionResource.Argument_InvalidFlag:
                     return SR.Argument_InvalidFlag;
                 case ExceptionResource.CancellationTokenSource_Disposed:

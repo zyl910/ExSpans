@@ -3701,7 +3701,6 @@ namespace Zyl.ExSpans {
             return BinarySearch(span, comparable);
         }
 
-#if TODO
         /// <summary>
         /// Sorts the elements in the entire <see cref="ExSpan{T}" /> using the <see cref="IComparable{T}" /> implementation
         /// of each element of the <see cref= "ExSpan{T}" />
@@ -3711,7 +3710,7 @@ namespace Zyl.ExSpans {
         /// <exception cref="InvalidOperationException">
         /// One or more elements in <paramref name="span"/> do not implement the <see cref="IComparable{T}" /> interface.
         /// </exception>
-        public static void Sort<T>(this ExSpan<T> ExSpan) =>
+        public static void Sort<T>(this ExSpan<T> span) =>
             Sort(span, (IComparer<T>?)null);
 
         /// <summary>
@@ -3733,7 +3732,7 @@ namespace Zyl.ExSpans {
         /// </exception>
         public static void Sort<T, TComparer>(this ExSpan<T> span, TComparer comparer) where TComparer : IComparer<T>? {
             if (span.Length > 1) {
-                ArraySortHelper<T>.Default.Sort(span, comparer); // value-type comparer will be boxed
+                ExArraySortHelper<T>.Default.Sort(span, comparer); // value-type comparer will be boxed
             }
         }
 
@@ -3746,10 +3745,10 @@ namespace Zyl.ExSpans {
         /// <exception cref="ArgumentNullException"><paramref name="comparison"/> is null.</exception>
         public static void Sort<T>(this ExSpan<T> span, Comparison<T> comparison) {
             if (comparison == null)
-                ThrowHelper.ThrowArgumentNullException(ExceptionArgument.comparison);
+                throw new ArgumentNullException(nameof(comparison));
 
             if (span.Length > 1) {
-                ArraySortHelper<T>.Sort(span, comparison);
+                ExArraySortHelper<T>.Sort(span, comparison);
             }
         }
 
@@ -3793,10 +3792,10 @@ namespace Zyl.ExSpans {
         /// </exception>
         public static void Sort<TKey, TValue, TComparer>(this ExSpan<TKey> keys, ExSpan<TValue> items, TComparer comparer) where TComparer : IComparer<TKey>? {
             if (keys.Length != items.Length)
-                ThrowHelper.ThrowArgumentException(ExceptionResource.Argument_ExSpansMustHaveSameLength);
+                ThrowHelper.ThrowArgumentException(ExceptionResource.Argument_SpansMustHaveSameLength);
 
             if (keys.Length > 1) {
-                ArraySortHelper<TKey, TValue>.Default.Sort(keys, items, comparer); // value-type comparer will be boxed
+                ExArraySortHelper<TKey, TValue>.Default.Sort(keys, items, comparer); // value-type comparer will be boxed
             }
         }
 
@@ -3815,15 +3814,16 @@ namespace Zyl.ExSpans {
         /// </exception>
         public static void Sort<TKey, TValue>(this ExSpan<TKey> keys, ExSpan<TValue> items, Comparison<TKey> comparison) {
             if (comparison == null)
-                ThrowHelper.ThrowArgumentNullException(ExceptionArgument.comparison);
+                throw new ArgumentNullException(nameof(comparison));
             if (keys.Length != items.Length)
-                ThrowHelper.ThrowArgumentException(ExceptionResource.Argument_ExSpansMustHaveSameLength);
+                ThrowHelper.ThrowArgumentException(ExceptionResource.Argument_SpansMustHaveSameLength);
 
             if (keys.Length > 1) {
-                ArraySortHelper<TKey, TValue>.Default.Sort(keys, items, new ComparisonComparer<TKey>(comparison));
+                ExArraySortHelper<TKey, TValue>.Default.Sort(keys, items, new ComparisonComparer<TKey>(comparison));
             }
         }
 
+#if TODO
         /// <summary>
         /// Replaces all occurrences of <paramref name="oldValue"/> with <paramref name="newValue"/>.
         /// </summary>
