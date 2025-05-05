@@ -3200,16 +3200,16 @@ namespace Zyl.ExSpans {
             span.Length != (TSize)0 &&
             (comparer is null ? EqualityComparer<T>.Default.Equals(span[span.Length - 1], value) : comparer.Equals(span[span.Length - 1], value));
 
-#if TODO
         /// <summary>
         /// Reverses the sequence of the elements in the entire span.
         /// </summary>
-        public static void Reverse<T>(this ExSpan<T> ExSpan) {
+        public static void Reverse<T>(this ExSpan<T> span) {
             if (span.Length > 1) {
                 ExSpanHelpers.Reverse(ref ExMemoryMarshal.GetReference(span), (nuint)span.Length);
             }
         }
 
+#if TODO
         /// <summary>
         /// Creates a new memory over the target array.
         /// </summary>
