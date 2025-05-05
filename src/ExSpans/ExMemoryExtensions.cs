@@ -3,6 +3,9 @@
 #if NET7_0_OR_GREATER
 #define GENERIC_MATH // C# 11 - Generic math support. https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-11#generic-math-support
 #endif // NET7_0_OR_GREATER
+#if NET9_0_OR_GREATER
+#define ALLOWS_REF_STRUCT // C# 13 - ref struct interface; allows ref struct. https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-13#ref-struct-interfaces
+#endif // NET9_0_OR_GREATER
 
 using System;
 using System.Buffers;
@@ -3537,7 +3540,6 @@ namespace Zyl.ExSpans {
             }
         }
 
-#if TODO
         /// <summary>
         /// Searches an entire sorted <see cref="ExSpan{T}"/> for a value
         /// using the specified <see cref="IComparable{T}"/> generic interface.
@@ -3556,7 +3558,7 @@ namespace Zyl.ExSpans {
         /// </exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [OverloadResolutionPriority(-1)]
-        public static int BinarySearch<T>(this ExSpan<T> span, IComparable<T> comparable) =>
+        public static TSize BinarySearch<T>(this ExSpan<T> span, IComparable<T> comparable) =>
             BinarySearch((ReadOnlyExSpan<T>)span, comparable);
 
         /// <summary>
@@ -3578,9 +3580,13 @@ namespace Zyl.ExSpans {
         /// </exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [OverloadResolutionPriority(-1)]
-        public static int BinarySearch<T, TComparable>(
+        public static TSize BinarySearch<T, TComparable>(
             this ExSpan<T> span, TComparable comparable)
-            where TComparable : IComparable<T>, allows ref struct =>
+            where TComparable : IComparable<T>
+#if ALLOWS_REF_STRUCT
+            , allows ref struct
+#endif
+            =>
             BinarySearch((ReadOnlyExSpan<T>)span, comparable);
 
         /// <summary>
@@ -3603,9 +3609,13 @@ namespace Zyl.ExSpans {
         /// </exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [OverloadResolutionPriority(-1)]
-        public static int BinarySearch<T, TComparer>(
+        public static TSize BinarySearch<T, TComparer>(
             this ExSpan<T> span, T value, TComparer comparer)
-            where TComparer : IComparer<T>, allows ref struct =>
+            where TComparer : IComparer<T>
+#if ALLOWS_REF_STRUCT
+            , allows ref struct
+#endif
+            =>
             BinarySearch((ReadOnlyExSpan<T>)span, value, comparer);
 
         /// <summary>
@@ -3625,7 +3635,7 @@ namespace Zyl.ExSpans {
         /// <paramref name = "comparable" /> is <see langword="null"/> .
         /// </exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int BinarySearch<T>(
+        public static TSize BinarySearch<T>(
             this ReadOnlyExSpan<T> span, IComparable<T> comparable) =>
             BinarySearch<T, IComparable<T>>(span, comparable);
 
@@ -3647,9 +3657,13 @@ namespace Zyl.ExSpans {
         /// <paramref name = "comparable" /> is <see langword="null"/> .
         /// </exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int BinarySearch<T, TComparable>(
+        public static TSize BinarySearch<T, TComparable>(
             this ReadOnlyExSpan<T> span, TComparable comparable)
-            where TComparable : IComparable<T>, allows ref struct {
+            where TComparable : IComparable<T>
+#if ALLOWS_REF_STRUCT
+            , allows ref struct
+#endif
+            {
             return ExSpanHelpers.BinarySearch(span, comparable);
         }
 
@@ -3672,17 +3686,22 @@ namespace Zyl.ExSpans {
         /// <paramref name = "comparer" /> is <see langword="null"/> .
         /// </exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int BinarySearch<T, TComparer>(
+        public static TSize BinarySearch<T, TComparer>(
             this ReadOnlyExSpan<T> span, T value, TComparer comparer)
-            where TComparer : IComparer<T>, allows ref struct {
+            where TComparer : IComparer<T>
+#if ALLOWS_REF_STRUCT
+            , allows ref struct
+#endif
+            {
             if (comparer is null)
-                ThrowHelper.ThrowArgumentNullException(ExceptionArgument.comparer);
+                throw new ArgumentNullException(nameof(comparer));
 
             var comparable = new ExSpanHelpers.ComparerComparable<T, TComparer>(
                 value, comparer);
             return BinarySearch(span, comparable);
         }
 
+#if TODO
         /// <summary>
         /// Sorts the elements in the entire <see cref="ExSpan{T}" /> using the <see cref="IComparable{T}" /> implementation
         /// of each element of the <see cref= "ExSpan{T}" />
