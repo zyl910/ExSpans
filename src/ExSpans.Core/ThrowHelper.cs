@@ -17,6 +17,11 @@ namespace Zyl.ExSpans {
         }
 
         [DoesNotReturn]
+        internal static void ThrowArgumentException_OverlapAlignmentMismatch() {
+            throw new ArgumentException(SR.Argument_OverlapAlignmentMismatch);
+        }
+
+        [DoesNotReturn]
         internal static void ThrowArgumentOutOfRangeException() {
             throw new ArgumentOutOfRangeException();
         }

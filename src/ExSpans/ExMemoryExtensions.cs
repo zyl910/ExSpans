@@ -3209,7 +3209,7 @@ namespace Zyl.ExSpans {
             }
         }
 
-#if TODO
+#if NOT_RELATED
         /// <summary>
         /// Creates a new memory over the target array.
         /// </summary>
@@ -3349,6 +3349,7 @@ namespace Zyl.ExSpans {
         public static void CopyTo<T>(this T[]? source, Memory<T> destination) {
             source.CopyTo(destination.ExSpan);
         }
+#endif // NOT_RELATED
 
         //
         //  Overlaps
@@ -3497,7 +3498,7 @@ namespace Zyl.ExSpans {
         /// <summary>
         /// Determines whether two sequences overlap in memory.
         /// </summary>
-        public static unsafe bool Overlaps<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> other) {
+        public static bool Overlaps<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> other) {
             if (span.IsEmpty || other.IsEmpty) {
                 return false;
             }
@@ -3513,7 +3514,7 @@ namespace Zyl.ExSpans {
         /// <summary>
         /// Determines whether two sequences overlap in memory and outputs the element offset.
         /// </summary>
-        public static unsafe bool Overlaps<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> other, out int elementOffset) {
+        public static bool Overlaps<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> other, out int elementOffset) {
             if (span.IsEmpty || other.IsEmpty) {
                 elementOffset = 0;
                 return false;
@@ -3536,6 +3537,7 @@ namespace Zyl.ExSpans {
             }
         }
 
+#if TODO
         /// <summary>
         /// Searches an entire sorted <see cref="ExSpan{T}"/> for a value
         /// using the specified <see cref="IComparable{T}"/> generic interface.
