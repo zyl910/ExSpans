@@ -519,7 +519,6 @@ namespace Zyl.ExSpans.Impl {
 
     #region ExArraySortHelper for paired key and value arrays
 
-#if TODO
     internal sealed partial class ExArraySortHelper<TKey, TValue> {
         public void Sort(ExSpan<TKey> keys, ExSpan<TValue> values, IComparer<TKey>? comparer) {
             // Add a try block here to detect IComparers (or their
@@ -533,8 +532,9 @@ namespace Zyl.ExSpans.Impl {
             }
         }
 
-        private static void SwapIfGreaterWithValues(ExSpan<TKey> keys, ExSpan<TValue> values, IComparer<TKey> comparer, int i, int j) {
+        private static void SwapIfGreaterWithValues(ExSpan<TKey> keys, ExSpan<TValue> values, IComparer<TKey> comparer, TSize i, TSize j) {
             Debug.Assert(comparer != null);
+            if (null == comparer) throw new ArgumentNullException(nameof(comparer));
             Debug.Assert(0 <= i && i < keys.Length && i < values.Length);
             Debug.Assert(0 <= j && j < keys.Length && j < values.Length);
             Debug.Assert(i != j);
@@ -551,7 +551,7 @@ namespace Zyl.ExSpans.Impl {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void Swap(ExSpan<TKey> keys, ExSpan<TValue> values, int i, int j) {
+        private static void Swap(ExSpan<TKey> keys, ExSpan<TValue> values, TSize i, TSize j) {
             Debug.Assert(i != j);
 
             TKey k = keys[i];
@@ -565,20 +565,22 @@ namespace Zyl.ExSpans.Impl {
 
         internal static void IntrospectiveSort(ExSpan<TKey> keys, ExSpan<TValue> values, IComparer<TKey> comparer) {
             Debug.Assert(comparer != null);
+            if (null == comparer) throw new ArgumentNullException(nameof(comparer));
             Debug.Assert(keys.Length == values.Length);
 
             if (keys.Length > 1) {
-                IntroSort(keys, values, 2 * (BitOperations.Log2((uint)keys.Length) + 1), comparer);
+                IntroSort(keys, values, 2 * (MathBitOperations.Log2((nuint)keys.Length) + 1), comparer);
             }
         }
 
-        private static void IntroSort(ExSpan<TKey> keys, ExSpan<TValue> values, int depthLimit, IComparer<TKey> comparer) {
+        private static void IntroSort(ExSpan<TKey> keys, ExSpan<TValue> values, TSize depthLimit, IComparer<TKey> comparer) {
             Debug.Assert(!keys.IsEmpty);
             Debug.Assert(values.Length == keys.Length);
             Debug.Assert(depthLimit >= 0);
             Debug.Assert(comparer != null);
+            if (null == comparer) throw new ArgumentNullException(nameof(comparer));
 
-            int partitionSize = keys.Length;
+            TSize partitionSize = keys.Length;
             while (partitionSize > 1) {
                 if (partitionSize <= ArrayHelper.IntrosortSizeThreshold) {
 
@@ -604,22 +606,23 @@ namespace Zyl.ExSpans.Impl {
                 }
                 depthLimit--;
 
-                int p = PickPivotAndPartition(keys.Slice(0, partitionSize), values.Slice(0, partitionSize), comparer);
+                TSize p = PickPivotAndPartition(keys.Slice(0, partitionSize), values.Slice(0, partitionSize), comparer);
 
                 // Note we've already partitioned around the pivot and do not have to move the pivot again.
-                IntroSort(keys[(p + 1)..partitionSize], values[(p + 1)..partitionSize], depthLimit, comparer);
+                IntroSort(keys.Slice(p + 1, partitionSize), values.Slice(p + 1, partitionSize), depthLimit, comparer);
                 partitionSize = p;
             }
         }
 
-        private static int PickPivotAndPartition(ExSpan<TKey> keys, ExSpan<TValue> values, IComparer<TKey> comparer) {
+        private static TSize PickPivotAndPartition(ExSpan<TKey> keys, ExSpan<TValue> values, IComparer<TKey> comparer) {
             Debug.Assert(keys.Length >= ArrayHelper.IntrosortSizeThreshold);
             Debug.Assert(comparer != null);
+            if (null == comparer) throw new ArgumentNullException(nameof(comparer));
 
-            int hi = keys.Length - 1;
+            TSize hi = keys.Length - 1;
 
             // Compute median-of-three.  But also partition them, since we've done the comparison.
-            int middle = hi >> 1;
+            TSize middle = hi >> 1;
 
             // Sort lo, mid and hi appropriately, then pick mid as the pivot.
             SwapIfGreaterWithValues(keys, values, comparer, 0, middle);  // swap the low with the mid point
@@ -628,7 +631,7 @@ namespace Zyl.ExSpans.Impl {
 
             TKey pivot = keys[middle];
             Swap(keys, values, middle, hi - 1);
-            int left = 0, right = hi - 1;  // We already partitioned lo and hi and put the pivot in hi - 1.  And we pre-increment & decrement below.
+            TSize left = 0, right = hi - 1;  // We already partitioned lo and hi and put the pivot in hi - 1.  And we pre-increment & decrement below.
 
             while (left < right) {
                 while (comparer.Compare(keys[++left], pivot) < 0) ;
@@ -649,27 +652,29 @@ namespace Zyl.ExSpans.Impl {
 
         private static void HeapSort(ExSpan<TKey> keys, ExSpan<TValue> values, IComparer<TKey> comparer) {
             Debug.Assert(comparer != null);
+            if (null == comparer) throw new ArgumentNullException(nameof(comparer));
             Debug.Assert(!keys.IsEmpty);
 
-            int n = keys.Length;
-            for (int i = n >> 1; i >= 1; i--) {
+            TSize n = keys.Length;
+            for (TSize i = n >> 1; i >= 1; i--) {
                 DownHeap(keys, values, i, n, comparer);
             }
 
-            for (int i = n; i > 1; i--) {
+            for (TSize i = n; i > 1; i--) {
                 Swap(keys, values, 0, i - 1);
                 DownHeap(keys, values, 1, i - 1, comparer);
             }
         }
 
-        private static void DownHeap(ExSpan<TKey> keys, ExSpan<TValue> values, int i, int n, IComparer<TKey> comparer) {
+        private static void DownHeap(ExSpan<TKey> keys, ExSpan<TValue> values, TSize i, TSize n, IComparer<TKey> comparer) {
             Debug.Assert(comparer != null);
+            if (null == comparer) throw new ArgumentNullException(nameof(comparer));
 
             TKey d = keys[i - 1];
             TValue dValue = values[i - 1];
 
             while (i <= n >> 1) {
-                int child = 2 * i;
+                TSize child = 2 * i;
                 if (child < n && comparer.Compare(keys[child - 1], keys[child]) < 0) {
                     child++;
                 }
@@ -688,12 +693,13 @@ namespace Zyl.ExSpans.Impl {
 
         private static void InsertionSort(ExSpan<TKey> keys, ExSpan<TValue> values, IComparer<TKey> comparer) {
             Debug.Assert(comparer != null);
+            if (null == comparer) throw new ArgumentNullException(nameof(comparer));
 
-            for (int i = 0; i < keys.Length - 1; i++) {
+            for (TSize i = 0; i < keys.Length - 1; i++) {
                 TKey t = keys[i + 1];
                 TValue tValue = values[i + 1];
 
-                int j = i;
+                TSize j = i;
                 while (j >= 0 && comparer.Compare(t, keys[j]) < 0) {
                     keys[j + 1] = keys[j];
                     values[j + 1] = values[j];
@@ -720,7 +726,7 @@ namespace Zyl.ExSpans.Impl {
                         if (typeof(TKey) == typeof(double) ||
                             typeof(TKey) == typeof(float) ||
                             typeof(TKey) == typeof(Half)) {
-                            int nanLeft = SortUtils.MoveNansToFront(keys, values);
+                            TSize nanLeft = SortUtils.MoveNansToFront(keys, values);
                             if (nanLeft == keys.Length) {
                                 return;
                             }
@@ -728,7 +734,7 @@ namespace Zyl.ExSpans.Impl {
                             values = values.Slice(nanLeft);
                         }
 
-                        IntroSort(keys, values, 2 * (BitOperations.Log2((uint)keys.Length) + 1));
+                        IntroSort(keys, values, 2 * (MathBitOperations.Log2((nuint)keys.Length) + 1));
                     }
                 } else {
                     ExArraySortHelper<TKey, TValue>.IntrospectiveSort(keys, values, comparer);
@@ -740,7 +746,7 @@ namespace Zyl.ExSpans.Impl {
             }
         }
 
-        private static void SwapIfGreaterWithValues(ExSpan<TKey> keys, ExSpan<TValue> values, int i, int j) {
+        private static void SwapIfGreaterWithValues(ExSpan<TKey> keys, ExSpan<TValue> values, TSize i, TSize j) {
             Debug.Assert(i != j);
 
             ref TKey keyRef = ref keys[i];
@@ -756,7 +762,7 @@ namespace Zyl.ExSpans.Impl {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void Swap(ExSpan<TKey> keys, ExSpan<TValue> values, int i, int j) {
+        private static void Swap(ExSpan<TKey> keys, ExSpan<TValue> values, TSize i, TSize j) {
             Debug.Assert(i != j);
 
             TKey k = keys[i];
@@ -768,12 +774,12 @@ namespace Zyl.ExSpans.Impl {
             values[j] = v;
         }
 
-        private static void IntroSort(ExSpan<TKey> keys, ExSpan<TValue> values, int depthLimit) {
+        private static void IntroSort(ExSpan<TKey> keys, ExSpan<TValue> values, TSize depthLimit) {
             Debug.Assert(!keys.IsEmpty);
             Debug.Assert(values.Length == keys.Length);
             Debug.Assert(depthLimit >= 0);
 
-            int partitionSize = keys.Length;
+            TSize partitionSize = keys.Length;
             while (partitionSize > 1) {
                 if (partitionSize <= ArrayHelper.IntrosortSizeThreshold) {
 
@@ -799,21 +805,21 @@ namespace Zyl.ExSpans.Impl {
                 }
                 depthLimit--;
 
-                int p = PickPivotAndPartition(keys.Slice(0, partitionSize), values.Slice(0, partitionSize));
+                TSize p = PickPivotAndPartition(keys.Slice(0, partitionSize), values.Slice(0, partitionSize));
 
                 // Note we've already partitioned around the pivot and do not have to move the pivot again.
-                IntroSort(keys[(p + 1)..partitionSize], values[(p + 1)..partitionSize], depthLimit);
+                IntroSort(keys.Slice(p + 1, partitionSize), values.Slice(p + 1, partitionSize), depthLimit);
                 partitionSize = p;
             }
         }
 
-        private static int PickPivotAndPartition(ExSpan<TKey> keys, ExSpan<TValue> values) {
+        private static TSize PickPivotAndPartition(ExSpan<TKey> keys, ExSpan<TValue> values) {
             Debug.Assert(keys.Length >= ArrayHelper.IntrosortSizeThreshold);
 
-            int hi = keys.Length - 1;
+            TSize hi = keys.Length - 1;
 
             // Compute median-of-three.  But also partition them, since we've done the comparison.
-            int middle = hi >> 1;
+            TSize middle = hi >> 1;
 
             // Sort lo, mid and hi appropriately, then pick mid as the pivot.
             SwapIfGreaterWithValues(keys, values, 0, middle);  // swap the low with the mid point
@@ -822,7 +828,7 @@ namespace Zyl.ExSpans.Impl {
 
             TKey pivot = keys[middle];
             Swap(keys, values, middle, hi - 1);
-            int left = 0, right = hi - 1;  // We already partitioned lo and hi and put the pivot in hi - 1.  And we pre-increment & decrement below.
+            TSize left = 0, right = hi - 1;  // We already partitioned lo and hi and put the pivot in hi - 1.  And we pre-increment & decrement below.
 
             while (left < right) {
                 if (pivot == null) {
@@ -849,23 +855,23 @@ namespace Zyl.ExSpans.Impl {
         private static void HeapSort(ExSpan<TKey> keys, ExSpan<TValue> values) {
             Debug.Assert(!keys.IsEmpty);
 
-            int n = keys.Length;
-            for (int i = n >> 1; i >= 1; i--) {
+            TSize n = keys.Length;
+            for (TSize i = n >> 1; i >= 1; i--) {
                 DownHeap(keys, values, i, n);
             }
 
-            for (int i = n; i > 1; i--) {
+            for (TSize i = n; i > 1; i--) {
                 Swap(keys, values, 0, i - 1);
                 DownHeap(keys, values, 1, i - 1);
             }
         }
 
-        private static void DownHeap(ExSpan<TKey> keys, ExSpan<TValue> values, int i, int n) {
+        private static void DownHeap(ExSpan<TKey> keys, ExSpan<TValue> values, TSize i, TSize n) {
             TKey d = keys[i - 1];
             TValue dValue = values[i - 1];
 
             while (i <= n >> 1) {
-                int child = 2 * i;
+                TSize child = 2 * i;
                 if (child < n && (keys[child - 1] == null || LessThan(ref keys[child - 1], ref keys[child]))) {
                     child++;
                 }
@@ -883,11 +889,11 @@ namespace Zyl.ExSpans.Impl {
         }
 
         private static void InsertionSort(ExSpan<TKey> keys, ExSpan<TValue> values) {
-            for (int i = 0; i < keys.Length - 1; i++) {
+            for (TSize i = 0; i < keys.Length - 1; i++) {
                 TKey t = keys[i + 1];
                 TValue tValue = values[i + 1];
 
-                int j = i;
+                TSize j = i;
                 while (j >= 0 && (t == null || LessThan(ref t, ref keys[j]))) {
                     keys[j + 1] = keys[j];
                     values[j + 1] = values[j];
@@ -943,7 +949,6 @@ namespace Zyl.ExSpans.Impl {
             return left.CompareTo(right) > 0 ? true : false;
         }
     }
-#endif // TODO
 
     #endregion
 
