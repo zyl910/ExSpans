@@ -4,13 +4,12 @@ using System.Text;
 
 namespace Zyl.ExSpans {
 
-#if TODO
-
-        /// <summary>
-        /// Enables enumerating each split within a <see cref="ReadOnlyExSpan{T}"/> that has been divided using one or more separators.
-        /// </summary>
-        /// <typeparam name="T">The type of items in the <see cref="ExSpanSplitEnumerator{T}"/>.</typeparam>
-        public ref struct ExSpanSplitEnumerator<T> where T : IEquatable<T> {
+#if NET8_0_OR_GREATER && TODO // [TODO why] SearchValues.IndexOfAny is internal
+    /// <summary>
+    /// Enables enumerating each split within a <see cref="ReadOnlyExSpan{T}"/> that has been divided using one or more separators.
+    /// </summary>
+    /// <typeparam name="T">The type of items in the <see cref="ExSpanSplitEnumerator{T}"/>.</typeparam>
+    public ref struct ExSpanSplitEnumerator<T> where T : IEquatable<T> {
             /// <summary>The input ExSpan being split.</summary>
             private readonly ReadOnlyExSpan<T> _source;
 
@@ -142,7 +141,7 @@ namespace Zyl.ExSpans {
         }
 
         /// <summary>Indicates in which mode <see cref="ExSpanSplitEnumerator{T}"/> is operating, with regards to how it should interpret its state.</summary>
-        private enum ExSpanSplitEnumeratorMode {
+        internal enum ExSpanSplitEnumeratorMode {
             /// <summary>Either a default <see cref="ExSpanSplitEnumerator{T}"/> was used, or the enumerator has finished enumerating and there's no more work to do.</summary>
             None = 0,
 
@@ -164,7 +163,6 @@ namespace Zyl.ExSpans {
             /// </summary>
             SearchValues
         }
-
-#endif // TODO
+#endif // NET8_0_OR_GREATER
 
 }

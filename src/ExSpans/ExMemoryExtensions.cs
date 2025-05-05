@@ -4302,7 +4302,7 @@ namespace Zyl.ExSpans {
             Debug.Assert(span.Length == other.Length);
         }
 
-#if TODO
+#if NET8_0_OR_GREATER && TODO // [TODO why] SearchValues.IndexOfAny is internal
         /// <summary>
         /// Returns a type that allows for enumeration of each element within a split span
         /// using the provided separator character.
@@ -4359,7 +4359,9 @@ namespace Zyl.ExSpans {
         /// </remarks>
         public static ExSpanSplitEnumerator<T> SplitAny<T>(this ReadOnlyExSpan<T> source, SearchValues<T> separators) where T : IEquatable<T> =>
             new ExSpanSplitEnumerator<T>(source, separators);
+#endif // NET8_0_OR_GREATER
 
+#if TODO
         /// <summary>
         /// Parses the source <see cref="ReadOnlyExSpan{Char}"/> for the specified <paramref name="separator"/>, populating the <paramref name="destination"/> ExSpan
         /// with <see cref="Range"/> instances representing the regions between the separators.
