@@ -5,6 +5,7 @@
 #endif // NET7_0_OR_GREATER
 #if NET9_0_OR_GREATER
 #define ALLOWS_REF_STRUCT // C# 13 - ref struct interface; allows ref struct. https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-13#ref-struct-interfaces
+#define PARAMS_COLLECTIONS // C# 13 - params collections. https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-13#params-collections
 #endif // NET9_0_OR_GREATER
 
 using System;
@@ -4832,7 +4833,7 @@ namespace Zyl.ExSpans {
             }
         }
 
-#if TODO
+#if NET8_0_OR_GREATER && TODO // [TODO why] SearchValues.IndexOfAny is internal
         /// <summary>Counts the number of times any of the specified <paramref name="values"/> occurs in the <paramref name="span"/>.</summary>
         /// <typeparam name="T">The element type of the span.</typeparam>
         /// <param name="span">The span to search.</param>
@@ -4840,17 +4841,18 @@ namespace Zyl.ExSpans {
         /// <returns>The number of times any of the <typeparamref name="T"/> elements in <paramref name="values"/> was found in the <paramref name="span"/>.</returns>
         /// <remarks>If <paramref name="values"/> is empty, 0 is returned.</remarks>
         /// <exception cref="ArgumentNullException"><paramref name="values"/> is <see langword="null"/>.</exception>
-        public static int CountAny<T>(this ReadOnlyExSpan<T> span, SearchValues<T> values) where T : IEquatable<T>? {
-            int count = 0;
+        public static TSize CountAny<T>(this ReadOnlyExSpan<T> span, SearchValues<T> values) where T : IEquatable<T>? {
+            TSize count = 0;
 
-            int pos;
+            TSize pos;
             while ((pos = span.IndexOfAny(values)) >= 0) {
                 count++;
-                ExSpan = span.Slice(pos + 1);
+                span = span.Slice(pos + 1);
             }
 
             return count;
         }
+#endif // NET8_0_OR_GREATER
 
         /// <summary>Counts the number of times any of the specified <paramref name="values"/> occurs in the <paramref name="span"/>.</summary>
         /// <typeparam name="T">The element type of the span.</typeparam>
@@ -4858,17 +4860,24 @@ namespace Zyl.ExSpans {
         /// <param name="values">The set of values for which to search.</param>
         /// <returns>The number of times any of the <typeparamref name="T"/> elements in <paramref name="values"/> was found in the <paramref name="span"/>.</returns>
         /// <remarks>If <paramref name="values"/> is empty, 0 is returned.</remarks>
-        public static int CountAny<T>(this ReadOnlyExSpan<T> span, params ReadOnlyExSpan<T> values) where T : IEquatable<T>? {
-            int count = 0;
+        public static TSize CountAny<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> values) where T : IEquatable<T>? {
+            TSize count = 0;
 
-            int pos;
+            TSize pos;
             while ((pos = span.IndexOfAny(values)) >= 0) {
                 count++;
-                ExSpan = span.Slice(pos + 1);
+                span = span.Slice(pos + 1);
             }
 
             return count;
         }
+
+#if PARAMS_COLLECTIONS
+        /// <inheritdoc cref="CountAny{T}(ReadOnlyExSpan{T}, ReadOnlyExSpan{T})"/>
+        public static TSize CountAny<T>(this ReadOnlyExSpan<T> span, params ReadOnlySpan<T> values) where T : IEquatable<T>? {
+            return CountAny(span, values.AsReadOnlyExSpan());
+        }
+#endif
 
         /// <summary>Counts the number of times any of the specified <paramref name="values"/> occurs in the <paramref name="span"/>.</summary>
         /// <typeparam name="T">The element type of the span.</typeparam>
@@ -4880,19 +4889,20 @@ namespace Zyl.ExSpans {
         /// </param>
         /// <returns>The number of times any of the <typeparamref name="T"/> elements in <paramref name="values"/> was found in the <paramref name="span"/>.</returns>
         /// <remarks>If <paramref name="values"/> is empty, 0 is returned.</remarks>
-        public static int CountAny<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> values, IEqualityComparer<T>? comparer = null) {
-            int count = 0;
+        public static TSize CountAny<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> values, IEqualityComparer<T>? comparer = null) {
+            TSize count = 0;
 
-            int pos;
+            TSize pos;
             while ((pos = span.IndexOfAny(values, comparer)) >= 0) {
                 count++;
-                ExSpan = span.Slice(pos + 1);
+                span = span.Slice(pos + 1);
             }
 
             return count;
         }
 
 
+#if TODO
         /// <summary>Writes the specified interpolated string to the character span.</summary>
         /// <param name="destination">The span to which the interpolated string should be formatted.</param>
         /// <param name="handler">The interpolated string.</param>
