@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 #if NETCOREAPP3_0_OR_GREATER
 using System.Runtime.Intrinsics;
@@ -7,6 +8,7 @@ using System.Runtime.Intrinsics.X86;
 #endif // NETCOREAPP3_0_OR_GREATER
 using Zyl.ExSpans.Impl;
 using Zyl.ExSpans.Reflection;
+using Zyl.VectorTraits;
 
 namespace Zyl.ExSpans {
     /// <summary>
@@ -90,7 +92,7 @@ namespace Zyl.ExSpans {
 
             if (false) {
 #if NET8_0_OR_GREATER
-            } else if (Vector512.IsHardwareAccelerated && remainder >= Vector512<int>.Count * 2) {
+            } else if (Vector512.IsHardwareAccelerated && remainder >= Vector512<int>.Count * 2 && Vector512<byte>.Count > Vector<byte>.Count) {
                 nint lastOffset = remainder - Vector512<int>.Count;
                 do {
                     // Load in values from beginning and end of the array.
@@ -118,6 +120,28 @@ namespace Zyl.ExSpans {
 
                 remainder = lastOffset + Vector512<int>.Count - offset;
 #endif // NET8_0_OR_GREATER
+            } else if (Vector.IsHardwareAccelerated && remainder > Vector<int>.Count && Vectors.YShuffleKernel_AcceleratedTypes.HasFlag(TypeCodeFlags.Int32)) {
+                int vectorSize = Vector<int>.Count;
+                nint lastOffset = remainder - vectorSize;
+                Vector<int> reverseMask = Vectors<int>.SerialDesc;
+                Vectors.YShuffleKernel_Args(reverseMask, out var args0, out var args1);
+                do {
+                    // Load the values into vectors
+                    Vector<int> tempFirst = VectorHelper.LoadUnsafe(ref buf, (nuint)offset);
+                    Vector<int> tempLast = VectorHelper.LoadUnsafe(ref buf, (nuint)lastOffset);
+                    // Shuffle to reverse each vector.
+                    //tempFirst = Vectors.YShuffleKernel(tempFirst, reverseMask);
+                    //tempLast = Vectors.YShuffleKernel(tempLast, reverseMask);
+                    tempFirst = Vectors.YShuffleKernel_Core(tempFirst, args0, args1);
+                    tempLast = Vectors.YShuffleKernel_Core(tempLast, args0, args1);
+                    // Store the reversed vectors
+                    tempLast.StoreUnsafe(ref buf, (nuint)offset);
+                    tempFirst.StoreUnsafe(ref buf, (nuint)lastOffset);
+                    // Next
+                    offset += vectorSize;
+                    lastOffset -= vectorSize;
+                } while (lastOffset >= offset);
+                remainder = lastOffset + vectorSize - offset;
 #if NET7_0_OR_GREATER
             } else if (Avx2.IsSupported && remainder >= Vector256<int>.Count * 2) {
                 nint lastOffset = remainder - Vector256<int>.Count;
@@ -190,7 +214,7 @@ namespace Zyl.ExSpans {
 
             if (false) {
 #if NET8_0_OR_GREATER
-            } else if (Vector512.IsHardwareAccelerated && remainder >= Vector512<long>.Count * 2) {
+            } else if (Vector512.IsHardwareAccelerated && remainder >= Vector512<long>.Count * 2 && Vector512<byte>.Count > Vector<byte>.Count) {
                 nint lastOffset = remainder - Vector512<long>.Count;
                 do {
                     // Load in values from beginning and end of the array.
@@ -218,6 +242,28 @@ namespace Zyl.ExSpans {
 
                 remainder = lastOffset + Vector512<long>.Count - offset;
 #endif // NET8_0_OR_GREATER
+            } else if (Vector.IsHardwareAccelerated && remainder > Vector<long>.Count && Vectors.YShuffleKernel_AcceleratedTypes.HasFlag(TypeCodeFlags.Int64)) {
+                int vectorSize = Vector<long>.Count;
+                nint lastOffset = remainder - vectorSize;
+                Vector<long> reverseMask = Vectors<long>.SerialDesc;
+                Vectors.YShuffleKernel_Args(reverseMask, out var args0, out var args1);
+                do {
+                    // Load the values into vectors
+                    Vector<long> tempFirst = VectorHelper.LoadUnsafe(ref buf, (nuint)offset);
+                    Vector<long> tempLast = VectorHelper.LoadUnsafe(ref buf, (nuint)lastOffset);
+                    // Shuffle to reverse each vector.
+                    //tempFirst = Vectors.YShuffleKernel(tempFirst, reverseMask);
+                    //tempLast = Vectors.YShuffleKernel(tempLast, reverseMask);
+                    tempFirst = Vectors.YShuffleKernel_Core(tempFirst, args0, args1);
+                    tempLast = Vectors.YShuffleKernel_Core(tempLast, args0, args1);
+                    // Store the reversed vectors
+                    tempLast.StoreUnsafe(ref buf, (nuint)offset);
+                    tempFirst.StoreUnsafe(ref buf, (nuint)lastOffset);
+                    // Next
+                    offset += vectorSize;
+                    lastOffset -= vectorSize;
+                } while (lastOffset >= offset);
+                remainder = lastOffset + vectorSize - offset;
 #if NET7_0_OR_GREATER
             } else if (Avx2.IsSupported && remainder >= Vector256<long>.Count * 2) {
                 nint lastOffset = remainder - Vector256<long>.Count;

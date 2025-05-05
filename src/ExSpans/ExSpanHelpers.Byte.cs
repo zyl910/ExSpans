@@ -1248,7 +1248,7 @@ namespace Zyl.ExSpans {
 
             if (false) {
 #if NET8_0_OR_GREATER
-            } else if (Vector512.IsHardwareAccelerated && remainder >= Vector512<byte>.Count * 2) {
+            } else if (Vector512.IsHardwareAccelerated && remainder >= Vector512<byte>.Count * 2 && Vector512<byte>.Count > Vector<byte>.Count) {
                 nint lastOffset = remainder - Vector512<byte>.Count;
                 do {
                     // Load the values into vectors
@@ -1284,6 +1284,28 @@ namespace Zyl.ExSpans {
 
                 remainder = lastOffset + Vector512<byte>.Count - offset;
 #endif // NET8_0_OR_GREATER
+            } else if (Vector.IsHardwareAccelerated && remainder > Vector<byte>.Count && Vectors.YShuffleKernel_AcceleratedTypes.HasFlag(TypeCodeFlags.Byte)) {
+                int vectorSize = Vector<byte>.Count;
+                nint lastOffset = remainder - vectorSize;
+                Vector<byte> reverseMask = Vectors<byte>.SerialDesc;
+                Vectors.YShuffleKernel_Args(reverseMask, out var args0, out var args1);
+                do {
+                    // Load the values into vectors
+                    Vector<byte> tempFirst = VectorHelper.LoadUnsafe(ref buf, (nuint)offset);
+                    Vector<byte> tempLast = VectorHelper.LoadUnsafe(ref buf, (nuint)lastOffset);
+                    // Shuffle to reverse each vector.
+                    //tempFirst = Vectors.YShuffleKernel(tempFirst, reverseMask);
+                    //tempLast = Vectors.YShuffleKernel(tempLast, reverseMask);
+                    tempFirst = Vectors.YShuffleKernel_Core(tempFirst, args0, args1);
+                    tempLast = Vectors.YShuffleKernel_Core(tempLast, args0, args1);
+                    // Store the reversed vectors
+                    tempLast.StoreUnsafe(ref buf, (nuint)offset);
+                    tempFirst.StoreUnsafe(ref buf, (nuint)lastOffset);
+                    // Next
+                    offset += vectorSize;
+                    lastOffset -= vectorSize;
+                } while (lastOffset >= offset);
+                remainder = lastOffset + vectorSize - offset;
 #if NET7_0_OR_GREATER
             } else if (Avx2.IsSupported && remainder >= (nint)(Vector256<byte>.Count * 1.5)) {
                 Vector256<byte> reverseMask = Vector256.Create(

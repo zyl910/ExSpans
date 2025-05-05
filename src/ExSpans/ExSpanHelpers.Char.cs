@@ -7,6 +7,7 @@ using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 #endif // NETCOREAPP3_0_OR_GREATER
 using Zyl.ExSpans.Impl;
+using Zyl.VectorTraits;
 
 namespace Zyl.ExSpans {
     internal static partial class ExSpanHelpers {
@@ -794,7 +795,7 @@ namespace Zyl.ExSpans {
 
             if (false) {
 #if NET8_0_OR_GREATER
-            } else if (Vector512.IsHardwareAccelerated && remainder >= Vector512<ushort>.Count * 2) {
+            } else if (Vector512.IsHardwareAccelerated && remainder >= Vector512<ushort>.Count * 2 && Vector512<byte>.Count > Vector<byte>.Count) {
                 nint lastOffset = remainder - Vector512<ushort>.Count;
                 do {
                     ref ushort first = ref Unsafe.As<char, ushort>(ref Unsafe.Add(ref buf, offset));
@@ -826,6 +827,29 @@ namespace Zyl.ExSpans {
 
                 remainder = (lastOffset + Vector512<ushort>.Count - offset);
 #endif // NET8_0_OR_GREATER
+            } else if (Vector.IsHardwareAccelerated && remainder > Vector<short>.Count && Vectors.YShuffleKernel_AcceleratedTypes.HasFlag(TypeCodeFlags.Int16)) {
+                ref short bufShort = ref Unsafe.As<char, short>(ref buf);
+                int vectorSize = Vector<short>.Count;
+                nint lastOffset = remainder - vectorSize;
+                Vector<short> reverseMask = Vectors<short>.SerialDesc;
+                Vectors.YShuffleKernel_Args(reverseMask, out var args0, out var args1);
+                do {
+                    // Load the values into vectors
+                    Vector<short> tempFirst = VectorHelper.LoadUnsafe(ref bufShort, (nuint)offset);
+                    Vector<short> tempLast = VectorHelper.LoadUnsafe(ref bufShort, (nuint)lastOffset);
+                    // Shuffle to reverse each vector.
+                    //tempFirst = Vectors.YShuffleKernel(tempFirst, reverseMask);
+                    //tempLast = Vectors.YShuffleKernel(tempLast, reverseMask);
+                    tempFirst = Vectors.YShuffleKernel_Core(tempFirst, args0, args1);
+                    tempLast = Vectors.YShuffleKernel_Core(tempLast, args0, args1);
+                    // Store the reversed vectors
+                    tempLast.StoreUnsafe(ref bufShort, (nuint)offset);
+                    tempFirst.StoreUnsafe(ref bufShort, (nuint)lastOffset);
+                    // Next
+                    offset += vectorSize;
+                    lastOffset -= vectorSize;
+                } while (lastOffset >= offset);
+                remainder = lastOffset + vectorSize - offset;
 #if NET7_0_OR_GREATER
             }
             // overlapping has a positive performance benefit around 24 elements
