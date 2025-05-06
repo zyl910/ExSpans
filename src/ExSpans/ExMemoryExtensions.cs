@@ -4902,13 +4902,13 @@ namespace Zyl.ExSpans {
         }
 
 
-#if TODO
+#if NET6_0_OR_GREATER
         /// <summary>Writes the specified interpolated string to the character span.</summary>
         /// <param name="destination">The span to which the interpolated string should be formatted.</param>
         /// <param name="handler">The interpolated string.</param>
         /// <param name="charsWritten">The number of characters written to the span.</param>
         /// <returns>true if the entire interpolated string could be formatted successfully; otherwise, false.</returns>
-        public static bool TryWrite(this ExSpan<char> destination, [InterpolatedStringHandlerArgument(nameof(destination))] ref ExTryWriteInterpolatedStringHandler handler, out int charsWritten) {
+        public static bool TryWrite(this ExSpan<char> destination, [InterpolatedStringHandlerArgument(nameof(destination))] ref ExTryWriteInterpolatedStringHandler handler, out TSize charsWritten) {
             // The span argument isn't used directly in the method; rather, it'll be used by the compiler to create the handler.
             // We could validate here that ExSpan == handler._destination, but that doesn't seem necessary.
             if (handler._success) {
@@ -4926,11 +4926,13 @@ namespace Zyl.ExSpans {
         /// <param name="handler">The interpolated string.</param>
         /// <param name="charsWritten">The number of characters written to the span.</param>
         /// <returns>true if the entire interpolated string could be formatted successfully; otherwise, false.</returns>
-        public static bool TryWrite(this ExSpan<char> destination, IFormatProvider? provider, [InterpolatedStringHandlerArgument(nameof(destination), nameof(provider))] ref ExTryWriteInterpolatedStringHandler handler, out int charsWritten) =>
+        public static bool TryWrite(this ExSpan<char> destination, IFormatProvider? provider, [InterpolatedStringHandlerArgument(nameof(destination), nameof(provider))] ref ExTryWriteInterpolatedStringHandler handler, out TSize charsWritten) =>
             // The provider is passed to the handler by the compiler, so the actual implementation of the method
             // is the same as the non-provider overload.
             TryWrite(destination, ref handler, out charsWritten);
+#endif
 
+#if NET8_0_OR_GREATER
         /// <summary>
         /// Writes the <see cref="CompositeFormat"/> string to the character span, substituting the format item or items
         /// with the string representation of the corresponding arguments.
@@ -4944,9 +4946,9 @@ namespace Zyl.ExSpans {
         /// <returns><see langword="true"/> if the entire interpolated string could be formatted successfully; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="format"/> is null.</exception>
         /// <exception cref="FormatException">The index of a format item is greater than or equal to the number of supplied arguments.</exception>
-        public static bool TryWrite<TArg0>(this ExSpan<char> destination, IFormatProvider? provider, CompositeFormat format, out int charsWritten, TArg0 arg0) {
+        public static bool TryWrite<TArg0>(this ExSpan<char> destination, IFormatProvider? provider, CompositeFormat format, out TSize charsWritten, TArg0 arg0) {
             ArgumentNullException.ThrowIfNull(format);
-            format.ValidateNumberOfArgs(1);
+            CompositeFormatHelper.ValidateNumberOfArgs(format, 1);
             return TryWrite(destination, provider, format, out charsWritten, arg0, 0, 0, default);
         }
 
@@ -4965,9 +4967,9 @@ namespace Zyl.ExSpans {
         /// <returns><see langword="true"/> if the entire interpolated string could be formatted successfully; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="format"/> is null.</exception>
         /// <exception cref="FormatException">The index of a format item is greater than or equal to the number of supplied arguments.</exception>
-        public static bool TryWrite<TArg0, TArg1>(this ExSpan<char> destination, IFormatProvider? provider, CompositeFormat format, out int charsWritten, TArg0 arg0, TArg1 arg1) {
+        public static bool TryWrite<TArg0, TArg1>(this ExSpan<char> destination, IFormatProvider? provider, CompositeFormat format, out TSize charsWritten, TArg0 arg0, TArg1 arg1) {
             ArgumentNullException.ThrowIfNull(format);
-            format.ValidateNumberOfArgs(2);
+            CompositeFormatHelper.ValidateNumberOfArgs(format, 2);
             return TryWrite(destination, provider, format, out charsWritten, arg0, arg1, 0, default);
         }
 
@@ -4988,9 +4990,9 @@ namespace Zyl.ExSpans {
         /// <returns><see langword="true"/> if the entire interpolated string could be formatted successfully; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="format"/> is null.</exception>
         /// <exception cref="FormatException">The index of a format item is greater than or equal to the number of supplied arguments.</exception>
-        public static bool TryWrite<TArg0, TArg1, TArg2>(this ExSpan<char> destination, IFormatProvider? provider, CompositeFormat format, out int charsWritten, TArg0 arg0, TArg1 arg1, TArg2 arg2) {
+        public static bool TryWrite<TArg0, TArg1, TArg2>(this ExSpan<char> destination, IFormatProvider? provider, CompositeFormat format, out TSize charsWritten, TArg0 arg0, TArg1 arg1, TArg2 arg2) {
             ArgumentNullException.ThrowIfNull(format);
-            format.ValidateNumberOfArgs(3);
+            CompositeFormatHelper.ValidateNumberOfArgs(format, 3);
             return TryWrite(destination, provider, format, out charsWritten, arg0, arg1, arg2, default);
         }
 
@@ -5007,10 +5009,10 @@ namespace Zyl.ExSpans {
         /// <exception cref="ArgumentNullException"><paramref name="format"/> is null.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="args"/> is null.</exception>
         /// <exception cref="FormatException">The index of a format item is greater than or equal to the number of supplied arguments.</exception>
-        public static bool TryWrite(this ExSpan<char> destination, IFormatProvider? provider, CompositeFormat format, out int charsWritten, params object?[] args) {
+        public static bool TryWrite(this ExSpan<char> destination, IFormatProvider? provider, CompositeFormat format, out TSize charsWritten, params object?[] args) {
             ArgumentNullException.ThrowIfNull(format);
             ArgumentNullException.ThrowIfNull(args);
-            return TryWrite(destination, provider, format, out charsWritten, (ReadOnlyExSpan<object?>)args);
+            return TryWrite(destination, provider, format, out charsWritten, (ReadOnlySpan<object?>)args);
         }
 
         /// <summary>
@@ -5025,9 +5027,13 @@ namespace Zyl.ExSpans {
         /// <returns><see langword="true"/> if the entire interpolated string could be formatted successfully; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="format"/> is null.</exception>
         /// <exception cref="FormatException">The index of a format item is greater than or equal to the number of supplied arguments.</exception>
-        public static bool TryWrite(this ExSpan<char> destination, IFormatProvider? provider, CompositeFormat format, out int charsWritten, params ReadOnlyExSpan<object?> args) {
+        public static bool TryWrite(this ExSpan<char> destination, IFormatProvider? provider, CompositeFormat format, out TSize charsWritten,
+#if PARAMS_COLLECTIONS
+#endif // PARAMS_COLLECTIONS
+            params
+            ReadOnlySpan<object?> args) {
             ArgumentNullException.ThrowIfNull(format);
-            format.ValidateNumberOfArgs(args.Length);
+            CompositeFormatHelper.ValidateNumberOfArgs(format, args.Length);
             return args.Length switch {
                 0 => TryWrite(destination, provider, format, out charsWritten, 0, 0, 0, args),
                 1 => TryWrite(destination, provider, format, out charsWritten, args[0], 0, 0, args),
@@ -5036,13 +5042,13 @@ namespace Zyl.ExSpans {
             };
         }
 
-        private static bool TryWrite<TArg0, TArg1, TArg2>(ExSpan<char> destination, IFormatProvider? provider, CompositeFormat format, out int charsWritten, TArg0 arg0, TArg1 arg1, TArg2 arg2, ReadOnlyExSpan<object?> args) {
+        private static bool TryWrite<TArg0, TArg1, TArg2>(ExSpan<char> destination, IFormatProvider? provider, CompositeFormat format, out TSize charsWritten, TArg0 arg0, TArg1 arg1, TArg2 arg2, ReadOnlyExSpan<object?> args) {
             // Create the interpolated string handler.
-            var handler = new ExTryWriteInterpolatedStringHandler(format._literalLength, format._formattedCount, destination, provider, out bool shouldAppend);
+            var handler = new ExTryWriteInterpolatedStringHandler(CompositeFormatHelper.GetLiteralLength(format), CompositeFormatHelper.GetFormattedCount(format), destination, provider, out bool shouldAppend);
 
             if (shouldAppend) {
                 // Write each segment.
-                foreach ((string? Literal, int ArgIndex, int Alignment, string? Format) segment in format._segments) {
+                foreach ((string? Literal, int ArgIndex, int Alignment, string? Format) segment in CompositeFormatHelper.GetSegments(format)) {
                     bool appended;
                     if (segment.Literal is string literal) {
                         appended = handler.AppendLiteral(literal);
@@ -5077,7 +5083,7 @@ namespace Zyl.ExSpans {
             // Complete the operation.
             return TryWrite(destination, provider, ref handler, out charsWritten);
         }
-#endif // TODO
+#endif // NET8_0_OR_GREATER
 
 
     }
