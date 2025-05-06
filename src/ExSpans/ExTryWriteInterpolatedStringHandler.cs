@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Text;
+using Zyl.ExSpans.Impl;
+using Zyl.ExSpans.Reflection;
 
 namespace Zyl.ExSpans {
 
-#if TODO
     /// <summary>Provides a handler used by the language compiler to format interpolated strings into character ExSpans.</summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [InterpolatedStringHandler]
@@ -16,10 +20,10 @@ namespace Zyl.ExSpans {
 
         /// <summary>The destination buffer.</summary>
         private readonly ExSpan<char> _destination;
-        /// <summary>Optional provider to pass to IFormattable.ToString or IExSpanFormattable.TryFormat calls.</summary>
+        /// <summary>Optional provider to pass to IFormattable.ToString or ISpanFormattable.TryFormat calls.</summary>
         private readonly IFormatProvider? _provider;
         /// <summary>The number of characters written to <see cref="_destination"/>.</summary>
-        internal int _pos;
+        internal TSize _pos;
         /// <summary>true if all formatting operations have succeeded; otherwise, false.</summary>
         internal bool _success;
         /// <summary>Whether <see cref="_provider"/> provides an ICustomFormatter.</summary>
@@ -58,7 +62,11 @@ namespace Zyl.ExSpans {
             _provider = provider;
             _pos = 0;
             _success = shouldAppend = destination.Length >= literalLength;
-            _hasCustomFormatter = provider is not null && DefaultInterpolatedStringHandler.HasCustomFormatter(provider);
+            _hasCustomFormatter = provider is not null
+#if TODO
+                && DefaultInterpolatedStringHandler.HasCustomFormatter(provider)
+#endif // TODO
+                ;
         }
 
         /// <summary>Writes the specified string to the handler.</summary>
@@ -92,19 +100,19 @@ namespace Zyl.ExSpans {
                 return AppendCustomFormatter(value, format: null);
             }
 
-            // Check first for IFormattable, even though we'll prefer to use IExSpanFormattable, as the latter
+            // Check first for IFormattable, even though we'll prefer to use ISpanFormattable, as the latter
             // derives from the former.  For value types, it won't matter as the type checks devolve into
             // JIT-time constants.  For reference types, they're more likely to implement IFormattable
-            // than they are to implement IExSpanFormattable: if they don't implement either, we save an
-            // interface check over first checking for IExSpanFormattable and then for IFormattable, and
+            // than they are to implement ISpanFormattable: if they don't implement either, we save an
+            // interface check over first checking for ISpanFormattable and then for IFormattable, and
             // if it only implements IFormattable, we come out even: only if it implements both do we
             // end up paying for an extra interface check.
             string? s;
             if (value is IFormattable) {
                 // If the value can format itself directly into our buffer, do so.
 
-                if (typeof(T).IsEnum) {
-                    if (Enum.TryFormatUnconstrained(value, _destination.Slice(_pos), out int charsWritten)) {
+                if (TypeHelper.IsEnum(typeof(T))) {
+                    if (EnumHelper.TryFormatUnconstrained(value, _destination.Slice(_pos).AsSpan(), out int charsWritten)) {
                         _pos += charsWritten;
                         return true;
                     }
@@ -112,8 +120,9 @@ namespace Zyl.ExSpans {
                     return Fail();
                 }
 
-                if (value is IExSpanFormattable) {
-                    if (((IExSpanFormattable)value).TryFormat(_destination.Slice(_pos), out int charsWritten, default, _provider)) // constrained call avoiding boxing for value types
+#if NET6_0_OR_GREATER
+                if (value is ISpanFormattable) {
+                    if (((ISpanFormattable)value).TryFormat(_destination.Slice(_pos).AsSpan(), out int charsWritten, default, _provider)) // constrained call avoiding boxing for value types
                     {
                         _pos += charsWritten;
                         return true;
@@ -121,6 +130,7 @@ namespace Zyl.ExSpans {
 
                     return Fail();
                 }
+#endif // NET6_0_OR_GREATER
 
                 s = ((IFormattable)value).ToString(format: null, _provider); // constrained call avoiding boxing for value types
             } else {
@@ -140,19 +150,19 @@ namespace Zyl.ExSpans {
                 return AppendCustomFormatter(value, format);
             }
 
-            // Check first for IFormattable, even though we'll prefer to use IExSpanFormattable, as the latter
+            // Check first for IFormattable, even though we'll prefer to use ISpanFormattable, as the latter
             // derives from the former.  For value types, it won't matter as the type checks devolve into
             // JIT-time constants.  For reference types, they're more likely to implement IFormattable
-            // than they are to implement IExSpanFormattable: if they don't implement either, we save an
-            // interface check over first checking for IExSpanFormattable and then for IFormattable, and
+            // than they are to implement ISpanFormattable: if they don't implement either, we save an
+            // interface check over first checking for ISpanFormattable and then for IFormattable, and
             // if it only implements IFormattable, we come out even: only if it implements both do we
             // end up paying for an extra interface check.
             string? s;
             if (value is IFormattable) {
                 // If the value can format itself directly into our buffer, do so.
 
-                if (typeof(T).IsEnum) {
-                    if (Enum.TryFormatUnconstrained(value, _destination.Slice(_pos), out int charsWritten, format)) {
+                if (TypeHelper.IsEnum(typeof(T))) {
+                    if (EnumHelper.TryFormatUnconstrained(value, _destination.Slice(_pos).AsSpan(), out int charsWritten, (format is not null) ? format.AsSpan() : default)) {
                         _pos += charsWritten;
                         return true;
                     }
@@ -160,8 +170,9 @@ namespace Zyl.ExSpans {
                     return Fail();
                 }
 
-                if (value is IExSpanFormattable) {
-                    if (((IExSpanFormattable)value).TryFormat(_destination.Slice(_pos), out int charsWritten, format, _provider)) // constrained call avoiding boxing for value types
+#if NET6_0_OR_GREATER
+                if (value is ISpanFormattable) {
+                    if (((ISpanFormattable)value).TryFormat(_destination.Slice(_pos).AsSpan(), out int charsWritten, format, _provider)) // constrained call avoiding boxing for value types
                     {
                         _pos += charsWritten;
                         return true;
@@ -169,6 +180,7 @@ namespace Zyl.ExSpans {
 
                     return Fail();
                 }
+#endif // NET6_0_OR_GREATER
 
                 s = ((IFormattable)value).ToString(format, _provider); // constrained call avoiding boxing for value types
             } else {
@@ -183,7 +195,7 @@ namespace Zyl.ExSpans {
         /// <param name="alignment">Minimum number of characters that should be written for this value.  If the value is negative, it indicates left-aligned and the required minimum is the absolute value.</param>
         /// <typeparam name="T">The type of the value to write.</typeparam>
         public bool AppendFormatted<T>(T value, int alignment) {
-            int startingPos = _pos;
+            TSize startingPos = _pos;
             if (AppendFormatted(value)) {
                 return alignment == 0 || TryAppendOrInsertAlignmentIfNeeded(startingPos, alignment);
             }
@@ -197,7 +209,7 @@ namespace Zyl.ExSpans {
         /// <param name="alignment">Minimum number of characters that should be written for this value.  If the value is negative, it indicates left-aligned and the required minimum is the absolute value.</param>
         /// <typeparam name="T">The type of the value to write.</typeparam>
         public bool AppendFormatted<T>(T value, int alignment, string? format) {
-            int startingPos = _pos;
+            TSize startingPos = _pos;
             if (AppendFormatted(value, format)) {
                 return alignment == 0 || TryAppendOrInsertAlignmentIfNeeded(startingPos, alignment);
             }
@@ -230,7 +242,7 @@ namespace Zyl.ExSpans {
                 alignment = -alignment;
             }
 
-            int paddingRequired = alignment - value.Length;
+            TSize paddingRequired = alignment - value.Length;
             if (paddingRequired <= 0) {
                 // The value is as large or larger than the required amount of padding,
                 // so just write the value.
@@ -316,7 +328,7 @@ namespace Zyl.ExSpans {
             Debug.Assert(_hasCustomFormatter);
             Debug.Assert(_provider != null);
 
-            ICustomFormatter? formatter = (ICustomFormatter?)_provider.GetFormat(typeof(ICustomFormatter));
+            ICustomFormatter? formatter = (ICustomFormatter?)_provider!.GetFormat(typeof(ICustomFormatter));
             Debug.Assert(formatter != null, "An incorrectly written provider said it implemented ICustomFormatter, and then didn't");
 
             if (formatter is not null && formatter.Format(format, value, _provider) is string customFormatted) {
@@ -329,11 +341,11 @@ namespace Zyl.ExSpans {
         /// <summary>Handles adding any padding required for aligning a formatted value in an interpolation expression.</summary>
         /// <param name="startingPos">The position at which the written value started.</param>
         /// <param name="alignment">Non-zero minimum number of characters that should be written for this value.  If the value is negative, it indicates left-aligned and the required minimum is the absolute value.</param>
-        private bool TryAppendOrInsertAlignmentIfNeeded(int startingPos, int alignment) {
+        private bool TryAppendOrInsertAlignmentIfNeeded(TSize startingPos, int alignment) {
             Debug.Assert(startingPos >= 0 && startingPos <= _pos);
             Debug.Assert(alignment != 0);
 
-            int charsWritten = _pos - startingPos;
+            TSize charsWritten = _pos - startingPos;
 
             bool leftAlign = false;
             if (alignment < 0) {
@@ -341,7 +353,7 @@ namespace Zyl.ExSpans {
                 alignment = -alignment;
             }
 
-            int paddingNeeded = alignment - charsWritten;
+            TSize paddingNeeded = alignment - charsWritten;
             if (paddingNeeded <= 0) {
                 return true;
             }
@@ -367,6 +379,5 @@ namespace Zyl.ExSpans {
             return false;
         }
     }
-#endif // TODO
 
 }
