@@ -18,5 +18,15 @@ namespace Zyl.ExSpans {
             ExSpanHelpers.Fill(ref span.GetPinnableReference(), span.Length.ToUIntPtr(), value);
         }
 
+        /// <summary>
+        /// Copies the contents of this string into the destination span.
+        /// </summary>
+        /// <param name="source">The source string.</param>
+        /// <param name="destination">The span into which to copy this string's contents.</param>
+        /// <returns>true if the data was copied; false if the destination was too short to fit the contents of the string.</returns>
+        public static bool TryCopyTo(this string source, ExSpan<char> destination) {
+            return source.AsExSpan().TryCopyTo(destination);
+        }
+
     }
 }
