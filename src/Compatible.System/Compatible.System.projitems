@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Diagnostics\CodeAnalysis\DoesNotReturnAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Diagnostics\CodeAnalysis\NotNullWhenAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Runtime\CompilerServices\InterpolatedStringHandlerArgumentAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Runtime\CompilerServices\InterpolatedStringHandlerAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Runtime\CompilerServices\OverloadResolutionPriorityAttribute.cs" />
   </ItemGroup>
