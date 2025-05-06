@@ -108,6 +108,36 @@ namespace Zyl.ExSpans.Reflection {
         }
 
         /// <summary>
+        /// Is enum types (是否为枚举类型).
+        /// </summary>
+        /// <typeparam name="T">The type (类型).</typeparam>
+        /// <returns>true if the Type is the enum types; otherwise, false (类型是枚举类型就返回 true; 否则返回 false).</returns>
+        /// <seealso cref="Type.IsEnum"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsEnum<T>()
+#if ALLOWS_REF_STRUCT
+                where T : allows ref struct
+#endif // ALLOWS_REF_STRUCT
+                {
+            return IsEnum(typeof(T));
+        }
+
+        /// <summary>
+        /// Is enum types (是否为枚举类型).
+        /// </summary>
+        /// <param name="atype">The type (类型).</param>
+        /// <returns>true if the Type is the enum types; otherwise, false (类型是枚举类型就返回 true; 否则返回 false).</returns>
+        /// <seealso cref="Type.IsEnum"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsEnum(Type atype) {
+#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET20_OR_GREATER
+            return atype.IsEnum;
+#else
+            return atype.GetTypeInfo().IsEnum;
+#endif
+        }
+
+        /// <summary>
         /// Is generic types (是否为泛型类型).
         /// </summary>
         /// <typeparam name="T">The type (类型).</typeparam>
