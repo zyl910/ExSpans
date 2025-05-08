@@ -17,6 +17,7 @@ namespace Zyl.ExSpans.Extensions {
     /// </summary>
     public static class IntPtrExtensions {
 
+#if ALLOW_OBSOLETE
         /// <summary>
         /// Add (加法). <c>left + right</c>.
         /// </summary>
@@ -62,6 +63,7 @@ namespace Zyl.ExSpans.Extensions {
         public static nuint Div(this nuint left, nuint right) {
             return (nuint)(left / right);
         }
+#endif // ALLOW_OBSOLETE
 
 #if NET5_0_OR_GREATER
 #else
@@ -127,6 +129,7 @@ namespace Zyl.ExSpans.Extensions {
 //#endif
 //        }
 
+#if ALLOW_OBSOLETE
         /// <summary>
         /// Greater than (大于比较). <c>left &gt; right</c>.
         /// </summary>
@@ -172,6 +175,7 @@ namespace Zyl.ExSpans.Extensions {
         public static bool GreaterThanOrEqual(this nuint left, nuint right) {
             return left >= right;
         }
+#endif // ALLOW_OBSOLETE
 
         /// <summary>
         /// Is the byte length within the <see cref="Int32">Int32</see> range. This method does not check for negative numbers (字节长度是否在 <see cref="Int32">Int32</see> 范围内. 该方法不检查负数).
@@ -234,6 +238,7 @@ namespace Zyl.ExSpans.Extensions {
             return source <= (uint)int.MaxValue;
         }
 
+#if ALLOW_OBSOLETE
         /// <summary>
         /// Less than (小于比较). <c>left &lt; right</c>.
         /// </summary>
@@ -280,6 +285,7 @@ namespace Zyl.ExSpans.Extensions {
             return left <= right;
         }
 
+#endif // ALLOW_OBSOLETE
         /// <summary>
         /// Multiply (乘法). <c>left * right</c>.
         /// </summary>
@@ -356,7 +362,7 @@ namespace Zyl.ExSpans.Extensions {
         /// <returns>A value after saturating convert (饱和转换后的值).</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int SaturatingToInt32(this nint source) {
-            int dst = source.LessThan(int.MinValue) ? int.MinValue : (source.LessThan(int.MaxValue) ? (int)source : int.MaxValue);
+            int dst = source < int.MinValue ? int.MinValue : (source < int.MaxValue ? (int)source : int.MaxValue);
             return dst;
         }
 
@@ -368,7 +374,7 @@ namespace Zyl.ExSpans.Extensions {
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int SaturatingToInt32(this nuint source) {
-            int dst = source.LessThan((uint)int.MaxValue) ? (int)source : int.MaxValue;
+            int dst = source < (uint)int.MaxValue ? (int)source : int.MaxValue;
             return dst;
         }
 

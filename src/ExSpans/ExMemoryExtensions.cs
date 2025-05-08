@@ -179,7 +179,7 @@ namespace Zyl.ExSpans {
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Contains<T>(this ReadOnlyExSpan<T> span, T value, IEqualityComparer<T>? comparer = null) =>
-            IndexOf(span, value, comparer).GreaterThanOrEqual(0);
+            IndexOf(span, value, comparer) >= 0;
 
         /// <inheritdoc cref="ContainsAny{T}(ReadOnlyExSpan{T}, T, T)"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1880,7 +1880,7 @@ namespace Zyl.ExSpans {
 
                 return IndexOfDefaultComparer(span, value);
                 static TSize IndexOfDefaultComparer(ReadOnlyExSpan<T> span, T value) {
-                    for (TSize i = (TSize)0; i.LessThan(span.Length); i += 1) {
+                    for (TSize i = (TSize)0; i < span.Length; i += 1) {
                         if (EqualityComparer<T>.Default.Equals(span[i], value)) {
                             return i;
                         }
@@ -1892,7 +1892,7 @@ namespace Zyl.ExSpans {
                 return IndexOfComparer(span, value, comparer);
                 static TSize IndexOfComparer(ReadOnlyExSpan<T> span, T value, IEqualityComparer<T>? comparer) {
                     comparer ??= EqualityComparer<T>.Default;
-                    for (TSize i = (TSize)0; i.LessThan(span.Length); i += 1) {
+                    for (TSize i = (TSize)0; i < span.Length; i += 1) {
                         if (comparer.Equals(span[i], value)) {
                             return i;
                         }
@@ -1964,15 +1964,15 @@ namespace Zyl.ExSpans {
                 TSize total = (TSize)0;
                 while (!span.IsEmpty) {
                     TSize pos = span.IndexOf(value[(TSize)0], comparer);
-                    if (pos.LessThan(0)) {
+                    if (pos < 0) {
                         break;
                     }
 
                     if (span.Slice(pos + 1).StartsWith(value.Slice((TSize)1), comparer)) {
-                        return total.Add(pos);
+                        return total + pos;
                     }
 
-                    total = total.Add(pos + 1);
+                    total = total + pos + 1;
                     span = span.Slice(pos + 1);
                 }
 
@@ -2914,11 +2914,11 @@ namespace Zyl.ExSpans {
                 if (blockSize < 1) blockSize = 1;
                 TSize blockSizeN = (TSize)blockSize;
                 TSize index = (TSize)0;
-                while (index.LessThan(length)) {
+                while (index < length) {
                     TSize count = length.Subtract(index);
                     TSize indexNext;
                     bool rt;
-                    if (count.LessThan(blockSizeN)) {
+                    if (count < blockSizeN) {
 #pragma warning disable CS8631 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match constraint type.
                         rt = span.Slice(index, count).AsReadOnlySpan().SequenceEqual(other.Slice(index, count).AsReadOnlySpan());
 #pragma warning restore CS8631 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match constraint type.
@@ -2980,11 +2980,11 @@ namespace Zyl.ExSpans {
                 if (blockSize < 1) blockSize = 1;
                 TSize blockSizeN = (TSize)blockSize;
                 TSize index = (TSize)0;
-                while (index.LessThan(length)) {
-                    TSize count = length.Subtract(index);
+                while (index < length) {
+                    TSize count = length - index;
                     TSize indexNext;
                     bool rt;
-                    if (count.LessThan(blockSizeN)) {
+                    if (count < blockSizeN) {
                         rt = span.Slice(index, count).AsReadOnlySpan().SequenceEqual(other.Slice(index, count).AsReadOnlySpan(), comparer);
                         indexNext = length;
                     } else {
@@ -3011,7 +3011,7 @@ namespace Zyl.ExSpans {
                     }
 
                     // Otherwise, compare each element using EqualityComparer<T>.Default.Equals in a way that will enable it to devirtualize.
-                    for (TSize i = (TSize)0; i.LessThan(length); i += 1) {
+                    for (TSize i = (TSize)0; i < length; i += 1) {
                         if (!EqualityComparer<T>.Default.Equals(span[i], other[i])) {
                             return false;
                         }
@@ -3023,7 +3023,7 @@ namespace Zyl.ExSpans {
 
             // Use the comparer to compare each element.
             comparer ??= EqualityComparer<T>.Default;
-            for (TSize i = (TSize)0; i.LessThan(length); i += 1) {
+            for (TSize i = (TSize)0; i < length; i += 1) {
                 if (!comparer.Equals(span[i], other[i])) {
                     return false;
                 }
@@ -3092,14 +3092,14 @@ namespace Zyl.ExSpans {
         public static bool StartsWith<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> value) where T : IEquatable<T>? {
             TSize valueLength = value.Length;
             if (TypeHelper.IsBitwiseEquatable<T>()) {
-                return valueLength.LessThanOrEqual(span.Length) &&
+                return valueLength <= span.Length &&
                 ExSpanHelpers.SequenceEqual(
                     ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(span)),
                     ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(value)),
                     ((uint)valueLength) * (nuint)Unsafe.SizeOf<T>());  // If this multiplication overflows, the span we got overflows the entire address range. There's no happy outcome for this api in such a case so we choose not to take the overhead of checking.
             }
 
-            return valueLength.LessThanOrEqual(span.Length) && ExSpanHelpers.SequenceEqual(ref ExMemoryMarshal.GetReference(span), ref ExMemoryMarshal.GetReference(value), valueLength.ToUIntPtr());
+            return valueLength <= span.Length && ExSpanHelpers.SequenceEqual(ref ExMemoryMarshal.GetReference(span), ref ExMemoryMarshal.GetReference(value), valueLength.ToUIntPtr());
         }
 
         /// <summary>
@@ -3110,7 +3110,7 @@ namespace Zyl.ExSpans {
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool StartsWith<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> value, IEqualityComparer<T>? comparer = null) =>
-            value.Length.LessThanOrEqual(span.Length) &&
+            value.Length <= span.Length &&
             SequenceEqual(span.Slice((TSize)0, value.Length), value, comparer);
 
         /// <summary>
@@ -3131,14 +3131,14 @@ namespace Zyl.ExSpans {
             TSize ExSpanLength = span.Length;
             TSize valueLength = value.Length;
             if (TypeHelper.IsBitwiseEquatable<T>()) {
-                return valueLength.LessThanOrEqual(ExSpanLength) &&
+                return valueLength <= ExSpanLength &&
                 ExSpanHelpers.SequenceEqual(
                     ref Unsafe.As<T, byte>(ref Unsafe.Add(ref ExMemoryMarshal.GetReference(span), ExSpanLength.Subtract(valueLength) /* force zero-extension */)),
                     ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(value)),
                     (valueLength.ToUIntPtr().Multiply((nuint)Unsafe.SizeOf<T>())));  // If this multiplication overflows, the span we got overflows the entire address range. There's no happy outcome for this api in such a case so we choose not to take the overhead of checking.
             }
 
-            return valueLength.LessThanOrEqual(ExSpanLength) &&
+            return valueLength <= ExSpanLength &&
                 ExSpanHelpers.SequenceEqual(
                     ref Unsafe.Add(ref ExMemoryMarshal.GetReference(span), ExSpanLength.Subtract(valueLength) /* force zero-extension */),
                     ref ExMemoryMarshal.GetReference(value),
@@ -3153,7 +3153,7 @@ namespace Zyl.ExSpans {
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool EndsWith<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> value, IEqualityComparer<T>? comparer = null) =>
-            value.Length.LessThanOrEqual( span.Length) &&
+            value.Length <= span.Length &&
             SequenceEqual(span.Slice(span.Length.Subtract(value.Length)), value, comparer);
 
         /// <summary>

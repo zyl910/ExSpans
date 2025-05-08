@@ -129,13 +129,13 @@ namespace Zyl.ExSpans {
             TSize start = (TSize)0;
 
             if (trimElement != null) {
-                for (; start.LessThan(span.Length); start += 1) {
+                for (; start < span.Length; start += 1) {
                     if (!trimElement.Equals(span[start])) {
                         break;
                     }
                 }
             } else {
-                for (; start.LessThan(span.Length); start += 1) {
+                for (; start < span.Length; start += 1) {
                     if (span[start] != null) {
                         break;
                     }
@@ -153,18 +153,18 @@ namespace Zyl.ExSpans {
         /// <param name="trimElement">The specified element to look for and remove.</param>
         private static TSize ClampEnd<T>(ReadOnlyExSpan<T> span, TSize start, T trimElement) where T : IEquatable<T>? {
             // Initially, start==len==0. If ClampStart trims all, start==len
-            Debug.Assert(start.ToUIntPtr().LessThanOrEqual(span.Length.ToUIntPtr()));
+            Debug.Assert(start.ToUIntPtr() <= span.Length.ToUIntPtr());
 
             TSize end = span.Length - 1;
 
             if (trimElement != null) {
-                for (; end.GreaterThanOrEqual(start); end -= 1) {
+                for (; end >= start; end -= 1) {
                     if (!trimElement.Equals(span[end])) {
                         break;
                     }
                 }
             } else {
-                for (; end.GreaterThanOrEqual(start); end -= 1) {
+                for (; end >= start; end -= 1) {
                     if (span[end] != null) {
                         break;
                     }
@@ -522,14 +522,14 @@ namespace Zyl.ExSpans {
             [MethodImpl(MethodImplOptions.NoInlining)]
             static ReadOnlyExSpan<char> TrimFallback(ReadOnlyExSpan<char> span) {
                 TSize start = (TSize)0;
-                for (; start.LessThan(span.Length); start += 1) {
+                for (; start < span.Length; start += 1) {
                     if (!char.IsWhiteSpace(span[start])) {
                         break;
                     }
                 }
 
                 TSize end = span.Length - 1;
-                for (; end.GreaterThan(start); end -= 1) {
+                for (; end > start; end -= 1) {
                     if (!char.IsWhiteSpace(span[end])) {
                         break;
                     }
@@ -544,7 +544,7 @@ namespace Zyl.ExSpans {
         /// <param name="span">The source span from which the characters are removed.</param>
         public static ReadOnlyExSpan<char> TrimStart(this ReadOnlyExSpan<char> span) {
             TSize start = (TSize)0;
-            for (; start.LessThan(span.Length); start += 1) {
+            for (; start < span.Length; start += 1) {
                 if (!char.IsWhiteSpace(span[start])) {
                     break;
                 }
@@ -559,7 +559,7 @@ namespace Zyl.ExSpans {
         /// <param name="span">The source span from which the characters are removed.</param>
         public static ReadOnlyExSpan<char> TrimEnd(this ReadOnlyExSpan<char> span) {
             TSize end = span.Length - 1;
-            for (; end.GreaterThanOrEqual((TSize)0); end -= 1) {
+            for (; end >= (TSize)0; end -= 1) {
                 if (!char.IsWhiteSpace(span[end])) {
                     break;
                 }
@@ -575,14 +575,14 @@ namespace Zyl.ExSpans {
         /// <param name="trimChar">The specified character to look for and remove.</param>
         public static ReadOnlyExSpan<char> Trim(this ReadOnlyExSpan<char> span, char trimChar) {
             TSize start = (TSize)0;
-            for (; start.LessThan(span.Length); start += 1) {
+            for (; start < span.Length  ; start += 1) {
                 if (span[start] != trimChar) {
                     break;
                 }
             }
 
             TSize end = span.Length - 1;
-            for (; end.GreaterThan(start); end -= 1) {
+            for (; end > start; end -= 1) {
                 if (span[end] != trimChar) {
                     break;
                 }
@@ -598,7 +598,7 @@ namespace Zyl.ExSpans {
         /// <param name="trimChar">The specified character to look for and remove.</param>
         public static ReadOnlyExSpan<char> TrimStart(this ReadOnlyExSpan<char> span, char trimChar) {
             TSize start = (TSize)0;
-            for (; start.LessThan(span.Length); start += 1) {
+            for (; start < span.Length; start += 1) {
                 if (span[start] != trimChar) {
                     break;
                 }
@@ -614,7 +614,7 @@ namespace Zyl.ExSpans {
         /// <param name="trimChar">The specified character to look for and remove.</param>
         public static ReadOnlyExSpan<char> TrimEnd(this ReadOnlyExSpan<char> span, char trimChar) {
             TSize end = span.Length - 1;
-            for (; end.GreaterThanOrEqual((TSize)0); end -= 1) {
+            for (; end >= (TSize)0; end -= 1) {
                 if (span[end] != trimChar) {
                     break;
                 }
@@ -646,8 +646,8 @@ namespace Zyl.ExSpans {
             }
 
             TSize start = (TSize)0;
-            for (; start.LessThan(span.Length); start += 1) {
-                for (TSize i = (TSize)0; i.LessThan(trimChars.Length); i += 1) {
+            for (; start < span.Length; start += 1) {
+                for (TSize i = (TSize)0; i < trimChars.Length; i += 1) {
                     if (span[start] == trimChars[i]) {
                         goto Next;
                     }
@@ -674,13 +674,13 @@ namespace Zyl.ExSpans {
             }
 
             TSize end = span.Length - 1;
-            for (; end.GreaterThanOrEqual((TSize)0); end -= 1) {
-                for (TSize i = (TSize)0; i.LessThan(trimChars.Length); i += 1) {
+            for (; end >= (TSize)0; end -= 1) {
+                for (TSize i = (TSize)0; i < trimChars.Length; i += 1) {
                     if (span[end] == trimChars[i]) {
                         goto Next;
                     }
                 }
-
+                    
                 break;
             Next:
                 ;
@@ -705,14 +705,14 @@ namespace Zyl.ExSpans {
             [MethodImpl(MethodImplOptions.NoInlining)]
             static ExSpan<char> TrimFallback(ExSpan<char> span) {
                 TSize start = (TSize)0;
-                for (; start.LessThan(span.Length); start += 1) {
+                for (; start < span.Length; start += 1) {
                     if (!char.IsWhiteSpace(span[start])) {
                         break;
                     }
                 }
 
                 TSize end = span.Length - 1;
-                for (; end.GreaterThan(start); end -= 1) {
+                for (; end > start; end -= 1) {
                     if (!char.IsWhiteSpace(span[end])) {
                         break;
                     }
@@ -742,7 +742,7 @@ namespace Zyl.ExSpans {
         private static TSize ClampStart(ReadOnlyExSpan<char> span) {
             TSize start = (TSize)0;
 
-            for (; start.LessThan(span.Length); start += 1) {
+            for (; start < span.Length; start += 1) {
                 if (!char.IsWhiteSpace(span[start])) {
                     break;
                 }
@@ -758,11 +758,11 @@ namespace Zyl.ExSpans {
         /// <param name="start">The start index from which to being searching.</param>
         private static TSize ClampEnd(ReadOnlyExSpan<char> span, TSize start) {
             // Initially, start==len==0. If ClampStart trims all, start==len
-            Debug.Assert(start.ToUIntPtr().LessThanOrEqual(span.Length.ToUIntPtr()));
+            Debug.Assert(start.ToUIntPtr() <= span.Length.ToUIntPtr());
 
             TSize end = span.Length - 1;
 
-            for (; end.GreaterThanOrEqual(start); end -= 1) {
+            for (; end >= start; end -= 1) {
                 if (!char.IsWhiteSpace(span[end])) {
                     break;
                 }

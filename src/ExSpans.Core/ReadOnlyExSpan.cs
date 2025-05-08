@@ -77,7 +77,7 @@ namespace Zyl.ExSpans {
                 return; // returns default
             }
             TUSize srcLength = array.ExLength().ToUIntPtr();
-            if (start.ToUIntPtr().GreaterThan(srcLength) || length.ToUIntPtr().GreaterThan(srcLength.Subtract(start.ToUIntPtr()))) {
+            if (start.ToUIntPtr()> srcLength || length.ToUIntPtr() > (srcLength - start.ToUIntPtr())) {
                 ThrowHelper.ThrowArgumentOutOfRangeException();
             }
 
@@ -108,7 +108,7 @@ namespace Zyl.ExSpans {
             if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
                 ThrowHelper.ThrowInvalidTypeWithPointersNotSupported(typeof(T));
 #endif
-            if (length.LessThan((TSize)0))
+            if (length < (TSize)0)
                 ThrowHelper.ThrowArgumentOutOfRangeException();
             if (length == (TSize)0) {
                 this = default;
@@ -141,7 +141,7 @@ namespace Zyl.ExSpans {
         // Constructor for internal use only. It is not safe to expose publicly, and is instead exposed via the unsafe MemoryMarshal.CreateReadOnlyExSpan.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal ReadOnlyExSpan(ref T reference, TSize length) {
-            Debug.Assert(length.GreaterThanOrEqual((TSize)0));
+            Debug.Assert(length >= (TSize)0);
 
             _length = length;
 #if STRUCT_REF_FIELD
@@ -175,7 +175,7 @@ namespace Zyl.ExSpans {
         public ref readonly T this[TSize index] {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get {
-                if (index.ToUIntPtr().GreaterThanOrEqual(_length.ToUIntPtr()))
+                if (index.ToUIntPtr() >= _length.ToUIntPtr())
                     ThrowHelper.ThrowIndexOutOfRangeException();
 #if STRUCT_REF_FIELD
                 return ref Unsafe.Add(ref _reference, index);
@@ -287,7 +287,7 @@ namespace Zyl.ExSpans {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public bool MoveNext() {
                 TSize index = _index + 1;
-                if (IntPtrExtensions.LessThan(index, _span.Length)) {
+                if (index < _span.Length) {
                     _index = index;
                     return true;
                 }
@@ -351,7 +351,7 @@ namespace Zyl.ExSpans {
             // check, and one for the result of TryCopyTo. Since these checks are equivalent,
             // we can optimize by performing the check once ourselves then calling Memmove directly.
 
-            if (IntPtrExtensions.LessThanOrEqual(_length, destination.Length)) {
+            if (_length <= destination.Length) {
                 BufferHelper.Memmove(ref destination.GetPinnableReference(), in GetPinnableReference(), _length.ToUIntPtr());
             } else {
                 ThrowHelper.ThrowArgumentException_DestinationTooShort();
@@ -368,7 +368,7 @@ namespace Zyl.ExSpans {
         /// <returns>true if the copy operation succeeded; otherwise, false (如果复制操作已成功，则为 true；否则，为 false).</returns>
         public bool TryCopyTo(ExSpan<T> destination) {
             bool retVal = false;
-            if (IntPtrExtensions.LessThanOrEqual(_length, destination.Length)) {
+            if (_length <= destination.Length) {
                 BufferHelper.Memmove(ref destination.GetPinnableReference(), in GetPinnableReference(), _length.ToUIntPtr());
                 retVal = true;
             }
@@ -410,10 +410,10 @@ namespace Zyl.ExSpans {
         [MyCLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ReadOnlyExSpan<T> Slice(TSize start) {
-            if (IntPtrExtensions.GreaterThan(start, _length))
+            if (start > _length)
                 ThrowHelper.ThrowArgumentOutOfRangeException();
 
-            TSize len = IntPtrExtensions.Subtract(_length, start);
+            TSize len = _length - start;
 #if STRUCT_REF_FIELD
             return new ReadOnlyExSpan<T>(ref Unsafe.Add(ref _reference, start), len);
 #else
@@ -439,9 +439,9 @@ namespace Zyl.ExSpans {
         [MyCLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ReadOnlyExSpan<T> Slice(TSize start, TSize length) {
-            if (start.ToUIntPtr().GreaterThan(_length.ToUIntPtr()))
+            if (start.ToUIntPtr() > _length.ToUIntPtr())
                 ThrowHelper.ThrowArgumentOutOfRangeException();
-            if (length.ToUIntPtr().GreaterThan(_length.Subtract(start).ToUIntPtr()))
+            if (length.ToUIntPtr() > _length.Subtract(start).ToUIntPtr())
                 ThrowHelper.ThrowArgumentOutOfRangeException();
 
 #if STRUCT_REF_FIELD
@@ -476,7 +476,7 @@ namespace Zyl.ExSpans {
             if (_length == (TSize)0)
                 return ArrayHelper.Empty<T>();
 
-            int len = (IntPtrExtensions.LessThan(_length, (TSize)maxLength)) ? (int)_length : maxLength;
+            int len = (_length < (TSize)maxLength) ? (int)_length : maxLength;
             var destination = new T[len];
             BufferHelper.Memmove(ref ExMemoryMarshal.GetArrayDataReference(destination), in GetPinnableReference(), (uint)len);
             return destination;

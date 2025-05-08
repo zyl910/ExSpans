@@ -318,7 +318,7 @@ namespace Zyl.ExSpans {
                 ThrowHelper.ThrowInvalidTypeWithPointersNotSupported(typeof(T));
             }
             TSize size = (TSize)Unsafe.SizeOf<T>();
-            if (size.GreaterThan(source.Length)) {
+            if (size > source.Length) {
                 throw new ArgumentOutOfRangeException(nameof(source), string.Format("The type size({0}) is greater then source length({1})!", size, source.Length));
             }
             return Unsafe.ReadUnaligned<T>(ref GetReference(source));
@@ -339,7 +339,7 @@ namespace Zyl.ExSpans {
                 ThrowHelper.ThrowInvalidTypeWithPointersNotSupported(typeof(T));
             }
             TSize size = (TSize)Unsafe.SizeOf<T>();
-            if (size.GreaterThan(source.Length)) {
+            if (size > source.Length) {
                 value = default;
                 return false;
             }
@@ -362,7 +362,7 @@ namespace Zyl.ExSpans {
                 ThrowHelper.ThrowInvalidTypeWithPointersNotSupported(typeof(T));
             }
             TSize size = (TSize)Unsafe.SizeOf<T>();
-            if (size.GreaterThan(destination.Length)) {
+            if (size > destination.Length) {
                 throw new ArgumentOutOfRangeException(nameof(destination), string.Format("The type size({0}) is greater then destination length({1})!", size, destination.Length));
             }
             Unsafe.WriteUnaligned(ref GetReference(destination), value);
@@ -383,7 +383,7 @@ namespace Zyl.ExSpans {
                 ThrowHelper.ThrowInvalidTypeWithPointersNotSupported(typeof(T));
             }
             TSize size = (TSize)Unsafe.SizeOf<T>();
-            if (size.GreaterThan(destination.Length)) {
+            if (size > destination.Length) {
                 return false;
             }
             Unsafe.WriteUnaligned(ref GetReference(destination), value);
@@ -409,7 +409,7 @@ namespace Zyl.ExSpans {
                 ThrowHelper.ThrowInvalidTypeWithPointersNotSupported(typeof(T));
             }
             TSize size = (TSize)Unsafe.SizeOf<T>();
-            if (size.GreaterThan(span.Length)) {
+            if (size > span.Length) {
                 throw new ArgumentOutOfRangeException(nameof(span), string.Format("The type size({0}) is greater then span length({1})!", size, span.Length));
             }
             return ref Unsafe.As<byte, T>(ref GetReference(span));
@@ -434,7 +434,7 @@ namespace Zyl.ExSpans {
                 ThrowHelper.ThrowInvalidTypeWithPointersNotSupported(typeof(T));
             }
             TSize size = (TSize)Unsafe.SizeOf<T>();
-            if (size.GreaterThan(span.Length)) {
+            if (size > span.Length) {
                 throw new ArgumentOutOfRangeException(nameof(span), string.Format("The type size({0}) is greater then span length({1})!", size, span.Length));
             }
             return ref Unsafe.As<byte, T>(ref GetReference(span));

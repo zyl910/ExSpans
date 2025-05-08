@@ -14,7 +14,7 @@ namespace Zyl.ExSpans {
         /// Indicates whether the specified span contains only white-space characters.
         /// </summary>
         public static bool IsWhiteSpace(this ReadOnlyExSpan<char> span) {
-            for (TSize i = (TSize)0; i.LessThan(span.Length); i+=1) {
+            for (TSize i = (TSize)0; i < span.Length; i+=1) {
                 if (!char.IsWhiteSpace(span[i]))
                     return false;
             }

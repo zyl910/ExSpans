@@ -253,10 +253,10 @@ namespace Zyl.ExSpans {
                     ThrowHelper.ThrowArgumentOutOfRangeException();
                 return default;
             }
-            if (IntPtrExtensions.GreaterThanOrEqual(start, array.ExLength())) {
+            if (start >= array.ExLength()) {
                 ThrowHelper.ThrowArgumentOutOfRangeException();
             }
-            return new ExSpan<T>(array, start, IntPtrExtensions.Subtract(array.ExLength(), start));
+            return new ExSpan<T>(array, start, array.ExLength() - start);
         }
 
 #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP3_0_OR_GREATER

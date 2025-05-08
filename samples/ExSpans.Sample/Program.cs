@@ -85,7 +85,7 @@ namespace Zyl.ExSpans.Sample {
 
         private static int SumExSpan(ReadOnlyExSpan<int> span) {
             int rt = 0; // Result.
-            for (TSize i = (TSize)0; i.LessThan(span.Length); i += 1) { // The LessThan method is from `Zyl.ExSpans.Extensions.IntPtrExtensions.LessThan`. Since .NET 7.0, the TSize type has only begin to support the less than operator.
+            for (TSize i = (TSize)0; i < span.Length; i += 1) { // The LessThan method is from `Zyl.ExSpans.Extensions.IntPtrExtensions.LessThan`. Since .NET 7.0, the TSize type has only begin to support the less than operator.
                 rt += span[i];
             }
             return rt;

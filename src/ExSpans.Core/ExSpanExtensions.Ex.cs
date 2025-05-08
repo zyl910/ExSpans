@@ -423,12 +423,12 @@ namespace Zyl.ExSpans {
             TSize headerCount = default;
             TSize footerCount = default;
             TSize footerStart = default;
-            if (length.LessThanOrEqual(headerLength)) {
+            if (length <= headerLength) {
                 headerCount = length;
             } else {
                 headerCount = headerLength;
                 footerStart = length.Subtract(footerLength);
-                if (footerStart.LessThan(headerCount)) footerStart = headerCount;
+                if (footerStart < headerCount) footerStart = headerCount;
                 footerCount = length.Subtract(footerStart);
             }
             // Output before.
@@ -439,8 +439,8 @@ namespace Zyl.ExSpans {
             // Output header.
             ref T p0 = ref Unsafe.AsRef(in source);
             ref T p = ref p0;
-            for (TSize i = zero; i.LessThan(headerCount); i += 1) {
-                if (i.GreaterThan(zero)) {
+            for (TSize i = zero; i < headerCount; i += 1) {
+                if (i > zero) {
                     output(separator);
                 }
                 T value = p;
@@ -450,17 +450,17 @@ namespace Zyl.ExSpans {
                 p = ref Unsafe.Add(ref p, 1);
             }
             // Output ellipsis.
-            if (headerCount.LessThan(length) && headerCount != footerStart) {
+            if (headerCount < length && headerCount != footerStart) {
                 output(separator);
                 output("...");
             }
             // Output footer.
-            if (footerCount.GreaterThan(zero)) {
+            if (footerCount > zero) {
                 output(separator);
                 // Output.
                 p = ref ExUnsafe.Add(ref p0, footerStart);
-                for (TSize i = zero; i.LessThan(footerCount); i += 1) {
-                    if (i.GreaterThan(zero)) {
+                for (TSize i = zero; i < footerCount; i += 1) {
+                    if (i > zero) {
                         output(separator);
                     }
                     T value = p;

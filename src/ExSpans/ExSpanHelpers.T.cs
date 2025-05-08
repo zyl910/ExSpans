@@ -3651,7 +3651,7 @@ namespace Zyl.ExSpans {
         private static nint ComputeFirstIndex<T>(ref T searchSpace, ref T current, Vector<T> equals) where T : struct {
             ulong notEqualsElements = equals.ExtractMostSignificantBits();
             int index = MathBitOperations.TrailingZeroCount(notEqualsElements);
-            return index + Unsafe.ByteOffset(ref searchSpace, ref current).Div(Unsafe.SizeOf<T>());
+            return index + Unsafe.ByteOffset(ref searchSpace, ref current) / (nint)Unsafe.SizeOf<T>();
         }
 
 #if NET7_0_OR_GREATER

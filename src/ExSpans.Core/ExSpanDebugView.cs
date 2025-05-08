@@ -39,12 +39,12 @@ namespace Zyl.ExSpans {
             _length = span.Length;
             _dataAddress = (nint)Unsafe.AsPointer(ref span.GetPinnableReference());
             _itemsHeader = span.ToArray(spanViewLength);
-            if (_length.LessThanOrEqual((TSize32)spanViewLength)) {
+            if (_length <= (TSize32)spanViewLength) {
                 _itemsFooter = ArrayHelper.Empty<T>();
                 _itemsFooterStart = default;
             } else {
                 _itemsFooterStart = _length.Subtract((TSize)spanViewLength);
-                if (_itemsFooterStart.LessThan((TSize32)spanViewLength)) _itemsFooterStart = (TSize)spanViewLength;
+                if (_itemsFooterStart < (TSize32)spanViewLength) _itemsFooterStart = (TSize)spanViewLength;
                 _itemsFooter = span.Slice(_itemsFooterStart).ToArray(spanViewLength);
             }
             _stringHeader = string.Empty;
@@ -68,7 +68,7 @@ namespace Zyl.ExSpans {
             _length = span.Length;
             _dataAddress = (nint)Unsafe.AsPointer(ref Unsafe.AsRef(in span.GetPinnableReference()));
             _itemsHeader = span.ToArray(spanViewLength);
-            if (_length.LessThanOrEqual((TSize32)spanViewLength)) {
+            if (_length <= (TSize32)spanViewLength) {
                 _itemsFooter = ArrayHelper.Empty<T>();
                 _itemsFooterStart = default;
             } else {
