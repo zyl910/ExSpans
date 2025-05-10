@@ -2915,7 +2915,7 @@ namespace Zyl.ExSpans {
                 TSize blockSizeN = (TSize)blockSize;
                 TSize index = (TSize)0;
                 while (index < length) {
-                    TSize count = length.Subtract(index);
+                    TSize count = length - index;
                     TSize indexNext;
                     bool rt;
                     if (count < blockSizeN) {
@@ -3128,19 +3128,19 @@ namespace Zyl.ExSpans {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         //[Intrinsic] // Unrolled and vectorized for half-constant input
         public static bool EndsWith<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> value) where T : IEquatable<T>? {
-            TSize ExSpanLength = span.Length;
+            TSize spanLength = span.Length;
             TSize valueLength = value.Length;
             if (TypeHelper.IsBitwiseEquatable<T>()) {
-                return valueLength <= ExSpanLength &&
+                return valueLength <= spanLength &&
                 ExSpanHelpers.SequenceEqual(
-                    ref Unsafe.As<T, byte>(ref Unsafe.Add(ref ExMemoryMarshal.GetReference(span), ExSpanLength.Subtract(valueLength) /* force zero-extension */)),
+                    ref Unsafe.As<T, byte>(ref Unsafe.Add(ref ExMemoryMarshal.GetReference(span), spanLength - valueLength /* force zero-extension */)),
                     ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(value)),
-                    (valueLength.ToUIntPtr().Multiply((nuint)Unsafe.SizeOf<T>())));  // If this multiplication overflows, the span we got overflows the entire address range. There's no happy outcome for this api in such a case so we choose not to take the overhead of checking.
+                    (valueLength.ToUIntPtr() * (nuint)Unsafe.SizeOf<T>()));  // If this multiplication overflows, the span we got overflows the entire address range. There's no happy outcome for this api in such a case so we choose not to take the overhead of checking.
             }
 
-            return valueLength <= ExSpanLength &&
+            return valueLength <= spanLength &&
                 ExSpanHelpers.SequenceEqual(
-                    ref Unsafe.Add(ref ExMemoryMarshal.GetReference(span), ExSpanLength.Subtract(valueLength) /* force zero-extension */),
+                    ref Unsafe.Add(ref ExMemoryMarshal.GetReference(span), spanLength - valueLength /* force zero-extension */),
                     ref ExMemoryMarshal.GetReference(value),
                     valueLength.ToUIntPtr());
         }
@@ -3154,7 +3154,7 @@ namespace Zyl.ExSpans {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool EndsWith<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> value, IEqualityComparer<T>? comparer = null) =>
             value.Length <= span.Length &&
-            SequenceEqual(span.Slice(span.Length.Subtract(value.Length)), value, comparer);
+            SequenceEqual(span.Slice(span.Length - value.Length), value, comparer);
 
         /// <summary>
         /// Determines whether the specified value appears at the start of the span.

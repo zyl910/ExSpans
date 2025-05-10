@@ -285,7 +285,6 @@ namespace Zyl.ExSpans.Extensions {
             return left <= right;
         }
 
-#endif // ALLOW_OBSOLETE
         /// <summary>
         /// Multiply (乘法). <c>left * right</c>.
         /// </summary>
@@ -354,6 +353,7 @@ namespace Zyl.ExSpans.Extensions {
         public static nuint Subtract(this nuint left, nuint right) {
             return left - right;
         }
+#endif // ALLOW_OBSOLETE
 
         /// <summary>
         /// Convert <see cref="UIntPtr"/> saturating to <see cref="Int32"/> (将 <see cref="UIntPtr"/> 饱和转换为 <see cref="Int32"/>).

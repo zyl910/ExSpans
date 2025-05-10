@@ -280,7 +280,7 @@ namespace Zyl.ExSpans {
             if (actualIndex < 0) {
                 ThrowHelper.ThrowArgumentOutOfRangeException();
             }
-            return new ExSpan<T>(array, (TSize)actualIndex, IntPtrExtensions.Subtract(array.ExLength(), (TSize)actualIndex));
+            return new ExSpan<T>(array, (TSize)actualIndex, array.ExLength() - (TSize)actualIndex);
         }
 
         /// <summary>

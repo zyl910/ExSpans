@@ -427,9 +427,9 @@ namespace Zyl.ExSpans {
                 headerCount = length;
             } else {
                 headerCount = headerLength;
-                footerStart = length.Subtract(footerLength);
+                footerStart = length - footerLength;
                 if (footerStart < headerCount) footerStart = headerCount;
-                footerCount = length.Subtract(footerStart);
+                footerCount = length - footerStart;
             }
             // Output before.
             bool hideBrace = ItemsToStringFlags.HideBrace == (ItemsToStringFlags.HideBrace & stringFlags);

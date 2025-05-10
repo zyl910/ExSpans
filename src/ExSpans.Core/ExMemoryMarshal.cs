@@ -34,7 +34,7 @@ namespace Zyl.ExSpans {
             where T : struct {
             if (TypeHelper.IsReferenceOrContainsReferences<T>())
                 ThrowHelper.ThrowInvalidTypeWithPointersNotSupported(typeof(T));
-            TSize len = span.Length.MultiplyChecked(Unsafe.SizeOf<T>());
+            TSize len = checked(span.Length * Unsafe.SizeOf<T>());
 #if STRUCT_REF_FIELD
             return new ExSpan<byte>(ref Unsafe.As<T, byte>(ref GetReference(span)), len);
 #else
@@ -62,7 +62,7 @@ namespace Zyl.ExSpans {
             if (TypeHelper.IsReferenceOrContainsReferences<T>())
                 ThrowHelper.ThrowInvalidTypeWithPointersNotSupported(typeof(T));
 
-            TSize len = span.Length.MultiplyChecked(Unsafe.SizeOf<T>());
+            TSize len = checked(span.Length * Unsafe.SizeOf<T>());
 #if STRUCT_REF_FIELD
             return new ReadOnlyExSpan<byte>(ref Unsafe.As<T, byte>(ref GetReference(span)), len);
 #else

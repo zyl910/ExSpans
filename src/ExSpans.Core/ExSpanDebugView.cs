@@ -43,7 +43,7 @@ namespace Zyl.ExSpans {
                 _itemsFooter = ArrayHelper.Empty<T>();
                 _itemsFooterStart = default;
             } else {
-                _itemsFooterStart = _length.Subtract((TSize)spanViewLength);
+                _itemsFooterStart = _length - (TSize)spanViewLength;
                 if (_itemsFooterStart < (TSize32)spanViewLength) _itemsFooterStart = (TSize)spanViewLength;
                 _itemsFooter = span.Slice(_itemsFooterStart).ToArray(spanViewLength);
             }
@@ -72,7 +72,7 @@ namespace Zyl.ExSpans {
                 _itemsFooter = ArrayHelper.Empty<T>();
                 _itemsFooterStart = default;
             } else {
-                _itemsFooterStart = _length.Subtract((TSize)spanViewLength);
+                _itemsFooterStart = _length - (TSize)spanViewLength;
                 _itemsFooter = span.Slice(_itemsFooterStart).ToArray(spanViewLength);
             }
             _stringHeader = string.Empty;

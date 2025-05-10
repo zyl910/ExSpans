@@ -431,7 +431,7 @@ namespace Zyl.ExSpans {
             if (start > _length)
                 ThrowHelper.ThrowArgumentOutOfRangeException();
 
-            TSize len = IntPtrExtensions.Subtract(_length, start);
+            TSize len = _length - start;
 #if STRUCT_REF_FIELD
             return new ExSpan<T>(ref Unsafe.Add(ref _reference, start), len);
 #else
@@ -459,7 +459,7 @@ namespace Zyl.ExSpans {
         public ExSpan<T> Slice(TSize start, TSize length) {
             if (start.ToUIntPtr() > _length.ToUIntPtr())
                 ThrowHelper.ThrowArgumentOutOfRangeException();
-            if (length.ToUIntPtr() > _length.Subtract(start).ToUIntPtr())
+            if (length.ToUIntPtr() > (TUSize)_length - start.ToUIntPtr())
                 ThrowHelper.ThrowArgumentOutOfRangeException();
 
 #if STRUCT_REF_FIELD

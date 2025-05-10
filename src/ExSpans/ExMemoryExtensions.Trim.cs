@@ -171,7 +171,7 @@ namespace Zyl.ExSpans {
                 }
             }
 
-            return end.Subtract(start) + 1;
+            return end - start + 1;
         }
 
 #if NOT_RELATED
@@ -534,7 +534,7 @@ namespace Zyl.ExSpans {
                         break;
                     }
                 }
-                return span.Slice(start, end.Subtract(start) + 1);
+                return span.Slice(start, end - start + 1);
             }
         }
 
@@ -588,7 +588,7 @@ namespace Zyl.ExSpans {
                 }
             }
 
-            return span.Slice(start, end.Subtract(start) + 1);
+            return span.Slice(start, end - start + 1);
         }
 
         /// <summary>
@@ -717,7 +717,7 @@ namespace Zyl.ExSpans {
                         break;
                     }
                 }
-                return span.Slice(start, end.Subtract(start) + 1);
+                return span.Slice(start, end - start + 1);
             }
         }
 
@@ -768,7 +768,7 @@ namespace Zyl.ExSpans {
                 }
             }
 
-            return end.Subtract(start) + 1;
+            return end - start + 1;
         }
 
     }

@@ -441,7 +441,7 @@ namespace Zyl.ExSpans {
         public ReadOnlyExSpan<T> Slice(TSize start, TSize length) {
             if (start.ToUIntPtr() > _length.ToUIntPtr())
                 ThrowHelper.ThrowArgumentOutOfRangeException();
-            if (length.ToUIntPtr() > _length.Subtract(start).ToUIntPtr())
+            if (length.ToUIntPtr() > (_length - start).ToUIntPtr())
                 ThrowHelper.ThrowArgumentOutOfRangeException();
 
 #if STRUCT_REF_FIELD
