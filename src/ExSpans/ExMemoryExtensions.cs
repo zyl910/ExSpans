@@ -4153,7 +4153,7 @@ namespace Zyl.ExSpans {
             int pos;
             while ((pos = span.IndexOfAny(values)) >= 0) {
                 span[pos] = newValue;
-                ExSpan = span.Slice(pos + 1);
+                span = span.Slice(pos + 1);
             }
         }
 
@@ -4197,7 +4197,7 @@ namespace Zyl.ExSpans {
             int pos;
             while ((pos = span.IndexOfAnyExcept(values)) >= 0) {
                 span[pos] = newValue;
-                ExSpan = span.Slice(pos + 1);
+                span = span.Slice(pos + 1);
             }
         }
 #endif // NET8_0_OR_GREATER
@@ -4910,7 +4910,7 @@ namespace Zyl.ExSpans {
         /// <returns>true if the entire interpolated string could be formatted successfully; otherwise, false.</returns>
         public static bool TryWrite(this ExSpan<char> destination, [InterpolatedStringHandlerArgument(nameof(destination))] ref ExTryWriteInterpolatedStringHandler handler, out TSize charsWritten) {
             // The span argument isn't used directly in the method; rather, it'll be used by the compiler to create the handler.
-            // We could validate here that ExSpan == handler._destination, but that doesn't seem necessary.
+            // We could validate here that span == handler._destination, but that doesn't seem necessary.
             if (handler._success) {
                 charsWritten = handler._pos;
                 return true;
