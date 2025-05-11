@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using Zyl.ExSpans.Exceptions;
 using Zyl.ExSpans.Extensions;
 using Zyl.ExSpans.Impl;
 
@@ -21,7 +22,6 @@ namespace Zyl.ExSpans {
             return true;
         }
 
-#if TODO
         /// <summary>
         /// Returns a value indicating whether the specified <paramref name="value"/> occurs within the <paramref name="span"/>.
         /// </summary>
@@ -32,6 +32,7 @@ namespace Zyl.ExSpans {
             return IndexOf(span, value, comparisonType) >= 0;
         }
 
+#if TODO
         /// <summary>
         /// Determines whether this <paramref name="span"/> and the specified <paramref name="other"/> span have the same characters
         /// when compared using the specified <paramref name="comparisonType"/> option.
@@ -62,6 +63,7 @@ namespace Zyl.ExSpans {
                     return EqualsOrdinalIgnoreCase(span, other);
             }
         }
+#endif // TODO
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static bool EqualsOrdinal(this ReadOnlyExSpan<char> span, ReadOnlyExSpan<char> value) {
@@ -72,6 +74,7 @@ namespace Zyl.ExSpans {
             return span.SequenceEqual(value);
         }
 
+#if TODO
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static bool EqualsOrdinalIgnoreCase(this ReadOnlyExSpan<char> span, ReadOnlyExSpan<char> value) {
             if (span.Length != value.Length)
@@ -110,6 +113,7 @@ namespace Zyl.ExSpans {
                     return Ordinal.CompareStringIgnoreCase(ref ExMemoryMarshal.GetReference(span), span.Length, ref ExMemoryMarshal.GetReference(other), other.Length);
             }
         }
+#endif // TODO
 
         /// <summary>
         /// Reports the zero-based index of the first occurrence of the specified <paramref name="value"/> in the current <paramref name="span"/>.
@@ -117,13 +121,15 @@ namespace Zyl.ExSpans {
         /// <param name="span">The source span.</param>
         /// <param name="value">The value to seek within the source span.</param>
         /// <param name="comparisonType">One of the enumeration values that determines how the <paramref name="span"/> and <paramref name="value"/> are compared.</param>
-        public static int IndexOf(this ReadOnlyExSpan<char> span, ReadOnlyExSpan<char> value, StringComparison comparisonType) {
-            string.CheckStringComparison(comparisonType);
+        /// <exception cref="ExSpanTooLongException">Throws an exception if the length is out of the range of Int32.</exception>
+        public static TSize IndexOf(this ReadOnlyExSpan<char> span, ReadOnlyExSpan<char> value, StringComparison comparisonType) {
+            //string.CheckStringComparison(comparisonType);
 
             if (comparisonType == StringComparison.Ordinal) {
                 return ExSpanHelpers.IndexOf(ref ExMemoryMarshal.GetReference(span), span.Length, ref ExMemoryMarshal.GetReference(value), value.Length);
             }
 
+#if INTERNAL && TODO
             switch (comparisonType) {
                 case StringComparison.CurrentCulture:
                 case StringComparison.CurrentCultureIgnoreCase:
@@ -137,8 +143,13 @@ namespace Zyl.ExSpans {
                     Debug.Assert(comparisonType == StringComparison.OrdinalIgnoreCase);
                     return Ordinal.IndexOfOrdinalIgnoreCase(span, value);
             }
+#endif // INTERNAL && TODO
+            ExSpanTooLongException.ThrowIfOutInt32(span.Length);
+            ExSpanTooLongException.ThrowIfOutInt32(value.Length);
+            return span.AsReadOnlySpan().IndexOf(value.AsReadOnlySpan(), comparisonType);
         }
 
+#if TODO
         /// <summary>
         /// Reports the zero-based index of the last occurrence of the specified <paramref name="value"/> in the current <paramref name="span"/>.
         /// </summary>
