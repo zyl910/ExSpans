@@ -58,7 +58,7 @@ namespace Zyl.ExSpans.Exceptions {
         [DoesNotReturn]
         public static void ThrowByLength(TSize length, [CallerMemberName] string? memberName = null) {
             string message = (memberName is null) ? $"The ExSpan length({length}) is too long!"
-                : $"The span length({length}) of the call to the ({memberName}) method is too long";
+                : $"The ExSpan length({length}) is too long! The {memberName} method not support it!";
             throw new ExSpanTooLongException(message);
         }
 
