@@ -296,7 +296,6 @@ namespace Zyl.ExSpans {
         }
 #endif // NOT_RELATED
 
-#if TODO
         /// <summary>
         /// Removes all leading and trailing occurrences of a set of elements specified
         /// in a readonly span from the span.
@@ -305,7 +304,7 @@ namespace Zyl.ExSpans {
         /// <param name="trimElements">The span which contains the set of elements to remove.</param>
         /// <remarks>If <paramref name="trimElements"/> is empty, the span is returned unaltered.</remarks>
         public static ExSpan<T> Trim<T>(this ExSpan<T> span, ReadOnlyExSpan<T> trimElements) where T : IEquatable<T>? {
-            if (trimElements.Length.GreaterThan((TSize)1)) {
+            if (trimElements.Length > 1) {
                 TSize start = ClampStart(span, trimElements);
                 TSize length = ClampEnd(span, start, trimElements);
                 return span.Slice(start, length);
@@ -326,7 +325,7 @@ namespace Zyl.ExSpans {
         /// <param name="trimElements">The span which contains the set of elements to remove.</param>
         /// <remarks>If <paramref name="trimElements"/> is empty, the span is returned unaltered.</remarks>
         public static ExSpan<T> TrimStart<T>(this ExSpan<T> span, ReadOnlyExSpan<T> trimElements) where T : IEquatable<T>? {
-            if (trimElements.Length.GreaterThan((TSize)1)) {
+            if (trimElements.Length > 1) {
                 return span.Slice(ClampStart(span, trimElements));
             }
 
@@ -345,7 +344,7 @@ namespace Zyl.ExSpans {
         /// <param name="trimElements">The span which contains the set of elements to remove.</param>
         /// <remarks>If <paramref name="trimElements"/> is empty, the span is returned unaltered.</remarks>
         public static ExSpan<T> TrimEnd<T>(this ExSpan<T> span, ReadOnlyExSpan<T> trimElements) where T : IEquatable<T>? {
-            if (trimElements.Length.GreaterThan((TSize)1)) {
+            if (trimElements.Length > 1) {
                 return span.Slice((TSize)0, ClampEnd(span, (TSize)0, trimElements));
             }
 
@@ -364,7 +363,7 @@ namespace Zyl.ExSpans {
         /// <param name="trimElements">The span which contains the set of elements to remove.</param>
         /// <remarks>If <paramref name="trimElements"/> is empty, the span is returned unaltered.</remarks>
         public static ReadOnlyExSpan<T> Trim<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> trimElements) where T : IEquatable<T>? {
-            if (trimElements.Length.GreaterThan((TSize)1)) {
+            if (trimElements.Length > 1) {
                 TSize start = ClampStart(span, trimElements);
                 TSize length = ClampEnd(span, start, trimElements);
                 return span.Slice(start, length);
@@ -385,7 +384,7 @@ namespace Zyl.ExSpans {
         /// <param name="trimElements">The span which contains the set of elements to remove.</param>
         /// <remarks>If <paramref name="trimElements"/> is empty, the span is returned unaltered.</remarks>
         public static ReadOnlyExSpan<T> TrimStart<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> trimElements) where T : IEquatable<T>? {
-            if (trimElements.Length.GreaterThan((TSize)1)) {
+            if (trimElements.Length > 1) {
                 return span.Slice(ClampStart(span, trimElements));
             }
 
@@ -404,7 +403,7 @@ namespace Zyl.ExSpans {
         /// <param name="trimElements">The span which contains the set of elements to remove.</param>
         /// <remarks>If <paramref name="trimElements"/> is empty, the span is returned unaltered.</remarks>
         public static ReadOnlyExSpan<T> TrimEnd<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> trimElements) where T : IEquatable<T>? {
-            if (trimElements.Length.GreaterThan((TSize)1)) {
+            if (trimElements.Length > 1) {
                 return span.Slice((TSize)0, ClampEnd(span, (TSize)0, trimElements));
             }
 
@@ -423,7 +422,7 @@ namespace Zyl.ExSpans {
         /// <param name="trimElements">The span which contains the set of elements to remove.</param>
         private static TSize ClampStart<T>(ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> trimElements) where T : IEquatable<T>? {
             TSize start = (TSize)0;
-            for (; start.LessThan(span.Length); start+=1) {
+            for (; start < span.Length; start+=1) {
                 if (!trimElements.Contains(span[start])) {
                     break;
                 }
@@ -441,18 +440,17 @@ namespace Zyl.ExSpans {
         /// <param name="trimElements">The span which contains the set of elements to remove.</param>
         private static TSize ClampEnd<T>(ReadOnlyExSpan<T> span, TSize start, ReadOnlyExSpan<T> trimElements) where T : IEquatable<T>? {
             // Initially, start==len==0. If ClampStart trims all, start==len
-            Debug.Assert(start.ToUIntPtr().LessThanOrEqual(span.Length.ToUIntPtr()));
+            Debug.Assert(start.ToUIntPtr() <= span.Length.ToUIntPtr());
 
             TSize end = span.Length - 1;
-            for (; end.GreaterThanOrEqual(start); end -= 1) {
+            for (; end >= start; end -= 1) {
                 if (!trimElements.Contains(span[end])) {
                     break;
                 }
             }
 
-            return end.Subtract(start) + 1;
+            return end - start + 1;
         }
-#endif // TODO
 
 #if NOT_RELATED
         /// <summary>
