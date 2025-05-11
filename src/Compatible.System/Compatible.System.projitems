@@ -14,5 +14,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Runtime\CompilerServices\InterpolatedStringHandlerArgumentAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Runtime\CompilerServices\InterpolatedStringHandlerAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Runtime\CompilerServices\OverloadResolutionPriorityAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SerializableAttribute.cs" />
   </ItemGroup>
 </Project>
