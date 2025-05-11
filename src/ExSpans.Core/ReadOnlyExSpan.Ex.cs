@@ -55,5 +55,36 @@ namespace Zyl.ExSpans {
 #endif
         }
 
+        /// <summary>
+        /// Forms a slice out of the given read-only Ex span, ending at 'TSize' (从尾部指定索引处的只读扩展跨度形成切片).
+        /// </summary>
+        /// <param name="end">The zero-based index at which to begin this slice (从零开始的切片尾部索引).</param>
+        /// <returns>Returns the new read-only Ex span (返回新的只读扩展跨度).</returns>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// Thrown when the specified <paramref name="end"/> index is not in range (&lt;0 or &gt;Length).
+        /// </exception>
+        [MyCLSCompliant(false)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlyExSpan<T> LastSlice(TSize end) {
+            TSize len = _length - end;
+            return Slice(0, len);
+        }
+
+        /// <summary>
+        /// Forms a slice out of the given read-only Ex span, beginning at 'end', of given length (从尾部指定长度的指定索引处开始的当前只读扩展跨度形成切片)
+        /// </summary>
+        /// <param name="end">The zero-based index at which to begin this slice (从零开始的切片尾部索引).</param>
+        /// <param name="length">The desired length for the slice (exclusive) (切片所需的长度).</param>
+        /// <returns>Returns the new read-only Ex span (返回新的只读扩展跨度).</returns>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// Thrown when the specified <paramref name="end"/> or end index is not in range (&lt;0 or &gt;Length).
+        /// </exception>
+        [MyCLSCompliant(false)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlyExSpan<T> LastSlice(TSize end, TSize length) {
+            TSize start  = _length - end - length;
+            return Slice(start, length);
+        }
+
     }
 }

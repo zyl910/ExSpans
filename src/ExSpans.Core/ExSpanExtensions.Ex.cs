@@ -52,7 +52,7 @@ namespace Zyl.ExSpans {
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <param name="span">The object to convert (要转换的对象).</param>
-        /// <param name="start">The zero-based index at which to begin this slice (从零开始切片的索引).</param>
+        /// <param name="start">The zero-based index at which to begin this slice (从零开始的切片索引).</param>
         /// <returns>a <see cref="ReadOnlySpan{T}"/></returns>
         /// <seealso cref="MemoryMarshalHelper.GetSpanSaturatingLength"/>
         [MyCLSCompliant(false)]
@@ -66,7 +66,7 @@ namespace Zyl.ExSpans {
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <param name="span">The object to convert (要转换的对象).</param>
-        /// <param name="start">The zero-based index at which to begin this slice (从零开始切片的索引).</param>
+        /// <param name="start">The zero-based index at which to begin this slice (从零开始的切片索引).</param>
         /// <param name="length"></param>
         /// <returns>a <see cref="ReadOnlySpan{T}"/></returns>
         [MyCLSCompliant(false)]
@@ -105,7 +105,7 @@ namespace Zyl.ExSpans {
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <param name="span">The object to convert (要转换的对象).</param>
-        /// <param name="start">The zero-based index at which to begin this slice (从零开始切片的索引).</param>
+        /// <param name="start">The zero-based index at which to begin this slice (从零开始的切片索引).</param>
         /// <returns>a <see cref="Span{T}"/></returns>
         /// <seealso cref="MemoryMarshalHelper.GetSpanSaturatingLength"/>
         [MyCLSCompliant(false)]
@@ -119,7 +119,7 @@ namespace Zyl.ExSpans {
         /// </summary>
         /// <typeparam name="T">The element type (元素的类型).</typeparam>
         /// <param name="span">The object to convert (要转换的对象).</param>
-        /// <param name="start">The zero-based index at which to begin this slice (从零开始切片的索引).</param>
+        /// <param name="start">The zero-based index at which to begin this slice (从零开始的切片索引).</param>
         /// <param name="length"></param>
         /// <returns>a <see cref="Span{T}"/></returns>
         [MyCLSCompliant(false)]

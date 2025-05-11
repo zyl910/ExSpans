@@ -402,7 +402,7 @@ namespace Zyl.ExSpans {
         /// <summary>
         /// Forms a slice out of the given read-only Ex span, beginning at 'start' (从指定索引处开始的只读扩展跨度形成切片).
         /// </summary>
-        /// <param name="start">The zero-based index at which to begin this slice (从零开始切片的索引).</param>
+        /// <param name="start">The zero-based index at which to begin this slice (从零开始的切片索引).</param>
         /// <returns>Returns the new read-only Ex span (返回新的只读扩展跨度).</returns>
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown when the specified <paramref name="start"/> index is not in range (&lt;0 or &gt;Length).
@@ -430,7 +430,7 @@ namespace Zyl.ExSpans {
         /// <summary>
         /// Forms a slice out of the given read-only Ex span, beginning at 'start', of given length (从指定长度的指定索引处开始的当前只读扩展跨度形成切片)
         /// </summary>
-        /// <param name="start">The zero-based index at which to begin this slice (从零开始切片的索引).</param>
+        /// <param name="start">The zero-based index at which to begin this slice (从零开始的切片索引).</param>
         /// <param name="length">The desired length for the slice (exclusive) (切片所需的长度).</param>
         /// <returns>Returns the new read-only Ex span (返回新的只读扩展跨度).</returns>
         /// <exception cref="ArgumentOutOfRangeException">
