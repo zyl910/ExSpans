@@ -74,7 +74,7 @@ namespace Zyl.ExSpans {
             return span.SequenceEqual(value);
         }
 
-#if TODO
+#if INTERNAL && TODO
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static bool EqualsOrdinalIgnoreCase(this ReadOnlyExSpan<char> span, ReadOnlyExSpan<char> value) {
             if (span.Length != value.Length)
@@ -83,6 +83,7 @@ namespace Zyl.ExSpans {
                 return true;
             return Ordinal.EqualsIgnoreCase(ref ExMemoryMarshal.GetReference(span), ref ExMemoryMarshal.GetReference(value), span.Length);
         }
+#endif // INTERNAL && TODO
 
         /// <summary>
         /// Compares the specified <paramref name="span"/> and <paramref name="other"/> using the specified <paramref name="comparisonType"/>,
@@ -92,8 +93,8 @@ namespace Zyl.ExSpans {
         /// <param name="other">The value to compare with the source span.</param>
         /// <param name="comparisonType">One of the enumeration values that determines how the <paramref name="span"/> and <paramref name="other"/> are compared.</param>
         public static int CompareTo(this ReadOnlyExSpan<char> span, ReadOnlyExSpan<char> other, StringComparison comparisonType) {
+#if INTERNAL && TODO
             string.CheckStringComparison(comparisonType);
-
             switch (comparisonType) {
                 case StringComparison.CurrentCulture:
                 case StringComparison.CurrentCultureIgnoreCase:
@@ -112,8 +113,11 @@ namespace Zyl.ExSpans {
                     Debug.Assert(comparisonType == StringComparison.OrdinalIgnoreCase);
                     return Ordinal.CompareStringIgnoreCase(ref ExMemoryMarshal.GetReference(span), span.Length, ref ExMemoryMarshal.GetReference(other), other.Length);
             }
+#endif // INTERNAL && TODO
+            ExSpanTooLongException.ThrowIfOutInt32(span.Length);
+            ExSpanTooLongException.ThrowIfOutInt32(other.Length);
+            return span.AsReadOnlySpan().IndexOf(other.AsReadOnlySpan(), comparisonType);
         }
-#endif // TODO
 
         /// <summary>
         /// Reports the zero-based index of the first occurrence of the specified <paramref name="value"/> in the current <paramref name="span"/>.
