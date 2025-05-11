@@ -56,7 +56,7 @@ namespace Zyl.ExSpans {
         }
 
         /// <summary>
-        /// Forms a slice out of the given read-only Ex span, ending at 'TSize' (从尾部指定索引处的只读扩展跨度形成切片).
+        /// Forms a slice out of the given read-only Ex span, last beginning at 'TSize' (从尾部指定索引处的只读扩展跨度形成切片).
         /// </summary>
         /// <param name="end">The zero-based index at which to begin this slice (从零开始的切片尾部索引).</param>
         /// <returns>Returns the new read-only Ex span (返回新的只读扩展跨度).</returns>
@@ -71,7 +71,7 @@ namespace Zyl.ExSpans {
         }
 
         /// <summary>
-        /// Forms a slice out of the given read-only Ex span, beginning at 'end', of given length (从尾部指定长度的指定索引处开始的当前只读扩展跨度形成切片)
+        /// Forms a slice out of the given read-only Ex span, last beginning at 'end', of given length (从尾部指定长度的指定索引处开始的当前只读扩展跨度形成切片)
         /// </summary>
         /// <param name="end">The zero-based index at which to begin this slice (从零开始的切片尾部索引).</param>
         /// <param name="length">The desired length for the slice (exclusive) (切片所需的长度).</param>

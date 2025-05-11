@@ -42,6 +42,7 @@ namespace Zyl.ExSpans {
         /// <param name="span">The object to convert (要转换的对象).</param>
         /// <returns>a <see cref="ReadOnlySpan{T}"/></returns>
         /// <seealso cref="MemoryMarshalHelper.GetSpanSaturatingLength"/>
+        /// <seealso cref="LastAsReadOnlySpan{T}(ReadOnlyExSpan{T})"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadOnlySpan<T> AsReadOnlySpan<T>(this ReadOnlyExSpan<T> span) {
             return (ReadOnlySpan<T>)span;
@@ -69,6 +70,7 @@ namespace Zyl.ExSpans {
         /// <param name="start">The zero-based index at which to begin this slice (从零开始的切片索引).</param>
         /// <param name="length"></param>
         /// <returns>a <see cref="ReadOnlySpan{T}"/></returns>
+        /// <seealso cref="LastAsReadOnlySpan{T}(ReadOnlyExSpan{T}, nint, int)"/>
         [MyCLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadOnlySpan<T> AsReadOnlySpan<T>(this ReadOnlyExSpan<T> span, TSize start, int length) {
@@ -95,6 +97,7 @@ namespace Zyl.ExSpans {
         /// <param name="span">The object to convert (要转换的对象).</param>
         /// <returns>a <see cref="Span{T}"/></returns>
         /// <seealso cref="MemoryMarshalHelper.GetSpanSaturatingLength"/>
+        /// <seealso cref="LastAsSpan{T}(ExSpan{T})"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Span<T> AsSpan<T>(this ExSpan<T> span) {
             return (Span<T>)span;
@@ -122,6 +125,7 @@ namespace Zyl.ExSpans {
         /// <param name="start">The zero-based index at which to begin this slice (从零开始的切片索引).</param>
         /// <param name="length"></param>
         /// <returns>a <see cref="Span{T}"/></returns>
+        /// <seealso cref="LastAsSpan{T}(ExSpan{T}, nint, int)"/>
         [MyCLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Span<T> AsSpan<T>(this ExSpan<T> span, TSize start, int length) {
@@ -616,6 +620,78 @@ namespace Zyl.ExSpans {
             StringBuilder stringBuilder = new StringBuilder();
             ItemsAppendStringUnsafe(in source, length, stringBuilder, headerLength, footerLength, itemFormater, stringFlags);
             return stringBuilder.ToString();
+        }
+
+        /// <summary>
+        /// An conversion of a <see cref="ExSpan{T}"/> to a <see cref="Span{T}"/>, last beginning at end. The length will saturating limited to the maximum length it supports (<see cref="ExSpan{T}"/> 到 <see cref="Span{T}"/> 的转换, 从尾部索引处开始. 长度会饱和限制为它所支持的最大长度).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="span">The object to convert (要转换的对象).</param>
+        /// <returns>a <see cref="Span{T}"/></returns>
+        /// <seealso cref="MemoryMarshalHelper.GetSpanSaturatingLength"/>
+        /// <seealso cref="AsSpan{T}(ExSpan{T})"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Span<T> LastAsSpan<T>(this ExSpan<T> span) {
+            if (0 == span.Length) return (Span<T>)span;
+            int length = MemoryMarshalHelper.GetSpanSaturatingLength(span.Length);
+            TSize start = span.Length - length;
+            return (Span<T>)span.Slice(start, length);
+        }
+
+        /// <summary>
+        /// An conversion of a <see cref="ExSpan{T}"/> to a <see cref="Span{T}"/>, last beginning at 'end', of given length (<see cref="ExSpan{T}"/> 到 <see cref="Span{T}"/> 的转换, 从尾部指定索引处开始, 且使用指定长度).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="span">The object to convert (要转换的对象).</param>
+        /// <param name="end">The zero-based index at which to begin this slice (从零开始的切片尾部索引).</param>
+        /// <param name="length"></param>
+        /// <returns>a <see cref="Span{T}"/></returns>
+        /// <seealso cref="AsSpan{T}(ExSpan{T}, nint, int)"/>
+        [MyCLSCompliant(false)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Span<T> LastAsSpan<T>(this ExSpan<T> span, TSize end, int length) {
+            if (length < 0) ThrowHelper.ThrowArgumentOutOfRangeException();
+            if (end < 0) ThrowHelper.ThrowArgumentOutOfRangeException();
+            if (end >= span.Length) ThrowHelper.ThrowArgumentOutOfRangeException();
+            TSize start = span.Length - end - length;
+            if (start < 0) ThrowHelper.ThrowArgumentOutOfRangeException();
+            return (Span<T>)span.Slice(start, length);
+        }
+
+        /// <summary>
+        /// An conversion of a <see cref="ReadOnlyExSpan{T}"/> to a <see cref="ReadOnlySpan{T}"/>, last beginning at end. The length will saturating limited to the maximum length it supports (<see cref="ReadOnlyExSpan{T}"/> 到 <see cref="ReadOnlySpan{T}"/> 的转换, 从尾部索引处开始. 长度会饱和限制为它所支持的最大长度).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="span">The object to convert (要转换的对象).</param>
+        /// <returns>a <see cref="ReadOnlySpan{T}"/></returns>
+        /// <seealso cref="MemoryMarshalHelper.GetSpanSaturatingLength"/>
+        /// <seealso cref="AsReadOnlySpan{T}(ReadOnlyExSpan{T})"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlySpan<T> LastAsReadOnlySpan<T>(this ReadOnlyExSpan<T> span) {
+            if (0 == span.Length) return (ReadOnlySpan<T>)span;
+            int length = MemoryMarshalHelper.GetSpanSaturatingLength(span.Length);
+            TSize start = span.Length - length;
+            return (ReadOnlySpan<T>)span.Slice(start, length);
+        }
+
+        /// <summary>
+        /// An conversion of a <see cref="ReadOnlyExSpan{T}"/> to a <see cref="ReadOnlySpan{T}"/>, last beginning at 'end', of given length (<see cref="ReadOnlyExSpan{T}"/> 到 <see cref="ReadOnlySpan{T}"/> 的转换, 从尾部指定索引处开始, 且使用指定长度).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="span">The object to convert (要转换的对象).</param>
+        /// <param name="end">The zero-based index at which to begin this slice (从零开始的切片尾部索引).</param>
+        /// <param name="length"></param>
+        /// <returns>a <see cref="ReadOnlySpan{T}"/></returns>
+        /// <seealso cref="AsReadOnlySpan{T}(ReadOnlyExSpan{T}, nint, int)"/>
+        [MyCLSCompliant(false)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlySpan<T> LastAsReadOnlySpan<T>(this ReadOnlyExSpan<T> span, TSize end, int length) {
+            if (length < 0) ThrowHelper.ThrowArgumentOutOfRangeException();
+            if (end < 0) ThrowHelper.ThrowArgumentOutOfRangeException();
+            if (end >= span.Length) ThrowHelper.ThrowArgumentOutOfRangeException();
+            TSize start = span.Length - end - length;
+            if (start < 0) ThrowHelper.ThrowArgumentOutOfRangeException();
+            return (ReadOnlySpan<T>)span.Slice(start, length);
         }
 
     }
