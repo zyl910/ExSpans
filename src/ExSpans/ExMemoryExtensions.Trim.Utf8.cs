@@ -7,7 +7,7 @@ using System.Text;
 namespace Zyl.ExSpans {
     partial class ExMemoryExtensions {
 
-#if TODO
+#if NETCOREAPP3_0_OR_GREATER
         internal static ReadOnlyExSpan<byte> TrimUtf8(this ReadOnlyExSpan<byte> span) {
             // Assume that in most cases input doesn't need trimming
             //
@@ -21,17 +21,17 @@ namespace Zyl.ExSpans {
                 return span;
             }
 
-            _ = Rune.DecodeFromUtf8(span, out Rune first, out int firstBytesConsumed);
+            _ = Rune.DecodeFromUtf8(span.AsReadOnlySpan(), out Rune first, out int firstBytesConsumed);
 
             if (Rune.IsWhiteSpace(first)) {
-                span = span[firstBytesConsumed..];
+                span = span.Slice(firstBytesConsumed);
                 return TrimFallback(span);
             }
 
-            _ = Rune.DecodeLastFromUtf8(span, out Rune last, out int lastBytesConsumed);
+            _ = Rune.DecodeLastFromUtf8(span.LastAsReadOnlySpan(), out Rune last, out int lastBytesConsumed);
 
             if (Rune.IsWhiteSpace(last)) {
-                span = span[..^lastBytesConsumed];
+                span = span.LastSlice(lastBytesConsumed);
                 return TrimFallback(span);
             }
 
@@ -40,29 +40,29 @@ namespace Zyl.ExSpans {
             [MethodImpl(MethodImplOptions.NoInlining)]
             static ReadOnlyExSpan<byte> TrimFallback(ReadOnlyExSpan<byte> span) {
                 while (span.Length != 0) {
-                    _ = Rune.DecodeFromUtf8(span, out Rune current, out int bytesConsumed);
+                    _ = Rune.DecodeFromUtf8(span.AsReadOnlySpan(), out Rune current, out int bytesConsumed);
 
                     if (!Rune.IsWhiteSpace(current)) {
                         break;
                     }
 
-                    span = span[bytesConsumed..];
+                    span = span.Slice(bytesConsumed);
                 }
 
                 while (span.Length != 0) {
-                    _ = Rune.DecodeLastFromUtf8(span, out Rune current, out int bytesConsumed);
+                    _ = Rune.DecodeLastFromUtf8(span.LastAsReadOnlySpan(), out Rune current, out int bytesConsumed);
 
                     if (!Rune.IsWhiteSpace(current)) {
                         break;
                     }
 
-                    span = span[..^bytesConsumed];
+                    span = span.LastSlice(bytesConsumed);
                 }
 
                 return span;
             }
         }
-#endif // TODO
+#endif // NETCOREAPP3_0_OR_GREATER
 
     }
 }
