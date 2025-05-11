@@ -192,7 +192,7 @@ namespace Zyl.ExSpans.Extensions {
             if (1 == n) {
                 return IsLengthInInt32(source);
             }
-            return source <= (int.MaxValue / n);
+            return (source <= int.MaxValue) && ((source * n) <= int.MaxValue);
         }
 
         /// <summary>
@@ -211,7 +211,7 @@ namespace Zyl.ExSpans.Extensions {
             if (1 == n) {
                 return IsLengthInInt32(source);
             }
-            return source <= (uint)(int.MaxValue / n);
+            return (source <= (uint)int.MaxValue) && ((source * (uint)n) <= (uint)int.MaxValue);
         }
 
         /// <summary>
@@ -356,13 +356,29 @@ namespace Zyl.ExSpans.Extensions {
 #endif // ALLOW_OBSOLETE
 
         /// <summary>
+        /// Convert <see cref="long"/> saturating to <see cref="Int32"/> (将 <see cref="long"/> 饱和转换为 <see cref="Int32"/>).
+        /// </summary>
+        /// <param name="source">Source value (源值).</param>
+        /// <returns>A value after saturating convert (饱和转换后的值).</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int SaturatingToInt32(this long source) {
+            int dst = source < int.MinValue ? int.MinValue : (source < int.MaxValue ? (int)source : int.MaxValue);
+            return dst;
+        }
+
+        /// <summary>
         /// Convert <see cref="UIntPtr"/> saturating to <see cref="Int32"/> (将 <see cref="UIntPtr"/> 饱和转换为 <see cref="Int32"/>).
         /// </summary>
         /// <param name="source">Source value (源值).</param>
         /// <returns>A value after saturating convert (饱和转换后的值).</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int SaturatingToInt32(this nint source) {
-            int dst = source < int.MinValue ? int.MinValue : (source < int.MaxValue ? (int)source : int.MaxValue);
+            int dst;
+            if (ExMemoryMarshal.Is64BitProcess) {
+                dst = (int)source;
+            } else {
+                dst = source < int.MinValue ? int.MinValue : (source < int.MaxValue ? (int)source : int.MaxValue);
+            }
             return dst;
         }
 
