@@ -162,15 +162,16 @@ namespace Zyl.ExSpans {
             return span.AsReadOnlySpan().IndexOf(value.AsReadOnlySpan(), comparisonType);
         }
 
-#if TODO
+#if NETCOREAPP3_0_OR_GREATER
         /// <summary>
         /// Reports the zero-based index of the last occurrence of the specified <paramref name="value"/> in the current <paramref name="span"/>.
         /// </summary>
         /// <param name="span">The source span.</param>
         /// <param name="value">The value to seek within the source span.</param>
         /// <param name="comparisonType">One of the enumeration values that determines how the <paramref name="span"/> and <paramref name="value"/> are compared.</param>
-        public static int LastIndexOf(this ReadOnlyExSpan<char> span, ReadOnlyExSpan<char> value, StringComparison comparisonType) {
-            string.CheckStringComparison(comparisonType);
+        /// <exception cref="ExSpanTooLongException">Throws an exception if the length is out of the range of Int32.</exception>
+        public static TSize LastIndexOf(this ReadOnlyExSpan<char> span, ReadOnlyExSpan<char> value, StringComparison comparisonType) {
+            //string.CheckStringComparison(comparisonType);
 
             if (comparisonType == StringComparison.Ordinal) {
                 return ExSpanHelpers.LastIndexOf(
@@ -180,6 +181,7 @@ namespace Zyl.ExSpans {
                     value.Length);
             }
 
+#if INTERNAL && TODO
             switch (comparisonType) {
                 case StringComparison.CurrentCulture:
                 case StringComparison.CurrentCultureIgnoreCase:
@@ -193,7 +195,12 @@ namespace Zyl.ExSpans {
                     Debug.Assert(comparisonType == StringComparison.OrdinalIgnoreCase);
                     return Ordinal.LastIndexOfOrdinalIgnoreCase(span, value);
             }
+#endif // INTERNAL && TODO
+            ExSpanTooLongException.ThrowIfOutInt32(span.Length);
+            ExSpanTooLongException.ThrowIfOutInt32(value.Length);
+            return span.AsReadOnlySpan().LastIndexOf(value.AsReadOnlySpan(), comparisonType);
         }
+#endif // NETCOREAPP3_0_OR_GREATER
 
         /// <summary>
         /// Copies the characters from the source span into the destination, converting each character to lowercase,
@@ -205,9 +212,10 @@ namespace Zyl.ExSpans {
         /// <remarks>If <paramref name="culture"/> is null, <see cref="CultureInfo.CurrentCulture"/> will be used.</remarks>
         /// <returns>The number of characters written into the destination span. If the destination is too small, returns -1.</returns>
         /// <exception cref="InvalidOperationException">The source and destination buffers overlap.</exception>
-        public static int ToLower(this ReadOnlyExSpan<char> source, ExSpan<char> destination, CultureInfo? culture) {
+        /// <exception cref="ExSpanTooLongException">Throws an exception if the length is out of the range of Int32.</exception>
+        public static TSize ToLower(this ReadOnlyExSpan<char> source, ExSpan<char> destination, CultureInfo? culture) {
             if (source.Overlaps(destination))
-                ThrowHelper.ThrowInvalidOperationException(ExceptionResource.InvalidOperation_ExSpanOverlappedOperation);
+                ThrowHelper.ThrowInvalidOperationException(ExceptionResource.InvalidOperation_SpanOverlappedOperation);
 
             culture ??= CultureInfo.CurrentCulture;
 
@@ -215,11 +223,16 @@ namespace Zyl.ExSpans {
             if (destination.Length < source.Length)
                 return -1;
 
+#if INTERNAL && TODO
             if (GlobalizationMode.Invariant)
                 InvariantModeCasing.ToLower(source, destination);
             else
                 culture.TextInfo.ChangeCaseToLower(source, destination);
             return source.Length;
+#endif // INTERNAL && TODO
+            ExSpanTooLongException.ThrowIfOutInt32(source.Length);
+            ExSpanTooLongException.ThrowIfOutInt32(destination.Length);
+            return source.AsReadOnlySpan().ToLower(destination.AsSpan(), culture);
         }
 
         /// <summary>
@@ -230,19 +243,25 @@ namespace Zyl.ExSpans {
         /// <param name="destination">The destination span which contains the transformed characters.</param>
         /// <returns>The number of characters written into the destination span. If the destination is too small, returns -1.</returns>
         /// <exception cref="InvalidOperationException">The source and destination buffers overlap.</exception>
-        public static int ToLowerInvariant(this ReadOnlyExSpan<char> source, ExSpan<char> destination) {
+        /// <exception cref="ExSpanTooLongException">Throws an exception if the length is out of the range of Int32.</exception>
+        public static TSize ToLowerInvariant(this ReadOnlyExSpan<char> source, ExSpan<char> destination) {
             if (source.Overlaps(destination))
-                ThrowHelper.ThrowInvalidOperationException(ExceptionResource.InvalidOperation_ExSpanOverlappedOperation);
+                ThrowHelper.ThrowInvalidOperationException(ExceptionResource.InvalidOperation_SpanOverlappedOperation);
 
             // Assuming that changing case does not affect length
             if (destination.Length < source.Length)
                 return -1;
 
+#if INTERNAL && TODO
             if (GlobalizationMode.Invariant)
                 InvariantModeCasing.ToLower(source, destination);
             else
                 TextInfo.Invariant.ChangeCaseToLower(source, destination);
             return source.Length;
+#endif // INTERNAL && TODO
+            ExSpanTooLongException.ThrowIfOutInt32(source.Length);
+            ExSpanTooLongException.ThrowIfOutInt32(destination.Length);
+            return source.AsReadOnlySpan().ToLowerInvariant(destination.AsSpan());
         }
 
         /// <summary>
@@ -255,9 +274,10 @@ namespace Zyl.ExSpans {
         /// <remarks>If <paramref name="culture"/> is null, <see cref="CultureInfo.CurrentCulture"/> will be used.</remarks>
         /// <returns>The number of characters written into the destination span. If the destination is too small, returns -1.</returns>
         /// <exception cref="InvalidOperationException">The source and destination buffers overlap.</exception>
-        public static int ToUpper(this ReadOnlyExSpan<char> source, ExSpan<char> destination, CultureInfo? culture) {
+        /// <exception cref="ExSpanTooLongException">Throws an exception if the length is out of the range of Int32.</exception>
+        public static TSize ToUpper(this ReadOnlyExSpan<char> source, ExSpan<char> destination, CultureInfo? culture) {
             if (source.Overlaps(destination))
-                ThrowHelper.ThrowInvalidOperationException(ExceptionResource.InvalidOperation_ExSpanOverlappedOperation);
+                ThrowHelper.ThrowInvalidOperationException(ExceptionResource.InvalidOperation_SpanOverlappedOperation);
 
             culture ??= CultureInfo.CurrentCulture;
 
@@ -265,11 +285,16 @@ namespace Zyl.ExSpans {
             if (destination.Length < source.Length)
                 return -1;
 
+#if INTERNAL && TODO
             if (GlobalizationMode.Invariant)
                 InvariantModeCasing.ToUpper(source, destination);
             else
                 culture.TextInfo.ChangeCaseToUpper(source, destination);
             return source.Length;
+#endif // INTERNAL && TODO
+            ExSpanTooLongException.ThrowIfOutInt32(source.Length);
+            ExSpanTooLongException.ThrowIfOutInt32(destination.Length);
+            return source.AsReadOnlySpan().ToUpper(destination.AsSpan(), culture);
         }
 
         /// <summary>
@@ -280,21 +305,28 @@ namespace Zyl.ExSpans {
         /// <param name="destination">The destination span which contains the transformed characters.</param>
         /// <returns>The number of characters written into the destination span. If the destination is too small, returns -1.</returns>
         /// <exception cref="InvalidOperationException">The source and destination buffers overlap.</exception>
-        public static int ToUpperInvariant(this ReadOnlyExSpan<char> source, ExSpan<char> destination) {
+        /// <exception cref="ExSpanTooLongException">Throws an exception if the length is out of the range of Int32.</exception>
+        public static TSize ToUpperInvariant(this ReadOnlyExSpan<char> source, ExSpan<char> destination) {
             if (source.Overlaps(destination))
-                ThrowHelper.ThrowInvalidOperationException(ExceptionResource.InvalidOperation_ExSpanOverlappedOperation);
+                ThrowHelper.ThrowInvalidOperationException(ExceptionResource.InvalidOperation_SpanOverlappedOperation);
 
             // Assuming that changing case does not affect length
             if (destination.Length < source.Length)
                 return -1;
 
+#if INTERNAL && TODO
             if (GlobalizationMode.Invariant)
                 InvariantModeCasing.ToUpper(source, destination);
             else
                 TextInfo.Invariant.ChangeCaseToUpper(source, destination);
             return source.Length;
+#endif // INTERNAL && TODO
+            ExSpanTooLongException.ThrowIfOutInt32(source.Length);
+            ExSpanTooLongException.ThrowIfOutInt32(destination.Length);
+            return source.AsReadOnlySpan().ToUpperInvariant(destination.AsSpan());
         }
 
+#if TODO
         /// <summary>
         /// Determines whether the end of the <paramref name="span"/> matches the specified <paramref name="value"/> when compared using the specified <paramref name="comparisonType"/> option.
         /// </summary>
