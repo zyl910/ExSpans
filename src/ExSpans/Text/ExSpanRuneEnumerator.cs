@@ -5,9 +5,8 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace Zyl.ExSpans.Text {
-#if TODO
     /// <summary>
-    /// Provides an enumerator for the Rune values represented by a span containing UTF-16 text (为由包含 UTF-16 文本的跨度表示的 Rune 值提供枚举器).
+    /// Provides an enumerator for the <see cref="Rune"/> values represented by a span containing UTF-16 text (为由包含 UTF-16 文本的跨度表示的 <see cref="Rune"/> 值提供枚举器).
     /// </summary>
     public ref struct ExSpanRuneEnumerator {
         private ReadOnlyExSpan<char> _remaining;
@@ -18,10 +17,13 @@ namespace Zyl.ExSpans.Text {
             _current = default;
         }
 
-        public Rune Current => _current;
+        /// <inheritdoc cref="IEnumerator{T}.Current"/>
+        public readonly Rune Current => _current;
 
-        public ExSpanRuneEnumerator GetEnumerator() => this;
+        /// <inheritdoc cref="IEnumerable{T}.GetEnumerator"/>
+        public readonly ExSpanRuneEnumerator GetEnumerator() => this;
 
+        /// <inheritdoc cref="IEnumerator{T}.MoveNext"/>
         public bool MoveNext() {
             if (_remaining.IsEmpty) {
                 // reached the end of the buffer
@@ -29,23 +31,10 @@ namespace Zyl.ExSpans.Text {
                 return false;
             }
 
-            int scalarValue = Rune.ReadFirstRuneFromUtf16Buffer(_remaining);
-            if (scalarValue < 0) {
-                // replace invalid sequences with U+FFFD
-                scalarValue = Rune.ReplacementChar.Value;
-            }
-
-            // In UTF-16 specifically, invalid sequences always have length 1, which is the same
-            // length as the replacement character U+FFFD. This means that we can always bump the
-            // next index by the current scalar's UTF-16 sequence length. This optimization is not
-            // generally applicable; for example, enumerating scalars from UTF-8 cannot utilize
-            // this same trick.
-
-            _current = Rune.UnsafeCreate((uint)scalarValue);
-            _remaining = _remaining.Slice(_current.Utf16SequenceLength);
+            Rune.DecodeFromUtf16(_remaining.AsReadOnlySpan(), out _current, out int charsConsumed);
+            _remaining = _remaining.Slice(charsConsumed);
             return true;
         }
     }
-#endif // TODO
 }
 #endif // NETCOREAPP3_0_OR_GREATER
