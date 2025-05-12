@@ -326,15 +326,16 @@ namespace Zyl.ExSpans {
             return source.AsReadOnlySpan().ToUpperInvariant(destination.AsSpan());
         }
 
-#if TODO
         /// <summary>
         /// Determines whether the end of the <paramref name="span"/> matches the specified <paramref name="value"/> when compared using the specified <paramref name="comparisonType"/> option.
         /// </summary>
         /// <param name="span">The source span.</param>
         /// <param name="value">The sequence to compare to the end of the source span.</param>
         /// <param name="comparisonType">One of the enumeration values that determines how the <paramref name="span"/> and <paramref name="value"/> are compared.</param>
-        [Intrinsic] // Unrolled and vectorized for half-constant input (Ordinal)
+        /// <exception cref="ExSpanTooLongException">Throws an exception if the length is out of the range of Int32.</exception>
+        //[Intrinsic] // Unrolled and vectorized for half-constant input (Ordinal)
         public static bool EndsWith(this ReadOnlyExSpan<char> span, ReadOnlyExSpan<char> value, StringComparison comparisonType) {
+#if INTERNAL && TODO
             string.CheckStringComparison(comparisonType);
 
             switch (comparisonType) {
@@ -353,8 +354,16 @@ namespace Zyl.ExSpans {
                     Debug.Assert(comparisonType == StringComparison.OrdinalIgnoreCase);
                     return span.EndsWithOrdinalIgnoreCase(value);
             }
+#endif // INTERNAL && TODO
+            if (comparisonType == StringComparison.Ordinal) {
+                return span.EndsWith(value);
+            }
+            ExSpanTooLongException.ThrowIfOutInt32(span.Length);
+            ExSpanTooLongException.ThrowIfOutInt32(value.Length);
+            return span.AsReadOnlySpan().EndsWith(value.AsReadOnlySpan(), comparisonType);
         }
 
+#if INTERNAL && TODO
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static bool EndsWithOrdinalIgnoreCase(this ReadOnlyExSpan<char> span, ReadOnlyExSpan<char> value)
             => value.Length <= span.Length
@@ -362,6 +371,7 @@ namespace Zyl.ExSpans {
                 ref Unsafe.Add(ref ExMemoryMarshal.GetReference(span), span.Length - value.Length),
                 ref ExMemoryMarshal.GetReference(value),
                 value.Length);
+#endif // INTERNAL && TODO
 
         /// <summary>
         /// Determines whether the beginning of the <paramref name="span"/> matches the specified <paramref name="value"/> when compared using the specified <paramref name="comparisonType"/> option.
@@ -369,8 +379,10 @@ namespace Zyl.ExSpans {
         /// <param name="span">The source span.</param>
         /// <param name="value">The sequence to compare to the beginning of the source span.</param>
         /// <param name="comparisonType">One of the enumeration values that determines how the <paramref name="span"/> and <paramref name="value"/> are compared.</param>
-        [Intrinsic] // Unrolled and vectorized for half-constant input (Ordinal)
+        /// <exception cref="ExSpanTooLongException">Throws an exception if the length is out of the range of Int32.</exception>
+        //[Intrinsic] // Unrolled and vectorized for half-constant input (Ordinal)
         public static bool StartsWith(this ReadOnlyExSpan<char> span, ReadOnlyExSpan<char> value, StringComparison comparisonType) {
+#if INTERNAL && TODO
             string.CheckStringComparison(comparisonType);
 
             switch (comparisonType) {
@@ -389,13 +401,23 @@ namespace Zyl.ExSpans {
                     Debug.Assert(comparisonType == StringComparison.OrdinalIgnoreCase);
                     return span.StartsWithOrdinalIgnoreCase(value);
             }
+#endif // INTERNAL && TODO
+            if (comparisonType == StringComparison.Ordinal) {
+                return span.StartsWith(value);
+            }
+            ExSpanTooLongException.ThrowIfOutInt32(span.Length);
+            ExSpanTooLongException.ThrowIfOutInt32(value.Length);
+            return span.AsReadOnlySpan().StartsWith(value.AsReadOnlySpan(), comparisonType);
         }
 
+#if INTERNAL && TODO
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static bool StartsWithOrdinalIgnoreCase(this ReadOnlyExSpan<char> span, ReadOnlyExSpan<char> value)
             => value.Length <= span.Length
             && Ordinal.EqualsIgnoreCase(ref ExMemoryMarshal.GetReference(span), ref ExMemoryMarshal.GetReference(value), value.Length);
+#endif // INTERNAL && TODO
 
+#if TODO
         /// <summary>
         /// Returns an enumeration of <see cref="Rune"/> from the provided span.
         /// </summary>
