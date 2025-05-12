@@ -8,6 +8,9 @@ using System.Text;
 using Zyl.ExSpans.Exceptions;
 using Zyl.ExSpans.Extensions;
 using Zyl.ExSpans.Impl;
+#if NETCOREAPP3_0_OR_GREATER
+using Zyl.ExSpans.Text;
+#endif // NETCOREAPP3_0_OR_GREATER
 
 namespace Zyl.ExSpans {
     partial class ExMemoryExtensions {
@@ -417,7 +420,7 @@ namespace Zyl.ExSpans {
             && Ordinal.EqualsIgnoreCase(ref ExMemoryMarshal.GetReference(span), ref ExMemoryMarshal.GetReference(value), value.Length);
 #endif // INTERNAL && TODO
 
-#if TODO
+#if NETCOREAPP3_0_OR_GREATER
         /// <summary>
         /// Returns an enumeration of <see cref="Rune"/> from the provided span.
         /// </summary>
@@ -438,7 +441,9 @@ namespace Zyl.ExSpans {
         public static ExSpanRuneEnumerator EnumerateRunes(this ExSpan<char> span) {
             return new ExSpanRuneEnumerator(span);
         }
+#endif // NETCOREAPP3_0_OR_GREATER
 
+#if TODO
         /// <summary>
         /// Returns an enumeration of lines over the provided span.
         /// </summary>
