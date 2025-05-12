@@ -1,14 +1,16 @@
 ﻿#if NETCOREAPP3_0_OR_GREATER
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 
 namespace Zyl.ExSpans.Text {
     /// <summary>
     /// Provides an enumerator for the <see cref="Rune"/> values represented by a span containing UTF-16 text (为由包含 UTF-16 文本的跨度表示的 <see cref="Rune"/> 值提供枚举器).
     /// </summary>
-    public ref struct ExSpanRuneEnumerator {
+    public ref struct ExSpanRuneEnumerator : IEnumerator<Rune> {
         private ReadOnlyExSpan<char> _remaining;
         private Rune _current;
 
@@ -19,6 +21,13 @@ namespace Zyl.ExSpans.Text {
 
         /// <inheritdoc cref="IEnumerator{T}.Current"/>
         public readonly Rune Current => _current;
+
+        readonly object? IEnumerator.Current => _current;
+
+        /// <inheritdoc cref="IDisposable.Dispose"/>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public readonly void Dispose() {
+        }
 
         /// <inheritdoc cref="IEnumerable{T}.GetEnumerator"/>
         public readonly ExSpanRuneEnumerator GetEnumerator() => this;
@@ -34,6 +43,12 @@ namespace Zyl.ExSpans.Text {
             Rune.DecodeFromUtf16(_remaining.AsReadOnlySpan(), out _current, out int charsConsumed);
             _remaining = _remaining.Slice(charsConsumed);
             return true;
+        }
+
+        /// <inheritdoc cref="IEnumerator.Reset"/>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void Reset() {
+            throw new NotImplementedException();
         }
     }
 }
