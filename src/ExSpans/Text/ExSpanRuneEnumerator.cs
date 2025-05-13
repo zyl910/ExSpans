@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Zyl.ExSpans.Text {
@@ -20,12 +21,19 @@ namespace Zyl.ExSpans.Text {
         }
 
         /// <inheritdoc cref="IEnumerator{T}.Current"/>
-        public readonly Rune Current => _current;
+        public readonly Rune Current {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get { return _current; }
+        }
 
-        readonly object? IEnumerator.Current => _current;
+        readonly object? IEnumerator.Current {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get { return _current; }
+        }
 
         /// <inheritdoc cref="IDisposable.Dispose"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public readonly void Dispose() {
         }
 
