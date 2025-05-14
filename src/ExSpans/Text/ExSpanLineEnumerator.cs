@@ -7,7 +7,6 @@ using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Zyl.ExSpans.Text {
-#if TODO
     /// <summary>
     /// Enumerates the lines of a <see cref="ReadOnlyExSpan{Char}"/>.
     /// </summary>
@@ -15,6 +14,13 @@ namespace Zyl.ExSpans.Text {
     /// To get an instance of this type, use <see cref="ExMemoryExtensions.EnumerateLines(ReadOnlyExSpan{char})"/>.
     /// </remarks>
     public ref struct ExSpanLineEnumerator {
+        /// <summary>
+        /// SearchValues would use SpanHelpers.IndexOfAnyValueType for 5 values in this case.
+        /// No need to allocate the SearchValues as a regular Span.IndexOfAny will use the same implementation.
+        /// </summary>
+        internal const string NewLineCharsExceptLineFeed = "\r\f\u0085\u2028\u2029";
+        //public static readonly SearchValues<char> NewLineChars = SearchValues.Create(NewLineCharsExceptLineFeed + "\n");
+
         private ReadOnlyExSpan<char> _remaining;
         private ReadOnlyExSpan<char> _current;
         private bool _isEnumeratorActive;
@@ -49,12 +55,21 @@ namespace Zyl.ExSpans.Text {
 
             ReadOnlyExSpan<char> remaining = _remaining;
 
-            int idx = remaining.IndexOfAny(string.SearchValuesStorage.NewLineChars);
+            //int idx = remaining.IndexOfAny(string.SearchValuesStorage.NewLineChars);
+            TSize idx = ExSpanHelpers.IndexOfAnyValueType(
+                ref ExMemoryMarshal.GetReference(remaining),
+                '\r',
+                '\n',
+                '\f',
+                '\u0085',
+                '\u2028',
+                '\u2029',
+                remaining.Length);
 
-            if ((uint)idx < (uint)remaining.Length) {
+            if ((TUSize)idx < (TUSize)remaining.Length) {
                 int stride = 1;
 
-                if (remaining[idx] == '\r' && (uint)(idx + 1) < (uint)remaining.Length && remaining[idx + 1] == '\n') {
+                if (remaining[idx] == '\r' && (TUSize)(idx + 1) < (TUSize)remaining.Length && remaining[idx + 1] == '\n') {
                     stride = 2;
                 }
 
@@ -72,6 +87,5 @@ namespace Zyl.ExSpans.Text {
             return true;
         }
     }
-#endif // TODO
 }
 #endif // NETCOREAPP3_0_OR_GREATER
