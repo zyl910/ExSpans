@@ -2423,10 +2423,21 @@ namespace Zyl.ExSpans {
                                 Unsafe.Add(ref valueRef, 3),
                                 Unsafe.Add(ref valueRef, 4),
                                 span.Length);
+
+                        case 6:
+                            return ExSpanHelpers.IndexOfAnyValueType(
+                                ref spanRef,
+                                valueRef,
+                                Unsafe.Add(ref valueRef, 1),
+                                Unsafe.Add(ref valueRef, 2),
+                                Unsafe.Add(ref valueRef, 3),
+                                Unsafe.Add(ref valueRef, 4),
+                                Unsafe.Add(ref valueRef, 5),
+                                span.Length);
                     }
                 }
 
-                if (Unsafe.SizeOf<T>() == sizeof(short) && values.Length<=5) {
+                if (Unsafe.SizeOf<T>() == sizeof(short) && values.Length<=6) {
                     ref short spanRef = ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(span));
                     ref short valueRef = ref Unsafe.As<T, short>(ref ExMemoryMarshal.GetReference(values));
                     return values.Length switch {
@@ -2457,6 +2468,15 @@ namespace Zyl.ExSpans {
                                  Unsafe.Add(ref valueRef, 2),
                                  Unsafe.Add(ref valueRef, 3),
                                  Unsafe.Add(ref valueRef, 4),
+                                 span.Length),
+                        6 => ExSpanHelpers.IndexOfAnyValueType(
+                                 ref spanRef,
+                                 valueRef,
+                                 Unsafe.Add(ref valueRef, 1),
+                                 Unsafe.Add(ref valueRef, 2),
+                                 Unsafe.Add(ref valueRef, 3),
+                                 Unsafe.Add(ref valueRef, 4),
+                                 Unsafe.Add(ref valueRef, 5),
                                  span.Length),
                         //_ => ProbabilisticMap.IndexOfAny(ref Unsafe.As<short, char>(ref spanRef), span.Length, ref Unsafe.As<short, char>(ref valueRef), values.Length),
                         _ => ExSpanHelpers.IndexOfAny(ref ExMemoryMarshal.GetReference(span), span.Length, ref ExMemoryMarshal.GetReference(values), values.Length),
