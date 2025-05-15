@@ -56,7 +56,7 @@ namespace Zyl.ExSpans.Text {
         /// <inheritdoc cref="IEnumerator.Reset"/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public void Reset() {
-            throw new NotImplementedException();
+            throw new NotImplementedException("ExSpanRuneEnumerator not support The Reset method.");
         }
     }
 }

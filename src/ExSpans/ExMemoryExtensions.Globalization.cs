@@ -441,15 +441,13 @@ namespace Zyl.ExSpans {
         public static ExSpanRuneEnumerator EnumerateRunes(this ExSpan<char> span) {
             return new ExSpanRuneEnumerator(span);
         }
-#endif // NETCOREAPP3_0_OR_GREATER
 
-#if TODO
         /// <summary>
         /// Returns an enumeration of lines over the provided span.
         /// </summary>
         /// <remarks>
         /// It is recommended that protocol parsers not utilize this API. See the documentation
-        /// for <see cref="string.ReplaceLineEndings"/> for more information on how newline
+        /// for <see cref="string.ReplaceLineEndings()"/> for more information on how newline
         /// sequences are detected.
         /// </remarks>
         public static ExSpanLineEnumerator EnumerateLines(this ReadOnlyExSpan<char> span) {
@@ -461,14 +459,14 @@ namespace Zyl.ExSpans {
         /// </summary>
         /// <remarks>
         /// It is recommended that protocol parsers not utilize this API. See the documentation
-        /// for <see cref="string.ReplaceLineEndings"/> for more information on how newline
+        /// for <see cref="string.ReplaceLineEndings()"/> for more information on how newline
         /// sequences are detected.
         /// </remarks>
         [OverloadResolutionPriority(-1)]
         public static ExSpanLineEnumerator EnumerateLines(this ExSpan<char> span) {
             return new ExSpanLineEnumerator(span);
         }
-#endif // TODO
+#endif // NETCOREAPP3_0_OR_GREATER
 
     }
 }
