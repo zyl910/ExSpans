@@ -33,51 +33,16 @@ namespace Zyl.ExSpans {
             TSize offset = 0;
             byte valueHead = value;
             TSize searchSpaceMinusValueTailLength = searchSpaceLength - valueTailLength;
-            if (Vector.IsHardwareAccelerated && searchSpaceMinusValueTailLength >= Vector<byte>.Count) {
-                goto SEARCH_TWO_BYTES;
-            }
-#if NET7_0_OR_GREATER
-            if (Vector128.IsHardwareAccelerated && searchSpaceMinusValueTailLength >= Vector128<byte>.Count) {
-                goto SEARCH_TWO_BYTES;
-            }
-#endif // NET7_0_OR_GREATER
 
-            ref byte valueTail = ref Unsafe.Add(ref value, 1);
-            TSize remainingSearchSpaceLength = searchSpaceMinusValueTailLength;
-
-            while (remainingSearchSpaceLength > 0) {
-                // Do a quick search for the first element of "value".
-                TSize relativeIndex = IndexOfValueType(ref Unsafe.Add(ref searchSpace, offset), valueHead, remainingSearchSpaceLength);
-                if (relativeIndex < 0)
-                    break;
-
-                remainingSearchSpaceLength -= relativeIndex;
-                offset += relativeIndex;
-
-                if (remainingSearchSpaceLength <= 0)
-                    break;  // The unsearched portion is now shorter than the sequence we're looking for. So it can't be there.
-
-                // Found the first element of "value". See if the tail matches.
-                if (SequenceEqual(
-                        ref Unsafe.Add(ref searchSpace, offset + 1),
-                        ref valueTail, (nuint)(uint)valueTailLength))  // The (nuint)-cast is necessary to pick the correct overload
-                    return (int)offset;  // The tail matched. Return a successful find.
-
-                remainingSearchSpaceLength--;
-                offset++;
-            }
-            return -1;
-
-        // Based on http://0x80.pl/articles/simd-strfind.html#algorithm-1-generic-simd "Algorithm 1: Generic SIMD" by Wojciech Mula
-        // Some details about the implementation can also be found in https://github.com/dotnet/runtime/pull/63285
-        SEARCH_TWO_BYTES:
+            // Based on http://0x80.pl/articles/simd-strfind.html#algorithm-1-generic-simd "Algorithm 1: Generic SIMD" by Wojciech Mula
+            // Some details about the implementation can also be found in https://github.com/dotnet/runtime/pull/63285
             if (false) {
 #if NET8_0_OR_GREATER
             } else if (Vector512.IsHardwareAccelerated && searchSpaceMinusValueTailLength - Vector512<byte>.Count >= 0) {
                 // Find the last unique (which is not equal to ch1) byte
                 // the algorithm is fine if both are equal, just a little bit less efficient
                 byte ch2Val = Unsafe.Add(ref value, valueTailLength);
-                nint ch1ch2Distance = (nint)(uint)valueTailLength;
+                nint ch1ch2Distance = valueTailLength;
                 while (ch2Val == value && ch1ch2Distance > 1)
                     ch2Val = Unsafe.Add(ref value, --ch1ch2Distance);
 
@@ -120,9 +85,9 @@ namespace Zyl.ExSpans {
                         if (valueLength == 2 || // we already matched two bytes
                             SequenceEqual(
                                 ref Unsafe.Add(ref searchSpace, offset + bitPos),
-                                ref value, (nuint)(uint)valueLength)) // The (nuint)-cast is necessary to pick the correct overload
+                                ref value, (TUSize)valueLength)) // The (nuint)-cast is necessary to pick the correct overload
                         {
-                            return (int)(offset + bitPos);
+                            return offset + bitPos;
                         }
                         mask = BitOperationsHelper.ResetLowestSetBit(mask); // Clear the lowest set bit
                     } while (mask != 0);
@@ -134,7 +99,7 @@ namespace Zyl.ExSpans {
                 // Find the last unique (which is not equal to ch1) byte
                 // the algorithm is fine if both are equal, just a little bit less efficient
                 byte ch2Val = Unsafe.Add(ref value, valueTailLength);
-                nint ch1ch2Distance = (nint)(uint)valueTailLength;
+                nint ch1ch2Distance = valueTailLength;
                 while (ch2Val == value && ch1ch2Distance > 1)
                     ch2Val = Unsafe.Add(ref value, --ch1ch2Distance);
 
@@ -177,9 +142,9 @@ namespace Zyl.ExSpans {
                         if (valueLength == 2 || // we already matched two bytes
                             SequenceEqual(
                                 ref Unsafe.Add(ref searchSpace, offset + bitPos),
-                                ref value, (nuint)(uint)valueLength)) // The (nuint)-cast is necessary to pick the correct overload
+                                ref value, (TUSize)valueLength)) // The (nuint)-cast is necessary to pick the correct overload
                         {
-                            return (int)(offset + bitPos);
+                            return offset + bitPos;
                         }
                         mask = BitOperationsHelper.ResetLowestSetBit(mask); // Clear the lowest set bit
                     } while (mask != 0);
@@ -234,9 +199,9 @@ namespace Zyl.ExSpans {
                         if (valueLength == 2 || // we already matched two bytes
                             SequenceEqual(
                                 ref Unsafe.Add(ref searchSpace, offset + bitPos),
-                                ref value, (nuint)(uint)valueLength)) // The (nuint)-cast is necessary to pick the correct overload
+                                ref value, (TUSize)valueLength)) // The (nuint)-cast is necessary to pick the correct overload
                         {
-                            return (int)(offset + bitPos);
+                            return offset + bitPos;
                         }
                         mask = BitOperationsHelper.ResetLowestSetBit(mask); // Clear the lowest set bit
                     } while (mask != 0);
@@ -291,9 +256,9 @@ namespace Zyl.ExSpans {
                         if (valueLength == 2 || // we already matched two bytes
                             SequenceEqual(
                                 ref Unsafe.Add(ref searchSpace, offset + bitPos),
-                                ref value, (nuint)(uint)valueLength)) // The (nuint)-cast is necessary to pick the correct overload
+                                ref value, (TUSize)valueLength)) // The (nuint)-cast is necessary to pick the correct overload
                         {
-                            return (int)(offset + bitPos);
+                            return offset + bitPos;
                         }
                         // Clear the lowest set bit
                         mask = BitOperationsHelper.ResetLowestSetBit(mask);
@@ -302,6 +267,31 @@ namespace Zyl.ExSpans {
 
                 } while (true);
 #endif // NET7_0_OR_GREATER
+            }
+
+            ref byte valueTail = ref Unsafe.Add(ref value, 1);
+            TSize remainingSearchSpaceLength = searchSpaceMinusValueTailLength;
+
+            while (remainingSearchSpaceLength > 0) {
+                // Do a quick search for the first element of "value".
+                TSize relativeIndex = IndexOfValueType(ref Unsafe.Add(ref searchSpace, offset), valueHead, remainingSearchSpaceLength);
+                if (relativeIndex < 0)
+                    break;
+
+                remainingSearchSpaceLength -= relativeIndex;
+                offset += relativeIndex;
+
+                if (remainingSearchSpaceLength <= 0)
+                    break;  // The unsearched portion is now shorter than the sequence we're looking for. So it can't be there.
+
+                // Found the first element of "value". See if the tail matches.
+                if (SequenceEqual(
+                        ref Unsafe.Add(ref searchSpace, offset + 1),
+                        ref valueTail, (nuint)(uint)valueTailLength))  // The (nuint)-cast is necessary to pick the correct overload
+                    return (int)offset;  // The tail matched. Return a successful find.
+
+                remainingSearchSpaceLength--;
+                offset++;
             }
             return -1;
         }
@@ -377,7 +367,7 @@ namespace Zyl.ExSpans {
                             if (valueLength == 2 || // we already matched two bytes
                                 SequenceEqual(
                                     ref Unsafe.Add(ref searchSpace, offset + highestSetBitIndex),
-                                    ref value, (nuint)(uint)valueLength)) // The (nuint)-cast is necessary to pick the correct overload
+                                    ref value, valueLength)) // The (nuint)-cast is necessary to pick the correct overload
                             {
                                 return highestSetBitIndex + offset;
                             }
@@ -419,7 +409,7 @@ namespace Zyl.ExSpans {
                             if (valueLength == 2 || // we already matched two bytes
                                 SequenceEqual(
                                     ref Unsafe.Add(ref searchSpace, offset + highestSetBitIndex),
-                                    ref value, (nuint)(uint)valueLength)) // The (nuint)-cast is necessary to pick the correct overload
+                                    ref value, valueLength)) // The (nuint)-cast is necessary to pick the correct overload
                             {
                                 return highestSetBitIndex + offset;
                             }
@@ -464,7 +454,7 @@ namespace Zyl.ExSpans {
                             if (valueLength == 2 || // we already matched two bytes
                                 SequenceEqual(
                                     ref Unsafe.Add(ref searchSpace, offset + highestSetBitIndex),
-                                    ref value, (nuint)(uint)valueLength)) // The (nuint)-cast is necessary to pick the correct overload
+                                    ref value, valueLength)) // The (nuint)-cast is necessary to pick the correct overload
                             {
                                 return highestSetBitIndex + offset;
                             }
