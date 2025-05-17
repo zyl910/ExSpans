@@ -310,41 +310,9 @@ namespace Zyl.ExSpans {
             TSize offset = 0;
             byte valueHead = value;
             TSize searchSpaceMinusValueTailLength = searchSpaceLength - valueTailLength;
-            if (Vector.IsHardwareAccelerated && searchSpaceMinusValueTailLength >= Vector<byte>.Count) {
-                goto SEARCH_TWO_BYTES;
-            }
-#if NET7_0_OR_GREATER
-            if (Vector128.IsHardwareAccelerated && searchSpaceMinusValueTailLength >= Vector128<byte>.Count) {
-                goto SEARCH_TWO_BYTES;
-            }
-#endif // NET7_0_OR_GREATER
 
-            ref byte valueTail = ref Unsafe.Add(ref value, 1);
-
-            while (true) {
-                Debug.Assert(0 <= offset && offset <= searchSpaceLength); // Ensures no deceptive underflows in the computation of "remainingSearchSpaceLength".
-                TSize remainingSearchSpaceLength = searchSpaceLength - offset - valueTailLength;
-                if (remainingSearchSpaceLength <= 0)
-                    break;  // The unsearched portion is now shorter than the sequence we're looking for. So it can't be there.
-
-                // Do a quick search for the first element of "value".
-                TSize relativeIndex = LastIndexOfValueType(ref searchSpace, valueHead, remainingSearchSpaceLength);
-                if (relativeIndex < 0)
-                    break;
-
-                // Found the first element of "value". See if the tail matches.
-                if (SequenceEqual(
-                        ref Unsafe.Add(ref searchSpace, relativeIndex + 1),
-                        ref valueTail, (nuint)(uint)valueTailLength)) // The (nuint)-cast is necessary to pick the correct overload
-                    return relativeIndex;  // The tail matched. Return a successful find.
-
-                offset += remainingSearchSpaceLength - relativeIndex;
-            }
-            return -1;
-
-        // Based on http://0x80.pl/articles/simd-strfind.html#algorithm-1-generic-simd "Algorithm 1: Generic SIMD" by Wojciech Mula
-        // Some details about the implementation can also be found in https://github.com/dotnet/runtime/pull/63285
-        SEARCH_TWO_BYTES:
+            // Based on http://0x80.pl/articles/simd-strfind.html#algorithm-1-generic-simd "Algorithm 1: Generic SIMD" by Wojciech Mula
+            // Some details about the implementation can also be found in https://github.com/dotnet/runtime/pull/63285
             if (false) {
 #if NET8_0_OR_GREATER
             } else if (Vector512.IsHardwareAccelerated && searchSpaceMinusValueTailLength >= Vector512<byte>.Count && Vector512<byte>.Count >= Vector<byte>.Count) {
@@ -475,8 +443,8 @@ namespace Zyl.ExSpans {
                     if (offset < 0)
                         offset = 0;
                 } while (true);
-            } else // 128bit vector path (SSE2 or AdvSimd)
-              {
+            } else if (Vector128.IsHardwareAccelerated && searchSpaceMinusValueTailLength >= Vector128<byte>.Count) {
+                // 128bit vector path (SSE2 or AdvSimd)
                 offset = searchSpaceMinusValueTailLength - Vector128<byte>.Count;
 
                 // Find the last unique (which is not equal to ch1) byte
@@ -522,6 +490,28 @@ namespace Zyl.ExSpans {
 
                 } while (true);
 #endif // NET7_0_OR_GREATER
+            }
+
+            ref byte valueTail = ref Unsafe.Add(ref value, 1);
+
+            while (true) {
+                Debug.Assert(0 <= offset && offset <= searchSpaceLength); // Ensures no deceptive underflows in the computation of "remainingSearchSpaceLength".
+                TSize remainingSearchSpaceLength = searchSpaceLength - offset - valueTailLength;
+                if (remainingSearchSpaceLength <= 0)
+                    break;  // The unsearched portion is now shorter than the sequence we're looking for. So it can't be there.
+
+                // Do a quick search for the first element of "value".
+                TSize relativeIndex = LastIndexOfValueType(ref searchSpace, valueHead, remainingSearchSpaceLength);
+                if (relativeIndex < 0)
+                    break;
+
+                // Found the first element of "value". See if the tail matches.
+                if (SequenceEqual(
+                        ref Unsafe.Add(ref searchSpace, relativeIndex + 1),
+                        ref valueTail, (nuint)(uint)valueTailLength)) // The (nuint)-cast is necessary to pick the correct overload
+                    return relativeIndex;  // The tail matched. Return a successful find.
+
+                offset += remainingSearchSpaceLength - relativeIndex;
             }
             return -1;
         }
