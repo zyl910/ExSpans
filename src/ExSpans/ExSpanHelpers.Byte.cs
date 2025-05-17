@@ -516,23 +516,30 @@ namespace Zyl.ExSpans {
             return -1;
         }
 
-#if TODO
         [DoesNotReturn]
         private static void ThrowMustBeNullTerminatedString() {
             throw new ArgumentException(SR.Arg_MustBeNullTerminatedString);
         }
 
+#if ALLOW_OBSOLETE
         // IndexOfNullByte processes memory in aligned chunks, and thus it won't crash even if it accesses memory beyond the null terminator.
         // This behavior is an implementation detail of the runtime and callers outside System.Private.CoreLib must not depend on it.
-        internal static unsafe int IndexOfNullByte(byte* searchSpace) {
+        internal static unsafe TSize IndexOfNullByte(byte* searchSpace) {
             const int Length = int.MaxValue;
             const uint uValue = 0; // Use uint for comparisons to avoid unnecessary 8->32 extensions
             nuint offset = 0; // Use nuint for arithmetic to avoid unnecessary 64->32->64 truncations
             nuint lengthToExamine = (nuint)(uint)Length;
 
-            if (Vector128.IsHardwareAccelerated) {
+            if (Vector.IsHardwareAccelerated) {
                 // Avx2 branch also operates on Sse2 sizes, so check is combined.
-                lengthToExamine = UnalignedCountVector128(searchSpace);
+                lengthToExamine = UnalignedCountVector(searchSpace);
+            } else {
+#if NET7_0_OR_GREATER
+                if (Vector128.IsHardwareAccelerated) {
+                    // Avx2 branch also operates on Sse2 sizes, so check is combined.
+                    lengthToExamine = UnalignedCountVector128(searchSpace);
+                }
+#endif // NET7_0_OR_GREATER
             }
 
         SequentialScan:
@@ -586,7 +593,9 @@ namespace Zyl.ExSpans {
             // We get past SequentialScan only if IsHardwareAccelerated is true; and remain length is greater than Vector length.
             // However, we still have the redundant check to allow the JIT to see that the code is unreachable and eliminate it when the platform does not
             // have hardware accelerated. After processing Vector lengths we return to SequentialScan to finish any remaining.
-            if (Vector512.IsHardwareAccelerated) {
+            if (false) {
+#if NET8_0_OR_GREATER
+            } else if (Vector512.IsHardwareAccelerated) {
                 if (offset < (nuint)(uint)Length) {
                     if ((((nuint)(uint)searchSpace + offset) & (nuint)(Vector256<byte>.Count - 1)) != 0) {
                         // Not currently aligned to Vector256 (is aligned to Vector128); this can cause a problem for searches
@@ -676,6 +685,8 @@ namespace Zyl.ExSpans {
                         goto SequentialScan;
                     }
                 }
+#endif // NET8_0_OR_GREATER
+#if NET7_0_OR_GREATER
             } else if (Vector256.IsHardwareAccelerated) {
                 if (offset < (nuint)(uint)Length) {
                     if ((((nuint)(uint)searchSpace + offset) & (nuint)(Vector256<byte>.Count - 1)) != 0) {
@@ -759,27 +770,28 @@ namespace Zyl.ExSpans {
                         goto SequentialScan;
                     }
                 }
+#endif // NET7_0_OR_GREATER
             }
 
             ThrowMustBeNullTerminatedString();
         Found: // Workaround for https://github.com/dotnet/runtime/issues/8795
-            return (int)offset;
+            return (TSize)offset;
         Found1:
-            return (int)(offset + 1);
+            return (TSize)(offset + 1);
         Found2:
-            return (int)(offset + 2);
+            return (TSize)(offset + 2);
         Found3:
-            return (int)(offset + 3);
+            return (TSize)(offset + 3);
         Found4:
-            return (int)(offset + 4);
+            return (TSize)(offset + 4);
         Found5:
-            return (int)(offset + 5);
+            return (TSize)(offset + 5);
         Found6:
-            return (int)(offset + 6);
+            return (TSize)(offset + 6);
         Found7:
-            return (int)(offset + 7);
+            return (TSize)(offset + 7);
         }
-#endif // TODO
+#endif // ALLOW_OBSOLETE
 
         // Optimized byte-based SequenceEquals. The "length" parameter for this one is declared a nuint rather than int as we also use it for types other than byte
         // where the length can exceed 2Gb once scaled by sizeof(T).
@@ -1382,6 +1394,12 @@ namespace Zyl.ExSpans {
         }
 
 #endif // NETCOREAPP3_0_OR_GREATER
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static unsafe nuint UnalignedCountVector(byte* searchSpace) {
+            nint unaligned = (nint)searchSpace & (Vector<byte>.Count - 1);
+            return (nuint)(uint)((Vector<byte>.Count - unaligned) & (Vector<byte>.Count - 1));
+        }
 
         public static void Reverse(ref byte buf, nuint length) {
             Debug.Assert(length > 1);

@@ -7,6 +7,7 @@ namespace Zyl.ExSpans {
     internal static class SR {
 
         internal static string Arg_BogusIComparer => "Unable to sort because the IComparer.Compare() method returns inconsistent results. Either a value does not compare equal to itself, or one value repeatedly compared to another value yields different results. IComparer: '{0}'.";
+        internal static string Arg_MustBeNullTerminatedString => "The string must be null-terminated.";
 
         internal static string Argument_DestinationTooShort => "Destination is too short.";
         internal static string Argument_InvalidTypeWithPointersNotSupported => "Cannot use type '{0}'. Only value types without pointers or references are supported.";
