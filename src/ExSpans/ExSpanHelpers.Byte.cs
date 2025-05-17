@@ -13,36 +13,41 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Zyl.ExSpans.Impl;
 using Zyl.VectorTraits;
+using Zyl.VectorTraits.Extensions.SameW;
 using Zyl.VectorTraits.Numerics;
 
 namespace Zyl.ExSpans {
     partial class ExSpanHelpers {
 
-#if TODO
-        public static int IndexOf(ref byte searchSpace, int searchSpaceLength, ref byte value, int valueLength) {
+        public static TSize IndexOf(ref byte searchSpace, TSize searchSpaceLength, ref byte value, TSize valueLength) {
             Debug.Assert(searchSpaceLength >= 0);
             Debug.Assert(valueLength >= 0);
 
             if (valueLength == 0)
                 return 0;  // A zero-length sequence is always treated as "found" at the start of the search space.
 
-            int valueTailLength = valueLength - 1;
+            TSize valueTailLength = valueLength - 1;
             if (valueTailLength == 0)
                 return IndexOfValueType(ref searchSpace, value, searchSpaceLength); // for single-byte values use plain IndexOf
 
-            nint offset = 0;
+            TSize offset = 0;
             byte valueHead = value;
-            int searchSpaceMinusValueTailLength = searchSpaceLength - valueTailLength;
+            TSize searchSpaceMinusValueTailLength = searchSpaceLength - valueTailLength;
+            if (Vector.IsHardwareAccelerated && searchSpaceMinusValueTailLength >= Vector<byte>.Count) {
+                goto SEARCH_TWO_BYTES;
+            }
+#if NET7_0_OR_GREATER
             if (Vector128.IsHardwareAccelerated && searchSpaceMinusValueTailLength >= Vector128<byte>.Count) {
                 goto SEARCH_TWO_BYTES;
             }
+#endif // NET7_0_OR_GREATER
 
             ref byte valueTail = ref Unsafe.Add(ref value, 1);
-            int remainingSearchSpaceLength = searchSpaceMinusValueTailLength;
+            TSize remainingSearchSpaceLength = searchSpaceMinusValueTailLength;
 
             while (remainingSearchSpaceLength > 0) {
                 // Do a quick search for the first element of "value".
-                int relativeIndex = IndexOfValueType(ref Unsafe.Add(ref searchSpace, offset), valueHead, remainingSearchSpaceLength);
+                TSize relativeIndex = IndexOfValueType(ref Unsafe.Add(ref searchSpace, offset), valueHead, remainingSearchSpaceLength);
                 if (relativeIndex < 0)
                     break;
 
@@ -66,7 +71,9 @@ namespace Zyl.ExSpans {
         // Based on http://0x80.pl/articles/simd-strfind.html#algorithm-1-generic-simd "Algorithm 1: Generic SIMD" by Wojciech Mula
         // Some details about the implementation can also be found in https://github.com/dotnet/runtime/pull/63285
         SEARCH_TWO_BYTES:
-            if (Vector512.IsHardwareAccelerated && searchSpaceMinusValueTailLength - Vector512<byte>.Count >= 0) {
+            if (false) {
+#if NET8_0_OR_GREATER
+            } else if (Vector512.IsHardwareAccelerated && searchSpaceMinusValueTailLength - Vector512<byte>.Count >= 0) {
                 // Find the last unique (which is not equal to ch1) byte
                 // the algorithm is fine if both are equal, just a little bit less efficient
                 byte ch2Val = Unsafe.Add(ref value, valueTailLength);
@@ -117,11 +124,69 @@ namespace Zyl.ExSpans {
                         {
                             return (int)(offset + bitPos);
                         }
-                        mask = BitOperations.ResetLowestSetBit(mask); // Clear the lowest set bit
+                        mask = BitOperationsHelper.ResetLowestSetBit(mask); // Clear the lowest set bit
                     } while (mask != 0);
                     goto LOOP_FOOTER;
 
                 } while (true);
+#endif // NET8_0_OR_GREATER
+            } else if (Vector.IsHardwareAccelerated && searchSpaceMinusValueTailLength - Vector<byte>.Count >= 0) {
+                // Find the last unique (which is not equal to ch1) byte
+                // the algorithm is fine if both are equal, just a little bit less efficient
+                byte ch2Val = Unsafe.Add(ref value, valueTailLength);
+                nint ch1ch2Distance = (nint)(uint)valueTailLength;
+                while (ch2Val == value && ch1ch2Distance > 1)
+                    ch2Val = Unsafe.Add(ref value, --ch1ch2Distance);
+
+                Vector<byte> ch1 = Vectors.Create(value);
+                Vector<byte> ch2 = Vectors.Create(ch2Val);
+
+                nint searchSpaceMinusValueTailLengthAndVector =
+                    searchSpaceMinusValueTailLength - (nint)Vector<byte>.Count;
+
+                do {
+                    Debug.Assert(offset >= 0);
+                    // Make sure we don't go out of bounds
+                    Debug.Assert(offset + ch1ch2Distance + Vector<byte>.Count <= searchSpaceLength);
+
+                    Vector<byte> cmpCh2 = Vector.Equals(ch2, VectorHelper.LoadUnsafe(ref searchSpace, (nuint)(offset + ch1ch2Distance)));
+                    Vector<byte> cmpCh1 = Vector.Equals(ch1, VectorHelper.LoadUnsafe(ref searchSpace, (nuint)offset));
+                    Vector<byte> cmpAnd = (cmpCh1 & cmpCh2).AsByte();
+
+                    // Early out: cmpAnd is all zeros
+                    if (cmpAnd != Vector<byte>.Zero) {
+                        goto CANDIDATE_FOUND;
+                    }
+
+                LOOP_FOOTER:
+                    offset += Vector<byte>.Count;
+
+                    if (offset == searchSpaceMinusValueTailLength)
+                        return -1;
+
+                    // Overlap with the current chunk for trailing elements
+                    if (offset > searchSpaceMinusValueTailLengthAndVector)
+                        offset = searchSpaceMinusValueTailLengthAndVector;
+
+                    continue;
+
+                CANDIDATE_FOUND:
+                    ulong mask = cmpAnd.ExtractMostSignificantBits();
+                    do {
+                        int bitPos = MathBitOperations.TrailingZeroCount(mask);
+                        if (valueLength == 2 || // we already matched two bytes
+                            SequenceEqual(
+                                ref Unsafe.Add(ref searchSpace, offset + bitPos),
+                                ref value, (nuint)(uint)valueLength)) // The (nuint)-cast is necessary to pick the correct overload
+                        {
+                            return (int)(offset + bitPos);
+                        }
+                        mask = BitOperationsHelper.ResetLowestSetBit(mask); // Clear the lowest set bit
+                    } while (mask != 0);
+                    goto LOOP_FOOTER;
+
+                } while (true);
+#if NET7_0_OR_GREATER
             } else if (Vector256.IsHardwareAccelerated && searchSpaceMinusValueTailLength - Vector256<byte>.Count >= 0) {
                 // Find the last unique (which is not equal to ch1) byte
                 // the algorithm is fine if both are equal, just a little bit less efficient
@@ -173,17 +238,17 @@ namespace Zyl.ExSpans {
                         {
                             return (int)(offset + bitPos);
                         }
-                        mask = BitOperations.ResetLowestSetBit(mask); // Clear the lowest set bit
+                        mask = BitOperationsHelper.ResetLowestSetBit(mask); // Clear the lowest set bit
                     } while (mask != 0);
                     goto LOOP_FOOTER;
 
                 } while (true);
-            } else // 128bit vector path (SSE2 or AdvSimd)
-              {
+            } else if (Vector128.IsHardwareAccelerated && searchSpaceMinusValueTailLength - Vector128<byte>.Count >= 0) {
+                // -- 128bit vector path (SSE2 or AdvSimd) --
                 // Find the last unique (which is not equal to ch1) byte
                 // the algorithm is fine if both are equal, just a little bit less efficient
                 byte ch2Val = Unsafe.Add(ref value, valueTailLength);
-                int ch1ch2Distance = valueTailLength;
+                nint ch1ch2Distance = valueTailLength;
                 while (ch2Val == value && ch1ch2Distance > 1)
                     ch2Val = Unsafe.Add(ref value, --ch1ch2Distance);
 
@@ -231,14 +296,17 @@ namespace Zyl.ExSpans {
                             return (int)(offset + bitPos);
                         }
                         // Clear the lowest set bit
-                        mask = BitOperations.ResetLowestSetBit(mask);
+                        mask = BitOperationsHelper.ResetLowestSetBit(mask);
                     } while (mask != 0);
                     goto LOOP_FOOTER;
 
                 } while (true);
+#endif // NET7_0_OR_GREATER
             }
+            return -1;
         }
 
+#if TODO
         public static int LastIndexOf(ref byte searchSpace, int searchSpaceLength, ref byte value, int valueLength) {
             Debug.Assert(searchSpaceLength >= 0);
             Debug.Assert(valueLength >= 0);
