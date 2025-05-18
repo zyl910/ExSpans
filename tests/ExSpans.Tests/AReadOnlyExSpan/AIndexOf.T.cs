@@ -1,11 +1,13 @@
 using Xunit;
 
 namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
+    using static AComparers;
+
     public static partial class AIndexOf {
         [Fact]
         public static void ZeroLengthIndexOf() {
-            Assert.Equal(-1, new ReadOnlyExSpan<int>(Array.Empty<int>()).IndexOf(0));
-            Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.Equal(-1, new ReadOnlyExSpan<int>(Array.Empty<int>()).IndexOf(0, comparer)));
+            Assert.Equal(-1, new ReadOnlyExSpan<int>(ArrayHelper.Empty<int>()).IndexOf(0));
+            Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.Equal(-1, new ReadOnlyExSpan<int>(ArrayHelper.Empty<int>()).IndexOf(0, comparer)));
         }
 
         [Fact]
@@ -20,7 +22,9 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                     int target = a[targetIndex];
                     Assert.Equal(targetIndex, new ReadOnlyExSpan<int>(a).IndexOf(target));
                     Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.Equal(targetIndex, new ReadOnlyExSpan<int>(a).IndexOf(target, comparer)));
+#if NET8_0_OR_GREATER
                     Assert.Equal(-1, new ReadOnlyExSpan<int>(a).IndexOf(target, GetFalseEqualityComparer<int>()));
+#endif // NET8_0_OR_GREATER
                 }
             }
         }
@@ -38,7 +42,9 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                 Assert.Equal(length - 2, new ReadOnlyExSpan<int>(a).IndexOf(5555));
                 Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.Equal(length - 2, new ReadOnlyExSpan<int>(a).IndexOf(5555, comparer)));
+#if NET8_0_OR_GREATER
                 Assert.Equal(-1, new ReadOnlyExSpan<int>(a).IndexOf(5555, GetFalseEqualityComparer<int>()));
+#endif // NET8_0_OR_GREATER
             }
         }
 
@@ -52,7 +58,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                     a[i] = new TInt(10 * (i + 1), log);
                 }
                 ReadOnlyExSpan<TInt> span = new ReadOnlyExSpan<TInt>(a);
-                int idx = span.IndexOf(new TInt(9999, log));
+                TSize idx = span.IndexOf(new TInt(9999, log));
                 Assert.Equal(-1, idx);
 
                 // Since we asked for a non-existent value, make sure each element of the array was compared once.
@@ -94,8 +100,8 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
         [Fact]
         public static void ZeroLengthIndexOf_String() {
-            Assert.Equal(-1, new ReadOnlyExSpan<string>(Array.Empty<string>()).IndexOf("a"));
-            Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(-1, new ReadOnlyExSpan<string>(Array.Empty<string>()).IndexOf("a", comparer)));
+            Assert.Equal(-1, new ReadOnlyExSpan<string>(ArrayHelper.Empty<string>()).IndexOf("a"));
+            Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(-1, new ReadOnlyExSpan<string>(ArrayHelper.Empty<string>()).IndexOf("a", comparer)));
         }
 
         [Fact]
@@ -109,7 +115,9 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                 for (int targetIndex = 0; targetIndex < length; targetIndex++) {
                     Assert.Equal(targetIndex, new ReadOnlyExSpan<string>(a).IndexOf(a[targetIndex]));
                     Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(targetIndex, new ReadOnlyExSpan<string>(a).IndexOf(a[targetIndex], comparer)));
+#if NET8_0_OR_GREATER
                     Assert.Equal(-1, new ReadOnlyExSpan<string>(a).IndexOf(a[targetIndex], GetFalseEqualityComparer<string>()));
+#endif // NET8_0_OR_GREATER
                 }
             }
         }
@@ -143,16 +151,23 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                 Assert.Equal(length - 2, new ReadOnlyExSpan<string>(a).IndexOf("5555"));
                 Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(length - 2, new ReadOnlyExSpan<string>(a).IndexOf("5555", comparer)));
+#if NET8_0_OR_GREATER
                 Assert.Equal(-1, new ReadOnlyExSpan<string>(a).IndexOf("5555", GetFalseEqualityComparer<string>()));
+#endif // NET8_0_OR_GREATER
             }
         }
 
+#nullable disable
         [Theory]
         [MemberData(nameof(TestHelpers.IndexOfNullData), MemberType = typeof(TestHelpers))]
         public static void IndexOfNull_String(string[] spanInput, int expected) {
             Assert.Equal(expected, new ReadOnlyExSpan<string>(spanInput).IndexOf((string)null));
             Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(expected, new ReadOnlyExSpan<string>(spanInput).IndexOf((string)null, comparer)));
+#if NET8_0_OR_GREATER
             Assert.Equal(-1, new ReadOnlyExSpan<string>(spanInput).IndexOf((string)null, GetFalseEqualityComparer<string>()));
+#endif // NET8_0_OR_GREATER
         }
+#nullable restore
+
     }
 }

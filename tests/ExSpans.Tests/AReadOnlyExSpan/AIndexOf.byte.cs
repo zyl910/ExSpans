@@ -5,8 +5,8 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
     public static partial class AIndexOf {
         [Fact]
         public static void ZeroLengthIndexOf_Byte() {
-            ReadOnlyExSpan<byte> sp = new ReadOnlyExSpan<byte>(Array.Empty<byte>());
-            int idx = sp.IndexOf<byte>(0);
+            ReadOnlyExSpan<byte> sp = new ReadOnlyExSpan<byte>(ArrayHelper.Empty<byte>());
+            TSize idx = sp.IndexOf<byte>(0);
             Assert.Equal(-1, idx);
         }
 
@@ -18,7 +18,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                 for (int i = 0; i < length; i++) {
                     byte target0 = default;
-                    int idx = span.IndexOf(target0);
+                    TSize idx = span.IndexOf(target0);
                     Assert.Equal(0, idx);
                 }
             }
@@ -35,7 +35,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                 for (int targetIndex = 0; targetIndex < length; targetIndex++) {
                     byte target = a[targetIndex];
-                    int idx = span.IndexOf(target);
+                    TSize idx = span.IndexOf(target);
                     Assert.Equal(targetIndex, idx);
                 }
             }
@@ -53,7 +53,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                 }
                 ReadOnlyExSpan<byte> span = new ReadOnlyExSpan<byte>(a);
 
-                int idx = span.IndexOf(target);
+                TSize idx = span.IndexOf(target);
                 Assert.Equal(-1, idx);
             }
         }
@@ -63,7 +63,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             byte[] array = new byte[4 * Vector<byte>.Count];
             for (var i = 0; i < Vector<byte>.Count; i++) {
                 var span = new ReadOnlyExSpan<byte>(array, i, 3 * Vector<byte>.Count);
-                int idx = span.IndexOf((byte)'1');
+                TSize idx = span.IndexOf((byte)'1');
                 Assert.Equal(-1, idx);
 
                 span = new ReadOnlyExSpan<byte>(array, i, 3 * Vector<byte>.Count - 3);
@@ -80,7 +80,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             }
             for (var i = 0; i < Vector<byte>.Count; i++) {
                 var span = new ReadOnlyExSpan<byte>(array, i, 3 * Vector<byte>.Count);
-                int idx = span.IndexOf<byte>(5);
+                TSize idx = span.IndexOf<byte>(5);
                 Assert.Equal(0, idx);
 
                 span = new ReadOnlyExSpan<byte>(array, i, 3 * Vector<byte>.Count - 3);
@@ -102,7 +102,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                 a[length - 2] = 200;
 
                 ReadOnlyExSpan<byte> span = new ReadOnlyExSpan<byte>(a);
-                int idx = span.IndexOf<byte>(200);
+                TSize idx = span.IndexOf<byte>(200);
                 Assert.Equal(length - 2, idx);
             }
         }
@@ -114,7 +114,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                 a[0] = 99;
                 a[length + 1] = 99;
                 ReadOnlyExSpan<byte> span = new ReadOnlyExSpan<byte>(a, 1, length);
-                int index = span.IndexOf<byte>(99);
+                TSize index = span.IndexOf<byte>(99);
                 Assert.Equal(-1, index);
             }
         }
