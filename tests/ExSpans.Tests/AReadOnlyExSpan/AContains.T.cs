@@ -2,12 +2,14 @@ using System.Collections.Generic;
 using Xunit;
 
 namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
+using static AComparers;
+
     // Adapted from IndexOf.T.cs
     public static partial class AContains // .Contains<T>
     {
         [Fact]
         public static void ZeroLengthContains() {
-            ReadOnlyExSpan<int> span = new ReadOnlyExSpan<int>(Array.Empty<int>());
+            ReadOnlyExSpan<int> span = new ReadOnlyExSpan<int>(ArrayHelper.Empty<int>());
 
             bool found = span.Contains(0);
             Assert.False(found);
@@ -25,7 +27,9 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                     int target = a[targetIndex];
                     Assert.True(new ReadOnlyExSpan<int>(a).Contains(target));
                     Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.True(new ReadOnlyExSpan<int>(a).Contains(target, comparer)));
+#if NET8_0_OR_GREATER
                     Assert.False(new ReadOnlyExSpan<int>(a).Contains(target, GetFalseEqualityComparer<int>()));
+#endif // NET8_0_OR_GREATER
                 }
             }
         }
@@ -43,7 +47,9 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                 Assert.True(new ReadOnlyExSpan<int>(a).Contains(5555));
                 Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.True(new ReadOnlyExSpan<int>(a).Contains(5555, comparer)));
+#if NET8_0_OR_GREATER
                 Assert.False(new ReadOnlyExSpan<int>(a).Contains(5555, GetFalseEqualityComparer<int>()));
+#endif // NET8_0_OR_GREATER
             }
         }
 
@@ -97,12 +103,14 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
         [Fact]
         public static void ZeroLengthContains_String() {
-            ReadOnlyExSpan<string> span = new ReadOnlyExSpan<string>(Array.Empty<string>());
+            ReadOnlyExSpan<string> span = new ReadOnlyExSpan<string>(ArrayHelper.Empty<string>());
             Assert.False(span.Contains("a"));
-            Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.False(new ReadOnlyExSpan<string>(Array.Empty<string>()).Contains("a", comparer)));
+            Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.False(new ReadOnlyExSpan<string>(ArrayHelper.Empty<string>()).Contains("a", comparer)));
             Assert.False(span.Contains("a", null));
             Assert.False(span.Contains("a", EqualityComparer<string>.Default));
+#if NET8_0_OR_GREATER
             Assert.False(span.Contains("a", EqualityComparer<string>.Create((i, j) => i == j)));
+#endif // NET8_0_OR_GREATER
         }
 
         [Fact]
@@ -118,7 +126,9 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                     string target = a[targetIndex];
                     Assert.True(span.Contains(target));
                     Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.True(new ReadOnlyExSpan<string>(a).Contains(target, comparer)));
+#if NET8_0_OR_GREATER
                     Assert.False(span.Contains(target, GetFalseEqualityComparer<string>()));
+#endif // NET8_0_OR_GREATER
                 }
             }
         }
@@ -157,10 +167,10 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
         [Theory]
         [MemberData(nameof(TestHelpers.ContainsNullData), MemberType = typeof(TestHelpers))]
-        public static void ContainsNull_String(string[] spanInput, bool expected) {
-            ReadOnlyExSpan<string> theStrings = spanInput;
-            Assert.Equal(expected, theStrings.Contains(null));
-            Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(expected, new ReadOnlyExSpan<string>(spanInput).Contains(null, comparer)));
+        public static void ContainsNull_String(string?[] spanInput, bool expected) {
+            ReadOnlyExSpan<string?> theStrings = spanInput;
+            Assert.Equal(expected, theStrings!.Contains(null));
+            Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(expected, new ReadOnlyExSpan<string?>(spanInput).Contains(null, comparer!)));
         }
     }
 }

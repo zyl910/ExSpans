@@ -11,6 +11,7 @@ global using System;
 global using System.Collections.Generic;
 global using System.Linq;
 global using System.Runtime.InteropServices;
+global using Zyl.ExSpans.Impl;
 global using Zyl.ExSpans.Tests.Fake.Attributes;
 
 using static System.Buffers.Binary.BinaryPrimitives;
@@ -368,7 +369,7 @@ namespace Zyl.ExSpans.Tests {
             DangerousCreateMemory<T>(obj, offset, length);
 #endif // NOT_RELATED
 
-#if TODO
+#nullable disable
         public static TheoryData<string[], bool> ContainsNullData => new TheoryData<string[], bool>()
         {
             { new string[] { "1", null, "2" }, true},
@@ -395,7 +396,7 @@ namespace Zyl.ExSpans.Tests {
             { new string[] { "1", null, "9", null, "9"}, 2},
             { new string[] { null, null, "9", null, "9", "9", null, "9"}, 3},
         };
-#endif // TODO
+#nullable restore
 
         public static TheoryData<string?[]?, string?[]?, bool> SequenceEqualsNullData => new TheoryData<string?[]?, string?[]?, bool>()
         {
@@ -416,7 +417,7 @@ namespace Zyl.ExSpans.Tests {
             { new string?[] { null, null, null }, new string?[] { null, null, null }, true},
         };
 
-#if TODO
+#nullable disable
         public static TheoryData<string[], int> IndexOfNullData => new TheoryData<string[], int>()
         {
             { new string[] { "1", null, "2" }, 1},
@@ -527,7 +528,7 @@ namespace Zyl.ExSpans.Tests {
             { new string[] { "1", null, "2" }, null, -1},
             { new string[] { "1", "3", "2" }, null, -1},
         };
-#endif // TODO
+#nullable restore
 
     }
 }

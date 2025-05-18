@@ -7,7 +7,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
     {
         [Fact]
         public static void ZeroLengthContains_Byte() {
-            ReadOnlyExSpan<byte> span = new ReadOnlyExSpan<byte>(Array.Empty<byte>());
+            ReadOnlyExSpan<byte> span = new ReadOnlyExSpan<byte>(ArrayHelper.Empty<byte>());
 
             bool found = span.Contains<byte>(0);
             Assert.False(found);
