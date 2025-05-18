@@ -11,7 +11,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             Assert.Equal(0, empty.Length);
             unsafe {
                 ref int expected = ref Unsafe.AsRef<int>(null);
-                ref int actual = ref Unsafe.AsRef(in MemoryMarshal.GetReference(empty));
+                ref int actual = ref Unsafe.AsRef(in ExMemoryMarshal.GetReference(empty));
                 Assert.True(Unsafe.AreSame(ref expected, ref actual));
             }
         }
