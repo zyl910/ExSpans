@@ -4894,6 +4894,7 @@ namespace Zyl.ExSpans {
 
 #if PARAMS_COLLECTIONS
         /// <inheritdoc cref="CountAny{T}(ReadOnlyExSpan{T}, ReadOnlyExSpan{T})"/>
+        [OverloadResolutionPriority(1)]
         public static TSize CountAny<T>(this ReadOnlyExSpan<T> span, params ReadOnlySpan<T> values) where T : IEquatable<T>? {
             return CountAny(span, values.AsReadOnlyExSpan());
         }
