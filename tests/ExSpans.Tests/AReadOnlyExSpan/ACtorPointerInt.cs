@@ -11,7 +11,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                 fixed (int* pa = a) {
                     ReadOnlyExSpan<int> span = new ReadOnlyExSpan<int>(pa, 3);
                     span.Validate(90, 91, 92);
-                    Assert.True(Unsafe.AreSame(ref Unsafe.AsRef<int>(pa), ref Unsafe.AsRef(in MemoryMarshal.GetReference(span))));
+                    Assert.True(Unsafe.AreSame(ref Unsafe.AsRef<int>(pa), ref Unsafe.AsRef(in ExMemoryMarshal.GetReference(span))));
                 }
             }
         }
@@ -21,7 +21,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             unsafe {
                 ReadOnlyExSpan<int> span = new ReadOnlyExSpan<int>((void*)null, 0);
                 span.Validate();
-                Assert.True(Unsafe.AreSame(ref Unsafe.AsRef<int>((void*)null), ref Unsafe.AsRef(in MemoryMarshal.GetReference(span))));
+                Assert.True(Unsafe.AreSame(ref Unsafe.AsRef<int>((void*)null), ref Unsafe.AsRef(in ExMemoryMarshal.GetReference(span))));
             }
         }
 
@@ -41,8 +41,10 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             unsafe {
                 new ReadOnlyExSpan<int>((void*)null, 0);
                 new ReadOnlyExSpan<int?>((void*)null, 0);
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
                 AssertExtensions.Throws<ArgumentException>(null, () => new ReadOnlyExSpan<object>((void*)null, 0).DontBox());
                 AssertExtensions.Throws<ArgumentException>(null, () => new ReadOnlyExSpan<TestHelpers.StructWithReferences>((void*)null, 0).DontBox());
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             }
         }
     }
