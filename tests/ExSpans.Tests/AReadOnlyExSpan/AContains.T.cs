@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Xunit;
 
 namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
-using static AComparers;
+    using static AComparers;
 
     // Adapted from IndexOf.T.cs
     public static partial class AContains // .Contains<T>

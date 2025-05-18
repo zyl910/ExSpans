@@ -1,6 +1,8 @@
 using Xunit;
 
 namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
+    using static AComparers;
+
     public static partial class ACount {
         [Fact]
         public static void ZeroLengthCount_Int() {
@@ -35,7 +37,9 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                 for (int targetIndex = 0; targetIndex < length; targetIndex++) {
                     Assert.Equal(1, new ReadOnlyExSpan<int>(a).Count(a[targetIndex]));
                     Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.Equal(1, new ReadOnlyExSpan<int>(a).Count(a[targetIndex], comparer)));
+#if NET8_0_OR_GREATER
                     Assert.Equal(0, new ReadOnlyExSpan<int>(a).Count(a[targetIndex], GetFalseEqualityComparer<int>()));
+#endif // NET8_0_OR_GREATER
                 }
             }
         }
@@ -51,7 +55,9 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                 for (int targetIndex = 0; targetIndex < length - 1; targetIndex++) {
                     Assert.Equal(1, new ReadOnlyExSpan<int>(a).Count(new int[] { a[targetIndex], a[targetIndex + 1] }));
                     Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.Equal(1, new ReadOnlyExSpan<int>(a).Count(new int[] { a[targetIndex], a[targetIndex + 1] }, comparer)));
+#if NET8_0_OR_GREATER
                     Assert.Equal(0, new ReadOnlyExSpan<int>(a).Count(new int[] { a[targetIndex], a[targetIndex + 1] }, GetFalseEqualityComparer<int>()));
+#endif // NET8_0_OR_GREATER
                 }
             }
         }
@@ -64,11 +70,17 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                     a[i] = 10 * (i + 1);
                 }
 
+#if NETCOREAPP1_0_OR_GREATER || NETSTANDARD2_0_OR_GREATER || NET461_OR_GREATER
                 a[^1] = a[^2] = 5555;
+#else
+                a[length - 1] = a[length - 2] = 5555;
+#endif // NETCOREAPP1_0_OR_GREATER || NETSTANDARD2_0_OR_GREATER || NET461_OR_GREATER
 
                 Assert.Equal(2, new ReadOnlyExSpan<int>(a).Count(5555));
                 Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.Equal(2, new ReadOnlyExSpan<int>(a).Count(5555, comparer)));
+#if NET8_0_OR_GREATER
                 Assert.Equal(0, new ReadOnlyExSpan<int>(a).Count(5555, GetFalseEqualityComparer<int>()));
+#endif // NET8_0_OR_GREATER
             }
         }
 
@@ -79,11 +91,17 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                 for (int i = 0; i < length; i++) {
                     a[i] = 10 * (i + 1);
                 }
+#if NETCOREAPP1_0_OR_GREATER || NETSTANDARD2_0_OR_GREATER || NET461_OR_GREATER
                 a[0] = a[1] = a[^1] = a[^2] = 5555;
+#else
+                a[0] = a[1] = a[length - 1] = a[length - 2] = 5555;
+#endif // NETCOREAPP1_0_OR_GREATER || NETSTANDARD2_0_OR_GREATER || NET461_OR_GREATER
 
                 Assert.Equal(2, new ReadOnlyExSpan<int>(a).Count(new int[] { 5555, 5555 }));
                 Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.Equal(2, new ReadOnlyExSpan<int>(a).Count(new int[] { 5555, 5555 }, comparer)));
+#if NET8_0_OR_GREATER
                 Assert.Equal(0, new ReadOnlyExSpan<int>(a).Count(new int[] { 5555, 5555 }, GetFalseEqualityComparer<int>()));
+#endif // NET8_0_OR_GREATER
             }
         }
 
@@ -208,7 +226,9 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                 for (int targetIndex = 0; targetIndex < length; targetIndex++) {
                     Assert.Equal(1, new ReadOnlyExSpan<string>(a).Count(a[targetIndex]));
                     Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(1, new ReadOnlyExSpan<string>(a).Count(a[targetIndex], comparer)));
+#if NET8_0_OR_GREATER
                     Assert.Equal(0, new ReadOnlyExSpan<string>(a).Count(a[targetIndex], GetFalseEqualityComparer<string>()));
+#endif // NET8_0_OR_GREATER
                 }
             }
         }
@@ -224,7 +244,9 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                 for (int targetIndex = 0; targetIndex < length - 1; targetIndex++) {
                     Assert.Equal(1, new ReadOnlyExSpan<string>(a).Count(new string[] { a[targetIndex], a[targetIndex + 1] }));
                     Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(1, new ReadOnlyExSpan<string>(a).Count(new string[] { a[targetIndex], a[targetIndex + 1] }, comparer)));
+#if NET8_0_OR_GREATER
                     Assert.Equal(0, new ReadOnlyExSpan<string>(a).Count(new string[] { a[targetIndex], a[targetIndex + 1] }, GetFalseEqualityComparer<string>()));
+#endif // NET8_0_OR_GREATER
                 }
             }
         }
@@ -269,11 +291,17 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                     a[i] = (10 * (i + 1)).ToString();
                 }
 
+#if NETCOREAPP1_0_OR_GREATER || NETSTANDARD2_0_OR_GREATER || NET461_OR_GREATER
                 a[^1] = a[^2] = "5555";
+#else
+                a[length - 1] = a[length - 2] = "5555";
+#endif // NETCOREAPP1_0_OR_GREATER || NETSTANDARD2_0_OR_GREATER || NET461_OR_GREATER
 
                 Assert.Equal(2, new ReadOnlyExSpan<string>(a).Count("5555"));
                 Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(2, new ReadOnlyExSpan<string>(a).Count("5555", comparer)));
+#if NET8_0_OR_GREATER
                 Assert.Equal(0, new ReadOnlyExSpan<string>(a).Count("5555", GetFalseEqualityComparer<string>()));
+#endif // NET8_0_OR_GREATER
             }
         }
 
@@ -285,11 +313,17 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                     a[i] = (10 * (i + 1)).ToString();
                 }
 
+#if NETCOREAPP1_0_OR_GREATER || NETSTANDARD2_0_OR_GREATER || NET461_OR_GREATER
                 a[0] = a[1] = a[^1] = a[^2] = "5555";
+#else
+                a[0] = a[1] = a[length - 1] = a[length - 2] = "5555";
+#endif // NETCOREAPP1_0_OR_GREATER || NETSTANDARD2_0_OR_GREATER || NET461_OR_GREATER
 
                 Assert.Equal(2, new ReadOnlyExSpan<string>(a).Count(new string[] { "5555", "5555" }));
                 Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(2, new ReadOnlyExSpan<string>(a).Count(new string[] { "5555", "5555" }, comparer)));
+#if NET8_0_OR_GREATER
                 Assert.Equal(0, new ReadOnlyExSpan<string>(a).Count(new string[] { "5555", "5555" }, GetFalseEqualityComparer<string>()));
+#endif // NET8_0_OR_GREATER
             }
         }
 
@@ -298,7 +332,9 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             var arr = new string[] { "ii", "II", "μμ", "ii" };
             Assert.Equal(2, new ReadOnlyExSpan<string>(arr).Count("ii"));
             Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(2, new ReadOnlyExSpan<string>(arr).Count("ii", comparer)));
+#if NET8_0_OR_GREATER
             Assert.Equal(0, new ReadOnlyExSpan<string>(arr).Count("ii", GetFalseEqualityComparer<string>()));
+#endif // NET8_0_OR_GREATER
         }
 
         [Fact]
@@ -306,21 +342,26 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             var arr = new string[] { "ii", "II", "μμ", "ii", "μμ" };
             Assert.Equal(1, new ReadOnlyExSpan<string>(arr).Count(new string[] { "ii", "II" }));
             Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(1, new ReadOnlyExSpan<string>(arr).Count(new string[] { "ii", "II" }, comparer)));
+#if NET8_0_OR_GREATER
             Assert.Equal(0, new ReadOnlyExSpan<string>(arr).Count(new string[] { "ii", "II" }, GetFalseEqualityComparer<string>()));
+#endif // NET8_0_OR_GREATER
         }
 
         [Fact]
         public static void TestOverlapDoNotCount_RosChar() {
-            ReadOnlyExSpan<char> span = new string('a', 10);
-            Assert.Equal(5, span.Count("aa"));
+            ReadOnlyExSpan<char> span = new string('a', 10).AsSpan();
+            Assert.Equal(5, span.Count("aa".AsSpan()));
         }
 
+#nullable disable
         [Theory]
         [MemberData(nameof(TestHelpers.CountNullData), MemberType = typeof(TestHelpers))]
         public static void CountNull_String(string[] spanInput, int expected) {
             Assert.Equal(expected, new ReadOnlyExSpan<string>(spanInput).Count((string)null));
             Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(expected, new ReadOnlyExSpan<string>(spanInput).Count((string)null, comparer)));
+#if NET8_0_OR_GREATER
             Assert.Equal(0, new ReadOnlyExSpan<string>(spanInput).Count((string)null, GetFalseEqualityComparer<string>()));
+#endif // NET8_0_OR_GREATER
         }
 
         [Theory]
@@ -329,7 +370,11 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             var target = new string[] { null, "9" };
             Assert.Equal(expected, new ReadOnlyExSpan<string>(spanInput).Count(target));
             Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(expected, new ReadOnlyExSpan<string>(spanInput).Count(target, comparer)));
+#if NET8_0_OR_GREATER
             Assert.Equal(0, new ReadOnlyExSpan<string>(spanInput).Count(target, GetFalseEqualityComparer<string>()));
+#endif // NET8_0_OR_GREATER
         }
+#nullable restore
+
     }
 }

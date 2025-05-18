@@ -134,7 +134,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
         [Fact]
         public static void TestAlignmentCount_Byte() {
             byte[] array = new byte[4 * Vector<byte>.Count];
-            Array.Fill(array, (byte)5);
+            ArrayHelper.Fill(array, (byte)5);
             for (var i = 0; i < Vector<byte>.Count; i++) {
                 var span = new ReadOnlyExSpan<byte>(array, i, 3 * Vector<byte>.Count);
                 Assert.Equal(span.Length, span.Count<byte>(5));
@@ -147,7 +147,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
         [Fact]
         public static void TestAlignmentCount_RosByte() {
             byte[] array = new byte[4 * Vector<byte>.Count];
-            Array.Fill(array, (byte)5);
+            ArrayHelper.Fill(array, (byte)5);
             for (var i = 0; i < Vector<byte>.Count; i++) {
                 var span = new ReadOnlyExSpan<byte>(array, i, 3 * Vector<byte>.Count);
                 ReadOnlyExSpan<byte> target = new byte[] { 5, 5 };
@@ -167,7 +167,11 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                     a[i] = val == 200 ? (byte)201 : val;
                 }
 
+#if NETCOREAPP1_0_OR_GREATER || NETSTANDARD2_0_OR_GREATER || NET461_OR_GREATER
                 a[^1] = a[^2] = 200;
+#else
+                a[length - 1] = a[length - 2] = 200;
+#endif // NETCOREAPP1_0_OR_GREATER || NETSTANDARD2_0_OR_GREATER || NET461_OR_GREATER
 
                 var span = new ReadOnlyExSpan<byte>(a);
                 Assert.Equal(2, span.Count<byte>(200));
@@ -182,7 +186,11 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                     byte val = (byte)(i + 1);
                     a[i] = val == 200 ? (byte)201 : val;
                 }
+#if NETCOREAPP1_0_OR_GREATER || NETSTANDARD2_0_OR_GREATER || NET461_OR_GREATER
                 a[0] = a[1] = a[^1] = a[^2] = 200;
+#else
+                a[0] = a[1] = a[length - 1] = a[length - 2] = 200;
+#endif // NETCOREAPP1_0_OR_GREATER || NETSTANDARD2_0_OR_GREATER || NET461_OR_GREATER
 
                 var span = new ReadOnlyExSpan<byte>(a);
                 Assert.Equal(2, span.Count<byte>(new byte[] { 200, 200 }));
@@ -193,7 +201,11 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
         public static void MakeSureNoCountChecksGoOutOfRange_Byte() {
             for (int length = 0; length <= byte.MaxValue; length++) {
                 byte[] a = new byte[length + 2];
+#if NETCOREAPP1_0_OR_GREATER || NETSTANDARD2_0_OR_GREATER || NET461_OR_GREATER
                 a[0] = a[^1] = 99;
+#else
+                a[0] = a[a.Length - 1] = 99;
+#endif // NETCOREAPP1_0_OR_GREATER || NETSTANDARD2_0_OR_GREATER || NET461_OR_GREATER
 
                 var span = new ReadOnlyExSpan<byte>(a, 1, length);
                 Assert.Equal(0, span.Count<byte>(99));
@@ -204,7 +216,11 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
         public static void MakeSureNoCountChecksGoOutOfRange_RosByte() {
             for (int length = 0; length <= byte.MaxValue; length++) {
                 byte[] a = new byte[length + 4];
+#if NETCOREAPP1_0_OR_GREATER || NETSTANDARD2_0_OR_GREATER || NET461_OR_GREATER
                 a[0] = a[1] = a[^1] = a[^2] = 99;
+#else
+                a[0] = a[1] = a[length - 1] = a[length - 2] = 99;
+#endif // NETCOREAPP1_0_OR_GREATER || NETSTANDARD2_0_OR_GREATER || NET461_OR_GREATER
 
                 var span = new ReadOnlyExSpan<byte>(a, 2, length);
                 Assert.Equal(0, span.Count<byte>(new byte[] { 99, 99 }));
@@ -214,7 +230,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
         [Fact]
         public static void TestOverlapDoNotCount_RosByte() {
             byte[] a = new byte[10];
-            Array.Fill<byte>(a, 6);
+            ArrayHelper.Fill<byte>(a, 6);
 
 
             var span = new ReadOnlyExSpan<byte>(a);
