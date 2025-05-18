@@ -79,19 +79,21 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             Assert.Equal(-8, span.BinarySearch(9));
         }
 
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
         [Fact]
         public static void BinarySearch_NullComparableThrows() {
-            Assert.Throws<ArgumentNullException>(() => new Span<int>(new int[] { }).BinarySearch<int>(null));
+            Assert.Throws<ArgumentNullException>(() => new ExSpan<int>(new int[] { }).BinarySearch<int>(null));
             Assert.Throws<ArgumentNullException>(() => new ReadOnlyExSpan<int>(new int[] { }).BinarySearch<int>(null));
-            Assert.Throws<ArgumentNullException>(() => new Span<int>(new int[] { }).BinarySearch<int, IComparable<int>>(null));
+            Assert.Throws<ArgumentNullException>(() => new ExSpan<int>(new int[] { }).BinarySearch<int, IComparable<int>>(null));
             Assert.Throws<ArgumentNullException>(() => new ReadOnlyExSpan<int>(new int[] { }).BinarySearch<int, IComparable<int>>(null));
         }
 
         [Fact]
         public static void BinarySearch_NullComparerThrows() {
-            Assert.Throws<ArgumentNullException>(() => new Span<int>(new int[] { }).BinarySearch<int, IComparer<int>>(0, null));
+            Assert.Throws<ArgumentNullException>(() => new ExSpan<int>(new int[] { }).BinarySearch<int, IComparer<int>>(0, null));
             Assert.Throws<ArgumentNullException>(() => new ReadOnlyExSpan<int>(new int[] { }).BinarySearch<int, IComparer<int>>(0, null));
         }
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
         // NOTE: BinarySearch_MaxLength_NoOverflow test is constrained to run on Windows and MacOSX because it causes
         //       problems on Linux due to the way deferred memory allocation works. On Linux, the allocation can
@@ -109,7 +111,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                     return;
                 }
                 try {
-                    var span = new Span<byte>(memory.ToPointer(), length);
+                    var span = new ExSpan<byte>(memory.ToPointer(), length);
                     span.Clear();
                     // Fill last two elements
                     span[int.MaxValue - 2] = 2;
@@ -141,7 +143,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
         private static void TestSpan<T, TComparable>(
             T[] array, TComparable value, int expectedIndex)
             where TComparable : IComparable<T> {
-            var span = new Span<T>(array);
+            var span = new ExSpan<T>(array);
             var index = span.BinarySearch(value);
             Assert.Equal(expectedIndex, index);
         }
@@ -155,7 +157,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
         private static void TestIComparableSpan<T, TComparable>(
             T[] array, TComparable value, int expectedIndex)
             where TComparable : IComparable<T>, T {
-            var span = new Span<T>(array);
+            var span = new ExSpan<T>(array);
             var index = span.BinarySearch((IComparable<T>)value);
             Assert.Equal(expectedIndex, index);
         }
@@ -169,7 +171,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
         private static void TestComparerSpan<T, TComparable>(
             T[] array, TComparable value, int expectedIndex)
             where TComparable : IComparable<T>, T {
-            var span = new Span<T>(array);
+            var span = new ExSpan<T>(array);
             var index = span.BinarySearch(value, Comparer<T>.Default);
             Assert.Equal(expectedIndex, index);
         }
