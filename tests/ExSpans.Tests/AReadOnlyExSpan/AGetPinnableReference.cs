@@ -29,7 +29,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                 Assert.True(ptr == null);
             }
 
-            ReadOnlyExSpan<int> spanFromEmptyArray = Array.Empty<int>();
+            ReadOnlyExSpan<int> spanFromEmptyArray = ArrayHelper.Empty<int>();
             fixed (int* ptr = spanFromEmptyArray) {
                 Assert.True(ptr == null);
             }
@@ -61,7 +61,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             ref int pinnableReference = ref Unsafe.AsRef(in span.GetPinnableReference());
             Assert.True(Unsafe.AreSame(ref Unsafe.AsRef<int>(null), ref pinnableReference));
 
-            ReadOnlyExSpan<int> spanFromEmptyArray = Array.Empty<int>();
+            ReadOnlyExSpan<int> spanFromEmptyArray = ArrayHelper.Empty<int>();
             pinnableReference = ref Unsafe.AsRef(in spanFromEmptyArray.GetPinnableReference());
             Assert.True(Unsafe.AreSame(ref Unsafe.AsRef<int>(null), ref pinnableReference));
         }
