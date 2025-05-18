@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
+using Zyl.ExSpans.Reflection;
 
 namespace Zyl.ExSpans.Impl {
     /// <summary>
@@ -15,6 +16,38 @@ namespace Zyl.ExSpans.Impl {
         /// Large value types may benefit from a smaller number.
         /// </summary>
         internal const int IntrosortSizeThreshold = 16; // Array.IntrosortSizeThreshold
+
+        /// <summary>
+        /// Assigns the given value of type T to each element of the specified array.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements in the array.</typeparam>
+        /// <param name="array">The array to be filled.</param>
+        /// <param name="value">The value to assign to each array element.</param>
+        public static void Fill<T>(T[] array, T value) {
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_0_OR_GREATER
+            Array.Fill<T>(array, value);
+#else
+            if (array == null) {
+                throw new ArgumentNullException(nameof(array));
+            }
+
+            if (!TypeHelper.IsValueType<T>() && array.GetType() != typeof(T[])) {
+#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP2_0_OR_GREATER || NET20_OR_GREATER
+                if (array.LongLength >= int.MaxValue) {
+                    for (nint i = 0; i < (nint)array.LongLength; i++) {
+                        array[i] = value;
+                    }
+                    return;
+                }
+#endif // NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET20_OR_GREATER
+                for (int i = 0; i < array.Length; i++) {
+                    array[i] = value;
+                }
+            } else {
+                new Span<T>(array).Fill(value);
+            }
+#endif
+        }
 
 #if NETSTANDARD1_3_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET46_OR_GREATER
 #else
