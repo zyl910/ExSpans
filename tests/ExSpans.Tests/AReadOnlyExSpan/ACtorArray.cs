@@ -49,7 +49,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
         [Fact]
         public static void CtorArrayZeroLength() {
-            int[] empty = Array.Empty<int>();
+            int[] empty = ArrayHelper.Empty<int>();
             ReadOnlyExSpan<int> span;
 
             span = new ReadOnlyExSpan<int>(empty);
