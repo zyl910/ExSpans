@@ -1,3 +1,8 @@
+#if DEBUG
+#else
+#define CALL_LARGE
+#endif // DEBUG
+
 using Xunit;
 
 namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
@@ -160,6 +165,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             }
         }
 
+#if CALL_LARGE
         [Fact]
         public static void TestMatchIndexOfAny_ThreeInteger() {
             var rnd = new Random(42);
@@ -208,6 +214,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                 }
             }
         }
+#endif // CALL_LARGE
 
         [Fact]
         public static void TestNoMatchIndexOfAny_ThreeInteger() {
@@ -293,6 +300,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             }
         }
 
+#if CALL_LARGE
         [Fact]
         public static void TestMatchIndexOfAny_ManyInteger() {
             var rnd = new Random(42);
@@ -337,6 +345,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                 }
             }
         }
+#endif // CALL_LARGE
 
         [Fact]
         public static void TestMatchValuesLargerIndexOfAny_ManyInteger() {
@@ -476,6 +485,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             }
         }
 
+#if CALL_LARGE
         [Fact]
         public static void TestMatchIndexOfAny_TwoString() {
             var rnd = new Random(42);
@@ -521,6 +531,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                 }
             }
         }
+#endif // CALL_LARGE
 
         [Fact]
         public static void TestNoMatchIndexOfAny_TwoString() {
@@ -608,6 +619,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             }
         }
 
+#if CALL_LARGE
         [Fact]
         public static void TestMatchIndexOfAny_ThreeString() {
             Random rnd = new Random(42);
@@ -656,6 +668,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                 }
             }
         }
+#endif // CALL_LARGE
 
         [Fact]
         public static void TestNoMatchIndexOfAny_ThreeString() {
@@ -743,6 +756,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             }
         }
 
+#if CALL_LARGE
         [Fact]
         public static void TestMatchIndexOfAny_ManyString() {
             Random rnd = new Random(42);
@@ -791,6 +805,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                 }
             }
         }
+#endif // CALL_LARGE
 
         [Fact]
         public static void TestMatchValuesLargerIndexOfAny_ManyString() {
