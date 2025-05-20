@@ -39,10 +39,10 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                         Assert.Equal(expectedGuid, actualGuid);
 
                         ReadOnlyExSpan<Guid> slice = span.Slice(bigIndex);
-                        Assert.True(Unsafe.AreSame<Guid>(ref expected, ref Unsafe.AsRef(in MemoryMarshal.GetReference(slice))));
+                        Assert.True(Unsafe.AreSame<Guid>(ref expected, ref Unsafe.AsRef(in ExMemoryMarshal.GetReference(slice))));
 
                         slice = span.Slice(bigIndex, 1);
-                        Assert.True(Unsafe.AreSame<Guid>(ref expected, ref Unsafe.AsRef(in MemoryMarshal.GetReference(slice))));
+                        Assert.True(Unsafe.AreSame<Guid>(ref expected, ref Unsafe.AsRef(in ExMemoryMarshal.GetReference(slice))));
                     } finally {
                         AllocationHelper.ReleaseNative(ref memBlock);
                     }

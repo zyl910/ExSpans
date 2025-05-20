@@ -3,7 +3,7 @@ using Xunit;
 
 namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
     public static partial class AOverlaps {
-        private static void DoubleEachElementForwards(ReadOnlyExSpan<int> source, Span<int> destination) {
+        private static void DoubleEachElementForwards(ReadOnlyExSpan<int> source, ExSpan<int> destination) {
             if (source.Length != destination.Length)
                 throw new ArgumentException();
 
@@ -13,7 +13,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             if (source.Overlaps(destination, out int elementOffset) && elementOffset > 0)
                 source = source.ToArray();
 
-            for (int i = 0; i < source.Length; i++)
+            for (TSize i = 0; i < source.Length; i++)
                 destination[i] = 2 * source[i];
         }
 
@@ -22,10 +22,10 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             for (int i = 0; i < 14; i++) {
                 int[] a = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
 
-                ReadOnlyExSpan<int> source = a.AsSpan(7, 5);
+                ReadOnlyExSpan<int> source = a.AsExSpan(7, 5);
 
-                Span<int> expected = new int[a.Length].AsSpan(i, 5);
-                Span<int> actual = a.AsSpan(i, 5);
+                ExSpan<int> expected = new int[a.Length].AsExSpan(i, 5);
+                ExSpan<int> actual = a.AsExSpan(i, 5);
 
                 DoubleEachElementForwards(source, expected);
                 DoubleEachElementForwards(source, actual);
@@ -39,10 +39,10 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             Assert.Throws<ArgumentException>(() => {
                 int[] a = new int[] { 1, 2, 3, 4, 5, 6 };
 
-                ReadOnlyExSpan<byte> bytes = MemoryMarshal.AsBytes<int>(a);
-                ReadOnlyExSpan<int> source = MemoryMarshal.Cast<byte, int>(bytes.Slice(2, 5 * sizeof(int)));
+                ReadOnlyExSpan<byte> bytes = ExMemoryMarshal.AsBytes<int>(a);
+                ReadOnlyExSpan<int> source = ExMemoryMarshal.Cast<byte, int>(bytes.Slice(2, 5 * sizeof(int)));
 
-                Span<int> actual = a.AsSpan(0, 5);
+                ExSpan<int> actual = a.AsExSpan(0, 5);
 
                 DoubleEachElementForwards(source, actual);
             });
@@ -50,16 +50,16 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             Assert.Throws<ArgumentException>(() => {
                 int[] a = new int[] { 1, 2, 3, 4, 5, 6 };
 
-                ReadOnlyExSpan<byte> bytes = MemoryMarshal.AsBytes<int>(a);
-                ReadOnlyExSpan<int> source = MemoryMarshal.Cast<byte, int>(bytes.Slice(2, 5 * sizeof(int)));
+                ReadOnlyExSpan<byte> bytes = ExMemoryMarshal.AsBytes<int>(a);
+                ReadOnlyExSpan<int> source = ExMemoryMarshal.Cast<byte, int>(bytes.Slice(2, 5 * sizeof(int)));
 
-                Span<int> actual = a.AsSpan(1, 5);
+                ExSpan<int> actual = a.AsExSpan(1, 5);
 
                 DoubleEachElementForwards(source, actual);
             });
         }
 
-        private static void DoubleEachElementBackwards(ReadOnlyExSpan<int> source, Span<int> destination) {
+        private static void DoubleEachElementBackwards(ReadOnlyExSpan<int> source, ExSpan<int> destination) {
             if (source.Length != destination.Length)
                 throw new ArgumentException();
 
@@ -69,7 +69,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             if (source.Overlaps(destination, out int elementOffset) && elementOffset < 0)
                 source = source.ToArray();
 
-            for (int i = source.Length - 1; i >= 0; i--)
+            for (TSize i = source.Length - 1; i >= 0; i--)
                 destination[i] = 2 * source[i];
         }
 
@@ -78,10 +78,10 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             for (int i = 0; i < 14; i++) {
                 int[] a = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
 
-                ReadOnlyExSpan<int> source = a.AsSpan(7, 5);
+                ReadOnlyExSpan<int> source = a.AsExSpan(7, 5);
 
-                Span<int> expected = new int[a.Length].AsSpan(i, 5);
-                Span<int> actual = a.AsSpan(i, 5);
+                ExSpan<int> expected = new int[a.Length].AsExSpan(i, 5);
+                ExSpan<int> actual = a.AsExSpan(i, 5);
 
                 DoubleEachElementBackwards(source, expected);
                 DoubleEachElementBackwards(source, actual);
@@ -95,10 +95,10 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             Assert.Throws<ArgumentException>(() => {
                 int[] a = new int[] { 1, 2, 3, 4, 5, 6 };
 
-                ReadOnlyExSpan<byte> bytes = MemoryMarshal.AsBytes<int>(a);
-                ReadOnlyExSpan<int> source = MemoryMarshal.Cast<byte, int>(bytes.Slice(2, 5 * sizeof(int)));
+                ReadOnlyExSpan<byte> bytes = ExMemoryMarshal.AsBytes<int>(a);
+                ReadOnlyExSpan<int> source = ExMemoryMarshal.Cast<byte, int>(bytes.Slice(2, 5 * sizeof(int)));
 
-                Span<int> actual = a.AsSpan(0, 5);
+                ExSpan<int> actual = a.AsExSpan(0, 5);
 
                 DoubleEachElementBackwards(source, actual);
             });
@@ -106,10 +106,10 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             Assert.Throws<ArgumentException>(() => {
                 int[] a = new int[] { 1, 2, 3, 4, 5, 6 };
 
-                ReadOnlyExSpan<byte> bytes = MemoryMarshal.AsBytes<int>(a);
-                ReadOnlyExSpan<int> source = MemoryMarshal.Cast<byte, int>(bytes.Slice(2, 5 * sizeof(int)));
+                ReadOnlyExSpan<byte> bytes = ExMemoryMarshal.AsBytes<int>(a);
+                ReadOnlyExSpan<int> source = ExMemoryMarshal.Cast<byte, int>(bytes.Slice(2, 5 * sizeof(int)));
 
-                Span<int> actual = a.AsSpan(1, 5);
+                ExSpan<int> actual = a.AsExSpan(1, 5);
 
                 DoubleEachElementBackwards(source, actual);
             });
@@ -119,8 +119,8 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
         public static void SizeOf1Overlaps() {
             byte[] a = new byte[16];
 
-            ReadOnlyExSpan<byte> span1 = a.AsSpan(0, 12);
-            ReadOnlyExSpan<byte> span2 = a.AsSpan(8, 8);
+            ReadOnlyExSpan<byte> span1 = a.AsExSpan(0, 12);
+            ReadOnlyExSpan<byte> span2 = a.AsExSpan(8, 8);
 
             Assert.True(span1.Overlaps(span2, out int elementOffset));
             Assert.Equal(8, elementOffset);
@@ -130,8 +130,8 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
         public static void SizeOf16Overlaps() {
             Guid[] a = new Guid[16];
 
-            ReadOnlyExSpan<Guid> span1 = a.AsSpan(0, 12);
-            ReadOnlyExSpan<Guid> span2 = a.AsSpan(8, 8);
+            ReadOnlyExSpan<Guid> span1 = a.AsExSpan(0, 12);
+            ReadOnlyExSpan<Guid> span2 = a.AsExSpan(8, 8);
 
             Assert.True(span1.Overlaps(span2, out int elementOffset));
             Assert.Equal(8, elementOffset);
