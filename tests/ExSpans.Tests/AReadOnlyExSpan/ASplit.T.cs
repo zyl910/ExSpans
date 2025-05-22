@@ -3,16 +3,17 @@ using Xunit;
 
 namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
     public static partial class ASplit {
+#if NET8_0_OR_GREATER && TODO // [TODO why] SearchValues.IndexOfAny is internal
         [Fact]
         public static void DefaultSpanSplitEnumeratorBehaviour() {
-            var charSpanEnumerator = new MemoryExtensions.SpanSplitEnumerator<char>();
+            var charSpanEnumerator = new ExSpanSplitEnumerator<char>();
             Assert.Equal(new Range(0, 0), charSpanEnumerator.Current);
             Assert.False(charSpanEnumerator.MoveNext());
 
             // Implicit DoesNotThrow assertion
             charSpanEnumerator.GetEnumerator();
 
-            var stringSpanEnumerator = new MemoryExtensions.SpanSplitEnumerator<string>();
+            var stringSpanEnumerator = new ExSpanSplitEnumerator<string>();
             Assert.Equal(new Range(0, 0), stringSpanEnumerator.Current);
             Assert.False(stringSpanEnumerator.MoveNext());
             stringSpanEnumerator.GetEnumerator();
@@ -183,7 +184,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             }
         }
 
-        private static void AssertEnsureCorrectEnumeration<T>(MemoryExtensions.SpanSplitEnumerator<T> enumerator, Range[] result) where T : IEquatable<T> {
+        private static void AssertEnsureCorrectEnumeration<T>(ExSpanSplitEnumerator<T> enumerator, Range[] result) where T : IEquatable<T> {
             Assert.Equal(new Range(0, 0), enumerator.Current);
 
             for (int i = 0; i < result.Length; i++) {
@@ -197,5 +198,6 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
         public record struct CustomStruct(int value) : IEquatable<CustomStruct>;
 
         public record class CustomClass(int value) : IEquatable<CustomClass>;
+#endif // NET8_0_OR_GREATER
     }
 }
