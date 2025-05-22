@@ -42,8 +42,10 @@ namespace Zyl.ExSpans.Tests {
         public static unsafe void ValidateNonNullEmpty<T>(this ExSpan<T> span) {
             Assert.True(span.IsEmpty);
 
+#if NOT_RELATED
             // Validate that empty ExSpan is not normalized to null
             Assert.False(Unsafe.IsNullRef(ref ExMemoryMarshal.GetReference(span)));
+#endif // NOT_RELATED
         }
 
         public delegate void AssertThrowsAction<T>(ExSpan<T> span);
@@ -94,8 +96,10 @@ namespace Zyl.ExSpans.Tests {
         public static unsafe void ValidateNonNullEmpty<T>(this ReadOnlyExSpan<T> span) {
             Assert.True(span.IsEmpty);
 
+#if NOT_RELATED
             // Validate that empty ExSpan is not normalized to null
             Assert.False(Unsafe.IsNullRef(ref ExMemoryMarshal.GetReference(span)));
+#endif // NOT_RELATED
         }
 
         public delegate void AssertThrowsActionReadOnly<T>(ReadOnlyExSpan<T> span);

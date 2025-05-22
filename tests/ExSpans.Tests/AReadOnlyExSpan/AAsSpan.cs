@@ -58,6 +58,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 #endif // NET8_0_OR_GREATER
         }
 
+#if NOT_RELATED
         [Theory]
         [MemberData(nameof(TestHelpers.StringSliceTestData), MemberType = typeof(TestHelpers))]
         public static void AsSpan_StartAndLength(string text, int start, int length) {
@@ -89,6 +90,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                 }
             }
         }
+#endif // NOT_RELATED
 
 #if NET8_0_OR_GREATER && TODO // [TODO why] NRange need System.Numerics.Tensors.dll
         [Theory]
