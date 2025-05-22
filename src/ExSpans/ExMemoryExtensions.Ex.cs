@@ -19,6 +19,13 @@ namespace Zyl.ExSpans {
         }
 
         /// <summary>
+        /// Determines the relative order of the sequences being compared by comparing the elements using IComparable{T}.CompareTo(T).
+        /// </summary>
+        public static TSize SequenceCompareTo<T>(this ExSpan<T> span, ReadOnlyExSpan<T> other, IComparer<T>? comparer = null) {
+            return SequenceCompareTo(span.AsReadOnlyExSpan(), other, comparer);
+        }
+
+        /// <summary>
         /// Copies the contents of this string into the destination span.
         /// </summary>
         /// <param name="source">The source string.</param>

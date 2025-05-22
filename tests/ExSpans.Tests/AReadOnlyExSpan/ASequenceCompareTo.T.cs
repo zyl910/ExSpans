@@ -1,6 +1,8 @@
 using Xunit;
 
 namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
+    using static AComparers;
+
     public static partial class ASequenceCompareTo {
         [Fact]
         public static void OnSequenceCompareToOfEqualSpansMakeSureEveryElementIsCompared() {
@@ -151,15 +153,15 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             Assert.True(new ReadOnlyExSpan<string>(a, 0, 2).SequenceCompareTo<string>(new ReadOnlyExSpan<string>(a, 0, 3)) < 0);
             Assert.True(new ReadOnlyExSpan<string>(a, 0, 3).SequenceCompareTo<string>(new ReadOnlyExSpan<string>(a, 0, 2)) > 0);
 
-            Assert.True(new Span<string>(a, 1, 0).SequenceCompareTo<string>(new ReadOnlyExSpan<string>(a, 0, 3)) < 0);
-            Assert.True(new ReadOnlyExSpan<string>(a, 0, 3).SequenceCompareTo<string>(new Span<string>(a, 1, 0)) > 0);
+            Assert.True(new ExSpan<string>(a, 1, 0).SequenceCompareTo<string>(new ReadOnlyExSpan<string>(a, 0, 3)) < 0);
+            Assert.True(new ReadOnlyExSpan<string>(a, 0, 3).SequenceCompareTo<string>(new ExSpan<string>(a, 1, 0)) > 0);
 
             Assert.All(GetDefaultComparers<string>(), comparer => {
                 Assert.True(new ReadOnlyExSpan<string>(a, 0, 2).SequenceCompareTo<string>(new ReadOnlyExSpan<string>(a, 0, 3), comparer) < 0);
                 Assert.True(new ReadOnlyExSpan<string>(a, 0, 3).SequenceCompareTo<string>(new ReadOnlyExSpan<string>(a, 0, 2), comparer) > 0);
 
-                Assert.True(new Span<string>(a, 1, 0).SequenceCompareTo<string>(new ReadOnlyExSpan<string>(a, 0, 3), comparer) < 0);
-                Assert.True(new ReadOnlyExSpan<string>(a, 0, 3).SequenceCompareTo<string>(new Span<string>(a, 1, 0), comparer) > 0);
+                Assert.True(new ExSpan<string>(a, 1, 0).SequenceCompareTo<string>(new ReadOnlyExSpan<string>(a, 0, 3), comparer) < 0);
+                Assert.True(new ReadOnlyExSpan<string>(a, 0, 3).SequenceCompareTo<string>(new ExSpan<string>(a, 1, 0), comparer) > 0);
             });
         }
 
