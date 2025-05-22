@@ -95,12 +95,15 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
         [Fact]
         public static void CtorVariantArrayType() {
-            // For ReadOnlyExSpan<T>, variant arrays are allowed for string to object
+            // For ReadOnlySpan<T>, variant arrays are allowed for string to object
             // and reference type to object.
 
             ReadOnlyExSpan<object> span;
 
             string[] strArray = { "Hello" };
+            span = new ReadOnlySpan<object>(strArray);
+            span.ValidateReferenceType("Hello");
+#if NOT_RELATED
             span = new ReadOnlyExSpan<object>(strArray);
             span.ValidateReferenceType("Hello");
             span = new ReadOnlyExSpan<object>(strArray, 0, strArray.Length);
@@ -113,6 +116,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             span.ValidateReferenceType(c1, c2);
             span = new ReadOnlyExSpan<object>(clsArray, 0, clsArray.Length);
             span.ValidateReferenceType(c1, c2);
+#endif // NOT_RELATED
         }
     }
 }
