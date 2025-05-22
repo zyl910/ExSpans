@@ -117,7 +117,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                 var span1 = new ExSpan<long>(first, 1, length);
                 var span2 = new ReadOnlyExSpan<long>(second, 1, length);
-                int result = span1.SequenceCompareTo<long>(span2);
+                TSize result = span1.SequenceCompareTo<long>(span2);
                 Assert.Equal(0, result);
             }
         }

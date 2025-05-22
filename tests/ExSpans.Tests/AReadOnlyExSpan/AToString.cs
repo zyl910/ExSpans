@@ -1,26 +1,22 @@
 using Xunit;
 
-namespace Zyl.ExSpans.Tests.AReadOnlyExSpan
-{
+namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
     public static partial class AToString {
         [Fact]
-        public static void ToStringInt()
-        {
+        public static void ToStringInt() {
             int[] a = { 91, 92, 93 };
             var span = new ReadOnlyExSpan<int>(a);
             Assert.Equal("System.ReadOnlyExSpan<Int32>[3]", span.ToString());
         }
 
         [Fact]
-        public static void ToStringInt_Empty()
-        {
+        public static void ToStringInt_Empty() {
             var span = new ReadOnlyExSpan<int>();
             Assert.Equal("System.ReadOnlyExSpan<Int32>[0]", span.ToString());
         }
 
         [Fact]
-        public static void ToStringChar()
-        {
+        public static void ToStringChar() {
             char[] a = { 'a', 'b', 'c' };
             var span = new ReadOnlyExSpan<char>(a);
             Assert.Equal("abc", span.ToString());
@@ -31,23 +27,20 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan
         }
 
         [Fact]
-        public static void ToStringChar_Empty()
-        {
+        public static void ToStringChar_Empty() {
             var span = new ReadOnlyExSpan<char>();
             Assert.Equal("", span.ToString());
         }
 
         [Fact]
-        public static void ToStringForSpanOfString()
-        {
+        public static void ToStringForSpanOfString() {
             string[] a = { "a", "b", "c" };
             var span = new ReadOnlyExSpan<string>(a);
             Assert.Equal("System.ReadOnlyExSpan<String>[3]", span.ToString());
         }
 
         [Fact]
-        public static void ToStringFromString()
-        {
+        public static void ToStringFromString() {
             string orig = "hello world";
             Assert.Equal(orig, orig.AsSpan().ToString());
             Assert.Equal(orig.Substring(0, 5), orig.AsSpan(0, 5).ToString());
@@ -56,8 +49,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan
         }
 
         [Fact]
-        public static void ToStringSpanOverSubstringDoesNotReturnOriginal()
-        {
+        public static void ToStringSpanOverSubstringDoesNotReturnOriginal() {
             string original = TestHelpers.BuildString(10, 42);
             ReadOnlyExSpan<char> span = original.AsSpan();
 
