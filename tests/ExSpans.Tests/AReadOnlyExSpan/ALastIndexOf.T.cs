@@ -23,9 +23,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                     Assert.Equal(targetIndex, new ReadOnlyExSpan<int>(a).LastIndexOf(target));
                     Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.Equal(targetIndex, new ReadOnlyExSpan<int>(a).LastIndexOf(target, comparer)));
-#if NET8_0_OR_GREATER
                     Assert.Equal(-1, new ReadOnlyExSpan<int>(a).LastIndexOf(target, GetFalseEqualityComparer<int>()));
-#endif // NET8_0_OR_GREATER
                 }
             }
         }
@@ -43,9 +41,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                 Assert.Equal(length - 1, new ReadOnlyExSpan<int>(a).LastIndexOf(5555));
                 Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.Equal(length - 1, new ReadOnlyExSpan<int>(a).LastIndexOf(5555, comparer)));
-#if NET8_0_OR_GREATER
                 Assert.Equal(-1, new ReadOnlyExSpan<int>(a).LastIndexOf(5555, GetFalseEqualityComparer<int>()));
-#endif // NET8_0_OR_GREATER
             }
         }
 
@@ -118,9 +114,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                     Assert.Equal(targetIndex, new ReadOnlyExSpan<string>(a).LastIndexOf(target));
                     Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(targetIndex, new ReadOnlyExSpan<string>(a).LastIndexOf(target, comparer)));
-#if NET8_0_OR_GREATER
                     Assert.Equal(-1, new ReadOnlyExSpan<string>(a).LastIndexOf(target, GetFalseEqualityComparer<string>()));
-#endif // NET8_0_OR_GREATER
                 }
             }
         }
@@ -154,9 +148,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                 Assert.Equal(length - 1, new ReadOnlyExSpan<string>(a).LastIndexOf("5555"));
                 Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(length - 1, new ReadOnlyExSpan<string>(a).LastIndexOf("5555", comparer)));
-#if NET8_0_OR_GREATER
                 Assert.Equal(-1, new ReadOnlyExSpan<string>(a).LastIndexOf("5555", GetFalseEqualityComparer<string>()));
-#endif // NET8_0_OR_GREATER
             }
         }
 

@@ -17,9 +17,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             int[] a = { 4, 5, 6 };
             Assert.True(new ReadOnlyExSpan<int>(a).EndsWith(new ReadOnlyExSpan<int>(a)));
             Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.True(new ReadOnlyExSpan<int>(a).EndsWith(new ReadOnlyExSpan<int>(a), comparer)));
-#if NET8_0_OR_GREATER
             Assert.False(new ReadOnlyExSpan<int>(a).EndsWith(new ReadOnlyExSpan<int>(a), GetFalseEqualityComparer<int>()));
-#endif // NET8_0_OR_GREATER
         }
 
         [Fact]
@@ -34,9 +32,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             int[] a = { 4, 5, 6 };
             Assert.True(new ReadOnlyExSpan<int>(a, 0, 3).EndsWith(new ReadOnlyExSpan<int>(a, 1, 2)));
             Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.True(new ReadOnlyExSpan<int>(a, 0, 3).EndsWith(new ReadOnlyExSpan<int>(a, 1, 2), comparer)));
-#if NET8_0_OR_GREATER
             Assert.False(new ReadOnlyExSpan<int>(a, 0, 3).EndsWith(new ReadOnlyExSpan<int>(a, 1, 2), GetFalseEqualityComparer<int>()));
-#endif // NET8_0_OR_GREATER
         }
 
         [Fact]
@@ -45,9 +41,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             int[] b = { 4, 5, 6 };
             Assert.True(new ReadOnlyExSpan<int>(a, 0, 3).EndsWith(new ReadOnlyExSpan<int>(b, 0, 3)));
             Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.True(new ReadOnlyExSpan<int>(a, 0, 3).EndsWith(new ReadOnlyExSpan<int>(b, 0, 3), comparer)));
-#if NET8_0_OR_GREATER
             Assert.False(new ReadOnlyExSpan<int>(a, 0, 3).EndsWith(new ReadOnlyExSpan<int>(b, 0, 3), GetFalseEqualityComparer<int>()));
-#endif // NET8_0_OR_GREATER
         }
 
         [Fact]

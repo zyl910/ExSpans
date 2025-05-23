@@ -26,9 +26,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                     Assert.Equal(a.Length - 1, new ReadOnlyExSpan<int>(a).LastIndexOfAny(target0, target1));
                     Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.Equal(a.Length - 1, new ReadOnlyExSpan<int>(a).LastIndexOfAny(target0, target1, comparer)));
-#if NET8_0_OR_GREATER
                     Assert.Equal(-1, new ReadOnlyExSpan<int>(a).LastIndexOfAny(target0, target1, GetFalseEqualityComparer<int>()));
-#endif // NET8_0_OR_GREATER
                 }
             }
         }
@@ -47,9 +45,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                     Assert.Equal(targetIndex, new ReadOnlyExSpan<int>(a).LastIndexOfAny(target0, target1));
                     Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.Equal(targetIndex, new ReadOnlyExSpan<int>(a).LastIndexOfAny(target0, target1, comparer)));
-#if NET8_0_OR_GREATER
                     Assert.Equal(-1, new ReadOnlyExSpan<int>(a).LastIndexOfAny(target0, target1, GetFalseEqualityComparer<int>()));
-#endif // NET8_0_OR_GREATER
                 }
 
                 for (int targetIndex = 0; targetIndex < length - 1; targetIndex++) {
@@ -58,9 +54,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                     Assert.Equal(targetIndex + 1, new ReadOnlyExSpan<int>(a).LastIndexOfAny(target0, target1));
                     Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.Equal(targetIndex + 1, new ReadOnlyExSpan<int>(a).LastIndexOfAny(target0, target1, comparer)));
-#if NET8_0_OR_GREATER
                     Assert.Equal(-1, new ReadOnlyExSpan<int>(a).LastIndexOfAny(target0, target1, GetFalseEqualityComparer<int>()));
-#endif // NET8_0_OR_GREATER
                 }
 
                 for (int targetIndex = 0; targetIndex < length - 1; targetIndex++) {
@@ -69,9 +63,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                     Assert.Equal(targetIndex + 1, new ReadOnlyExSpan<int>(a).LastIndexOfAny(target0, target1));
                     Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.Equal(targetIndex + 1, new ReadOnlyExSpan<int>(a).LastIndexOfAny(target0, target1, comparer)));
-#if NET8_0_OR_GREATER
                     Assert.Equal(-1, new ReadOnlyExSpan<int>(a).LastIndexOfAny(target0, target1, GetFalseEqualityComparer<int>()));
-#endif // NET8_0_OR_GREATER
                 }
             }
         }
@@ -104,9 +96,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                 Assert.Equal(length - 1, new ReadOnlyExSpan<int>(a).LastIndexOfAny(200, 200));
                 Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.Equal(length - 1, new ReadOnlyExSpan<int>(a).LastIndexOfAny(200, 200, comparer)));
-#if NET8_0_OR_GREATER
                 Assert.Equal(-1, new ReadOnlyExSpan<int>(a).LastIndexOfAny(200, 200, GetFalseEqualityComparer<int>()));
-#endif // NET8_0_OR_GREATER
             }
         }
 
@@ -154,9 +144,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                     Assert.Equal(a.Length - 1, new ReadOnlyExSpan<int>(a).LastIndexOfAny(target0, target1, target2));
                     Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.Equal(a.Length - 1, new ReadOnlyExSpan<int>(a).LastIndexOfAny(target0, target1, target2, comparer)));
-#if NET8_0_OR_GREATER
                     Assert.Equal(-1, new ReadOnlyExSpan<int>(a).LastIndexOfAny(target0, target1, target2, GetFalseEqualityComparer<int>()));
-#endif // NET8_0_OR_GREATER
                 }
             }
         }
@@ -176,9 +164,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                     Assert.Equal(targetIndex, new ReadOnlyExSpan<int>(a).LastIndexOfAny(target0, target1, target2));
                     Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.Equal(targetIndex, new ReadOnlyExSpan<int>(a).LastIndexOfAny(target0, target1, target2, comparer)));
-#if NET8_0_OR_GREATER
                     Assert.Equal(-1, new ReadOnlyExSpan<int>(a).LastIndexOfAny(target0, target1, target2, GetFalseEqualityComparer<int>()));
-#endif // NET8_0_OR_GREATER
                 }
 
                 for (int targetIndex = 0; targetIndex < length - 2; targetIndex++) {
@@ -188,9 +174,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                     Assert.Equal(targetIndex + 2, new ReadOnlyExSpan<int>(a).LastIndexOfAny(target0, target1, target2));
                     Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.Equal(targetIndex + 2, new ReadOnlyExSpan<int>(a).LastIndexOfAny(target0, target1, target2, comparer)));
-#if NET8_0_OR_GREATER
                     Assert.Equal(-1, new ReadOnlyExSpan<int>(a).LastIndexOfAny(target0, target1, target2, GetFalseEqualityComparer<int>()));
-#endif // NET8_0_OR_GREATER
                 }
 
                 for (int targetIndex = 0; targetIndex < length - 2; targetIndex++) {
@@ -200,9 +184,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                     Assert.Equal(targetIndex + 2, new ReadOnlyExSpan<int>(a).LastIndexOfAny(target0, target1, target2));
                     Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.Equal(targetIndex + 2, new ReadOnlyExSpan<int>(a).LastIndexOfAny(target0, target1, target2, comparer)));
-#if NET8_0_OR_GREATER
                     Assert.Equal(-1, new ReadOnlyExSpan<int>(a).LastIndexOfAny(target0, target1, target2, GetFalseEqualityComparer<int>()));
-#endif // NET8_0_OR_GREATER
                 }
             }
         }
@@ -237,9 +219,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                 Assert.Equal(length - 1, new ReadOnlyExSpan<int>(a).LastIndexOfAny(200, 200, 200));
                 Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.Equal(length - 1, new ReadOnlyExSpan<int>(a).LastIndexOfAny(200, 200, 200, comparer)));
-#if NET8_0_OR_GREATER
                 Assert.Equal(-1, new ReadOnlyExSpan<int>(a).LastIndexOfAny(200, 200, 200, GetFalseEqualityComparer<int>()));
-#endif // NET8_0_OR_GREATER
             }
         }
 
@@ -285,9 +265,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                 for (int i = 0; i < length; i++) {
                     Assert.Equal(a.Length - 1, new ReadOnlyExSpan<int>(a).LastIndexOfAny(values));
                     Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.Equal(a.Length - 1, new ReadOnlyExSpan<int>(a).LastIndexOfAny(values, comparer)));
-#if NET8_0_OR_GREATER
                     Assert.Equal(-1, new ReadOnlyExSpan<int>(a).LastIndexOfAny(values, GetFalseEqualityComparer<int>()));
-#endif // NET8_0_OR_GREATER
                 }
             }
         }
@@ -305,9 +283,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                     Assert.Equal(targetIndex, new ReadOnlyExSpan<int>(a).LastIndexOfAny(values));
                     Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.Equal(targetIndex, new ReadOnlyExSpan<int>(a).LastIndexOfAny(values, comparer)));
-#if NET8_0_OR_GREATER
                     Assert.Equal(-1, new ReadOnlyExSpan<int>(a).LastIndexOfAny(values, GetFalseEqualityComparer<int>()));
-#endif // NET8_0_OR_GREATER
                 }
 
                 for (int targetIndex = 0; targetIndex < length - 3; targetIndex++) {
@@ -315,9 +291,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                     Assert.Equal(targetIndex + 3, new ReadOnlyExSpan<int>(a).LastIndexOfAny(values));
                     Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.Equal(targetIndex + 3, new ReadOnlyExSpan<int>(a).LastIndexOfAny(values, comparer)));
-#if NET8_0_OR_GREATER
                     Assert.Equal(-1, new ReadOnlyExSpan<int>(a).LastIndexOfAny(values, GetFalseEqualityComparer<int>()));
-#endif // NET8_0_OR_GREATER
                 }
 
                 for (int targetIndex = 0; targetIndex < length - 3; targetIndex++) {
@@ -325,9 +299,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                     Assert.Equal(targetIndex + 3, new ReadOnlyExSpan<int>(a).LastIndexOfAny(values));
                     Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.Equal(targetIndex + 3, new ReadOnlyExSpan<int>(a).LastIndexOfAny(values, comparer)));
-#if NET8_0_OR_GREATER
                     Assert.Equal(-1, new ReadOnlyExSpan<int>(a).LastIndexOfAny(values, GetFalseEqualityComparer<int>()));
-#endif // NET8_0_OR_GREATER
                 }
             }
         }
@@ -355,9 +327,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                 Assert.Equal(expectedIndex, new ReadOnlyExSpan<int>(a).LastIndexOfAny(targets));
                 Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.Equal(expectedIndex, new ReadOnlyExSpan<int>(a).LastIndexOfAny(targets, comparer)));
-#if NET8_0_OR_GREATER
                 Assert.Equal(-1, new ReadOnlyExSpan<int>(a).LastIndexOfAny(targets, GetFalseEqualityComparer<int>()));
-#endif // NET8_0_OR_GREATER
             }
         }
 
@@ -410,9 +380,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                 Assert.Equal(length - 1, new ReadOnlyExSpan<int>(a).LastIndexOfAny(values));
                 Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.Equal(length - 1, new ReadOnlyExSpan<int>(a).LastIndexOfAny(values, comparer)));
-#if NET8_0_OR_GREATER
                 Assert.Equal(-1, new ReadOnlyExSpan<int>(a).LastIndexOfAny(values, GetFalseEqualityComparer<int>()));
-#endif // NET8_0_OR_GREATER
             }
         }
 
@@ -462,9 +430,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                     Assert.Equal(a.Length - 1, new ReadOnlyExSpan<string>(a).LastIndexOfAny(target0, target1));
                     Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(a.Length - 1, new ReadOnlyExSpan<string>(a).LastIndexOfAny(target0, target1, comparer)));
-#if NET8_0_OR_GREATER
                     Assert.Equal(-1, new ReadOnlyExSpan<string>(a).LastIndexOfAny(target0, target1, GetFalseEqualityComparer<string>()));
-#endif // NET8_0_OR_GREATER
                 }
             }
         }
@@ -483,9 +449,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                     Assert.Equal(targetIndex, new ReadOnlyExSpan<string>(a).LastIndexOfAny(target0, target1));
                     Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(targetIndex, new ReadOnlyExSpan<string>(a).LastIndexOfAny(target0, target1, comparer)));
-#if NET8_0_OR_GREATER
                     Assert.Equal(-1, new ReadOnlyExSpan<string>(a).LastIndexOfAny(target0, target1, GetFalseEqualityComparer<string>()));
-#endif // NET8_0_OR_GREATER
                 }
 
                 for (int targetIndex = 0; targetIndex < length - 1; targetIndex++) {
@@ -494,9 +458,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                     Assert.Equal(targetIndex + 1, new ReadOnlyExSpan<string>(a).LastIndexOfAny(target0, target1));
                     Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(targetIndex + 1, new ReadOnlyExSpan<string>(a).LastIndexOfAny(target0, target1, comparer)));
-#if NET8_0_OR_GREATER
                     Assert.Equal(-1, new ReadOnlyExSpan<string>(a).LastIndexOfAny(target0, target1, GetFalseEqualityComparer<string>()));
-#endif // NET8_0_OR_GREATER
                 }
 
                 for (int targetIndex = 0; targetIndex < length - 1; targetIndex++) {
@@ -505,9 +467,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                     Assert.Equal(targetIndex + 1, new ReadOnlyExSpan<string>(a).LastIndexOfAny(target0, target1));
                     Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(targetIndex + 1, new ReadOnlyExSpan<string>(a).LastIndexOfAny(target0, target1, comparer)));
-#if NET8_0_OR_GREATER
                     Assert.Equal(-1, new ReadOnlyExSpan<string>(a).LastIndexOfAny(target0, target1, GetFalseEqualityComparer<string>()));
-#endif // NET8_0_OR_GREATER
                 }
             }
         }
@@ -540,9 +500,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                 Assert.Equal(length - 1, new ReadOnlyExSpan<string>(a).LastIndexOfAny("200", "200"));
                 Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(length - 1, new ReadOnlyExSpan<string>(a).LastIndexOfAny("200", "200", comparer)));
-#if NET8_0_OR_GREATER
                 Assert.Equal(-1, new ReadOnlyExSpan<string>(a).LastIndexOfAny("200", "200", GetFalseEqualityComparer<string>()));
-#endif // NET8_0_OR_GREATER
             }
         }
 
@@ -591,9 +549,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                     Assert.Equal(a.Length - 1, new ReadOnlyExSpan<string>(a).LastIndexOfAny(target0, target1, target2));
                     Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(a.Length - 1, new ReadOnlyExSpan<string>(a).LastIndexOfAny(target0, target1, target2, comparer)));
-#if NET8_0_OR_GREATER
                     Assert.Equal(-1, new ReadOnlyExSpan<string>(a).LastIndexOfAny(target0, target1, target2, GetFalseEqualityComparer<string>()));
-#endif // NET8_0_OR_GREATER
                 }
             }
         }
@@ -613,9 +569,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                     Assert.Equal(targetIndex, new ReadOnlyExSpan<string>(a).LastIndexOfAny(target0, target1, target2));
                     Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(targetIndex, new ReadOnlyExSpan<string>(a).LastIndexOfAny(target0, target1, target2, comparer)));
-#if NET8_0_OR_GREATER
                     Assert.Equal(-1, new ReadOnlyExSpan<string>(a).LastIndexOfAny(target0, target1, target2, GetFalseEqualityComparer<string>()));
-#endif // NET8_0_OR_GREATER
                 }
 
                 for (int targetIndex = 0; targetIndex < length - 2; targetIndex++) {
@@ -625,9 +579,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                     Assert.Equal(targetIndex + 2, new ReadOnlyExSpan<string>(a).LastIndexOfAny(target0, target1, target2));
                     Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(targetIndex + 2, new ReadOnlyExSpan<string>(a).LastIndexOfAny(target0, target1, target2, comparer)));
-#if NET8_0_OR_GREATER
                     Assert.Equal(-1, new ReadOnlyExSpan<string>(a).LastIndexOfAny(target0, target1, target2, GetFalseEqualityComparer<string>()));
-#endif // NET8_0_OR_GREATER
                 }
 
                 for (int targetIndex = 0; targetIndex < length - 2; targetIndex++) {
@@ -637,9 +589,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                     Assert.Equal(targetIndex + 2, new ReadOnlyExSpan<string>(a).LastIndexOfAny(target0, target1, target2));
                     Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(targetIndex + 2, new ReadOnlyExSpan<string>(a).LastIndexOfAny(target0, target1, target2, comparer)));
-#if NET8_0_OR_GREATER
                     Assert.Equal(-1, new ReadOnlyExSpan<string>(a).LastIndexOfAny(target0, target1, target2, GetFalseEqualityComparer<string>()));
-#endif // NET8_0_OR_GREATER
                 }
             }
         }
@@ -674,9 +624,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                 Assert.Equal(length - 1, new ReadOnlyExSpan<string>(a).LastIndexOfAny("200", "200", "200"));
                 Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(length - 1, new ReadOnlyExSpan<string>(a).LastIndexOfAny("200", "200", "200", comparer)));
-#if NET8_0_OR_GREATER
                 Assert.Equal(-1, new ReadOnlyExSpan<string>(a).LastIndexOfAny("200", "200", "200", GetFalseEqualityComparer<string>()));
-#endif // NET8_0_OR_GREATER
             }
         }
 
@@ -723,9 +671,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                 for (int i = 0; i < length; i++) {
                     Assert.Equal(a.Length - 1, new ReadOnlyExSpan<string>(a).LastIndexOfAny(values));
                     Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(a.Length - 1, new ReadOnlyExSpan<string>(a).LastIndexOfAny(values, comparer)));
-#if NET8_0_OR_GREATER
                     Assert.Equal(-1, new ReadOnlyExSpan<string>(a).LastIndexOfAny(values, GetFalseEqualityComparer<string>()));
-#endif // NET8_0_OR_GREATER
                 }
             }
         }
@@ -743,9 +689,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                     Assert.Equal(targetIndex, new ReadOnlyExSpan<string>(a).LastIndexOfAny(values));
                     Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(targetIndex, new ReadOnlyExSpan<string>(a).LastIndexOfAny(values, comparer)));
-#if NET8_0_OR_GREATER
                     Assert.Equal(-1, new ReadOnlyExSpan<string>(a).LastIndexOfAny(values, GetFalseEqualityComparer<string>()));
-#endif // NET8_0_OR_GREATER
                 }
 
                 for (int targetIndex = 0; targetIndex < length - 3; targetIndex++) {
@@ -753,9 +697,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                     Assert.Equal(targetIndex + 3, new ReadOnlyExSpan<string>(a).LastIndexOfAny(values));
                     Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(targetIndex + 3, new ReadOnlyExSpan<string>(a).LastIndexOfAny(values, comparer)));
-#if NET8_0_OR_GREATER
                     Assert.Equal(-1, new ReadOnlyExSpan<string>(a).LastIndexOfAny(values, GetFalseEqualityComparer<string>()));
-#endif // NET8_0_OR_GREATER
                 }
 
                 for (int targetIndex = 0; targetIndex < length - 3; targetIndex++) {
@@ -763,9 +705,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                     Assert.Equal(targetIndex + 3, new ReadOnlyExSpan<string>(a).LastIndexOfAny(values));
                     Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(targetIndex + 3, new ReadOnlyExSpan<string>(a).LastIndexOfAny(values, comparer)));
-#if NET8_0_OR_GREATER
                     Assert.Equal(-1, new ReadOnlyExSpan<string>(a).LastIndexOfAny(values, GetFalseEqualityComparer<string>()));
-#endif // NET8_0_OR_GREATER
                 }
             }
         }
@@ -795,9 +735,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                 Assert.Equal(expectedIndex, new ReadOnlyExSpan<string>(a).LastIndexOfAny(targets));
                 Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(expectedIndex, new ReadOnlyExSpan<string>(a).LastIndexOfAny(targets, comparer)));
-#if NET8_0_OR_GREATER
                 Assert.Equal(-1, new ReadOnlyExSpan<string>(a).LastIndexOfAny(targets, GetFalseEqualityComparer<string>()));
-#endif // NET8_0_OR_GREATER
             }
         }
 
@@ -850,9 +788,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                 Assert.Equal(length - 1, new ReadOnlyExSpan<string>(a).LastIndexOfAny(values));
                 Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(length - 1, new ReadOnlyExSpan<string>(a).LastIndexOfAny(values, comparer)));
-#if NET8_0_OR_GREATER
                 Assert.Equal(-1, new ReadOnlyExSpan<string>(a).LastIndexOfAny(values, GetFalseEqualityComparer<string>()));
-#endif // NET8_0_OR_GREATER
             }
         }
 

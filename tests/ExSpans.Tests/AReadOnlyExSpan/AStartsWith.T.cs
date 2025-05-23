@@ -10,9 +10,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
             Assert.True(new ReadOnlyExSpan<int>(a, 1, 0).StartsWith(new ReadOnlyExSpan<int>(a, 2, 0)));
             Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.True(new ReadOnlyExSpan<int>(a, 1, 0).StartsWith(new ReadOnlyExSpan<int>(a, 2, 0), comparer)));
-#if NET8_0_OR_GREATER
             Assert.True(new ReadOnlyExSpan<int>(a, 1, 0).StartsWith(new ReadOnlyExSpan<int>(a, 2, 0), GetFalseEqualityComparer<int>()));
-#endif // NET8_0_OR_GREATER
         }
 
         [Fact]
@@ -20,9 +18,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             int[] a = { 4, 5, 6 };
             Assert.True(new ReadOnlyExSpan<int>(a).StartsWith(a));
             Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.True(new ReadOnlyExSpan<int>(a).StartsWith(a, comparer)));
-#if NET8_0_OR_GREATER
             Assert.False(new ReadOnlyExSpan<int>(a).StartsWith(a, GetFalseEqualityComparer<int>()));
-#endif // NET8_0_OR_GREATER
         }
 
         [Fact]
@@ -39,9 +35,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
             Assert.True(new ReadOnlyExSpan<int>(a, 0, 3).StartsWith(new ReadOnlyExSpan<int>(a, 0, 2)));
             Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.True(new ReadOnlyExSpan<int>(a, 0, 3).StartsWith(new ReadOnlyExSpan<int>(a, 0, 2), comparer)));
-#if NET8_0_OR_GREATER
             Assert.False(new ReadOnlyExSpan<int>(a, 0, 3).StartsWith(new ReadOnlyExSpan<int>(a, 0, 2), GetFalseEqualityComparer<int>()));
-#endif // NET8_0_OR_GREATER
         }
 
         [Fact]
@@ -51,9 +45,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
             Assert.True(new ReadOnlyExSpan<int>(a, 0, 3).StartsWith(new ReadOnlyExSpan<int>(b, 0, 3)));
             Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.True(new ReadOnlyExSpan<int>(a, 0, 3).StartsWith(new ReadOnlyExSpan<int>(b, 0, 3), comparer)));
-#if NET8_0_OR_GREATER
             Assert.False(new ReadOnlyExSpan<int>(a, 0, 3).StartsWith(new ReadOnlyExSpan<int>(b, 0, 3), GetFalseEqualityComparer<int>()));
-#endif // NET8_0_OR_GREATER
         }
 
         [Fact]

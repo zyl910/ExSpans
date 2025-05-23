@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Xunit;
+using Zyl.ExSpans.Tests.Fake;
 
 namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
     using static AComparers;
@@ -27,9 +28,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                     int target = a[targetIndex];
                     Assert.True(new ReadOnlyExSpan<int>(a).Contains(target));
                     Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.True(new ReadOnlyExSpan<int>(a).Contains(target, comparer)));
-#if NET8_0_OR_GREATER
                     Assert.False(new ReadOnlyExSpan<int>(a).Contains(target, GetFalseEqualityComparer<int>()));
-#endif // NET8_0_OR_GREATER
                 }
             }
         }
@@ -47,9 +46,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
                 Assert.True(new ReadOnlyExSpan<int>(a).Contains(5555));
                 Assert.All(GetDefaultEqualityComparers<int>(), comparer => Assert.True(new ReadOnlyExSpan<int>(a).Contains(5555, comparer)));
-#if NET8_0_OR_GREATER
                 Assert.False(new ReadOnlyExSpan<int>(a).Contains(5555, GetFalseEqualityComparer<int>()));
-#endif // NET8_0_OR_GREATER
             }
         }
 
@@ -108,9 +105,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.False(new ReadOnlyExSpan<string>(ArrayHelper.Empty<string>()).Contains("a", comparer)));
             Assert.False(span.Contains("a", null));
             Assert.False(span.Contains("a", EqualityComparer<string>.Default));
-#if NET8_0_OR_GREATER
-            Assert.False(span.Contains("a", EqualityComparer<string>.Create((i, j) => i == j)));
-#endif // NET8_0_OR_GREATER
+            Assert.False(span.Contains("a", DelegateEqualityComparer<string>.Create((i, j) => i == j)));
         }
 
         [Fact]
@@ -126,9 +121,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                     string target = a[targetIndex];
                     Assert.True(span.Contains(target));
                     Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.True(new ReadOnlyExSpan<string>(a).Contains(target, comparer)));
-#if NET8_0_OR_GREATER
                     Assert.False(span.Contains(target, GetFalseEqualityComparer<string>()));
-#endif // NET8_0_OR_GREATER
                 }
             }
         }
