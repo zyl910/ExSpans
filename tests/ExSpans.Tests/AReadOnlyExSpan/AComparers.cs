@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Xunit;
+using Zyl.ExSpans.Tests.Fake;
 
 namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
     public static partial class AComparers {
@@ -8,9 +9,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 
             yield return EqualityComparer<T>.Default;
 
-#if NET8_0_OR_GREATER
-            yield return EqualityComparer<T>.Create((i, j) => EqualityComparer<T>.Default.Equals(i, j));
-#endif // NET8_0_OR_GREATER
+            yield return DelegateEqualityComparer<T>.Create((i, j) => EqualityComparer<T>.Default.Equals(i!, j!));
 
             if (typeof(T) == typeof(string)) {
                 yield return (IEqualityComparer<T>)(object)StringComparer.Ordinal;
@@ -29,9 +28,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             }
         }
 
-#if NET8_0_OR_GREATER
         internal static IEqualityComparer<T> GetFalseEqualityComparer<T>() =>
-            EqualityComparer<T>.Create((i, j) => false);
-#endif // NET8_0_OR_GREATER
+            DelegateEqualityComparer<T>.Create((i, j) => false);
     }
 }
