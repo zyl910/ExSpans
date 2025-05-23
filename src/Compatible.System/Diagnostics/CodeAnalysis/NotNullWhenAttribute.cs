@@ -6,6 +6,15 @@ namespace System.Diagnostics.CodeAnalysis {
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_0_OR_GREATER
 #else
 
+    /// <summary>Specifies that null is disallowed as an input even if the corresponding type allows it.</summary>
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Parameter | AttributeTargets.Property, Inherited = false)]
+#if SYSTEM_PRIVATE_CORELIB
+    public
+#else
+    internal
+#endif
+        sealed class DisallowNullAttribute : Attribute { }
+
     /// <summary>Specifies that when a method returns <see cref="ReturnValue"/>, the parameter will not be null even if the corresponding type allows it.</summary>
     [AttributeUsage(AttributeTargets.Parameter, Inherited = false)]
 #if SYSTEM_PRIVATE_CORELIB
