@@ -12,6 +12,7 @@ global using System.Collections.Generic;
 global using System.Linq;
 global using System.Runtime.InteropServices;
 global using Zyl.ExSpans.Impl;
+global using Zyl.ExSpans.Tests.Fake;
 global using Zyl.ExSpans.Tests.Fake.Attributes;
 
 using static System.Buffers.Binary.BinaryPrimitives;

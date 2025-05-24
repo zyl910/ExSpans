@@ -27,7 +27,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
 
         [Fact]
         public static void NullArrayAsExSpan() {
-            int[] a = null;
+            int[]? a = null;
             ExSpan<int> span = a.AsExSpan();
             span.Validate();
             Assert.True(span == default);
@@ -110,7 +110,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         [InlineData(10, 10)]
         public static void ArrayAsExSpanWithStart(int length, int start) {
             int[] a = new int[length];
-            ExSpan<int> s = a.AsExSpan(start);
+            ExSpan<int> s = a.AsExSpan((TSize)start);
             Assert.Equal(length - start, s.Length);
             if (start != length) {
                 s[0] = 42;
@@ -185,7 +185,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         [InlineData(5, 6)]
         public static void ArrayAsExSpanWithStartNegative(int length, int start) {
             int[] a = new int[length];
-            Assert.Throws<ArgumentOutOfRangeException>(() => a.AsExSpan(start));
+            Assert.Throws<ArgumentOutOfRangeException>(() => a.AsExSpan((TSize)start));
         }
 
         [Theory]
