@@ -37,6 +37,7 @@ namespace Zyl.ExSpans.Tests {
         }
 #endif // TODO
 
+#nullable disable
         public static void Throws<T>(Action action, string expectedMessage)
             where T : Exception {
             Assert.Equal(expectedMessage, Assert.Throws<T>(action).Message);
@@ -95,6 +96,7 @@ namespace Zyl.ExSpans.Tests {
 
             return exception;
         }
+#nullable restore
 
 #if TODO
         public static TException Throws<TException, TResult>(Func<TResult> func)

@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace Zyl.ExSpans.Tests.AExSpan {
     public static partial class ACtorRef {
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
         [Fact]
         public static void CtorRef() {
             int value = 1;
@@ -18,5 +19,6 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             value = 3;
             Assert.Equal(3, s[0]);
         }
+#endif // NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
     }
 }
