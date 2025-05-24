@@ -75,32 +75,47 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             }
         }
 
+#nullable disable
         [Fact]
         public static void EndsWithSingle() {
-            ReadOnlyExSpan<char> chars = [];
+            char[] charsArray = [];
+            ReadOnlyExSpan<char> chars = charsArray;
             Assert.False(chars.EndsWith('\0'));
             Assert.False(chars.EndsWith('f'));
 
-            chars = "foo";
+            chars = "foo".AsSpan();
+#if NET8_0_OR_GREATER && TODO // [TODO why] NRange need System.Numerics.Tensors.dll
             Assert.True(chars.EndsWith(chars[^1]));
+#else
+            Assert.True(chars.EndsWith(chars[chars.Length - 1]));
+#endif // NET8_0_OR_GREATER
             Assert.True(chars.EndsWith('o'));
             Assert.False(chars.EndsWith('f'));
 
-            scoped ReadOnlyExSpan<string> strings = [];
+            scoped ReadOnlyExSpan<string> strings = (string[])[];
             Assert.False(strings.EndsWith((string)null));
             Assert.False(strings.EndsWith("foo"));
 
-            strings = ["foo", "bar"];
+            strings = (string[])["foo", "bar"];
+#if NET8_0_OR_GREATER && TODO // [TODO why] NRange need System.Numerics.Tensors.dll
             Assert.True(strings.EndsWith(strings[^1]));
+#else
+            Assert.True(strings.EndsWith(strings[strings.Length - 1]));
+#endif // NET8_0_OR_GREATER
             Assert.True(strings.EndsWith("bar"));
             Assert.True(strings.EndsWith("*bar".Substring(1)));
             Assert.False(strings.EndsWith("foo"));
             Assert.False(strings.EndsWith((string)null));
 
-            strings = ["foo", null];
+            strings = (string[])["foo", null];
+#if NET8_0_OR_GREATER && TODO // [TODO why] NRange need System.Numerics.Tensors.dll
             Assert.True(strings.EndsWith(strings[^1]));
+#else
+            Assert.True(strings.EndsWith(strings[strings.Length - 1]));
+#endif // NET8_0_OR_GREATER
             Assert.True(strings.EndsWith((string)null));
             Assert.False(strings.EndsWith("foo"));
         }
+#nullable restore
     }
 }
