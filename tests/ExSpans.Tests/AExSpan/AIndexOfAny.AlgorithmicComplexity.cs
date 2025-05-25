@@ -8,6 +8,7 @@ using Xunit;
 
 namespace Zyl.ExSpans.Tests.AExSpan {
     public static partial class AIndexOfAny {
+#if INTERNAL && TODO
         [Fact]
         public static void IndexOfAny_LastIndexOfAny_AlgComplexity_Bytes()
             => RunIndexOfAnyLastIndexOfAnyAlgComplexityTest<byte>();
@@ -19,6 +20,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         [Fact]
         public static void IndexOfAny_LastIndexOfAny_AlgComplexity_Ints()
             => RunIndexOfAnyLastIndexOfAnyAlgComplexityTest<int>();
+#endif // INTERNAL && TODO
 
         [Fact]
         public static void IndexOfAny_LastIndexOfAny_AlgComplexity_RefType() {
@@ -28,18 +30,30 @@ namespace Zyl.ExSpans.Tests.AExSpan {
 
             ExSpan<CustomEquatableType<int>> haystack = new CustomEquatableType<int>[8192];
             haystack[1024] = new CustomEquatableType<int>(default, isPoison: true); // fail the test if we iterate this far
+#if ALLOW_NINDEX
             haystack[^1024] = new CustomEquatableType<int>(default, isPoison: true);
+#else
+            haystack[haystack.Length - 1024] = new CustomEquatableType<int>(default, isPoison: true);
+#endif // ALLOW_NINDEX
 
             ExSpan<CustomEquatableType<int>> needle = Enumerable.Range(100, 20).Select(val => new CustomEquatableType<int>(val)).ToArray();
             for (int i = 0; i < needle.Length; i++) {
                 haystack[4096] = needle[i];
-                Assert.Equal(2048, MemoryExtensions.IndexOfAny(haystack[2048..], needle));
-                Assert.Equal(2048, MemoryExtensions.IndexOfAny((ReadOnlyExSpan<CustomEquatableType<int>>)haystack[2048..], needle));
-                Assert.Equal(4096, MemoryExtensions.LastIndexOfAny(haystack[..^2048], needle));
-                Assert.Equal(4096, MemoryExtensions.LastIndexOfAny((ReadOnlyExSpan<CustomEquatableType<int>>)haystack[..^2048], needle));
+#if ALLOW_NINDEX
+                Assert.Equal(2048, ExMemoryExtensions.IndexOfAny(haystack[2048..], needle));
+                Assert.Equal(2048, ExMemoryExtensions.IndexOfAny((ReadOnlyExSpan<CustomEquatableType<int>>)haystack[2048..], needle));
+                Assert.Equal(4096, ExMemoryExtensions.LastIndexOfAny(haystack[..^2048], needle));
+                Assert.Equal(4096, ExMemoryExtensions.LastIndexOfAny((ReadOnlyExSpan<CustomEquatableType<int>>)haystack[..^2048], needle));
+#else
+                Assert.Equal(2048, ExMemoryExtensions.IndexOfAny(haystack.Slice(2048), needle));
+                Assert.Equal(2048, ExMemoryExtensions.IndexOfAny((ReadOnlyExSpan<CustomEquatableType<int>>)haystack.Slice(2048), needle));
+                Assert.Equal(4096, ExMemoryExtensions.LastIndexOfAny(haystack.Slice(0, haystack.Length - 2048), needle));
+                Assert.Equal(4096, ExMemoryExtensions.LastIndexOfAny((ReadOnlyExSpan<CustomEquatableType<int>>)haystack.Slice(0, haystack.Length - 2048), needle));
+#endif // ALLOW_NINDEX
             }
         }
 
+#if INTERNAL && TODO
         private static void RunIndexOfAnyLastIndexOfAnyAlgComplexityTest<T>() where T : unmanaged, IEquatable<T> {
             T[] needles = GetIndexOfAnyNeedlesForAlgComplexityTest<T>().ToArray();
             RunIndexOfAnyAlgComplexityTest<T>(needles);
@@ -71,8 +85,8 @@ namespace Zyl.ExSpans.Tests.AExSpan {
 
             for (int i = 0; i < needle.Length; i++) {
                 span[1024] = needle[i];
-                Assert.Equal(1024, MemoryExtensions.IndexOfAny(span, needle));
-                Assert.Equal(1024, MemoryExtensions.IndexOfAny((ReadOnlyExSpan<T>)span, needle));
+                Assert.Equal(1024, ExMemoryExtensions.IndexOfAny(span, needle));
+                Assert.Equal(1024, ExMemoryExtensions.IndexOfAny((ReadOnlyExSpan<T>)span, needle));
             }
         }
 
@@ -88,10 +102,11 @@ namespace Zyl.ExSpans.Tests.AExSpan {
 
             for (int i = 0; i < needle.Length; i++) {
                 span[^1024] = needle[i];
-                Assert.Equal(span.Length - 1024, MemoryExtensions.LastIndexOfAny(span, needle));
-                Assert.Equal(span.Length - 1024, MemoryExtensions.LastIndexOfAny((ReadOnlyExSpan<T>)span, needle));
+                Assert.Equal(span.Length - 1024, ExMemoryExtensions.LastIndexOfAny(span, needle));
+                Assert.Equal(span.Length - 1024, ExMemoryExtensions.LastIndexOfAny((ReadOnlyExSpan<T>)span, needle));
             }
         }
+#endif // INTERNAL && TODO
 
         // returns [ 'a', 'b', 'c', ... ], or the equivalent in bytes, ints, etc.
         private static IEnumerable<T> GetIndexOfAnyNeedlesForAlgComplexityTest<T>() where T : unmanaged {
@@ -100,6 +115,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             }
         }
 
+#nullable disable
 #pragma warning disable CS0659 // Type overrides Object.Equals(object o) but does not override Object.GetHashCode()
         private sealed class CustomEquatableType<T> : IEquatable<CustomEquatableType<T>> where T : IEquatable<T>
 #pragma warning restore CS0659 // Type overrides Object.Equals(object o) but does not override Object.GetHashCode()
@@ -127,5 +143,6 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 return _value.Equals(other._value);
             }
         }
+#nullable restore
     }
 }

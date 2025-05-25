@@ -5,7 +5,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         [Fact]
         public static void ZeroLengthIndexOf() {
             ExSpan<int> sp = new ExSpan<int>(ArrayHelper.Empty<int>());
-            int idx = sp.IndexOf(0);
+            TSize idx = sp.IndexOf(0);
             Assert.Equal(-1, idx);
         }
 
@@ -20,7 +20,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
 
                 for (int targetIndex = 0; targetIndex < length; targetIndex++) {
                     int target = a[targetIndex];
-                    int idx = span.IndexOf(target);
+                    TSize idx = span.IndexOf(target);
                     Assert.Equal(targetIndex, idx);
                 }
             }
@@ -38,7 +38,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 a[length - 2] = 5555;
 
                 ExSpan<int> span = new ExSpan<int>(a);
-                int idx = span.IndexOf(5555);
+                TSize idx = span.IndexOf(5555);
                 Assert.Equal(length - 2, idx);
             }
         }
@@ -53,7 +53,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                     a[i] = new TInt(10 * (i + 1), log);
                 }
                 ExSpan<TInt> span = new ExSpan<TInt>(a);
-                int idx = span.IndexOf(new TInt(9999, log));
+                TSize idx = span.IndexOf(new TInt(9999, log));
                 Assert.Equal(-1, idx);
 
                 // Since we asked for a non-existent value, make sure each element of the array was compared once.
@@ -89,7 +89,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 }
 
                 ExSpan<TInt> span = new ExSpan<TInt>(a, GuardLength, length);
-                int idx = span.IndexOf(new TInt(9999, checkForOutOfRangeAccess));
+                TSize idx = span.IndexOf(new TInt(9999, checkForOutOfRangeAccess));
                 Assert.Equal(-1, idx);
             }
         }
@@ -97,7 +97,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         [Fact]
         public static void ZeroLengthIndexOf_String() {
             ExSpan<string> sp = new ExSpan<string>(ArrayHelper.Empty<string>());
-            int idx = sp.IndexOf("a");
+            TSize idx = sp.IndexOf("a");
             Assert.Equal(-1, idx);
         }
 
@@ -112,7 +112,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
 
                 for (int targetIndex = 0; targetIndex < length; targetIndex++) {
                     string target = a[targetIndex];
-                    int idx = span.IndexOf(target);
+                    TSize idx = span.IndexOf(target);
                     Assert.Equal(targetIndex, idx);
                 }
             }
@@ -130,7 +130,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 }
                 ExSpan<string> span = new ExSpan<string>(a);
 
-                int idx = span.IndexOf(target);
+                TSize idx = span.IndexOf(target);
                 Assert.Equal(-1, idx);
             }
         }
@@ -147,17 +147,19 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 a[length - 2] = "5555";
 
                 ExSpan<string> span = new ExSpan<string>(a);
-                int idx = span.IndexOf("5555");
+                TSize idx = span.IndexOf("5555");
                 Assert.Equal(length - 2, idx);
             }
         }
 
+#nullable disable
         [Theory]
         [MemberData(nameof(TestHelpers.IndexOfNullData), MemberType = typeof(TestHelpers))]
         public static void IndexOfNull_String(string[] spanInput, int expected) {
             ExSpan<string> theStrings = spanInput;
             Assert.Equal(expected, theStrings.IndexOf((string)null));
         }
+#nullable restore
 
         [Fact]
         public static void NotBitwiseEquatableUsesCustomIEquatableImplementationForActualComparison() {

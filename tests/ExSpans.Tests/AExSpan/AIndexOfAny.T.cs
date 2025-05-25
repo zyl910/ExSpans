@@ -5,10 +5,11 @@ using Xunit;
 
 namespace Zyl.ExSpans.Tests.AExSpan {
     public static partial class AIndexOfAny {
+#if NET8_0_OR_GREATER && TODO // [TODO why] SearchValues methods is internal
         [Fact]
         public static void ZeroLengthIndexOfAny_TwoInteger() {
             var sp = new ExSpan<int>(ArrayHelper.Empty<int>());
-            int idx = IndexOfAny(sp, 0, 0);
+            TSize idx = IndexOfAny(sp, 0, 0);
             Assert.Equal(-1, idx);
         }
 
@@ -23,10 +24,10 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 int[] targets = { default, 99 };
 
                 for (int i = 0; i < length; i++) {
-                    int index = rnd.Next(0, 2) == 0 ? 0 : 1;
+                    TSize index = rnd.Next(0, 2) == 0 ? 0 : 1;
                     int target0 = targets[index];
                     int target1 = targets[(index + 1) % 2];
-                    int idx = IndexOfAny(span, target0, target1);
+                    TSize idx = IndexOfAny(span, target0, target1);
                     Assert.Equal(0, idx);
                 }
             }
@@ -46,22 +47,22 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 for (int targetIndex = 0; targetIndex < length; targetIndex++) {
                     int target0 = a[targetIndex];
                     int target1 = 0;
-                    int idx = IndexOfAny(span, target0, target1);
+                    TSize idx = IndexOfAny(span, target0, target1);
                     Assert.Equal(targetIndex, idx);
                 }
 
                 for (int targetIndex = 0; targetIndex < length - 1; targetIndex++) {
-                    int index = rnd.Next(0, 2) == 0 ? 0 : 1;
+                    TSize index = rnd.Next(0, 2) == 0 ? 0 : 1;
                     int target0 = a[targetIndex + index];
                     int target1 = a[targetIndex + (index + 1) % 2];
-                    int idx = IndexOfAny(span, target0, target1);
+                    TSize idx = IndexOfAny(span, target0, target1);
                     Assert.Equal(targetIndex, idx);
                 }
 
                 for (int targetIndex = 0; targetIndex < length; targetIndex++) {
                     int target0 = 0;
                     int target1 = a[targetIndex];
-                    int idx = IndexOfAny(span, target0, target1);
+                    TSize idx = IndexOfAny(span, target0, target1);
                     Assert.Equal(targetIndex, idx);
                 }
             }
@@ -76,7 +77,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 int target1 = rnd.Next(1, 256);
                 var span = new ExSpan<int>(a);
 
-                int idx = IndexOfAny(span, target0, target1);
+                TSize idx = IndexOfAny(span, target0, target1);
                 Assert.Equal(-1, idx);
             }
         }
@@ -95,7 +96,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 a[length - 3] = 200;
 
                 var span = new ExSpan<int>(a);
-                int idx = IndexOfAny(span, 200, 200);
+                TSize idx = IndexOfAny(span, 200, 200);
                 Assert.Equal(length - 3, idx);
             }
         }
@@ -107,7 +108,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 a[0] = 99;
                 a[length + 1] = 98;
                 var span = new ExSpan<int>(a, 1, length - 1);
-                int index = IndexOfAny(span, 99, 98);
+                TSize index = IndexOfAny(span, 99, 98);
                 Assert.Equal(-1, index);
             }
 
@@ -116,7 +117,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 a[0] = 99;
                 a[length + 1] = 99;
                 var span = new ExSpan<int>(a, 1, length - 1);
-                int index = IndexOfAny(span, 99, 99);
+                TSize index = IndexOfAny(span, 99, 99);
                 Assert.Equal(-1, index);
             }
         }
@@ -124,7 +125,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         [Fact]
         public static void ZeroLengthIndexOfAny_ThreeInteger() {
             var sp = new ExSpan<int>(ArrayHelper.Empty<int>());
-            int idx = IndexOfAny(sp, 0, 0, 0);
+            TSize idx = IndexOfAny(sp, 0, 0, 0);
             Assert.Equal(-1, idx);
         }
 
@@ -139,11 +140,11 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 int[] targets = { default, 99, 98 };
 
                 for (int i = 0; i < length; i++) {
-                    int index = rnd.Next(0, 3);
+                    TSize index = rnd.Next(0, 3);
                     int target0 = targets[index];
                     int target1 = targets[(index + 1) % 2];
                     int target2 = targets[(index + 1) % 3];
-                    int idx = IndexOfAny(span, target0, target1, target2);
+                    TSize idx = IndexOfAny(span, target0, target1, target2);
                     Assert.Equal(0, idx);
                 }
             }
@@ -164,16 +165,16 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                     int target0 = a[targetIndex];
                     int target1 = 0;
                     int target2 = 0;
-                    int idx = IndexOfAny(span, target0, target1, target2);
+                    TSize idx = IndexOfAny(span, target0, target1, target2);
                     Assert.Equal(targetIndex, idx);
                 }
 
                 for (int targetIndex = 0; targetIndex < length - 2; targetIndex++) {
-                    int index = rnd.Next(0, 3);
+                    TSize index = rnd.Next(0, 3);
                     int target0 = a[targetIndex + index];
                     int target1 = a[targetIndex + (index + 1) % 2];
                     int target2 = a[targetIndex + (index + 1) % 3];
-                    int idx = IndexOfAny(span, target0, target1, target2);
+                    TSize idx = IndexOfAny(span, target0, target1, target2);
                     Assert.Equal(targetIndex, idx);
                 }
 
@@ -181,7 +182,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                     int target0 = 0;
                     int target1 = 0;
                     int target2 = a[targetIndex];
-                    int idx = IndexOfAny(span, target0, target1, target2);
+                    TSize idx = IndexOfAny(span, target0, target1, target2);
                     Assert.Equal(targetIndex, idx);
                 }
             }
@@ -197,7 +198,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 int target2 = rnd.Next(1, 256);
                 var span = new ExSpan<int>(a);
 
-                int idx = IndexOfAny(span, target0, target1, target2);
+                TSize idx = IndexOfAny(span, target0, target1, target2);
                 Assert.Equal(-1, idx);
             }
         }
@@ -217,7 +218,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 a[length - 4] = 200;
 
                 var span = new ExSpan<int>(a);
-                int idx = IndexOfAny(span, 200, 200, 200);
+                TSize idx = IndexOfAny(span, 200, 200, 200);
                 Assert.Equal(length - 4, idx);
             }
         }
@@ -229,7 +230,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 a[0] = 99;
                 a[length + 1] = 98;
                 var span = new ExSpan<int>(a, 1, length - 1);
-                int index = IndexOfAny(span, 99, 98, 99);
+                TSize index = IndexOfAny(span, 99, 98, 99);
                 Assert.Equal(-1, index);
             }
 
@@ -238,7 +239,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 a[0] = 99;
                 a[length + 1] = 99;
                 var span = new ExSpan<int>(a, 1, length - 1);
-                int index = IndexOfAny(span, 99, 99, 99);
+                TSize index = IndexOfAny(span, 99, 99, 99);
                 Assert.Equal(-1, index);
             }
         }
@@ -247,7 +248,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         public static void ZeroLengthIndexOfAny_ManyInteger() {
             var sp = new ExSpan<int>(ArrayHelper.Empty<int>());
             var values = new ReadOnlyExSpan<int>(new int[] { 0, 0, 0, 0 });
-            int idx = IndexOfAny(sp, values);
+            TSize idx = IndexOfAny(sp, values);
             Assert.Equal(-1, idx);
 
             values = new ReadOnlyExSpan<int>(new int[] { });
@@ -264,7 +265,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 var values = new ReadOnlyExSpan<int>(new int[] { default, 99, 98, 0 });
 
                 for (int i = 0; i < length; i++) {
-                    int idx = IndexOfAny(span, values);
+                    TSize idx = IndexOfAny(span, values);
                     Assert.Equal(0, idx);
                 }
             }
@@ -283,12 +284,12 @@ namespace Zyl.ExSpans.Tests.AExSpan {
 
                 for (int targetIndex = 0; targetIndex < length; targetIndex++) {
                     var values = new ReadOnlyExSpan<int>(new int[] { a[targetIndex], 0, 0, 0 });
-                    int idx = IndexOfAny(span, values);
+                    TSize idx = IndexOfAny(span, values);
                     Assert.Equal(targetIndex, idx);
                 }
 
                 for (int targetIndex = 0; targetIndex < length - 3; targetIndex++) {
-                    int index = rnd.Next(0, 4) == 0 ? 0 : 1;
+                    TSize index = rnd.Next(0, 4) == 0 ? 0 : 1;
                     var values = new ReadOnlyExSpan<int>(new int[]
                         {
                             a[targetIndex + index],
@@ -296,13 +297,13 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                             a[targetIndex + (index + 1) % 3],
                             a[targetIndex + (index + 1) % 4]
                         });
-                    int idx = IndexOfAny(span, values);
+                    TSize idx = IndexOfAny(span, values);
                     Assert.Equal(targetIndex, idx);
                 }
 
                 for (int targetIndex = 0; targetIndex < length; targetIndex++) {
                     var values = new ReadOnlyExSpan<int>(new int[] { 0, 0, 0, a[targetIndex] });
-                    int idx = IndexOfAny(span, values);
+                    TSize idx = IndexOfAny(span, values);
                     Assert.Equal(targetIndex, idx);
                 }
             }
@@ -331,7 +332,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 }
 
                 var values = new ReadOnlyExSpan<int>(targets);
-                int idx = IndexOfAny(span, values);
+                TSize idx = IndexOfAny(span, values);
                 Assert.Equal(expectedIndex, idx);
             }
         }
@@ -348,7 +349,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 var span = new ExSpan<int>(a);
                 var values = new ReadOnlyExSpan<int>(targets);
 
-                int idx = IndexOfAny(span, values);
+                TSize idx = IndexOfAny(span, values);
                 Assert.Equal(-1, idx);
             }
         }
@@ -365,7 +366,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 var span = new ExSpan<int>(a);
                 var values = new ReadOnlyExSpan<int>(targets);
 
-                int idx = IndexOfAny(span, values);
+                TSize idx = IndexOfAny(span, values);
                 Assert.Equal(-1, idx);
             }
         }
@@ -387,7 +388,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
 
                 var span = new ExSpan<int>(a);
                 var values = new ReadOnlyExSpan<int>(new int[] { 200, 200, 200, 200, 200, 200, 200, 200, 200 });
-                int idx = IndexOfAny(span, values);
+                TSize idx = IndexOfAny(span, values);
                 Assert.Equal(length - 5, idx);
             }
         }
@@ -400,7 +401,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 a[length + 1] = 98;
                 var span = new ExSpan<int>(a, 1, length - 1);
                 var values = new ExSpan<int>(new int[] { 99, 98, 99, 98, 99, 98 });
-                int index = IndexOfAny(span, values);
+                TSize index = IndexOfAny(span, values);
                 Assert.Equal(-1, index);
             }
 
@@ -410,7 +411,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 a[length + 1] = 99;
                 var span = new ExSpan<int>(a, 1, length - 1);
                 var values = new ReadOnlyExSpan<int>(new int[] { 99, 99, 99, 99, 99, 99 });
-                int index = IndexOfAny(span, values);
+                TSize index = IndexOfAny(span, values);
                 Assert.Equal(-1, index);
             }
         }
@@ -418,7 +419,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         [Fact]
         public static void ZeroLengthIndexOfAny_TwoString() {
             var sp = new ExSpan<string>(ArrayHelper.Empty<string>());
-            int idx = IndexOfAny(sp, "0", "0");
+            TSize idx = IndexOfAny(sp, "0", "0");
             Assert.Equal(-1, idx);
         }
 
@@ -435,10 +436,10 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 string[] targets = { "", "99" };
 
                 for (int i = 0; i < length; i++) {
-                    int index = rnd.Next(0, 2) == 0 ? 0 : 1;
+                    TSize index = rnd.Next(0, 2) == 0 ? 0 : 1;
                     string target0 = targets[index];
                     string target1 = targets[(index + 1) % 2];
-                    int idx = IndexOfAny(span, target0, target1);
+                    TSize idx = IndexOfAny(span, target0, target1);
                     Assert.Equal(0, idx);
                 }
             }
@@ -458,22 +459,22 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 for (int targetIndex = 0; targetIndex < length; targetIndex++) {
                     string target0 = a[targetIndex];
                     string target1 = "0";
-                    int idx = IndexOfAny(span, target0, target1);
+                    TSize idx = IndexOfAny(span, target0, target1);
                     Assert.Equal(targetIndex, idx);
                 }
 
                 for (int targetIndex = 0; targetIndex < length - 1; targetIndex++) {
-                    int index = rnd.Next(0, 2) == 0 ? 0 : 1;
+                    TSize index = rnd.Next(0, 2) == 0 ? 0 : 1;
                     string target0 = a[targetIndex + index];
                     string target1 = a[targetIndex + (index + 1) % 2];
-                    int idx = IndexOfAny(span, target0, target1);
+                    TSize idx = IndexOfAny(span, target0, target1);
                     Assert.Equal(targetIndex, idx);
                 }
 
                 for (int targetIndex = 0; targetIndex < length - 1; targetIndex++) {
                     string target0 = "0";
                     string target1 = a[targetIndex + 1];
-                    int idx = IndexOfAny(span, target0, target1);
+                    TSize idx = IndexOfAny(span, target0, target1);
                     Assert.Equal(targetIndex + 1, idx);
                 }
             }
@@ -488,7 +489,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 string target1 = rnd.Next(1, 256).ToString();
                 var span = new ExSpan<string>(a);
 
-                int idx = IndexOfAny(span, target0, target1);
+                TSize idx = IndexOfAny(span, target0, target1);
                 Assert.Equal(-1, idx);
             }
         }
@@ -507,7 +508,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 a[length - 3] = "200";
 
                 var span = new ExSpan<string>(a);
-                int idx = IndexOfAny(span, "200", "200");
+                TSize idx = IndexOfAny(span, "200", "200");
                 Assert.Equal(length - 3, idx);
             }
         }
@@ -519,7 +520,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 a[0] = "99";
                 a[length + 1] = "98";
                 var span = new ExSpan<string>(a, 1, length - 1);
-                int index = IndexOfAny(span, "99", "98");
+                TSize index = IndexOfAny(span, "99", "98");
                 Assert.Equal(-1, index);
             }
 
@@ -528,7 +529,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 a[0] = "99";
                 a[length + 1] = "99";
                 var span = new ExSpan<string>(a, 1, length - 1);
-                int index = IndexOfAny(span, "99", "99");
+                TSize index = IndexOfAny(span, "99", "99");
                 Assert.Equal(-1, index);
             }
         }
@@ -536,7 +537,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         [Fact]
         public static void ZeroLengthIndexOf_ThreeString() {
             var sp = new ExSpan<string>(ArrayHelper.Empty<string>());
-            int idx = IndexOfAny(sp, "0", "0", "0");
+            TSize idx = IndexOfAny(sp, "0", "0", "0");
             Assert.Equal(-1, idx);
         }
 
@@ -553,11 +554,11 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 string[] targets = { "", "99", "98" };
 
                 for (int i = 0; i < length; i++) {
-                    int index = rnd.Next(0, 3);
+                    TSize index = rnd.Next(0, 3);
                     string target0 = targets[index];
                     string target1 = targets[(index + 1) % 2];
                     string target2 = targets[(index + 1) % 3];
-                    int idx = IndexOfAny(span, target0, target1, target2);
+                    TSize idx = IndexOfAny(span, target0, target1, target2);
                     Assert.Equal(0, idx);
                 }
             }
@@ -578,16 +579,16 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                     string target0 = a[targetIndex];
                     string target1 = "0";
                     string target2 = "0";
-                    int idx = IndexOfAny(span, target0, target1, target2);
+                    TSize idx = IndexOfAny(span, target0, target1, target2);
                     Assert.Equal(targetIndex, idx);
                 }
 
                 for (int targetIndex = 0; targetIndex < length - 2; targetIndex++) {
-                    int index = rnd.Next(0, 3) == 0 ? 0 : 1;
+                    TSize index = rnd.Next(0, 3) == 0 ? 0 : 1;
                     string target0 = a[targetIndex + index];
                     string target1 = a[targetIndex + (index + 1) % 2];
                     string target2 = a[targetIndex + (index + 1) % 3];
-                    int idx = IndexOfAny(span, target0, target1, target2);
+                    TSize idx = IndexOfAny(span, target0, target1, target2);
                     Assert.Equal(targetIndex, idx);
                 }
 
@@ -595,7 +596,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                     string target0 = "0";
                     string target1 = "0";
                     string target2 = a[targetIndex];
-                    int idx = IndexOfAny(span, target0, target1, target2);
+                    TSize idx = IndexOfAny(span, target0, target1, target2);
                     Assert.Equal(targetIndex, idx);
                 }
             }
@@ -611,7 +612,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 string target2 = rnd.Next(1, 256).ToString();
                 var span = new ExSpan<string>(a);
 
-                int idx = IndexOfAny(span, target0, target1, target2);
+                TSize idx = IndexOfAny(span, target0, target1, target2);
                 Assert.Equal(-1, idx);
             }
         }
@@ -631,7 +632,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 a[length - 4] = "200";
 
                 var span = new ExSpan<string>(a);
-                int idx = IndexOfAny(span, "200", "200", "200");
+                TSize idx = IndexOfAny(span, "200", "200", "200");
                 Assert.Equal(length - 4, idx);
             }
         }
@@ -643,7 +644,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 a[0] = "99";
                 a[length + 1] = "98";
                 var span = new ExSpan<string>(a, 1, length - 1);
-                int index = IndexOfAny(span, "99", "98", "99");
+                TSize index = IndexOfAny(span, "99", "98", "99");
                 Assert.Equal(-1, index);
             }
 
@@ -652,7 +653,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 a[0] = "99";
                 a[length + 1] = "99";
                 var span = new ExSpan<string>(a, 1, length - 1);
-                int index = IndexOfAny(span, "99", "99", "99");
+                TSize index = IndexOfAny(span, "99", "99", "99");
                 Assert.Equal(-1, index);
             }
         }
@@ -661,7 +662,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         public static void ZeroLengthIndexOfAny_ManyString() {
             var sp = new ExSpan<string>(ArrayHelper.Empty<string>());
             var values = new ReadOnlyExSpan<string>(new string[] { "0", "0", "0", "0" });
-            int idx = IndexOfAny(sp, values);
+            TSize idx = IndexOfAny(sp, values);
             Assert.Equal(-1, idx);
 
             values = new ReadOnlyExSpan<string>(new string[] { });
@@ -680,7 +681,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 var values = new ReadOnlyExSpan<string>(new string[] { "", "99", "98", "0" });
 
                 for (int i = 0; i < length; i++) {
-                    int idx = IndexOfAny(span, values);
+                    TSize idx = IndexOfAny(span, values);
                     Assert.Equal(0, idx);
                 }
             }
@@ -699,12 +700,12 @@ namespace Zyl.ExSpans.Tests.AExSpan {
 
                 for (int targetIndex = 0; targetIndex < length; targetIndex++) {
                     var values = new ReadOnlyExSpan<string>(new string[] { a[targetIndex], "0", "0", "0" });
-                    int idx = IndexOfAny(span, values);
+                    TSize idx = IndexOfAny(span, values);
                     Assert.Equal(targetIndex, idx);
                 }
 
                 for (int targetIndex = 0; targetIndex < length - 3; targetIndex++) {
-                    int index = rnd.Next(0, 4) == 0 ? 0 : 1;
+                    TSize index = rnd.Next(0, 4) == 0 ? 0 : 1;
                     var values = new ReadOnlyExSpan<string>(new string[]
                     {
                         a[targetIndex + index],
@@ -712,13 +713,13 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                         a[targetIndex + (index + 1) % 3],
                         a[targetIndex + (index + 1) % 4]
                     });
-                    int idx = IndexOfAny(span, values);
+                    TSize idx = IndexOfAny(span, values);
                     Assert.Equal(targetIndex, idx);
                 }
 
                 for (int targetIndex = 0; targetIndex < length; targetIndex++) {
                     var values = new ReadOnlyExSpan<string>(new string[] { "0", "0", "0", a[targetIndex] });
-                    int idx = IndexOfAny(span, values);
+                    TSize idx = IndexOfAny(span, values);
                     Assert.Equal(targetIndex, idx);
                 }
             }
@@ -749,7 +750,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 }
 
                 var values = new ReadOnlyExSpan<string>(targets);
-                int idx = IndexOfAny(span, values);
+                TSize idx = IndexOfAny(span, values);
                 Assert.Equal(expectedIndex, idx);
             }
         }
@@ -766,7 +767,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 var span = new ExSpan<string>(a);
                 var values = new ReadOnlyExSpan<string>(targets);
 
-                int idx = IndexOfAny(span, values);
+                TSize idx = IndexOfAny(span, values);
                 Assert.Equal(-1, idx);
             }
         }
@@ -783,7 +784,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 var span = new ExSpan<string>(a);
                 var values = new ReadOnlyExSpan<string>(targets);
 
-                int idx = IndexOfAny(span, values);
+                TSize idx = IndexOfAny(span, values);
                 Assert.Equal(-1, idx);
             }
         }
@@ -805,7 +806,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
 
                 var span = new ExSpan<string>(a);
                 var values = new ReadOnlyExSpan<string>(new string[] { "200", "200", "200", "200", "200", "200", "200", "200", "200" });
-                int idx = IndexOfAny(span, values);
+                TSize idx = IndexOfAny(span, values);
                 Assert.Equal(length - 5, idx);
             }
         }
@@ -818,7 +819,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 a[length + 1] = "98";
                 var span = new ExSpan<string>(a, 1, length - 1);
                 var values = new ReadOnlyExSpan<string>(new string[] { "99", "98", "99", "98", "99", "98" });
-                int index = IndexOfAny(span, values);
+                TSize index = IndexOfAny(span, values);
                 Assert.Equal(-1, index);
             }
 
@@ -828,7 +829,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 a[length + 1] = "99";
                 var span = new ExSpan<string>(a, 1, length - 1);
                 var values = new ReadOnlyExSpan<string>(new string[] { "99", "99", "99", "99", "99", "99" });
-                int index = IndexOfAny(span, values);
+                TSize index = IndexOfAny(span, values);
                 Assert.Equal(-1, index);
             }
         }
@@ -859,8 +860,8 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             }
         }
 
-        private static int IndexOf<T>(ExSpan<T> span, T value) where T : IEquatable<T>? {
-            int index = span.IndexOf(value);
+        private static TSize IndexOf<T>(ExSpan<T> span, T value) where T : IEquatable<T>? {
+            TSize index = span.IndexOf(value);
             Assert.Equal(index, ((ReadOnlyExSpan<T>)span).IndexOf(value));
 
             Assert.Equal(index >= 0, span.Contains(value));
@@ -870,8 +871,8 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             return index;
         }
 
-        private static int IndexOfAny<T>(ExSpan<T> span, T value0, T value1) where T : IEquatable<T>? {
-            int index = span.IndexOfAny(value0, value1);
+        private static TSize IndexOfAny<T>(ExSpan<T> span, T value0, T value1) where T : IEquatable<T>? {
+            TSize index = span.IndexOfAny(value0, value1);
             Assert.Equal(index, ((ReadOnlyExSpan<T>)span).IndexOfAny(value0, value1));
 
             Assert.Equal(index >= 0, span.ContainsAny(value0, value1));
@@ -881,8 +882,8 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             return index;
         }
 
-        private static int IndexOfAny<T>(ExSpan<T> span, T value0, T value1, T value2) where T : IEquatable<T>? {
-            int index = span.IndexOfAny(value0, value1, value2);
+        private static TSize IndexOfAny<T>(ExSpan<T> span, T value0, T value1, T value2) where T : IEquatable<T>? {
+            TSize index = span.IndexOfAny(value0, value1, value2);
             Assert.Equal(index, ((ReadOnlyExSpan<T>)span).IndexOfAny(value0, value1, value2));
 
             Assert.Equal(index >= 0, span.ContainsAny(value0, value1, value2));
@@ -892,8 +893,8 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             return index;
         }
 
-        private static int IndexOfAny<T>(ExSpan<T> span, ReadOnlyExSpan<T> values) where T : IEquatable<T>? {
-            int index = span.IndexOfAny(values);
+        private static TSize IndexOfAny<T>(ExSpan<T> span, ReadOnlyExSpan<T> values) where T : IEquatable<T>? {
+            TSize index = span.IndexOfAny(values);
             Assert.Equal(index, ((ReadOnlyExSpan<T>)span).IndexOfAny(values));
 
             Assert.Equal(index >= 0, span.ContainsAny(values));
@@ -903,11 +904,11 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             return index;
         }
 
-        private static void AssertSearchValues<T>(ExSpan<T> span, ReadOnlyExSpan<T> values, int expectedIndex) where T : IEquatable<T>? {
+        private static void AssertSearchValues<T>(ExSpan<T> span, ReadOnlyExSpan<T> values, TSize expectedIndex) where T : IEquatable<T>? {
             if (typeof(T) == typeof(byte) || typeof(T) == typeof(char)) {
                 SearchValues<T> searchValuesInstance = (SearchValues<T>)(object)(typeof(T) == typeof(byte)
-                    ? SearchValues.Create(MemoryMarshal.CreateReadOnlyExSpan(ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(values)), values.Length))
-                    : SearchValues.Create(MemoryMarshal.CreateReadOnlyExSpan(ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(values)), values.Length)));
+                    ? SearchValues.Create(ExMemoryMarshal.CreateReadOnlyExSpan(ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(values)), values.Length).AsReadOnlySpan())
+                    : SearchValues.Create(ExMemoryMarshal.CreateReadOnlyExSpan(ref Unsafe.As<T, char>(ref ExMemoryMarshal.GetReference(values)), values.Length).AsReadOnlySpan()));
 
                 Assert.Equal(expectedIndex, span.IndexOfAny(searchValuesInstance));
                 Assert.Equal(expectedIndex, ((ReadOnlyExSpan<T>)span).IndexOfAny(searchValuesInstance));
@@ -916,5 +917,6 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 Assert.Equal(expectedIndex >= 0, ((ReadOnlyExSpan<T>)span).ContainsAny(searchValuesInstance));
             }
         }
+#endif // NET8_0_OR_GREATER
     }
 }

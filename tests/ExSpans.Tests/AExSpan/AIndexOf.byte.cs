@@ -6,7 +6,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         [Fact]
         public static void ZeroLengthIndexOf_Byte() {
             ExSpan<byte> sp = new ExSpan<byte>(ArrayHelper.Empty<byte>());
-            int idx = sp.IndexOf<byte>(0);
+            TSize idx = sp.IndexOf<byte>(0);
             Assert.Equal(-1, idx);
         }
 
@@ -18,7 +18,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
 
                 for (int i = 0; i < length; i++) {
                     byte target0 = default;
-                    int idx = span.IndexOf(target0);
+                    TSize idx = span.IndexOf(target0);
                     Assert.Equal(0, idx);
                 }
             }
@@ -35,7 +35,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
 
                 for (int targetIndex = 0; targetIndex < length; targetIndex++) {
                     byte target = a[targetIndex];
-                    int idx = span.IndexOf(target);
+                    TSize idx = span.IndexOf(target);
                     Assert.Equal(targetIndex, idx);
                 }
             }
@@ -53,7 +53,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 }
                 ExSpan<byte> span = new ExSpan<byte>(a);
 
-                int idx = span.IndexOf(target);
+                TSize idx = span.IndexOf(target);
                 Assert.Equal(-1, idx);
             }
         }
@@ -63,7 +63,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             byte[] array = new byte[4 * Vector<byte>.Count];
             for (var i = 0; i < Vector<byte>.Count; i++) {
                 var span = new ExSpan<byte>(array, i, 3 * Vector<byte>.Count);
-                int idx = span.IndexOf((byte)'1');
+                TSize idx = span.IndexOf((byte)'1');
                 Assert.Equal(-1, idx);
 
                 span = new ExSpan<byte>(array, i, 3 * Vector<byte>.Count - 3);
@@ -80,7 +80,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             }
             for (var i = 0; i < Vector<byte>.Count; i++) {
                 var span = new ExSpan<byte>(array, i, 3 * Vector<byte>.Count);
-                int idx = span.IndexOf<byte>(5);
+                TSize idx = span.IndexOf<byte>(5);
                 Assert.Equal(0, idx);
 
                 span = new ExSpan<byte>(array, i, 3 * Vector<byte>.Count - 3);
@@ -102,7 +102,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 a[length - 2] = 200;
 
                 ExSpan<byte> span = new ExSpan<byte>(a);
-                int idx = span.IndexOf<byte>(200);
+                TSize idx = span.IndexOf<byte>(200);
                 Assert.Equal(length - 2, idx);
             }
         }
@@ -114,7 +114,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 a[0] = 99;
                 a[length + 1] = 99;
                 ExSpan<byte> span = new ExSpan<byte>(a, 1, length);
-                int index = span.IndexOf<byte>(99);
+                TSize index = span.IndexOf<byte>(99);
                 Assert.Equal(-1, index);
             }
         }
