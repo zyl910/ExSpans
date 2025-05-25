@@ -65,7 +65,7 @@ namespace Zyl.ExSpans {
             _hasCustomFormatter = provider is not null
 #if TODO
                 && DefaultInterpolatedStringHandler.HasCustomFormatter(provider)
-#endif // TODO
+#endif // (TODO)
                 ;
         }
 

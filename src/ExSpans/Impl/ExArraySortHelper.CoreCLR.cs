@@ -26,7 +26,7 @@ namespace Zyl.ExSpans.Impl {
             } else {
                 defaultExArraySortHelper = new ExArraySortHelper<T>();
             }
-#endif // TODO
+#endif // (TODO)
             defaultExArraySortHelper = new ExArraySortHelper<T>();
             return defaultExArraySortHelper;
         }
@@ -55,7 +55,7 @@ namespace Zyl.ExSpans.Impl {
             } else {
                 defaultExArraySortHelper = new ExArraySortHelper<TKey, TValue>();
             }
-#endif // TODO
+#endif // (TODO)
             defaultExArraySortHelper = new ExArraySortHelper<TKey, TValue>();
             return defaultExArraySortHelper;
         }

@@ -66,7 +66,7 @@ namespace Zyl.ExSpans {
 
             return Ordinal.StartsWithIgnoreCaseUtf8(ref MemoryMarshal.GetReference(span), span.Length, ref MemoryMarshal.GetReference(value), value.Length);
         }
-#endif // TODO
+#endif // (TODO)
 
     }
 }

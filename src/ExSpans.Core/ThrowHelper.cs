@@ -204,7 +204,7 @@ namespace Zyl.ExSpans {
                     return SR.Arg_RankIndices;
                 case ExceptionResource.Arg_RanksAndBounds:
                     return SR.Arg_RanksAndBounds;
-#endif // TODO
+#endif // (TODO)
                 case ExceptionResource.InvalidOperation_IComparerFailed:
                     return SR.InvalidOperation_IComparerFailed;
 #if TODO
@@ -214,7 +214,7 @@ namespace Zyl.ExSpans {
                     return SR.Rank_MultiDimNotSupported;
                 case ExceptionResource.Arg_TypeNotSupported:
                     return SR.Arg_TypeNotSupported;
-#endif // TODO
+#endif // (TODO)
                 case ExceptionResource.Argument_SpansMustHaveSameLength:
                     return SR.Argument_SpansMustHaveSameLength;
 #if TODO
@@ -226,7 +226,7 @@ namespace Zyl.ExSpans {
                     return SR.Argument_AlignmentMustBePow2;
                 case ExceptionResource.ArgumentOutOfRange_NotGreaterThanBufferLength:
                     return SR.ArgumentOutOfRange_NotGreaterThanBufferLength;
-#endif // TODO
+#endif // (TODO)
                 case ExceptionResource.InvalidOperation_SpanOverlappedOperation:
                     return SR.InvalidOperation_SpanOverlappedOperation;
 #if TODO
@@ -244,7 +244,7 @@ namespace Zyl.ExSpans {
                     return SR.Argument_HasToBeArrayClass;
                 case ExceptionResource.InvalidOperation_IncompatibleComparer:
                     return SR.InvalidOperation_IncompatibleComparer;
-#endif // TODO
+#endif // (TODO)
                 default:
                     DebugHelper.Fail("The enum value is not defined, please check the ExceptionResource Enum.");
                     return "";

@@ -35,7 +35,7 @@ namespace Zyl.ExSpans.Tests {
                 action();
             }
         }
-#endif // TODO
+#endif // (TODO)
 
 #nullable disable
         public static void Throws<T>(Action action, string expectedMessage)
@@ -1001,6 +1001,6 @@ namespace Zyl.ExSpans.Tests {
             throw EqualException.ForMismatchedValues(ToStringPadded(expected), ToStringPadded(actual));
         }
 #endif
-#endif // TODO
+#endif // (TODO)
     }
 }

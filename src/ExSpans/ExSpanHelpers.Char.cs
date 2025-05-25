@@ -785,7 +785,7 @@ namespace Zyl.ExSpans {
             const int ElementsPerByte = sizeof(ushort) / sizeof(byte);
             return (nint)(uint)(-(int)searchSpace / ElementsPerByte) & (Vector128<ushort>.Count - 1);
         }
-#endif // TODO
+#endif // (TODO)
 
         public static void Reverse(ref char buf, nuint length) {
             Debug.Assert(length > 1);

@@ -82,7 +82,7 @@ namespace Zyl.ExSpans {
             // Write only element.
             ip = default;
         }
-#endif // TODO
+#endif // (TODO)
 
         public static void Reverse(ref int buf, nuint length) {
             Debug.Assert(length > 1);
@@ -351,7 +351,7 @@ namespace Zyl.ExSpans {
             ReverseInner(ref elements, length);
         }
 #if TODO
-#endif // TODO
+#endif // (TODO)
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void ReverseInner<T>(ref T elements, nuint length) {

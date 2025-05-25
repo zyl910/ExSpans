@@ -159,7 +159,7 @@ namespace Zyl.ExSpans.Tests {
                 Assert.Same(expected[i], actual);
             }
         }
-#endif // TODO
+#endif // (TODO)
 
         public static void Validate<T>(ExSpan<byte> span, T value) where T : struct {
             T read = ExMemoryMarshal.Read<T>(span);
