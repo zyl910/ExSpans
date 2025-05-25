@@ -21,7 +21,7 @@ namespace Zyl.ExSpans {
         /// <summary>
         /// Determines the relative order of the sequences being compared by comparing the elements using IComparable{T}.CompareTo(T).
         /// </summary>
-        public static TSize SequenceCompareTo<T>(this ExSpan<T> span, ReadOnlyExSpan<T> other, IComparer<T>? comparer = null) {
+        public static int SequenceCompareTo<T>(this ExSpan<T> span, ReadOnlyExSpan<T> other, IComparer<T>? comparer = null) {
             return SequenceCompareTo(span.AsReadOnlyExSpan(), other, comparer);
         }
 

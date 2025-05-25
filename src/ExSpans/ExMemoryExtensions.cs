@@ -3081,7 +3081,7 @@ namespace Zyl.ExSpans {
         /// <summary>
         /// Determines the relative order of the sequences being compared by comparing the elements using IComparable{T}.CompareTo(T).
         /// </summary>
-        public static TSize SequenceCompareTo<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> other, IComparer<T>? comparer = null) {
+        public static int SequenceCompareTo<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> other, IComparer<T>? comparer = null) {
             TSize minLength = BitMath.Min(span.Length, other.Length);
             comparer ??= Comparer<T>.Default;
 
