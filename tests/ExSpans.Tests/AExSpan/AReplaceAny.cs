@@ -1,23 +1,17 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-
-using System.Buffers;
+﻿using System.Buffers;
 using System.Linq;
 using Xunit;
 
-namespace Zyl.ExSpans.Tests.AExSpan
-{
-    public class ReplaceAnyTests
-    {
+namespace Zyl.ExSpans.Tests.AExSpan {
+#if NET8_0_OR_GREATER && TODO // [TODO why] SearchValues methods is internal
+    public class ReplaceAnyTests {
         [Fact]
-        public void ReplaceAny_InPlace_InvalidArgs()
-        {
+        public void ReplaceAny_InPlace_InvalidArgs() {
             AssertExtensions.Throws<ArgumentNullException>("values", () => ExSpan<byte>.Empty.ReplaceAny<byte>(null, (byte)42));
         }
 
         [Fact]
-        public void ReplaceAny_InPlace_EmptyInput_Nop()
-        {
+        public void ReplaceAny_InPlace_EmptyInput_Nop() {
             ExSpan<byte> span = [42, 42, 42];
             span.Slice(0, 0).ReplaceAny<byte>(SearchValues.Create(42), 0);
             span.Slice(0, 0).ReplaceAnyExcept<byte>(SearchValues.Create(42), 0);
@@ -25,8 +19,7 @@ namespace Zyl.ExSpans.Tests.AExSpan
         }
 
         [Fact]
-        public void ReplaceAny_InPlace_NoMatch_Nop()
-        {
+        public void ReplaceAny_InPlace_NoMatch_Nop() {
             ExSpan<byte> span = [1, 2, 3];
 
             span.ReplaceAny<byte>(SearchValues.Create(42), 0);
@@ -37,8 +30,7 @@ namespace Zyl.ExSpans.Tests.AExSpan
         }
 
         [Fact]
-        public void ReplaceAny_InPlace_AllMatchesReplaced()
-        {
+        public void ReplaceAny_InPlace_AllMatchesReplaced() {
             SearchValues<char> sv = SearchValues.Create('a', 'c', '6', 'i', '1');
             const string Input = "abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789";
             ExSpan<char> span = Input.ToCharArray();
@@ -51,8 +43,7 @@ namespace Zyl.ExSpans.Tests.AExSpan
         }
 
         [Fact]
-        public void ReplaceAny_SrcDest_InvalidArgs()
-        {
+        public void ReplaceAny_SrcDest_InvalidArgs() {
             AssertExtensions.Throws<ArgumentNullException>("values", () => ReadOnlyExSpan<byte>.Empty.ReplaceAny<byte>(ExSpan<byte>.Empty, null, (byte)42));
             AssertExtensions.Throws<ArgumentException>("destination", () => new char[] { '1', '2', '3' }.ReplaceAny(new char[2], SearchValues.Create('b'), 'a'));
 
@@ -63,8 +54,7 @@ namespace Zyl.ExSpans.Tests.AExSpan
         }
 
         [Fact]
-        public void ReplaceAny_SrcDest_EmptyInput_Nop()
-        {
+        public void ReplaceAny_SrcDest_EmptyInput_Nop() {
             ReadOnlyExSpan<byte> source = [42, 42, 42];
             ExSpan<byte> dest = [1, 2, 3];
 
@@ -77,8 +67,7 @@ namespace Zyl.ExSpans.Tests.AExSpan
         }
 
         [Fact]
-        public void ReplaceAny_SrcDest_NoMatch_Nop()
-        {
+        public void ReplaceAny_SrcDest_NoMatch_Nop() {
             ReadOnlyExSpan<byte> source = [1, 2, 3];
             ExSpan<byte> dest = new byte[source.Length];
 
@@ -91,8 +80,7 @@ namespace Zyl.ExSpans.Tests.AExSpan
         }
 
         [Fact]
-        public void ReplaceAny_SrcDest_AllMatchesReplaced()
-        {
+        public void ReplaceAny_SrcDest_AllMatchesReplaced() {
             SearchValues<char> sv = SearchValues.Create('a', 'c', '6', 'i', '1');
             const string Input = "abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789";
             ReadOnlyExSpan<char> source = Input.ToCharArray();
@@ -107,8 +95,7 @@ namespace Zyl.ExSpans.Tests.AExSpan
         }
 
         [Fact]
-        public void ReplaceAny_SrcDest_OnlyWritesToRelevantPortionOfDestination()
-        {
+        public void ReplaceAny_SrcDest_OnlyWritesToRelevantPortionOfDestination() {
             SearchValues<char> sv = SearchValues.Create('a');
             ReadOnlyExSpan<char> source = ['a', 'b', 'c'];
             ExSpan<char> dest = ['1', '2', '3', '4', '5', '6'];
@@ -120,4 +107,5 @@ namespace Zyl.ExSpans.Tests.AExSpan
             Assert.Equal("_sbs56", dest.ToString());
         }
     }
+#endif // NET8_0_OR_GREATER
 }
