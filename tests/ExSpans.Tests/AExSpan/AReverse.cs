@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.Intrinsics;
-using System.Runtime.Intrinsics.X86;
 using Xunit;
 using static Zyl.ExSpans.Tests.TestHelpers;
 
@@ -69,11 +67,13 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             yield return new object[] { offset, 5 };
 
             // vectorized execution paths for AVX2
-            yield return new object[] { offset, offset + Vector256<byte>.Count * 2 }; // even
-            yield return new object[] { offset, offset + Vector256<byte>.Count * 2 + 1 }; // odd
+            int cnt = 32; // Vector256<byte>.Count;
+            yield return new object[] { offset, offset + cnt * 2 }; // even
+            yield return new object[] { offset, offset + cnt * 2 + 1 }; // odd
             // vectorized execution paths for SSE2
-            yield return new object[] { offset, offset + Vector128<byte>.Count * 2 }; // even
-            yield return new object[] { offset, offset + Vector128<byte>.Count * 2 + 1 }; // odd
+            cnt = 16; // Vector128<byte>.Count;
+            yield return new object[] { offset, offset + cnt * 2 }; // even
+            yield return new object[] { offset, offset + cnt * 2 + 1 }; // odd
         }
 
         [Theory, MemberData(nameof(GetReverseByteUnalignedArguments))]
@@ -131,11 +131,11 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             yield return new object[] { offset, 2 };
 
             // vectorized execution paths for AVX2
-            int avx2VectorSize = IntPtr.Size == 4 ? Vector256<int>.Count : Vector256<long>.Count;
+            int avx2VectorSize = 32 / IntPtr.Size; // IntPtr.Size == 4 ? Vector256<int>.Count : Vector256<long>.Count;
             yield return new object[] { offset, offset + avx2VectorSize * 2 }; // even
             yield return new object[] { offset, offset + avx2VectorSize * 2 + 1 }; // odd
             // vectorized execution paths for SSE
-            int ss2VectorSize = IntPtr.Size == 4 ? Vector128<int>.Count : Vector128<long>.Count;
+            int ss2VectorSize = 16 / IntPtr.Size; // IntPtr.Size == 4 ? Vector128<int>.Count : Vector128<long>.Count;
             yield return new object[] { offset, offset + ss2VectorSize * 2 }; // even
             yield return new object[] { offset, offset + ss2VectorSize * 2 + 1 }; // odd
         }

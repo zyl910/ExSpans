@@ -9,6 +9,7 @@ using System.Text;
 using Xunit;
 
 namespace Zyl.ExSpans.Tests.AExSpan {
+#if NET8_0_OR_GREATER && TODO // [TODO why] SearchValues methods is internal
     public static partial class ASearchValues {
         private static readonly Func<SearchValues<byte>, byte[]> s_getValuesByteMethod =
             typeof(SearchValues<byte>).GetMethod("GetValues", BindingFlags.NonPublic | BindingFlags.Instance).CreateDelegate<Func<SearchValues<byte>, byte[]>>();
@@ -500,4 +501,5 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             }
         }
     }
+#endif // NET8_0_OR_GREATER
 }
