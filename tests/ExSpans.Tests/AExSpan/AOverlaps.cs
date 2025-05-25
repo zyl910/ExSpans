@@ -39,8 +39,8 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             Assert.Throws<ArgumentException>(() => {
                 int[] a = new int[] { 1, 2, 3, 4, 5, 6 };
 
-                ExSpan<byte> bytes = MemoryMarshal.AsBytes(a.AsExSpan());
-                ExSpan<int> source = MemoryMarshal.Cast<byte, int>(bytes.Slice(2, 5 * sizeof(int)));
+                ExSpan<byte> bytes = ExMemoryMarshal.AsBytes(a.AsExSpan());
+                ExSpan<int> source = ExMemoryMarshal.Cast<byte, int>(bytes.Slice(2, 5 * sizeof(int)));
 
                 ExSpan<int> actual = a.AsExSpan(0, 5);
 
@@ -50,8 +50,8 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             Assert.Throws<ArgumentException>(() => {
                 int[] a = new int[] { 1, 2, 3, 4, 5, 6 };
 
-                ExSpan<byte> bytes = MemoryMarshal.AsBytes(a.AsExSpan());
-                ExSpan<int> source = MemoryMarshal.Cast<byte, int>(bytes.Slice(2, 5 * sizeof(int)));
+                ExSpan<byte> bytes = ExMemoryMarshal.AsBytes(a.AsExSpan());
+                ExSpan<int> source = ExMemoryMarshal.Cast<byte, int>(bytes.Slice(2, 5 * sizeof(int)));
 
                 ExSpan<int> actual = a.AsExSpan(1, 5);
 
@@ -69,7 +69,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             if (source.Overlaps(destination, out int elementOffset) && elementOffset < 0)
                 source = source.ToArray();
 
-            for (int i = source.Length - 1; i >= 0; i--)
+            for (TSize i = source.Length - 1; i >= 0; i--)
                 destination[i] = 2 * source[i];
         }
 
@@ -95,8 +95,8 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             Assert.Throws<ArgumentException>(() => {
                 int[] a = new int[] { 1, 2, 3, 4, 5, 6 };
 
-                ExSpan<byte> bytes = MemoryMarshal.AsBytes(a.AsExSpan());
-                ExSpan<int> source = MemoryMarshal.Cast<byte, int>(bytes.Slice(2, 5 * sizeof(int)));
+                ExSpan<byte> bytes = ExMemoryMarshal.AsBytes(a.AsExSpan());
+                ExSpan<int> source = ExMemoryMarshal.Cast<byte, int>(bytes.Slice(2, 5 * sizeof(int)));
 
                 ExSpan<int> actual = a.AsExSpan(0, 5);
 
@@ -106,8 +106,8 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             Assert.Throws<ArgumentException>(() => {
                 int[] a = new int[] { 1, 2, 3, 4, 5, 6 };
 
-                ExSpan<byte> bytes = MemoryMarshal.AsBytes(a.AsExSpan());
-                ExSpan<int> source = MemoryMarshal.Cast<byte, int>(bytes.Slice(2, 5 * sizeof(int)));
+                ExSpan<byte> bytes = ExMemoryMarshal.AsBytes(a.AsExSpan());
+                ExSpan<int> source = ExMemoryMarshal.Cast<byte, int>(bytes.Slice(2, 5 * sizeof(int)));
 
                 ExSpan<int> actual = a.AsExSpan(1, 5);
 

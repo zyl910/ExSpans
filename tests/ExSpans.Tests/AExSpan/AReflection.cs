@@ -3,29 +3,32 @@ using System.Buffers;
 using System.Buffers.Binary;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.MemoryTests;
+//using System.MemoryTests;
 
 namespace Zyl.ExSpans.Tests.AExSpan {
+#nullable disable
     public static partial class AReflection {
+#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP2_0_OR_GREATER || NET20
+
         // Calling ExSpan APIs via Reflection is not supported yet.
         // These tests check that using reflection results in graceful failures. See https://github.com/dotnet/runtime/issues/10057
         // These tests are only relevant for fast span.
 
         [Fact]
         public static void MemoryExtensions_StaticReturningReadOnlyExSpan() {
-            Type type = typeof(MemoryExtensions);
+            Type type = typeof(ExSpanExtensions);
 
-            MethodInfo method = type.GetMethod(nameof(MemoryExtensions.AsExSpan), new Type[] { typeof(string) });
+            MethodInfo method = type.GetMethod(nameof(ExSpanExtensions.AsExSpan), new Type[] { typeof(string) });
             Assert.Throws<NotSupportedException>(() => method.Invoke(null, new object[] { "Hello" }));
 
-            method = type.GetMethod(nameof(MemoryExtensions.AsExSpan), new Type[] { typeof(string), typeof(int), typeof(int) });
+            method = type.GetMethod(nameof(ExSpanExtensions.AsExSpan), new Type[] { typeof(string), typeof(int), typeof(int) });
             Assert.Throws<NotSupportedException>(() => method.Invoke(null, new object[] { "Hello", 1, 1 }));
         }
 
         [Fact]
         public static void MemoryExtensions_StaticWithExSpanArguments() {
-            Type type = typeof(MemoryExtensions);
-            MethodInfo method = type.GetMethod(nameof(MemoryExtensions.CompareTo));
+            Type type = typeof(ExMemoryExtensions);
+            MethodInfo method = type.GetMethod(nameof(ExMemoryExtensions.CompareTo));
             Assert.Throws<NotSupportedException>(() => method.Invoke(null, new object[] { default, default, StringComparison.Ordinal }));
         }
 
@@ -42,7 +45,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
 
         [Fact]
         public static void MemoryMarshal_GenericStaticReturningExSpan() {
-            MethodInfo createExSpanMethod = typeof(MemoryMarshal).GetMethod(nameof(MemoryMarshal.CreateExSpan));
+            MethodInfo createExSpanMethod = typeof(ExMemoryMarshal).GetMethod(nameof(ExMemoryMarshal.CreateExSpan));
 
             int value = 0;
             ref int refInt = ref value;
@@ -134,6 +137,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             Assert.Throws<NotSupportedException>(() => method.Invoke(default, new object[] { default }));
         }
 
+#if NOT_RELATED
         [Fact]
         public static void Memory_PropertyReturningExSpan() {
             Type type = typeof(Memory<int>);
@@ -158,5 +162,8 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             MethodInfo method = type.GetMethod(nameof(MemoryManager<int>.GetExSpan), BindingFlags.Public | BindingFlags.Instance);
             Assert.Throws<NotSupportedException>(() => method.Invoke(manager, null));
         }
+#endif // NOT_RELATED
+#endif // NETSTANDARD2_0_OR_GREATER || NETCOREAPP2_0_OR_GREATER || NET20
     }
+#nullable restore
 }
