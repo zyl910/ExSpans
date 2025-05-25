@@ -4,7 +4,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
     public static partial class AImplicitConversion {
         [Fact]
         public static void NullImplicitCast() {
-            int[] dst = null;
+            int[]? dst = null;
             ExSpan<int> srcExSpan = dst;
             Assert.True(ExSpan<int>.Empty == srcExSpan);
         }
