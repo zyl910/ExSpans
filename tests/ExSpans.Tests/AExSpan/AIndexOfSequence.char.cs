@@ -8,7 +8,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         public static void IndexOfSequenceMatchAtStart_Char() {
             ExSpan<char> span = new ExSpan<char>(new char[] { '5', '1', '7', '2', '3', '7', '7', '4', '5', '7', '7', '7', '8', '6', '6', '7', '7', '8', '9' });
             ExSpan<char> value = new ExSpan<char>(new char[] { '5', '1', '7' });
-            int index = span.IndexOf(value);
+            TSize index = span.IndexOf(value);
             Assert.Equal(0, index);
         }
 
@@ -16,7 +16,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         public static void IndexOfSequenceMultipleMatch_Char() {
             ExSpan<char> span = new ExSpan<char>(new char[] { '1', '2', '3', '1', '2', '3', '1', '2', '3' });
             ExSpan<char> value = new ExSpan<char>(new char[] { '2', '3' });
-            int index = span.IndexOf(value);
+            TSize index = span.IndexOf(value);
             Assert.Equal(1, index);
         }
 
@@ -24,7 +24,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         public static void IndexOfSequenceRestart_Char() {
             ExSpan<char> span = new ExSpan<char>(new char[] { '5', '1', '7', '2', '3', '7', '7', '4', '5', '7', '7', '7', '8', '6', '6', '7', '7', '8', '9' });
             ExSpan<char> value = new ExSpan<char>(new char[] { '7', '7', '8' });
-            int index = span.IndexOf(value);
+            TSize index = span.IndexOf(value);
             Assert.Equal(10, index);
         }
 
@@ -32,7 +32,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         public static void IndexOfSequenceNoMatch_Char() {
             ExSpan<char> span = new ExSpan<char>(new char[] { '0', '1', '7', '2', '3', '7', '7', '4', '5', '7', '7', '7', '8', '6', '6', '7', '7', '8', '9' });
             ExSpan<char> value = new ExSpan<char>(new char[] { '7', '7', '8', 'X' });
-            int index = span.IndexOf(value);
+            TSize index = span.IndexOf(value);
             Assert.Equal(-1, index);
         }
 
@@ -40,7 +40,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         public static void IndexOfSequenceNotEvenAHeadMatch_Char() {
             ExSpan<char> span = new ExSpan<char>(new char[] { '0', '1', '7', '2', '3', '7', '7', '4', '5', '7', '7', '7', '8', '6', '6', '7', '7', '8', '9' });
             ExSpan<char> value = new ExSpan<char>(new char[] { 'X', '7', '8', '9' });
-            int index = span.IndexOf(value);
+            TSize index = span.IndexOf(value);
             Assert.Equal(-1, index);
         }
 
@@ -48,7 +48,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         public static void IndexOfSequenceMatchAtVeryEnd_Char() {
             ExSpan<char> span = new ExSpan<char>(new char[] { '0', '1', '2', '3', '4', '5' });
             ExSpan<char> value = new ExSpan<char>(new char[] { '3', '4', '5' });
-            int index = span.IndexOf(value);
+            TSize index = span.IndexOf(value);
             Assert.Equal(3, index);
         }
 
@@ -56,7 +56,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         public static void IndexOfSequenceJustPastVeryEnd_Char() {
             ExSpan<char> span = new ExSpan<char>(new char[] { '0', '1', '2', '3', '4', '5' }, 0, 5);
             ExSpan<char> value = new ExSpan<char>(new char[] { '3', '4', '5' });
-            int index = span.IndexOf(value);
+            TSize index = span.IndexOf(value);
             Assert.Equal(-1, index);
         }
 
@@ -65,7 +65,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             // A zero-length value is always "found" at the start of the span.
             ExSpan<char> span = new ExSpan<char>(new char[] { '0', '1', '7', '2', '3', '7', '7', '4', '5', '7', '7', '7', '8', '6', '6', '7', '7', '8', '9' });
             ExSpan<char> value = new ExSpan<char>(ArrayHelper.Empty<char>());
-            int index = span.IndexOf(value);
+            TSize index = span.IndexOf(value);
             Assert.Equal(0, index);
         }
 
@@ -73,7 +73,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         public static void IndexOfSequenceZeroLengthExSpan_Char() {
             ExSpan<char> span = new ExSpan<char>(ArrayHelper.Empty<char>());
             ExSpan<char> value = new ExSpan<char>(new char[] { '1', '2', '3' });
-            int index = span.IndexOf(value);
+            TSize index = span.IndexOf(value);
             Assert.Equal(-1, index);
         }
 
@@ -81,7 +81,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         public static void IndexOfSequenceLengthOneValue_Char() {
             ExSpan<char> span = new ExSpan<char>(new char[] { '0', '1', '2', '3', '4', '5' });
             ExSpan<char> value = new ExSpan<char>(new char[] { '2' });
-            int index = span.IndexOf(value);
+            TSize index = span.IndexOf(value);
             Assert.Equal(2, index);
         }
 
@@ -89,7 +89,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         public static void IndexOfSequenceLengthOneValueAtVeryEnd_Char() {
             ExSpan<char> span = new ExSpan<char>(new char[] { '0', '1', '2', '3', '4', '5' });
             ExSpan<char> value = new ExSpan<char>(new char[] { '5' });
-            int index = span.IndexOf(value);
+            TSize index = span.IndexOf(value);
             Assert.Equal(5, index);
         }
 
@@ -97,7 +97,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         public static void IndexOfSequenceLengthOneValueJustPasttVeryEnd_Char() {
             ExSpan<char> span = new ExSpan<char>(new char[] { '0', '1', '2', '3', '4', '5' }, 0, 5);
             ExSpan<char> value = new ExSpan<char>(new char[] { '5' });
-            int index = span.IndexOf(value);
+            TSize index = span.IndexOf(value);
             Assert.Equal(-1, index);
         }
 
@@ -194,8 +194,8 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         [Theory]
         [MemberData(nameof(IndexOfSubSeqData_Char))]
         public static void ValueStartsAndEndsWithTheSameChars(string searchSpace, string value, int expectedIndexOfValue, int expectedLastIndexOfValue) {
-            Assert.Equal(expectedIndexOfValue, searchSpace.AsExSpan().IndexOf(value));
-            Assert.Equal(expectedLastIndexOfValue, searchSpace.AsExSpan().LastIndexOf(value));
+            Assert.Equal(expectedIndexOfValue, searchSpace.AsExSpan().IndexOf(value.AsExSpan()));
+            Assert.Equal(expectedLastIndexOfValue, searchSpace.AsExSpan().LastIndexOf(value.AsExSpan()));
         }
     }
 }

@@ -2,6 +2,7 @@ using System.Linq;
 using Xunit;
 
 namespace Zyl.ExSpans.Tests.AExSpan {
+#nullable disable
     public class IndexOfAnyInRangeTests_Byte : IndexOfAnyInRangeTests<byte> { protected override byte Create(int value) => (byte)value; }
     public class IndexOfAnyInRangeTests_SByte : IndexOfAnyInRangeTests<sbyte> { protected override sbyte Create(int value) => (sbyte)value; }
     public class IndexOfAnyInRangeTests_Char : IndexOfAnyInRangeTests<char> { protected override char Create(int value) => (char)value; }
@@ -11,8 +12,10 @@ namespace Zyl.ExSpans.Tests.AExSpan {
     public class IndexOfAnyInRangeTests_UInt32 : IndexOfAnyInRangeTests<uint> { protected override uint Create(int value) => (uint)value; }
     public class IndexOfAnyInRangeTests_Int64 : IndexOfAnyInRangeTests<long> { protected override long Create(int value) => value; }
     public class IndexOfAnyInRangeTests_UInt64 : IndexOfAnyInRangeTests<ulong> { protected override ulong Create(int value) => (ulong)value; }
+#if NET6_0_OR_GREATER
     public class IndexOfAnyInRangeTests_IntPtr : IndexOfAnyInRangeTests<nint> { protected override nint Create(int value) => (nint)value; }
     public class IndexOfAnyInRangeTests_UIntPtr : IndexOfAnyInRangeTests<nuint> { protected override nuint Create(int value) => (nuint)value; }
+#endif // NET6_0_OR_GREATER
     public class IndexOfAnyInRangeTests_TimeSpan : IndexOfAnyInRangeTests<TimeSpan> { protected override TimeSpan Create(int value) => TimeSpan.FromTicks(value); }
 
     public class IndexOfAnyInRangeTests_RefType : IndexOfAnyInRangeTests<RefType> {
@@ -23,17 +26,17 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             foreach ((RefType low, RefType high) in new (RefType, RefType)[] { (null, new RefType { Value = 42 }), (null, null), (new RefType { Value = 42 }, null) }) {
                 string argName = low is null ? "lowInclusive" : "highInclusive";
 
-                AssertExtensions.Throws<ArgumentNullException>(argName, () => MemoryExtensions.IndexOfAnyInRange(ExSpan<RefType>.Empty, low, high));
-                AssertExtensions.Throws<ArgumentNullException>(argName, () => MemoryExtensions.IndexOfAnyInRange(ReadOnlyExSpan<RefType>.Empty, low, high));
+                AssertExtensions.Throws<ArgumentNullException>(argName, () => ExMemoryExtensions.IndexOfAnyInRange(ExSpan<RefType>.Empty, low, high));
+                AssertExtensions.Throws<ArgumentNullException>(argName, () => ExMemoryExtensions.IndexOfAnyInRange(ReadOnlyExSpan<RefType>.Empty, low, high));
 
-                AssertExtensions.Throws<ArgumentNullException>(argName, () => MemoryExtensions.LastIndexOfAnyInRange(ExSpan<RefType>.Empty, low, high));
-                AssertExtensions.Throws<ArgumentNullException>(argName, () => MemoryExtensions.LastIndexOfAnyInRange(ReadOnlyExSpan<RefType>.Empty, low, high));
+                AssertExtensions.Throws<ArgumentNullException>(argName, () => ExMemoryExtensions.LastIndexOfAnyInRange(ExSpan<RefType>.Empty, low, high));
+                AssertExtensions.Throws<ArgumentNullException>(argName, () => ExMemoryExtensions.LastIndexOfAnyInRange(ReadOnlyExSpan<RefType>.Empty, low, high));
 
-                AssertExtensions.Throws<ArgumentNullException>(argName, () => MemoryExtensions.IndexOfAnyExceptInRange(ExSpan<RefType>.Empty, low, high));
-                AssertExtensions.Throws<ArgumentNullException>(argName, () => MemoryExtensions.IndexOfAnyExceptInRange(ReadOnlyExSpan<RefType>.Empty, low, high));
+                AssertExtensions.Throws<ArgumentNullException>(argName, () => ExMemoryExtensions.IndexOfAnyExceptInRange(ExSpan<RefType>.Empty, low, high));
+                AssertExtensions.Throws<ArgumentNullException>(argName, () => ExMemoryExtensions.IndexOfAnyExceptInRange(ReadOnlyExSpan<RefType>.Empty, low, high));
 
-                AssertExtensions.Throws<ArgumentNullException>(argName, () => MemoryExtensions.LastIndexOfAnyExceptInRange(ExSpan<RefType>.Empty, low, high));
-                AssertExtensions.Throws<ArgumentNullException>(argName, () => MemoryExtensions.LastIndexOfAnyExceptInRange(ReadOnlyExSpan<RefType>.Empty, low, high));
+                AssertExtensions.Throws<ArgumentNullException>(argName, () => ExMemoryExtensions.LastIndexOfAnyExceptInRange(ExSpan<RefType>.Empty, low, high));
+                AssertExtensions.Throws<ArgumentNullException>(argName, () => ExMemoryExtensions.LastIndexOfAnyExceptInRange(ReadOnlyExSpan<RefType>.Empty, low, high));
             }
         }
 
@@ -52,7 +55,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
 
     public class RefType : IComparable<RefType> {
         public int Value { get; set; }
-        public int CompareTo(RefType? other) => other is null ? 1 : Value.CompareTo(other.Value);
+        public int CompareTo(RefType other) => other is null ? 1 : Value.CompareTo(other.Value);
     }
 
     public abstract class IndexOfAnyInRangeTests<T>
@@ -149,36 +152,37 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         // ensuring they both produce the same result, and returning that result.
         // This avoids needing to code the same call sites twice in all the above tests.
 
-        protected static int IndexOfAnyInRange(ExSpan<T> span, T lowInclusive, T highInclusive) {
-            int result = MemoryExtensions.IndexOfAnyInRange(span, lowInclusive, highInclusive);
-            Assert.Equal(result, MemoryExtensions.IndexOfAnyInRange((ReadOnlyExSpan<T>)span, lowInclusive, highInclusive));
-            Assert.Equal(result >= 0, MemoryExtensions.ContainsAnyInRange(span, lowInclusive, highInclusive));
-            Assert.Equal(result >= 0, MemoryExtensions.ContainsAnyInRange((ReadOnlyExSpan<T>)span, lowInclusive, highInclusive));
+        protected static TSize IndexOfAnyInRange(ExSpan<T> span, T lowInclusive, T highInclusive) {
+            TSize result = ExMemoryExtensions.IndexOfAnyInRange(span, lowInclusive, highInclusive);
+            Assert.Equal(result, ExMemoryExtensions.IndexOfAnyInRange((ReadOnlyExSpan<T>)span, lowInclusive, highInclusive));
+            Assert.Equal(result >= 0, ExMemoryExtensions.ContainsAnyInRange(span, lowInclusive, highInclusive));
+            Assert.Equal(result >= 0, ExMemoryExtensions.ContainsAnyInRange((ReadOnlyExSpan<T>)span, lowInclusive, highInclusive));
             return result;
         }
 
-        protected static int LastIndexOfAnyInRange(ExSpan<T> span, T lowInclusive, T highInclusive) {
-            int result = MemoryExtensions.LastIndexOfAnyInRange(span, lowInclusive, highInclusive);
-            Assert.Equal(result, MemoryExtensions.LastIndexOfAnyInRange((ReadOnlyExSpan<T>)span, lowInclusive, highInclusive));
-            Assert.Equal(result >= 0, MemoryExtensions.ContainsAnyInRange(span, lowInclusive, highInclusive));
-            Assert.Equal(result >= 0, MemoryExtensions.ContainsAnyInRange((ReadOnlyExSpan<T>)span, lowInclusive, highInclusive));
+        protected static TSize LastIndexOfAnyInRange(ExSpan<T> span, T lowInclusive, T highInclusive) {
+            TSize result = ExMemoryExtensions.LastIndexOfAnyInRange(span, lowInclusive, highInclusive);
+            Assert.Equal(result, ExMemoryExtensions.LastIndexOfAnyInRange((ReadOnlyExSpan<T>)span, lowInclusive, highInclusive));
+            Assert.Equal(result >= 0, ExMemoryExtensions.ContainsAnyInRange(span, lowInclusive, highInclusive));
+            Assert.Equal(result >= 0, ExMemoryExtensions.ContainsAnyInRange((ReadOnlyExSpan<T>)span, lowInclusive, highInclusive));
             return result;
         }
 
-        protected static int IndexOfAnyExceptInRange(ExSpan<T> span, T lowInclusive, T highInclusive) {
-            int result = MemoryExtensions.IndexOfAnyExceptInRange(span, lowInclusive, highInclusive);
-            Assert.Equal(result, MemoryExtensions.IndexOfAnyExceptInRange((ReadOnlyExSpan<T>)span, lowInclusive, highInclusive));
-            Assert.Equal(result >= 0, MemoryExtensions.ContainsAnyExceptInRange(span, lowInclusive, highInclusive));
-            Assert.Equal(result >= 0, MemoryExtensions.ContainsAnyExceptInRange((ReadOnlyExSpan<T>)span, lowInclusive, highInclusive));
+        protected static TSize IndexOfAnyExceptInRange(ExSpan<T> span, T lowInclusive, T highInclusive) {
+            TSize result = ExMemoryExtensions.IndexOfAnyExceptInRange(span, lowInclusive, highInclusive);
+            Assert.Equal(result, ExMemoryExtensions.IndexOfAnyExceptInRange((ReadOnlyExSpan<T>)span, lowInclusive, highInclusive));
+            Assert.Equal(result >= 0, ExMemoryExtensions.ContainsAnyExceptInRange(span, lowInclusive, highInclusive));
+            Assert.Equal(result >= 0, ExMemoryExtensions.ContainsAnyExceptInRange((ReadOnlyExSpan<T>)span, lowInclusive, highInclusive));
             return result;
         }
 
-        protected static int LastIndexOfAnyExceptInRange(ExSpan<T> span, T lowInclusive, T highInclusive) {
-            int result = MemoryExtensions.LastIndexOfAnyExceptInRange(span, lowInclusive, highInclusive);
-            Assert.Equal(result, MemoryExtensions.LastIndexOfAnyExceptInRange((ReadOnlyExSpan<T>)span, lowInclusive, highInclusive));
-            Assert.Equal(result >= 0, MemoryExtensions.ContainsAnyExceptInRange(span, lowInclusive, highInclusive));
-            Assert.Equal(result >= 0, MemoryExtensions.ContainsAnyExceptInRange((ReadOnlyExSpan<T>)span, lowInclusive, highInclusive));
+        protected static TSize LastIndexOfAnyExceptInRange(ExSpan<T> span, T lowInclusive, T highInclusive) {
+            TSize result = ExMemoryExtensions.LastIndexOfAnyExceptInRange(span, lowInclusive, highInclusive);
+            Assert.Equal(result, ExMemoryExtensions.LastIndexOfAnyExceptInRange((ReadOnlyExSpan<T>)span, lowInclusive, highInclusive));
+            Assert.Equal(result >= 0, ExMemoryExtensions.ContainsAnyExceptInRange(span, lowInclusive, highInclusive));
+            Assert.Equal(result >= 0, ExMemoryExtensions.ContainsAnyExceptInRange((ReadOnlyExSpan<T>)span, lowInclusive, highInclusive));
             return result;
         }
     }
+#nullable restore
 }

@@ -3,6 +3,7 @@ using Xunit;
 
 namespace Zyl.ExSpans.Tests.AExSpan {
     public static partial class AIndexer {
+#if NET8_0_OR_GREATER && TODO // [TODO why] NRange need System.Numerics.Tensors.dll
         [Fact]
         public static void IndexerWithIndexTest() {
             ReadOnlyExSpan<char> span = "Hello".AsExSpan();
@@ -60,5 +61,6 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             Assert.Throws<ArgumentOutOfRangeException>(delegate () { var spp = new ExSpan<char>(s.ToCharArray())[range]; });
             Assert.Throws<ArgumentOutOfRangeException>(delegate () { var spp = s.AsExSpan()[range]; });
         }
+#endif // NET8_0_OR_GREATER
     }
 }

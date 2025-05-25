@@ -5,7 +5,6 @@ using Xunit;
 
 namespace Zyl.ExSpans.Tests.AExSpan {
     public static partial class AIndexOfAny {
-#if NET8_0_OR_GREATER && TODO // [TODO why] SearchValues methods is internal
         [Fact]
         public static void ZeroLengthIndexOfAny_TwoInteger() {
             var sp = new ExSpan<int>(ArrayHelper.Empty<int>());
@@ -867,7 +866,9 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             Assert.Equal(index >= 0, span.Contains(value));
             Assert.Equal(index >= 0, ((ReadOnlyExSpan<T>)span).Contains(value));
 
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
             AssertSearchValues(span, new ReadOnlyExSpan<T>(in value), index);
+#endif // NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
             return index;
         }
 
@@ -905,6 +906,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         }
 
         private static void AssertSearchValues<T>(ExSpan<T> span, ReadOnlyExSpan<T> values, TSize expectedIndex) where T : IEquatable<T>? {
+#if NET8_0_OR_GREATER && TODO // [TODO why] SearchValues methods is internal
             if (typeof(T) == typeof(byte) || typeof(T) == typeof(char)) {
                 SearchValues<T> searchValuesInstance = (SearchValues<T>)(object)(typeof(T) == typeof(byte)
                     ? SearchValues.Create(ExMemoryMarshal.CreateReadOnlyExSpan(ref Unsafe.As<T, byte>(ref ExMemoryMarshal.GetReference(values)), values.Length).AsReadOnlySpan())
@@ -916,7 +918,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 Assert.Equal(expectedIndex >= 0, span.ContainsAny(searchValuesInstance));
                 Assert.Equal(expectedIndex >= 0, ((ReadOnlyExSpan<T>)span).ContainsAny(searchValuesInstance));
             }
-        }
 #endif // NET8_0_OR_GREATER
+        }
     }
 }
