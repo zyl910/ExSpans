@@ -6,7 +6,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         public static void LastIndexOfSequenceMatchAtStart_Byte() {
             ExSpan<byte> span = new ExSpan<byte>(new byte[] { 5, 1, 77, 2, 3, 77, 77, 4, 5, 77, 77, 77, 88, 6, 6, 77, 77, 88, 9 });
             ExSpan<byte> value = new ExSpan<byte>(new byte[] { 5, 1, 77 });
-            int index = span.LastIndexOf(value);
+            TSize index = span.LastIndexOf(value);
             Assert.Equal(0, index);
         }
 
@@ -14,7 +14,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         public static void LastIndexOfSequenceMultipleMatch_Byte() {
             ExSpan<byte> span = new ExSpan<byte>(new byte[] { 1, 2, 3, 1, 2, 3, 1, 2, 3, 1 });
             ExSpan<byte> value = new ExSpan<byte>(new byte[] { 2, 3 });
-            int index = span.LastIndexOf(value);
+            TSize index = span.LastIndexOf(value);
             Assert.Equal(7, index);
         }
 
@@ -22,7 +22,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         public static void LastIndexOfSequenceRestart_Byte() {
             ExSpan<byte> span = new ExSpan<byte>(new byte[] { 0, 1, 77, 2, 3, 77, 77, 4, 5, 77, 77, 77, 88, 6, 6, 77, 77, 8, 9, 77, 0, 1 });
             ExSpan<byte> value = new ExSpan<byte>(new byte[] { 77, 77, 88 });
-            int index = span.LastIndexOf(value);
+            TSize index = span.LastIndexOf(value);
             Assert.Equal(10, index);
         }
 
@@ -30,7 +30,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         public static void LastIndexOfSequenceNoMatch_Byte() {
             ExSpan<byte> span = new ExSpan<byte>(new byte[] { 0, 1, 77, 2, 3, 77, 77, 4, 5, 77, 77, 77, 88, 6, 6, 77, 77, 88, 9 });
             ExSpan<byte> value = new ExSpan<byte>(new byte[] { 77, 77, 88, 99 });
-            int index = span.LastIndexOf(value);
+            TSize index = span.LastIndexOf(value);
             Assert.Equal(-1, index);
         }
 
@@ -38,7 +38,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         public static void LastIndexOfSequenceNotEvenAHeadMatch_Byte() {
             ExSpan<byte> span = new ExSpan<byte>(new byte[] { 0, 1, 77, 2, 3, 77, 77, 4, 5, 77, 77, 77, 88, 6, 6, 77, 77, 88, 9 });
             ExSpan<byte> value = new ExSpan<byte>(new byte[] { 100, 77, 88, 99 });
-            int index = span.LastIndexOf(value);
+            TSize index = span.LastIndexOf(value);
             Assert.Equal(-1, index);
         }
 
@@ -46,7 +46,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         public static void LastIndexOfSequenceMatchAtVeryEnd_Byte() {
             ExSpan<byte> span = new ExSpan<byte>(new byte[] { 0, 1, 2, 3, 4, 5 });
             ExSpan<byte> value = new ExSpan<byte>(new byte[] { 3, 4, 5 });
-            int index = span.LastIndexOf(value);
+            TSize index = span.LastIndexOf(value);
             Assert.Equal(3, index);
         }
 
@@ -54,7 +54,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         public static void LastIndexOfSequenceJustPastVeryEnd_Byte() {
             ExSpan<byte> span = new ExSpan<byte>(new byte[] { 0, 1, 2, 3, 4, 5 }, 0, 5);
             ExSpan<byte> value = new ExSpan<byte>(new byte[] { 3, 4, 5 });
-            int index = span.LastIndexOf(value);
+            TSize index = span.LastIndexOf(value);
             Assert.Equal(-1, index);
         }
 
@@ -63,7 +63,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             // A zero-length value is always "found" at the end of the span.
             ExSpan<byte> span = new ExSpan<byte>(new byte[] { 0, 1, 77, 2, 3, 77, 77, 4, 5, 77, 77, 77, 88, 6, 6, 77, 77, 88, 9 });
             ExSpan<byte> value = new ExSpan<byte>(ArrayHelper.Empty<byte>());
-            int index = span.LastIndexOf(value);
+            TSize index = span.LastIndexOf(value);
             Assert.Equal(span.Length, index);
         }
 
@@ -71,7 +71,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         public static void LastIndexOfSequenceZeroLengthExSpan_Byte() {
             ExSpan<byte> span = new ExSpan<byte>(ArrayHelper.Empty<byte>());
             ExSpan<byte> value = new ExSpan<byte>(new byte[] { 1, 2, 3 });
-            int index = span.LastIndexOf(value);
+            TSize index = span.LastIndexOf(value);
             Assert.Equal(-1, index);
         }
 
@@ -79,7 +79,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         public static void LastIndexOfSequenceLengthOneValue_Byte() {
             ExSpan<byte> span = new ExSpan<byte>(new byte[] { 0, 1, 2, 3, 4, 5 });
             ExSpan<byte> value = new ExSpan<byte>(new byte[] { 2 });
-            int index = span.LastIndexOf(value);
+            TSize index = span.LastIndexOf(value);
             Assert.Equal(2, index);
         }
 
@@ -87,7 +87,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         public static void LastIndexOfSequenceLengthOneValueAtVeryEnd_Byte() {
             ExSpan<byte> span = new ExSpan<byte>(new byte[] { 0, 1, 2, 3, 4, 5 });
             ExSpan<byte> value = new ExSpan<byte>(new byte[] { 5 });
-            int index = span.LastIndexOf(value);
+            TSize index = span.LastIndexOf(value);
             Assert.Equal(5, index);
         }
 
@@ -95,7 +95,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         public static void LastIndexOfSequenceLengthOneValueMultipleTimes_Byte() {
             ExSpan<byte> span = new ExSpan<byte>(new byte[] { 0, 1, 5, 3, 4, 5 });
             ExSpan<byte> value = new ExSpan<byte>(new byte[] { 5 });
-            int index = span.LastIndexOf(value);
+            TSize index = span.LastIndexOf(value);
             Assert.Equal(5, index);
         }
 
@@ -103,7 +103,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         public static void LastIndexOfSequenceLengthOneValueJustPasttVeryEnd_Byte() {
             ExSpan<byte> span = new ExSpan<byte>(new byte[] { 0, 1, 2, 3, 4, 5 }, 0, 5);
             ExSpan<byte> value = new ExSpan<byte>(new byte[] { 5 });
-            int index = span.LastIndexOf(value);
+            TSize index = span.LastIndexOf(value);
             Assert.Equal(-1, index);
         }
     }

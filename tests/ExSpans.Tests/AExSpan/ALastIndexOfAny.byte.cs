@@ -4,6 +4,7 @@ using Xunit;
 
 namespace Zyl.ExSpans.Tests.AExSpan {
     public static partial class ALastIndexOfAny {
+#if NET8_0_OR_GREATER && TODO // [TODO why] SearchValues methods is internal
         [Theory]
         [InlineData("a", "a", 'a', 0)]
         [InlineData("ab", "a", 'a', 0)]
@@ -30,7 +31,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             char[] searchFor = search.ToCharArray();
             byte[] searchForBytes = Encoding.UTF8.GetBytes(searchFor);
 
-            var index = -1;
+            TSize index = -1;
             if (searchFor.Length == 1) {
                 index = LastIndexOf(span, (byte)searchFor[0]);
             } else if (searchFor.Length == 2) {
@@ -45,11 +46,12 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             Assert.Equal((byte)expectResult, found);
             Assert.Equal(expectIndex, index);
         }
+#endif // NET8_0_OR_GREATER
 
         [Fact]
         public static void ZeroLengthLastIndexOfAny_Byte_TwoByte() {
             ExSpan<byte> span = new ExSpan<byte>(ArrayHelper.Empty<byte>());
-            int idx = LastIndexOfAny(span, 0, 0);
+            TSize idx = LastIndexOfAny(span, 0, 0);
             Assert.Equal(-1, idx);
         }
 
@@ -64,10 +66,10 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 byte[] targets = { default, 99 };
 
                 for (int i = 0; i < length; i++) {
-                    int index = rnd.Next(0, 2) == 0 ? 0 : 1;
+                    TSize index = rnd.Next(0, 2) == 0 ? 0 : 1;
                     byte target0 = targets[index];
                     byte target1 = targets[(index + 1) % 2];
-                    int idx = LastIndexOfAny(span, target0, target1);
+                    TSize idx = LastIndexOfAny(span, target0, target1);
                     Assert.Equal(span.Length - 1, idx);
                 }
             }
@@ -85,21 +87,21 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 for (int targetIndex = 0; targetIndex < length; targetIndex++) {
                     byte target0 = a[targetIndex];
                     byte target1 = 0;
-                    int idx = LastIndexOfAny(span, target0, target1);
+                    TSize idx = LastIndexOfAny(span, target0, target1);
                     Assert.Equal(targetIndex, idx);
                 }
 
                 for (int targetIndex = 0; targetIndex < length - 1; targetIndex++) {
                     byte target0 = a[targetIndex];
                     byte target1 = a[targetIndex + 1];
-                    int idx = LastIndexOfAny(span, target0, target1);
+                    TSize idx = LastIndexOfAny(span, target0, target1);
                     Assert.Equal(targetIndex + 1, idx);
                 }
 
                 for (int targetIndex = 0; targetIndex < length - 1; targetIndex++) {
                     byte target0 = 0;
                     byte target1 = a[targetIndex + 1];
-                    int idx = LastIndexOfAny(span, target0, target1);
+                    TSize idx = LastIndexOfAny(span, target0, target1);
                     Assert.Equal(targetIndex + 1, idx);
                 }
             }
@@ -114,7 +116,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 byte target1 = (byte)rnd.Next(1, 256);
                 ExSpan<byte> span = new ExSpan<byte>(a);
 
-                int idx = LastIndexOfAny(span, target0, target1);
+                TSize idx = LastIndexOfAny(span, target0, target1);
                 Assert.Equal(-1, idx);
             }
         }
@@ -133,7 +135,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 a[length - 3] = 200;
 
                 ExSpan<byte> span = new ExSpan<byte>(a);
-                int idx = LastIndexOfAny(span, 200, 200);
+                TSize idx = LastIndexOfAny(span, 200, 200);
                 Assert.Equal(length - 1, idx);
             }
         }
@@ -145,7 +147,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 a[0] = 99;
                 a[length + 1] = 98;
                 ExSpan<byte> span = new ExSpan<byte>(a, 1, length - 1);
-                int index = LastIndexOfAny(span, 99, 98);
+                TSize index = LastIndexOfAny(span, 99, 98);
                 Assert.Equal(-1, index);
             }
 
@@ -154,7 +156,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 a[0] = 99;
                 a[length + 1] = 99;
                 ExSpan<byte> span = new ExSpan<byte>(a, 1, length - 1);
-                int index = LastIndexOfAny(span, 99, 99);
+                TSize index = LastIndexOfAny(span, 99, 99);
                 Assert.Equal(-1, index);
             }
         }
@@ -162,7 +164,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         [Fact]
         public static void ZeroLengthIndexOf_Byte_ThreeByte() {
             ExSpan<byte> span = new ExSpan<byte>(ArrayHelper.Empty<byte>());
-            int idx = LastIndexOfAny(span, 0, 0, 0);
+            TSize idx = LastIndexOfAny(span, 0, 0, 0);
             Assert.Equal(-1, idx);
         }
 
@@ -177,11 +179,11 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 byte[] targets = { default, 99, 98 };
 
                 for (int i = 0; i < length; i++) {
-                    int index = rnd.Next(0, 3);
+                    TSize index = rnd.Next(0, 3);
                     byte target0 = targets[index];
                     byte target1 = targets[(index + 1) % 2];
                     byte target2 = targets[(index + 1) % 3];
-                    int idx = LastIndexOfAny(span, target0, target1, target2);
+                    TSize idx = LastIndexOfAny(span, target0, target1, target2);
                     Assert.Equal(span.Length - 1, idx);
                 }
             }
@@ -200,7 +202,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                     byte target0 = a[targetIndex];
                     byte target1 = 0;
                     byte target2 = 0;
-                    int idx = LastIndexOfAny(span, target0, target1, target2);
+                    TSize idx = LastIndexOfAny(span, target0, target1, target2);
                     Assert.Equal(targetIndex, idx);
                 }
 
@@ -208,7 +210,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                     byte target0 = a[targetIndex];
                     byte target1 = a[targetIndex + 1];
                     byte target2 = a[targetIndex + 2];
-                    int idx = LastIndexOfAny(span, target0, target1, target2);
+                    TSize idx = LastIndexOfAny(span, target0, target1, target2);
                     Assert.Equal(targetIndex + 2, idx);
                 }
 
@@ -216,7 +218,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                     byte target0 = 0;
                     byte target1 = 0;
                     byte target2 = a[targetIndex + 2];
-                    int idx = LastIndexOfAny(span, target0, target1, target2);
+                    TSize idx = LastIndexOfAny(span, target0, target1, target2);
                     Assert.Equal(targetIndex + 2, idx);
                 }
             }
@@ -232,7 +234,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 byte target2 = (byte)rnd.Next(1, 256);
                 ExSpan<byte> span = new ExSpan<byte>(a);
 
-                int idx = LastIndexOfAny(span, target0, target1, target2);
+                TSize idx = LastIndexOfAny(span, target0, target1, target2);
                 Assert.Equal(-1, idx);
             }
         }
@@ -252,7 +254,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 a[length - 4] = 200;
 
                 ExSpan<byte> span = new ExSpan<byte>(a);
-                int idx = LastIndexOfAny(span, 200, 200, 200);
+                TSize idx = LastIndexOfAny(span, 200, 200, 200);
                 Assert.Equal(length - 1, idx);
             }
         }
@@ -264,7 +266,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 a[0] = 99;
                 a[length + 1] = 98;
                 ExSpan<byte> span = new ExSpan<byte>(a, 1, length - 1);
-                int index = LastIndexOfAny(span, 99, 98, 99);
+                TSize index = LastIndexOfAny(span, 99, 98, 99);
                 Assert.Equal(-1, index);
             }
 
@@ -273,16 +275,17 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 a[0] = 99;
                 a[length + 1] = 99;
                 ExSpan<byte> span = new ExSpan<byte>(a, 1, length - 1);
-                int index = LastIndexOfAny(span, 99, 99, 99);
+                TSize index = LastIndexOfAny(span, 99, 99, 99);
                 Assert.Equal(-1, index);
             }
         }
 
+#if NET8_0_OR_GREATER && TODO // [TODO why] SearchValues methods is internal
         [Fact]
         public static void ZeroLengthLastIndexOfAny_Byte_ManyByte() {
             ExSpan<byte> span = new ExSpan<byte>(ArrayHelper.Empty<byte>());
             var values = new ReadOnlyExSpan<byte>(new byte[] { 0, 0, 0, 0 });
-            int idx = LastIndexOfAny(span, values);
+            TSize idx = LastIndexOfAny(span, values);
             Assert.Equal(-1, idx);
 
             values = new ReadOnlyExSpan<byte>(new byte[] { });
@@ -299,7 +302,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 var values = new ReadOnlyExSpan<byte>(new byte[] { default, 99, 98, 0 });
 
                 for (int i = 0; i < length; i++) {
-                    int idx = LastIndexOfAny(span, values);
+                    TSize idx = LastIndexOfAny(span, values);
                     Assert.Equal(span.Length - 1, idx);
                 }
             }
@@ -316,19 +319,19 @@ namespace Zyl.ExSpans.Tests.AExSpan {
 
                 for (int targetIndex = 0; targetIndex < length; targetIndex++) {
                     var values = new ReadOnlyExSpan<byte>(new byte[] { a[targetIndex], 0, 0, 0 });
-                    int idx = LastIndexOfAny(span, values);
+                    TSize idx = LastIndexOfAny(span, values);
                     Assert.Equal(targetIndex, idx);
                 }
 
                 for (int targetIndex = 0; targetIndex < length - 3; targetIndex++) {
                     var values = new ReadOnlyExSpan<byte>(new byte[] { a[targetIndex], a[targetIndex + 1], a[targetIndex + 2], a[targetIndex + 3] });
-                    int idx = LastIndexOfAny(span, values);
+                    TSize idx = LastIndexOfAny(span, values);
                     Assert.Equal(targetIndex + 3, idx);
                 }
 
                 for (int targetIndex = 0; targetIndex < length - 3; targetIndex++) {
                     var values = new ReadOnlyExSpan<byte>(new byte[] { 0, 0, 0, a[targetIndex + 3] });
-                    int idx = LastIndexOfAny(span, values);
+                    TSize idx = LastIndexOfAny(span, values);
                     Assert.Equal(targetIndex + 3, idx);
                 }
             }
@@ -357,7 +360,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 }
 
                 var values = new ReadOnlyExSpan<byte>(targets);
-                int idx = LastIndexOfAny(span, values);
+                TSize idx = LastIndexOfAny(span, values);
                 Assert.Equal(expectedIndex, idx);
             }
         }
@@ -374,7 +377,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 ExSpan<byte> span = new ExSpan<byte>(a);
                 var values = new ReadOnlyExSpan<byte>(targets);
 
-                int idx = LastIndexOfAny(span, values);
+                TSize idx = LastIndexOfAny(span, values);
                 Assert.Equal(-1, idx);
             }
         }
@@ -391,7 +394,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 ExSpan<byte> span = new ExSpan<byte>(a);
                 var values = new ReadOnlyExSpan<byte>(targets);
 
-                int idx = LastIndexOfAny(span, values);
+                TSize idx = LastIndexOfAny(span, values);
                 Assert.Equal(-1, idx);
             }
         }
@@ -413,7 +416,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
 
                 ExSpan<byte> span = new ExSpan<byte>(a);
                 var values = new ReadOnlyExSpan<byte>(new byte[] { 200, 200, 200, 200, 200, 200, 200, 200, 200 });
-                int idx = LastIndexOfAny(span, values);
+                TSize idx = LastIndexOfAny(span, values);
                 Assert.Equal(length - 1, idx);
             }
         }
@@ -426,7 +429,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 a[length + 1] = 98;
                 ExSpan<byte> span = new ExSpan<byte>(a, 1, length - 1);
                 var values = new ReadOnlyExSpan<byte>(new byte[] { 99, 98, 99, 98, 99, 98 });
-                int index = LastIndexOfAny(span, values);
+                TSize index = LastIndexOfAny(span, values);
                 Assert.Equal(-1, index);
             }
 
@@ -436,33 +439,49 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 a[length + 1] = 99;
                 ExSpan<byte> span = new ExSpan<byte>(a, 1, length - 1);
                 var values = new ReadOnlyExSpan<byte>(new byte[] { 99, 99, 99, 99, 99, 99 });
-                int index = LastIndexOfAny(span, values);
+                TSize index = LastIndexOfAny(span, values);
                 Assert.Equal(-1, index);
             }
         }
+#endif // NET8_0_OR_GREATER
 
-        private static int LastIndexOf(ExSpan<byte> span, byte value) {
-            int index = span.LastIndexOf(value);
+        private static TSize LastIndexOf(ExSpan<byte> span, byte value) {
+            TSize index = span.LastIndexOf(value);
+#if NET8_0_OR_GREATER && TODO // [TODO why] SearchValues methods is internal
             Assert.Equal(index, span.LastIndexOfAny(SearchValues.Create(stackalloc byte[] { value })));
+#else
+            Assert.Equal(index, span.LastIndexOf(value));
+#endif // NET8_0_OR_GREATER
             return index;
         }
 
-        private static int LastIndexOfAny(ExSpan<byte> span, byte value0, byte value1) {
-            int index = span.LastIndexOfAny(value0, value1);
+        private static TSize LastIndexOfAny(ExSpan<byte> span, byte value0, byte value1) {
+            TSize index = span.LastIndexOfAny(value0, value1);
+#if NET8_0_OR_GREATER && TODO // [TODO why] SearchValues methods is internal
             Assert.Equal(index, span.LastIndexOfAny(SearchValues.Create(stackalloc byte[] { value0, value1 })));
+#else
+            Assert.Equal(index, span.LastIndexOfAny(value0, value1));
+#endif // NET8_0_OR_GREATER
             return index;
         }
 
-        private static int LastIndexOfAny(ExSpan<byte> span, byte value0, byte value1, byte value2) {
-            int index = span.LastIndexOfAny(value0, value1, value2);
+        private static TSize LastIndexOfAny(ExSpan<byte> span, byte value0, byte value1, byte value2) {
+            TSize index = span.LastIndexOfAny(value0, value1, value2);
+#if NET8_0_OR_GREATER && TODO // [TODO why] SearchValues methods is internal
             Assert.Equal(index, span.LastIndexOfAny(SearchValues.Create(stackalloc byte[] { value0, value1, value2 })));
+#else
+            Assert.Equal(index, span.LastIndexOfAny(value0, value1, value2));
+#endif // NET8_0_OR_GREATER
             return index;
         }
 
-        private static int LastIndexOfAny(ExSpan<byte> span, ReadOnlyExSpan<byte> values) {
-            int index = span.LastIndexOfAny(values);
+#if NET8_0_OR_GREATER && TODO // [TODO why] SearchValues methods is internal
+        private static TSize LastIndexOfAny(ExSpan<byte> span, ReadOnlyExSpan<byte> values) {
+            TSize index = span.LastIndexOfAny(values);
             Assert.Equal(index, span.LastIndexOfAny(SearchValues.Create(values)));
             return index;
         }
+#else
+#endif // NET8_0_OR_GREATER
     }
 }

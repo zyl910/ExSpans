@@ -5,7 +5,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         [Fact]
         public static void ZeroLengthLastIndexOf_Char() {
             ExSpan<char> sp = new ExSpan<char>(ArrayHelper.Empty<char>());
-            int idx = sp.LastIndexOf((char)0);
+            TSize idx = sp.LastIndexOf((char)0);
             Assert.Equal(-1, idx);
         }
 
@@ -20,7 +20,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
 
                 for (int targetIndex = 0; targetIndex < length; targetIndex++) {
                     char target = a[targetIndex];
-                    int idx = span.LastIndexOf(target);
+                    TSize idx = span.LastIndexOf(target);
                     Assert.Equal(targetIndex, idx);
                 }
             }
@@ -38,7 +38,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 a[length - 2] = (char)200;
 
                 ExSpan<char> span = new ExSpan<char>(a);
-                int idx = span.LastIndexOf((char)200);
+                TSize idx = span.LastIndexOf((char)200);
                 Assert.Equal(length - 1, idx);
             }
         }
@@ -50,7 +50,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 a[0] = '9';
                 a[length + 1] = '9';
                 ExSpan<char> span = new ExSpan<char>(a, 1, length);
-                int index = span.LastIndexOf('9');
+                TSize index = span.LastIndexOf('9');
                 Assert.Equal(-1, index);
             }
         }
