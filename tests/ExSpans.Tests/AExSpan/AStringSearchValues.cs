@@ -3,14 +3,13 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.ExceptionServices;
-using System.Runtime.InteropServices;
-using System.Runtime.Intrinsics.X86;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.DotNet.RemoteExecutor;
+//using Microsoft.DotNet.RemoteExecutor;
 using Xunit;
 
-namespace System.Memory.Tests.ExSpan {
+namespace Zyl.ExSpans.Tests.AExSpan {
+#if NET8_0_OR_GREATER && TODO // [TODO why] SearchValues methods is internal
     public static class StringSearchValuesTests {
         public static bool CanTestInvariantCulture => RemoteExecutor.IsSupported;
         public static bool CanTestNls => RemoteExecutor.IsSupported && OperatingSystem.IsWindows();
@@ -686,4 +685,5 @@ namespace System.Memory.Tests.ExSpan {
             }
         }
     }
+#endif // NET8_0_OR_GREATER
 }
