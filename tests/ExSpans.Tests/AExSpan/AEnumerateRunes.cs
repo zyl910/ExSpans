@@ -4,10 +4,12 @@ using Xunit;
 
 namespace Zyl.ExSpans.Tests.AExSpan {
     public static partial class AEnumerateRunes {
+#if NETCOREAPP3_0_OR_GREATER
+
         [Fact]
         public static void EnumerateRunesEmpty() {
-            Assert.False(MemoryExtensions.EnumerateRunes(ReadOnlyExSpan<char>.Empty).GetEnumerator().MoveNext());
-            Assert.False(MemoryExtensions.EnumerateRunes(ExSpan<char>.Empty).GetEnumerator().MoveNext());
+            Assert.False(ExMemoryExtensions.EnumerateRunes(ReadOnlyExSpan<char>.Empty).GetEnumerator().MoveNext());
+            Assert.False(ExMemoryExtensions.EnumerateRunes(ExSpan<char>.Empty).GetEnumerator().MoveNext());
         }
 
         [Theory]
@@ -55,5 +57,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             }
             Assert.Equal(new int[] { 'y', '\uFFFD' }, enumeratedValues.ToArray());
         }
+
+#endif // NETCOREAPP3_0_OR_GREATER
     }
 }

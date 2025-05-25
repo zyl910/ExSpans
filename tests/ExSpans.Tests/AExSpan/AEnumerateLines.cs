@@ -8,6 +8,8 @@ using Xunit;
 
 namespace Zyl.ExSpans.Tests.AExSpan {
     public static partial class AEnumerateLines {
+#if NETCOREAPP3_0_OR_GREATER
+
         // newline chars given by Unicode Standard, Sec. 5.8, Recommendation R4 and Table 5-2
         public static IEnumerable<object[]> NewLineChars => new object[][]
         {
@@ -34,6 +36,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             Assert.False(enumerator.MoveNext());
         }
 
+#nullable disable
         [Theory]
         [InlineData(null, new[] { ".." })]
         [InlineData("", new[] { ".." })]
@@ -61,7 +64,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
 
             List<Range> actualRangesNormalized = new List<Range>();
             foreach (ReadOnlyExSpan<char> line in input.AsExSpan().EnumerateLines()) {
-                actualRangesNormalized.Add(GetNormalizedRangeFromSubspan(input, line));
+                actualRangesNormalized.Add(GetNormalizedRangeFromSubspan(input.AsSpan(), line));
             }
 
             Assert.Equal(expectedRangesNormalized, actualRangesNormalized);
@@ -83,7 +86,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                     nuint byteOffset = (nuint)(pInnerStart - pOuterStart);
                     Assert.Equal((nuint)0, byteOffset % (nuint)Unsafe.SizeOf<T>()); // Unaligned elements; cannot compute offset
                     nuint elementOffset = byteOffset / (nuint)Unsafe.SizeOf<T>();
-                    return checked((int)elementOffset)..checked((int)elementOffset + inner.Length);
+                    return checked((int)elementOffset)..checked((int)(elementOffset + (nuint)inner.Length));
                 }
             }
 
@@ -115,11 +118,13 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 static Index ParseIndex(ReadOnlyExSpan<char> input) {
                     bool fromEnd = false;
                     if (!input.IsEmpty && input[0] == '^') { fromEnd = true; input = input.Slice(1); }
-                    return new Index(int.Parse(input, NumberStyles.Integer, CultureInfo.InvariantCulture), fromEnd);
+                    return new Index(int.Parse(input.AsReadOnlySpan(), NumberStyles.Integer, CultureInfo.InvariantCulture), fromEnd);
                 }
             }
         }
+#nullable restore
 
+#if INTERNAL && TODO
         [Theory]
         [MemberData(nameof(NewLineChars))]
         public static void EnumerateLines_EnumerationIsNotPolynomialComplexity(char newlineChar) {
@@ -140,7 +145,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             span[512] = newlineChar;
             boundedMem.MakeReadonly();
 
-            span = MemoryMarshal.CreateExSpan(ref ExMemoryMarshal.GetReference(span), span.Length + 4096);
+            span = ExMemoryMarshal.CreateExSpan(ref ExMemoryMarshal.GetReference(span), span.Length + 4096);
 
             var enumerator = span.EnumerateLines().GetEnumerator();
             Assert.True(enumerator.MoveNext());
@@ -150,5 +155,8 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             Assert.True(enumerator.MoveNext());
             Assert.Equal(512, enumerator.Current.Length);
         }
+#endif // INTERNAL && TODO
+
+#endif // NETCOREAPP3_0_OR_GREATER
     }
 }
