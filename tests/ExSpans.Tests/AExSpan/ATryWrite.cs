@@ -1,13 +1,15 @@
 using System.Diagnostics;
 using System.Globalization;
-using System.Tests;
+//using System.Tests;
 using System.Text;
 using Xunit;
 
 // TODO: Once compiler support is available, augment tests to exercise interpolated strings.
 
 namespace Zyl.ExSpans.Tests.AExSpan {
-    public class TryWriteTests {
+#nullable disable
+#if NET6_0_OR_GREATER
+    public class ATryWrite {
         private char[] _largeBuffer = new char[4096];
 
         [Theory]
@@ -20,26 +22,26 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         public void LengthAndHoleArguments_Valid(int literalLength, int formattedCount) {
             bool shouldAppend;
 
-            new MemoryExtensions.TryWriteInterpolatedStringHandler(literalLength, formattedCount, new char[Math.Max(0, literalLength)], out shouldAppend);
+            new ExTryWriteInterpolatedStringHandler(literalLength, formattedCount, new char[Math.Max(0, literalLength)], out shouldAppend);
             Assert.True(shouldAppend);
 
-            new MemoryExtensions.TryWriteInterpolatedStringHandler(literalLength, formattedCount, new char[1 + Math.Max(0, literalLength)], out shouldAppend);
+            new ExTryWriteInterpolatedStringHandler(literalLength, formattedCount, new char[1 + Math.Max(0, literalLength)], out shouldAppend);
             Assert.True(shouldAppend);
 
             if (literalLength > 0) {
-                new MemoryExtensions.TryWriteInterpolatedStringHandler(literalLength, formattedCount, new char[literalLength - 1], out shouldAppend);
+                new ExTryWriteInterpolatedStringHandler(literalLength, formattedCount, new char[literalLength - 1], out shouldAppend);
                 Assert.False(shouldAppend);
             }
 
             foreach (IFormatProvider provider in new IFormatProvider[] { null, new ConcatFormatter(), CultureInfo.InvariantCulture, CultureInfo.CurrentCulture, new CultureInfo("en-US"), new CultureInfo("fr-FR") }) {
-                new MemoryExtensions.TryWriteInterpolatedStringHandler(literalLength, formattedCount, new char[Math.Max(0, literalLength)], out shouldAppend);
+                new ExTryWriteInterpolatedStringHandler(literalLength, formattedCount, new char[Math.Max(0, literalLength)], out shouldAppend);
                 Assert.True(shouldAppend);
 
-                new MemoryExtensions.TryWriteInterpolatedStringHandler(literalLength, formattedCount, new char[1 + Math.Max(0, literalLength)], out shouldAppend);
+                new ExTryWriteInterpolatedStringHandler(literalLength, formattedCount, new char[1 + Math.Max(0, literalLength)], out shouldAppend);
                 Assert.True(shouldAppend);
 
                 if (literalLength > 0) {
-                    new MemoryExtensions.TryWriteInterpolatedStringHandler(literalLength, formattedCount, new char[literalLength - 1], out shouldAppend);
+                    new ExTryWriteInterpolatedStringHandler(literalLength, formattedCount, new char[literalLength - 1], out shouldAppend);
                     Assert.False(shouldAppend);
                 }
             }
@@ -48,50 +50,50 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         [Fact]
         public void AppendLiteral() {
             var expected = new StringBuilder();
-            MemoryExtensions.TryWriteInterpolatedStringHandler actual = new MemoryExtensions.TryWriteInterpolatedStringHandler(0, 0, _largeBuffer, out _);
+            ExTryWriteInterpolatedStringHandler actual = new ExTryWriteInterpolatedStringHandler(0, 0, _largeBuffer, out _);
 
             foreach (string s in new[] { "", "a", "bc", "def", "this is a long string", "!" }) {
                 expected.Append(s);
                 actual.AppendLiteral(s);
             }
 
-            Assert.True(MemoryExtensions.TryWrite(_largeBuffer, ref actual, out int charsWritten));
+            Assert.True(ExMemoryExtensions.TryWrite(_largeBuffer, ref actual, out TSize charsWritten));
             Assert.Equal(expected.ToString(), _largeBuffer.AsExSpan(0, charsWritten).ToString());
         }
 
         [Fact]
         public void AppendFormatted_ReadOnlyExSpanChar() {
             var expected = new StringBuilder();
-            MemoryExtensions.TryWriteInterpolatedStringHandler actual = new MemoryExtensions.TryWriteInterpolatedStringHandler(0, 0, _largeBuffer, out _);
+            ExTryWriteInterpolatedStringHandler actual = new ExTryWriteInterpolatedStringHandler(0, 0, _largeBuffer, out _);
 
             foreach (string s in new[] { "", "a", "bc", "def", "this is a longer string", "!" }) {
                 // span
                 expected.Append(s);
-                actual.AppendFormatted((ReadOnlyExSpan<char>)s);
+                actual.AppendFormatted((ReadOnlyExSpan<char>)s.AsSpan());
 
                 // span, format
                 expected.AppendFormat("{0:X2}", s);
-                actual.AppendFormatted((ReadOnlyExSpan<char>)s, format: "X2");
+                actual.AppendFormatted((ReadOnlyExSpan<char>)s.AsSpan(), format: "X2");
 
                 foreach (int alignment in new[] { 0, 3, -3 }) {
                     // span, alignment
                     expected.AppendFormat("{0," + alignment.ToString(CultureInfo.InvariantCulture) + "}", s);
-                    actual.AppendFormatted((ReadOnlyExSpan<char>)s, alignment);
+                    actual.AppendFormatted((ReadOnlyExSpan<char>)s.AsSpan(), alignment);
 
                     // span, alignment, format
                     expected.AppendFormat("{0," + alignment.ToString(CultureInfo.InvariantCulture) + ":X2}", s);
-                    actual.AppendFormatted((ReadOnlyExSpan<char>)s, alignment, "X2");
+                    actual.AppendFormatted((ReadOnlyExSpan<char>)s.AsSpan(), alignment, "X2");
                 }
             }
 
-            Assert.True(MemoryExtensions.TryWrite(_largeBuffer, ref actual, out int charsWritten));
+            Assert.True(ExMemoryExtensions.TryWrite(_largeBuffer, ref actual, out TSize charsWritten));
             Assert.Equal(expected.ToString(), _largeBuffer.AsExSpan(0, charsWritten).ToString());
         }
 
         [Fact]
         public void AppendFormatted_String() {
             var expected = new StringBuilder();
-            MemoryExtensions.TryWriteInterpolatedStringHandler actual = new MemoryExtensions.TryWriteInterpolatedStringHandler(0, 0, _largeBuffer, out _);
+            ExTryWriteInterpolatedStringHandler actual = new ExTryWriteInterpolatedStringHandler(0, 0, _largeBuffer, out _);
 
             foreach (string s in new[] { null, "", "a", "bc", "def", "this is a longer string", "!" }) {
                 // string
@@ -113,7 +115,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 }
             }
 
-            Assert.True(MemoryExtensions.TryWrite(_largeBuffer, ref actual, out int charsWritten));
+            Assert.True(ExMemoryExtensions.TryWrite(_largeBuffer, ref actual, out TSize charsWritten));
             Assert.Equal(expected.ToString(), _largeBuffer.AsExSpan(0, charsWritten).ToString());
         }
 
@@ -122,7 +124,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             var provider = new ConcatFormatter();
 
             var expected = new StringBuilder();
-            MemoryExtensions.TryWriteInterpolatedStringHandler actual = new MemoryExtensions.TryWriteInterpolatedStringHandler(0, 0, _largeBuffer, provider, out _);
+            ExTryWriteInterpolatedStringHandler actual = new ExTryWriteInterpolatedStringHandler(0, 0, _largeBuffer, provider, out _);
 
             foreach (string s in new[] { null, "", "a" }) {
                 // string
@@ -142,14 +144,14 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 actual.AppendFormatted(s, -3, "X2");
             }
 
-            Assert.True(MemoryExtensions.TryWrite(_largeBuffer, ref actual, out int charsWritten));
+            Assert.True(ExMemoryExtensions.TryWrite(_largeBuffer, ref actual, out TSize charsWritten));
             Assert.Equal(expected.ToString(), _largeBuffer.AsExSpan(0, charsWritten).ToString());
         }
 
         [Fact]
         public void AppendFormatted_ReferenceTypes() {
             var expected = new StringBuilder();
-            MemoryExtensions.TryWriteInterpolatedStringHandler actual = new MemoryExtensions.TryWriteInterpolatedStringHandler(0, 0, _largeBuffer, out _);
+            ExTryWriteInterpolatedStringHandler actual = new ExTryWriteInterpolatedStringHandler(0, 0, _largeBuffer, out _);
 
             foreach (string rawInput in new[] { null, "", "a", "bc", "def", "this is a longer string", "!" }) {
                 foreach (object o in new object[]
@@ -157,7 +159,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                     rawInput, // raw string directly; ToString will return itself
                     new StringWrapper(rawInput), // wrapper object that returns string from ToString
                     new FormattableStringWrapper(rawInput), // IFormattable wrapper around string
-                    new ExSpanFormattableStringWrapper(rawInput) // IExSpanFormattable wrapper around string
+                    new ExSpanFormattableStringWrapper(rawInput) // ISpanFormattable wrapper around string
                 }) {
                     // object
                     expected.AppendFormat("{0}", o);
@@ -195,14 +197,14 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 }
             }
 
-            Assert.True(MemoryExtensions.TryWrite(_largeBuffer, ref actual, out int charsWritten));
+            Assert.True(ExMemoryExtensions.TryWrite(_largeBuffer, ref actual, out TSize charsWritten));
             Assert.Equal(expected.ToString(), _largeBuffer.AsExSpan(0, charsWritten).ToString());
         }
 
         [Fact]
         public void AppendFormatted_ReferenceTypes_CreateProviderFlowed() {
             var provider = new CultureInfo("en-US");
-            MemoryExtensions.TryWriteInterpolatedStringHandler handler = new MemoryExtensions.TryWriteInterpolatedStringHandler(1, 2, _largeBuffer, provider, out _);
+            ExTryWriteInterpolatedStringHandler handler = new ExTryWriteInterpolatedStringHandler(1, 2, _largeBuffer, provider, out _);
 
             foreach (IHasToStringState tss in new IHasToStringState[] { new FormattableStringWrapper("hello"), new ExSpanFormattableStringWrapper("hello") }) {
                 handler.AppendFormatted(tss);
@@ -224,7 +226,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             var provider = new ConcatFormatter();
 
             var expected = new StringBuilder();
-            MemoryExtensions.TryWriteInterpolatedStringHandler actual = new MemoryExtensions.TryWriteInterpolatedStringHandler(0, 0, _largeBuffer, provider, out _);
+            ExTryWriteInterpolatedStringHandler actual = new ExTryWriteInterpolatedStringHandler(0, 0, _largeBuffer, provider, out _);
 
             foreach (string s in new[] { null, "", "a" }) {
                 foreach (IHasToStringState tss in new IHasToStringState[] { new FormattableStringWrapper(s), new ExSpanFormattableStringWrapper(s) }) {
@@ -256,7 +258,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 }
             }
 
-            Assert.True(MemoryExtensions.TryWrite(_largeBuffer, ref actual, out int charsWritten));
+            Assert.True(ExMemoryExtensions.TryWrite(_largeBuffer, ref actual, out TSize charsWritten));
             Assert.Equal(expected.ToString(), _largeBuffer.AsExSpan(0, charsWritten).ToString());
         }
 
@@ -264,7 +266,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         public void AppendFormatted_ValueTypes() {
             void Test<T>(T t) {
                 var expected = new StringBuilder();
-                MemoryExtensions.TryWriteInterpolatedStringHandler actual = new MemoryExtensions.TryWriteInterpolatedStringHandler(0, 0, _largeBuffer, out _);
+                ExTryWriteInterpolatedStringHandler actual = new ExTryWriteInterpolatedStringHandler(0, 0, _largeBuffer, out _);
 
                 // struct
                 expected.AppendFormat("{0}", t);
@@ -292,7 +294,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                     AssertModeMatchesType(((IHasToStringState)t));
                 }
 
-                Assert.True(MemoryExtensions.TryWrite(_largeBuffer, ref actual, out int charsWritten));
+                Assert.True(ExMemoryExtensions.TryWrite(_largeBuffer, ref actual, out TSize charsWritten));
                 Assert.Equal(expected.ToString(), _largeBuffer.AsExSpan(0, charsWritten).ToString());
             }
 
@@ -306,7 +308,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         public void AppendFormatted_ValueTypes_CreateProviderFlowed() {
             void Test<T>(T t) {
                 var provider = new CultureInfo("en-US");
-                MemoryExtensions.TryWriteInterpolatedStringHandler handler = new MemoryExtensions.TryWriteInterpolatedStringHandler(1, 2, _largeBuffer, provider, out _);
+                ExTryWriteInterpolatedStringHandler handler = new ExTryWriteInterpolatedStringHandler(1, 2, _largeBuffer, provider, out _);
 
                 handler.AppendFormatted(t);
                 Assert.Same(provider, ((IHasToStringState)t).ToStringState.LastProvider);
@@ -339,7 +341,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 }
 
                 var expected = new StringBuilder();
-                MemoryExtensions.TryWriteInterpolatedStringHandler actual = new MemoryExtensions.TryWriteInterpolatedStringHandler(0, 0, _largeBuffer, provider, out _);
+                ExTryWriteInterpolatedStringHandler actual = new ExTryWriteInterpolatedStringHandler(0, 0, _largeBuffer, provider, out _);
 
                 // struct
                 expected.AppendFormat(provider, "{0}", t);
@@ -361,7 +363,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 actual.AppendFormatted(t, -3, "X2");
                 AssertTss(t, "X2");
 
-                Assert.True(MemoryExtensions.TryWrite(_largeBuffer, ref actual, out int charsWritten));
+                Assert.True(ExMemoryExtensions.TryWrite(_largeBuffer, ref actual, out TSize charsWritten));
                 Assert.Equal(expected.ToString(), _largeBuffer.AsExSpan(0, charsWritten).ToString());
             }
 
@@ -375,12 +377,12 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         public void AppendFormatted_EmptyBuffer_ZeroLengthWritesSuccessful() {
             var buffer = new char[100];
 
-            MemoryExtensions.TryWriteInterpolatedStringHandler b = new MemoryExtensions.TryWriteInterpolatedStringHandler(0, 0, buffer.AsExSpan(0, 0), out bool shouldAppend);
+            ExTryWriteInterpolatedStringHandler b = new ExTryWriteInterpolatedStringHandler(0, 0, buffer.AsExSpan(0, 0), out bool shouldAppend);
             Assert.True(shouldAppend);
 
             Assert.True(b.AppendLiteral(""));
             Assert.True(b.AppendFormatted((object)"", alignment: 0, format: "X2"));
-            Assert.True(b.AppendFormatted(null));
+            Assert.True(b.AppendFormatted((string)null));
             Assert.True(b.AppendFormatted(""));
             Assert.True(b.AppendFormatted("", alignment: 0, format: "X2"));
             Assert.True(b.AppendFormatted<string>(""));
@@ -390,7 +392,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             Assert.True(b.AppendFormatted("".AsExSpan()));
             Assert.True(b.AppendFormatted("".AsExSpan(), alignment: 0, format: "X2"));
 
-            Assert.True(MemoryExtensions.TryWrite(buffer.AsExSpan(0, 0), ref b, out int charsWritten));
+            Assert.True(ExMemoryExtensions.TryWrite(buffer.AsExSpan(0, 0), ref b, out TSize charsWritten));
             Assert.Equal(0, charsWritten);
         }
 
@@ -401,7 +403,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             var buffer = new char[bufferLength];
 
             for (int i = 0; i <= 29; i++) {
-                MemoryExtensions.TryWriteInterpolatedStringHandler b = new MemoryExtensions.TryWriteInterpolatedStringHandler(0, 0, buffer, out bool shouldAppend);
+                ExTryWriteInterpolatedStringHandler b = new ExTryWriteInterpolatedStringHandler(0, 0, buffer, out bool shouldAppend);
                 Assert.True(shouldAppend);
 
                 Assert.True(b.AppendLiteral(new string('s', bufferLength)));
@@ -441,7 +443,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 };
                 Assert.False(result);
 
-                Assert.False(MemoryExtensions.TryWrite(buffer.AsExSpan(0, 0), ref b, out int charsWritten));
+                Assert.False(ExMemoryExtensions.TryWrite(buffer.AsExSpan(0, 0), ref b, out TSize charsWritten));
                 Assert.Equal(0, charsWritten);
             }
         }
@@ -451,7 +453,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             var provider = new ConstFormatter(" ");
 
             {
-                MemoryExtensions.TryWriteInterpolatedStringHandler b = new MemoryExtensions.TryWriteInterpolatedStringHandler(0, 0, buffer.AsExSpan(0, 0), provider, out bool shouldAppend);
+                ExTryWriteInterpolatedStringHandler b = new ExTryWriteInterpolatedStringHandler(0, 0, buffer.AsExSpan(0, 0), provider, out bool shouldAppend);
                 Assert.True(shouldAppend);
 
                 // don't use custom formatter
@@ -461,7 +463,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
 
                 // do use custom formatter
                 Assert.False(b.AppendFormatted((object)"", alignment: 0, format: "X2"));
-                Assert.False(b.AppendFormatted(null));
+                Assert.False(b.AppendFormatted((string)null));
                 Assert.False(b.AppendFormatted(""));
                 Assert.False(b.AppendFormatted("", alignment: 0, format: "X2"));
                 Assert.False(b.AppendFormatted<string>(""));
@@ -469,26 +471,26 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 Assert.False(b.AppendFormatted<string>("", format: "X2"));
                 Assert.False(b.AppendFormatted<string>("", alignment: 0, format: "X2"));
 
-                Assert.False(MemoryExtensions.TryWrite(buffer.AsExSpan(0, 0), ref b, out int charsWritten));
+                Assert.False(ExMemoryExtensions.TryWrite(buffer.AsExSpan(0, 0), ref b, out TSize charsWritten));
                 Assert.Equal(0, charsWritten);
             }
         }
 
         private static void AssertModeMatchesType<T>(T tss) where T : IHasToStringState {
             ToStringMode expected =
-                tss is IExSpanFormattable ? ToStringMode.IExSpanFormattableTryFormat :
+                tss is ISpanFormattable ? ToStringMode.IExSpanFormattableTryFormat :
                 tss is IFormattable ? ToStringMode.IFormattableToString :
                 ToStringMode.ObjectToString;
             Assert.Equal(expected, tss.ToStringState.ToStringMode);
         }
 
-        private sealed class ExSpanFormattableStringWrapper : IFormattable, IExSpanFormattable, IHasToStringState {
+        private sealed class ExSpanFormattableStringWrapper : IFormattable, ISpanFormattable, IHasToStringState {
             private readonly string _value;
             public ToStringState ToStringState { get; } = new ToStringState();
 
             public ExSpanFormattableStringWrapper(string value) => _value = value;
 
-            public bool TryFormat(ExSpan<char> destination, out int charsWritten, ReadOnlyExSpan<char> format, IFormatProvider provider) {
+            public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider provider) {
                 ToStringState.LastFormat = format.ToString();
                 ToStringState.LastProvider = provider;
                 ToStringState.ToStringMode = ToStringMode.IExSpanFormattableTryFormat;
@@ -523,7 +525,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             }
         }
 
-        private struct ExSpanFormattableInt32Wrapper : IFormattable, IExSpanFormattable, IHasToStringState {
+        private struct ExSpanFormattableInt32Wrapper : IFormattable, ISpanFormattable, IHasToStringState {
             private readonly int _value;
             public ToStringState ToStringState { get; }
 
@@ -532,7 +534,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 _value = value;
             }
 
-            public bool TryFormat(ExSpan<char> destination, out int charsWritten, ReadOnlyExSpan<char> format, IFormatProvider provider) {
+            public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider provider) {
                 ToStringState.LastFormat = format.ToString();
                 ToStringState.LastProvider = provider;
                 ToStringState.ToStringMode = ToStringMode.IExSpanFormattableTryFormat;
@@ -652,4 +654,6 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             public string Format(string format, object arg, IFormatProvider formatProvider) => _value;
         }
     }
+#endif // NET6_0_OR_GREATER
+#nullable restore
 }

@@ -128,32 +128,34 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             }
         }
 
+#nullable disable
         [Fact]
         public static void StartsWithSingle() {
-            ReadOnlyExSpan<char> chars = [];
+            ReadOnlyExSpan<char> chars = (char[])[];
             Assert.False(chars.StartsWith('\0'));
             Assert.False(chars.StartsWith('f'));
 
-            chars = "foo";
+            chars = "foo".AsExSpan();
             Assert.True(chars.StartsWith(chars[0]));
             Assert.True(chars.StartsWith('f'));
             Assert.False(chars.StartsWith('o'));
 
-            scoped ReadOnlyExSpan<string> strings = [];
+            scoped ReadOnlyExSpan<string> strings = (string[])[];
             Assert.False(strings.StartsWith((string)null));
             Assert.False(strings.StartsWith("foo"));
 
-            strings = ["foo", "bar"];
+            strings = (string[])["foo", "bar"];
             Assert.True(strings.StartsWith(strings[0]));
             Assert.True(strings.StartsWith("foo"));
             Assert.True(strings.StartsWith("*foo".Substring(1)));
             Assert.False(strings.StartsWith("bar"));
             Assert.False(strings.StartsWith((string)null));
 
-            strings = [null, "bar"];
+            strings = (string[])[null, "bar"];
             Assert.True(strings.StartsWith(strings[0]));
             Assert.True(strings.StartsWith((string)null));
             Assert.False(strings.StartsWith("bar"));
         }
+#nullable restore
     }
 }
