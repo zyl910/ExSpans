@@ -30,6 +30,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             }
         }
 
+#if CALL_LARGE
         [Fact]
         public static void TestMatchIndexOfAny_TwoInteger() {
             var rnd = new Random(42);
@@ -66,6 +67,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                 }
             }
         }
+#endif // CALL_LARGE
 
         [Fact]
         public static void TestNoMatchIndexOfAny_TwoInteger() {
@@ -681,6 +683,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(-1, new ReadOnlyExSpan<string>(ArrayHelper.Empty<string>()).IndexOfAny(values, comparer)));
         }
 
+#if CALL_LARGE
         [Fact]
         public static void DefaultFilledIndexOfAny_ManyString() {
             for (int length = 0; length < byte.MaxValue; length++) {
@@ -697,7 +700,6 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             }
         }
 
-#if CALL_LARGE
         [Fact]
         public static void TestMatchIndexOfAny_ManyString() {
             Random rnd = new Random(42);
@@ -740,7 +742,6 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                 }
             }
         }
-#endif // CALL_LARGE
 
         [Fact]
         public static void TestMatchValuesLargerIndexOfAny_ManyString() {
@@ -800,6 +801,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                 Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(-1, new ReadOnlyExSpan<string>(a).IndexOfAny(targets, comparer)));
             }
         }
+#endif // CALL_LARGE
 
         [Fact]
         public static void TestMultipleMatchIndexOfAny_ManyString() {

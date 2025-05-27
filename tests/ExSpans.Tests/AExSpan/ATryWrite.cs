@@ -8,8 +8,8 @@ using Xunit;
 
 namespace Zyl.ExSpans.Tests.AExSpan {
 #nullable disable
-#if NET6_0_OR_GREATER
     public class ATryWrite {
+#if NET6_0_OR_GREATER
         private char[] _largeBuffer = new char[4096];
 
         [Theory]
@@ -653,7 +653,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
 
             public string Format(string format, object arg, IFormatProvider formatProvider) => _value;
         }
-    }
 #endif // NET6_0_OR_GREATER
+    }
 #nullable restore
 }

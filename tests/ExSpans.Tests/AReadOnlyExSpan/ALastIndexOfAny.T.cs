@@ -31,6 +31,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             }
         }
 
+#if CALL_LARGE
         [Fact]
         public static void TestMatchLastIndexOfAny_TwoByte() {
             for (int length = 0; length < byte.MaxValue; length++) {
@@ -67,6 +68,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                 }
             }
         }
+#endif // CALL_LARGE
 
         [Fact]
         public static void TestNoMatchLastIndexOfAny_TwoByte() {
@@ -149,6 +151,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             }
         }
 
+#if CALL_LARGE
         [Fact]
         public static void TestMatchLastIndexOfAny_ThreeByte() {
             for (int length = 0; length < byte.MaxValue; length++) {
@@ -188,6 +191,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                 }
             }
         }
+#endif // CALL_LARGE
 
         [Fact]
         public static void TestNoMatchLastIndexOfAny_ThreeByte() {
@@ -270,6 +274,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             }
         }
 
+#if CALL_LARGE
         [Fact]
         public static void TestMatchLastIndexOfAny_ManyByte() {
             for (int length = 0; length < byte.MaxValue; length++) {
@@ -303,6 +308,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                 }
             }
         }
+#endif // CALL_LARGE
 
         [Fact]
         public static void TestMatchValuesLargerLastIndexOfAny_ManyByte() {
@@ -435,6 +441,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             }
         }
 
+#if CALL_LARGE
         [Fact]
         public static void TestMatchLastIndexOfAny_String_TwoByte() {
             for (int length = 0; length < byte.MaxValue; length++) {
@@ -471,6 +478,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                 }
             }
         }
+#endif // CALL_LARGE
 
         [Fact]
         public static void TestNoMatchLastIndexOfAny_String_TwoByte() {
@@ -554,6 +562,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             }
         }
 
+#if CALL_LARGE
         [Fact]
         public static void TestMatchLastIndexOfAny_String_ThreeByte() {
             for (int length = 0; length < byte.MaxValue; length++) {
@@ -593,6 +602,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                 }
             }
         }
+#endif // CALL_LARGE
 
         [Fact]
         public static void TestNoMatchLastIndexOfAny_String_ThreeByte() {
@@ -676,6 +686,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             }
         }
 
+#if CALL_LARGE
         [Fact]
         public static void TestMatchLastIndexOfAny_String_ManyByte() {
             for (int length = 0; length < byte.MaxValue; length++) {
@@ -709,6 +720,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                 }
             }
         }
+#endif // CALL_LARGE
 
         [Fact]
         public static void TestMatchValuesLargerLastIndexOfAny_String_ManyByte() {

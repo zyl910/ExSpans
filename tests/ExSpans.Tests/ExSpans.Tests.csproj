@@ -31,7 +31,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DefineConstants>$(DefineConstants);CALL_LARGE</DefineConstants>
+    <DefineConstants>$(DefineConstants);CALL_LARGE0</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <DefineConstants>$(DefineConstants);CALL_LARGE</DefineConstants>

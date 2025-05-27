@@ -686,6 +686,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             }
         }
 
+#if CALL_LARGE
         [Fact]
         public static void TestMatchIndexOfAny_ManyString() {
             Random rnd = new Random(42);
@@ -723,6 +724,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 }
             }
         }
+#endif // CALL_LARGE
 
         [Fact]
         public static void TestMatchValuesLargerIndexOfAny_ManyString() {

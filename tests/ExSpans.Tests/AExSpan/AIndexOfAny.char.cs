@@ -70,6 +70,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             }
         }
 
+#if CALL_LARGE
         [Fact]
         public static void TestMatchTwo_Char() {
             for (int length = Vector<short>.Count; length <= byte.MaxValue + 1; length++) {
@@ -101,6 +102,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 }
             }
         }
+#endif // CALL_LARGE
 
         [Fact]
         public static void TestNoMatchTwo_Char() {
@@ -184,6 +186,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             }
         }
 
+#if CALL_LARGE
         [Fact]
         public static void TestMatchThree_Char() {
             for (int length = Vector<short>.Count; length <= byte.MaxValue + 1; length++) {
@@ -217,6 +220,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 }
             }
         }
+#endif // CALL_LARGE
 
         [Fact]
         public static void TestNoMatchThree_Char() {
@@ -301,6 +305,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             }
         }
 
+#if CALL_LARGE
         [Fact]
         public static void TestMatchFour_Char() {
             for (int length = Vector<short>.Count; length <= byte.MaxValue + 1; length++) {
@@ -329,6 +334,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 }
             }
         }
+#endif // CALL_LARGE
 
         [Fact]
         public static void TestNoMatchFour_Char() {
@@ -415,6 +421,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             }
         }
 
+#if CALL_LARGE
         [Fact]
         public static void TestMatchFive_Char() {
             for (int length = Vector<short>.Count; length <= byte.MaxValue + 1; length++) {
@@ -442,6 +449,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 }
             }
         }
+#endif // CALL_LARGE
 
         [Fact]
         public static void TestNoMatchFive_Char() {
