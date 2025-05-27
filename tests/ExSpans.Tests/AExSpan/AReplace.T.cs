@@ -174,7 +174,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
 #if ALLOW_NINDEX
             expected[^1] = _newValue;
 #else
-            span[span.Length - 1] = _newValue;
+            expected[expected.Length - 1] = _newValue;
 #endif // ALLOW_NINDEX
 
             span.Replace(_oldValue, _newValue);
@@ -202,7 +202,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
 #if ALLOW_NINDEX
             expected[^1] = _newValue;
 #else
-            span[span.Length - 1] = _newValue;
+            expected[expected.Length - 1] = _newValue;
 #endif // ALLOW_NINDEX
 
             T[] destination = new T[expected.Length];
