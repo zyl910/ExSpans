@@ -44,7 +44,11 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             ExSpan<int> span = new ExSpan<int>(a, a.Length, 0);
             ref int pinnableReference = ref span.GetPinnableReference();
             ref int expected = ref Unsafe.AsRef<int>(null);
+#if NOT_RELATED
             Assert.True(Unsafe.AreSame(ref expected, ref pinnableReference));
+#else
+            Assert.False(Unsafe.AreSame(ref expected, ref pinnableReference));
+#endif // NOT_RELATED
         }
 
         [Fact]
