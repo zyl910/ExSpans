@@ -18,6 +18,11 @@ namespace Zyl.ExSpans {
     partial class ExSpanHelpers {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static nint IndexOfAnyValueType(ref char searchSpace, char value0, char value1, char value2, char value3, char value4, char value5, TSize length) {
+            return IndexOfAnyValueType<short>(ref Unsafe.As<char, short>(ref searchSpace), (short)value0, (short)value1, (short)value2, (short)value3, (short)value4, (short)value5, length);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static nint IndexOfAnyValueType<T>(ref T searchSpace, T value0, T value1, T value2, T value3, T value4, T value5, TSize length) where T : struct, IEquatable<T>
 #if GENERIC_MATH
                 , INumber<T>
