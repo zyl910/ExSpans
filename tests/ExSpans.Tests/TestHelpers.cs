@@ -1,25 +1,4 @@
-﻿#if SIZE_UINTPTR
-global using TSize = nuint; //System.UIntPtr;
-global using TSize32 = System.UInt32;
-#else
-global using TSize = nint; //System.IntPtr;
-global using TSize32 = System.Int32;
-#endif // SIZE_UINTPTR
-global using TUSize = nuint; //System.UIntPtr;
-
-global using System;
-global using System.Collections.Generic;
-global using System.Linq;
-global using System.Runtime.InteropServices;
-#if NETCOREAPP3_0_OR_GREATER
-global using System.Runtime.Intrinsics;
-global using System.Runtime.Intrinsics.X86;
-#endif // NETCOREAPP3_0_OR_GREATER
-global using Zyl.ExSpans.Impl;
-global using Zyl.ExSpans.Tests.Fake;
-global using Zyl.ExSpans.Tests.Fake.Attributes;
-
-using static System.Buffers.Binary.BinaryPrimitives;
+﻿using static System.Buffers.Binary.BinaryPrimitives;
 using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
@@ -137,7 +116,7 @@ namespace Zyl.ExSpans.Tests {
             // This space intentionally left blank.
         }
 
-#if TODO
+#if NOT_RELATED
         public static void Validate<T>(this Memory<T> memory, params T[] expected) where T : IEquatable<T> {
             Assert.True(memory.ExSpan.SequenceEqual(expected));
         }
@@ -163,7 +142,7 @@ namespace Zyl.ExSpans.Tests {
                 Assert.Same(expected[i], actual);
             }
         }
-#endif // (TODO)
+#endif // NOT_RELATED
 
         public static void Validate<T>(ExSpan<byte> span, T value) where T : struct {
             T read = ExMemoryMarshal.Read<T>(span);
