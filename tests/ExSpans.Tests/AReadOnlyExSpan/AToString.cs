@@ -6,13 +6,13 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
         public static void ToStringInt() {
             int[] a = { 91, 92, 93 };
             var span = new ReadOnlyExSpan<int>(a);
-            Assert.Equal("System.ReadOnlyExSpan<Int32>[3]", span.ToString());
+            Assert.Equal("Zyl.ExSpans.ReadOnlyExSpan<Int32>[3]", span.ToString());
         }
 
         [Fact]
         public static void ToStringInt_Empty() {
             var span = new ReadOnlyExSpan<int>();
-            Assert.Equal("System.ReadOnlyExSpan<Int32>[0]", span.ToString());
+            Assert.Equal("Zyl.ExSpans.ReadOnlyExSpan<Int32>[0]", span.ToString());
         }
 
         [Fact]
@@ -36,7 +36,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
         public static void ToStringForSpanOfString() {
             string[] a = { "a", "b", "c" };
             var span = new ReadOnlyExSpan<string>(a);
-            Assert.Equal("System.ReadOnlyExSpan<String>[3]", span.ToString());
+            Assert.Equal("Zyl.ExSpans.ReadOnlyExSpan<String>[3]", span.ToString());
         }
 
         [Fact]

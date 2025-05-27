@@ -7,13 +7,13 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         public static void ToStringInt() {
             int[] a = { 91, 92, 93 };
             var span = new ExSpan<int>(a);
-            Assert.Equal("System.ExSpan<Int32>[3]", span.ToString());
+            Assert.Equal("Zyl.ExSpans.ExSpan<Int32>[3]", span.ToString());
         }
 
         [Fact]
         public static void ToStringInt_Empty() {
             var span = new ExSpan<int>();
-            Assert.Equal("System.ExSpan<Int32>[0]", span.ToString());
+            Assert.Equal("Zyl.ExSpans.ExSpan<Int32>[0]", span.ToString());
         }
 
         [Fact]
@@ -41,7 +41,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         public static void ToStringForExSpanOfString() {
             string[] a = { "a", "b", "c" };
             var span = new ExSpan<string>(a);
-            Assert.Equal("System.ExSpan<String>[3]", span.ToString());
+            Assert.Equal("Zyl.ExSpans.ExSpan<String>[3]", span.ToString());
         }
 
 #if NOT_RELATED

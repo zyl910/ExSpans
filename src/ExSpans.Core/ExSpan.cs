@@ -411,9 +411,10 @@ namespace Zyl.ExSpans {
         /// </summary>
         /// <seealso cref="ExSpanExtensions.ItemsToString{T}(ExSpan{T}, Func{TSize, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
         public override string ToString() {
-            //if (typeof(T) == typeof(char)) {
-            //    return new string(new ReadOnlySpan<char>(ref Unsafe.As<T, char>(ref _reference), _length));
-            //}
+            if (typeof(T) == typeof(char) && _length.IsLengthInInt32()) {
+                //return new string(new ReadOnlySpan<char>(ref Unsafe.As<T, char>(ref _reference), _length));
+                return ((Span<T>)this).ToString();
+            }
             return $"Zyl.ExSpans.ExSpan<{typeof(T).Name}>[{_length}]";
         }
 
