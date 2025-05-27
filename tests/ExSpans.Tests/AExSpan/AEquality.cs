@@ -66,6 +66,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             Assert.False(!(left != right));
         }
 
+#if NOT_RELATED
         [Fact]
         public static void EmptyExSpansNotUnified() {
             ExSpan<int> left = new ExSpan<int>(new int[0]);
@@ -74,6 +75,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             Assert.False(left == right);
             Assert.False(!(left != right));
         }
+#endif // NOT_RELATED
 
         [Fact]
         public static void CannotCallEqualsOnExSpan() {

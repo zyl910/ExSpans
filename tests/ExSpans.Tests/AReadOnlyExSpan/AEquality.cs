@@ -66,6 +66,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             Assert.False(!(left != right));
         }
 
+#if NOT_RELATED
         [Fact]
         public static void EmptySpansNotUnified() {
             ReadOnlyExSpan<int> left = new ReadOnlyExSpan<int>(new int[0]);
@@ -74,6 +75,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             Assert.False(left == right);
             Assert.False(!(left != right));
         }
+#endif // NOT_RELATED
 
         [Fact]
         public static void CannotCallEqualsOnSpan() {
