@@ -410,7 +410,7 @@ namespace Zyl.ExSpans {
         [MyCLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ReadOnlyExSpan<T> Slice(TSize start) {
-            if (start > _length)
+            if (start.ToUIntPtr() > _length.ToUIntPtr())
                 ThrowHelper.ThrowArgumentOutOfRangeException();
 
             TSize len = _length - start;
