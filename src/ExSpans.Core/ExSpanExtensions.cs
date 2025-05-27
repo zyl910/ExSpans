@@ -253,7 +253,7 @@ namespace Zyl.ExSpans {
                     ThrowHelper.ThrowArgumentOutOfRangeException();
                 return default;
             }
-            if (start >= array.ExLength()) {
+            if ((TUSize)start > (TUSize)(array.ExLength())) {
                 ThrowHelper.ThrowArgumentOutOfRangeException();
             }
             return new ExSpan<T>(array, start, array.ExLength() - start);
