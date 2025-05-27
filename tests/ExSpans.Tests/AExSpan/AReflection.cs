@@ -62,11 +62,11 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             ConstructorInfo ctor = type.GetConstructor(new Type[] { typeof(int[]) });
             Assert.Throws<TargetException>(() => ctor.Invoke(new object[] { new int[10] }));
 
-            ctor = type.GetConstructor(new Type[] { typeof(int[]), typeof(int), typeof(int) });
-            Assert.Throws<TargetException>(() => ctor.Invoke(new object[] { new int[10], 1, 1 }));
+            ctor = type.GetConstructor(new Type[] { typeof(int[]), typeof(TSize), typeof(TSize) });
+            Assert.Throws<TargetException>(() => ctor.Invoke(new object[] { new int[10], (TSize)1, (TSize)1 }));
 
-            ctor = type.GetConstructor(new Type[] { typeof(void*), typeof(int) });
-            Assert.Throws<TargetException>(() => ctor.Invoke(new object[] { null, 1 }));
+            ctor = type.GetConstructor(new Type[] { typeof(void*), typeof(TSize) });
+            Assert.Throws<TargetException>(() => ctor.Invoke(new object[] { null, (TSize)1 }));
         }
 
         [Fact]
@@ -103,11 +103,11 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             ConstructorInfo ctor = type.GetConstructor(new Type[] { typeof(int[]) });
             Assert.Throws<TargetException>(() => ctor.Invoke(new object[] { new int[10] }));
 
-            ctor = type.GetConstructor(new Type[] { typeof(int[]), typeof(int), typeof(int) });
-            Assert.Throws<TargetException>(() => ctor.Invoke(new object[] { new int[10], 1, 1 }));
+            ctor = type.GetConstructor(new Type[] { typeof(int[]), typeof(TSize), typeof(TSize) });
+            Assert.Throws<TargetException>(() => ctor.Invoke(new object[] { new int[10], (TSize)1, (TSize)1 }));
 
-            ctor = type.GetConstructor(new Type[] { typeof(void*), typeof(int) });
-            Assert.Throws<TargetException>(() => ctor.Invoke(new object[] { null, 1 }));
+            ctor = type.GetConstructor(new Type[] { typeof(void*), typeof(TSize) });
+            Assert.Throws<TargetException>(() => ctor.Invoke(new object[] { null, (TSize)1 }));
         }
 
         [Fact]
