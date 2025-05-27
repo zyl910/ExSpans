@@ -1,8 +1,3 @@
-#if DEBUG
-#else
-#define CALL_LARGE
-#endif // DEBUG
-
 using Xunit;
 
 namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {

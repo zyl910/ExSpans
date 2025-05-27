@@ -30,6 +30,12 @@
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DefineConstants>$(DefineConstants);CALL_LARGE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DefineConstants>$(DefineConstants);CALL_LARGE</DefineConstants>
+  </PropertyGroup>
 
   <ItemGroup>
       <PackageReference Include="Microsoft.TestPlatform.TestHost" Version="17.3.3" />
