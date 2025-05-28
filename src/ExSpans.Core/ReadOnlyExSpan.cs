@@ -449,7 +449,7 @@ namespace Zyl.ExSpans {
             return new ReadOnlyExSpan<T>(ref Unsafe.Add(ref _reference, start), length);
 #else
             unsafe {
-                if (_referenceSpan.IsEmpty) {
+                if (_referenceSpan.IsEmpty && length > 0) {
                     return new ReadOnlyExSpan<T>((void*)ExUnsafe.AddPointer<T>(_byteOffset, start), length);
                 } else {
                     return new ReadOnlyExSpan<T>(_referenceSpan, ExUnsafe.AddPointer<T>(_byteOffset, start), length);
