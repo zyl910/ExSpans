@@ -1,3 +1,7 @@
+#if NET7_0_OR_GREATER
+#define STRUCT_REF_FIELD // C# 11 - ref fields and ref scoped variables. https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/ref-struct#ref-fields
+#endif // NET7_0_OR_GREATER
+
 using Xunit;
 
 namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
@@ -43,6 +47,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             Assert.False(!(left != right));
         }
 
+#if STRUCT_REF_FIELD
         [Fact]
         public static void EqualityBasedOnLocationNotConstructor() {
             unsafe {
@@ -56,6 +61,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                 }
             }
         }
+#endif
 
         [Fact]
         public static void EqualityComparesRangeNotContent() {
