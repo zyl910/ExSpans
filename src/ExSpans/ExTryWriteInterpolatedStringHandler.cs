@@ -63,9 +63,7 @@ namespace Zyl.ExSpans {
             _pos = 0;
             _success = shouldAppend = destination.Length >= literalLength;
             _hasCustomFormatter = provider is not null
-#if TODO
-                && DefaultInterpolatedStringHandler.HasCustomFormatter(provider)
-#endif // (TODO)
+                && StringHelper.HasCustomFormatter(provider)
                 ;
         }
 
