@@ -1,3 +1,7 @@
+#if NET7_0_OR_GREATER
+#define STRUCT_REF_FIELD // C# 11 - ref fields and ref scoped variables. https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/ref-struct#ref-fields
+#endif // NET7_0_OR_GREATER
+
 using Xunit;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -17,7 +21,9 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             int[] a = { 90, 91, 92, 93, 94, 95, 96, 97, 98, 99 };
             ExSpan<int> span = new ExSpan<int>(a).Slice(a.Length);
             Assert.Equal(0, span.Length);
+#if STRUCT_REF_FIELD
             Assert.True(Unsafe.AreSame(ref a[a.Length - 1], ref Unsafe.Subtract<int>(ref ExMemoryMarshal.GetReference(span), 1)));
+#endif
         }
 
         [Fact]
@@ -41,7 +47,9 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             int[] a = { 90, 91, 92, 93, 94, 95, 96, 97, 98, 99 };
             ExSpan<int> span = new ExSpan<int>(a).Slice(a.Length, 0);
             Assert.Equal(0, span.Length);
+#if STRUCT_REF_FIELD
             Assert.True(Unsafe.AreSame(ref a[a.Length - 1], ref Unsafe.Subtract<int>(ref ExMemoryMarshal.GetReference(span), 1)));
+#endif
         }
 
         [Fact]
