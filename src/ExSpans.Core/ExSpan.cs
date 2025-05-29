@@ -34,7 +34,7 @@ namespace Zyl.ExSpans {
 #else
         /// <summary>A byte offset of _referenceSpan or a native ptr (_referenceSpan 的偏移, 或是原生指针).</summary>
         internal readonly TSize _byteOffset;
-        /// <summary>A span of reference. It is Empty on native ptr (引用的跨度. 原生指针时它为空).</summary>
+        /// <summary>A span of reference. It is default on native ptr (引用的跨度. 原生指针时它为 default).</summary>
         internal readonly Span<T> _referenceSpan;
 #endif
 
@@ -128,7 +128,7 @@ namespace Zyl.ExSpans {
             _reference = ref Unsafe.AsRef<T>(pointer); // *(T*)pointer;
 #else
             _byteOffset = (TSize)pointer;
-            _referenceSpan = Span<T>.Empty;
+            _referenceSpan = default;
 #endif
         }
 
@@ -189,7 +189,7 @@ namespace Zyl.ExSpans {
                 return ref Unsafe.Add(ref _reference, index);
 #else
                 unsafe {
-                    if (_referenceSpan.IsEmpty) {
+                    if (_referenceSpan == default) {
                         return ref ExUnsafe.Add(ref Unsafe.AsRef<T>((void*)_byteOffset), index);
                     } else {
                         return ref ExUnsafe.Add(ref Unsafe.AddByteOffset(ref _referenceSpan.GetPinnableReference(), IntPtrExtensions.ToIntPtr(_byteOffset)), index);
@@ -311,7 +311,7 @@ namespace Zyl.ExSpans {
             ref T ret = ref Unsafe.NullRef<T>();
             if (_length != (TSize)0) {
                 unsafe {
-                    if (_referenceSpan.IsEmpty) {
+                    if (_referenceSpan == default) {
                         return ref Unsafe.AsRef<T>((void*)_byteOffset);
                     } else {
                         return ref Unsafe.AddByteOffset(ref _referenceSpan.GetPinnableReference(), IntPtrExtensions.ToIntPtr(_byteOffset));
@@ -437,7 +437,7 @@ namespace Zyl.ExSpans {
             return new ExSpan<T>(ref Unsafe.Add(ref _reference, start), len);
 #else
             unsafe {
-                if (_referenceSpan.IsEmpty) {
+                if (_referenceSpan == default) {
                     return new ExSpan<T>((void*)ExUnsafe.AddPointer<T>(_byteOffset, start), len);
                 } else {
                     return new ExSpan<T>(_referenceSpan, ExUnsafe.AddPointer<T>(_byteOffset, start), len);
@@ -467,7 +467,7 @@ namespace Zyl.ExSpans {
             return new ExSpan<T>(ref Unsafe.Add(ref _reference, start), length);
 #else
             unsafe {
-                if (_referenceSpan.IsEmpty && length > 0) {
+                if (_referenceSpan == default) {
                     return new ExSpan<T>((void*)ExUnsafe.AddPointer<T>(_byteOffset, start), length);
                 } else {
                     return new ExSpan<T>(_referenceSpan, ExUnsafe.AddPointer<T>(_byteOffset, start), length);

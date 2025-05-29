@@ -77,8 +77,8 @@ namespace Zyl.ExSpans.Tests.AExSpan {
 
                 fixed (byte* pOuterStart = &Unsafe.As<T, byte>(ref refOuter))
                 fixed (byte* pInnerStart = &Unsafe.As<T, byte>(ref refInner)) {
-                    byte* pOuterEnd = pOuterStart + (uint)outer.Length * (nuint)Unsafe.SizeOf<T>();
-                    byte* pInnerEnd = pInnerStart + (uint)inner.Length * (nuint)Unsafe.SizeOf<T>();
+                    byte* pOuterEnd = pOuterStart + (TUSize)outer.Length * (nuint)Unsafe.SizeOf<T>();
+                    byte* pInnerEnd = pInnerStart + (TUSize)inner.Length * (nuint)Unsafe.SizeOf<T>();
 
                     Assert.True(pOuterStart <= pInnerStart && pInnerStart <= pOuterEnd, "Inner span begins outside outer span.");
                     Assert.True(pOuterStart <= pInnerEnd && pInnerEnd <= pOuterEnd, "Inner span ends outside outer span.");
