@@ -128,7 +128,7 @@ namespace Zyl.ExSpans {
 #endif // INTERNAL && TODO
             ExSpanTooLongException.ThrowIfOutInt32(span.Length);
             ExSpanTooLongException.ThrowIfOutInt32(other.Length);
-            return span.AsReadOnlySpan().IndexOf(other.AsReadOnlySpan(), comparisonType);
+            return span.AsReadOnlySpan().CompareTo(other.AsReadOnlySpan(), comparisonType);
         }
 
         /// <summary>
