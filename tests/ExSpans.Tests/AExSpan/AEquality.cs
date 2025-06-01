@@ -43,6 +43,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             Assert.False(!(left != right));
         }
 
+#if NET7_0_OR_GREATER
         [Fact]
         public static void EqualityBasedOnLocationNotConstructor() {
             unsafe {
@@ -56,6 +57,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 }
             }
         }
+#endif // NET7_0_OR_GREATER
 
         [Fact]
         public static void EqualityComparesRangeNotContent() {
