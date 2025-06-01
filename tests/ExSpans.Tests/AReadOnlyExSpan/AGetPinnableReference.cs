@@ -1,7 +1,3 @@
-#if NET7_0_OR_GREATER
-#define STRUCT_REF_FIELD // C# 11 - ref fields and ref scoped variables. https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/ref-struct#ref-fields
-#endif // NET7_0_OR_GREATER
-
 using System.Runtime.CompilerServices;
 using Xunit;
 
@@ -48,10 +44,10 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             ReadOnlyExSpan<int> span = new ReadOnlyExSpan<int>(a, a.Length, 0);
             ref int pinnableReference = ref Unsafe.AsRef(in span.GetPinnableReference());
             ref int expected = ref Unsafe.AsRef<int>(null);
-#if STRUCT_REF_FIELD
-            Assert.False(Unsafe.AreSame(ref expected, ref pinnableReference));
-#else
+#if NOT_RELATED
             Assert.True(Unsafe.AreSame(ref expected, ref pinnableReference));
+#else
+            Assert.False(Unsafe.AreSame(ref expected, ref pinnableReference));
 #endif // NOT_RELATED
         }
 

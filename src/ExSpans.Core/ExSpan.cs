@@ -308,17 +308,13 @@ namespace Zyl.ExSpans {
             return ref _reference;
 #else
             // Ensure that the native code has just one forward branch that is predicted-not-taken.
-            ref T ret = ref Unsafe.NullRef<T>();
-            if (_length != (TSize)0) {
+            if (_referenceSpan == default) {
                 unsafe {
-                    if (_referenceSpan == default) {
-                        return ref Unsafe.AsRef<T>((void*)_byteOffset);
-                    } else {
-                        return ref Unsafe.AddByteOffset(ref _referenceSpan.GetPinnableReference(), IntPtrExtensions.ToIntPtr(_byteOffset));
-                    }
+                    return ref Unsafe.AsRef<T>((void*)_byteOffset);
                 }
+            } else {
+                return ref Unsafe.AddByteOffset(ref _referenceSpan.GetPinnableReference(), IntPtrExtensions.ToIntPtr(_byteOffset));
             }
-            return ref ret;
 #endif
         }
 
