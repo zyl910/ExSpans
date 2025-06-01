@@ -433,7 +433,7 @@ namespace Zyl.ExSpans {
             return new ExSpan<T>(ref Unsafe.Add(ref _reference, start), len);
 #else
             unsafe {
-                if (_referenceSpan == default) {
+                if (_referenceSpan == default && 0 != _byteOffset) {
                     return new ExSpan<T>((void*)ExUnsafe.AddPointer<T>(_byteOffset, start), len);
                 } else {
                     return new ExSpan<T>(_referenceSpan, ExUnsafe.AddPointer<T>(_byteOffset, start), len);
@@ -463,7 +463,7 @@ namespace Zyl.ExSpans {
             return new ExSpan<T>(ref Unsafe.Add(ref _reference, start), length);
 #else
             unsafe {
-                if (_referenceSpan == default) {
+                if (_referenceSpan == default && 0 != _byteOffset) {
                     return new ExSpan<T>((void*)ExUnsafe.AddPointer<T>(_byteOffset, start), length);
                 } else {
                     return new ExSpan<T>(_referenceSpan, ExUnsafe.AddPointer<T>(_byteOffset, start), length);

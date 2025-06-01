@@ -244,11 +244,13 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(-1, new ReadOnlyExSpan<string>(source, 0, 5).LastIndexOf(value, comparer)));
         }
 
+#nullable disable
         [Theory]
         [MemberData(nameof(TestHelpers.LastIndexOfNullSequenceData), MemberType = typeof(TestHelpers))]
         public static void LastIndexOfNullSequence_String(string[] source, string[] target, int expected) {
             Assert.Equal(expected, new ReadOnlyExSpan<string>(source).LastIndexOf(target));
             Assert.All(GetDefaultEqualityComparers<string>(), comparer => Assert.Equal(expected, new ReadOnlyExSpan<string>(source).LastIndexOf(target, comparer)));
         }
+#nullable restore
     }
 }
