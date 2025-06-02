@@ -25,6 +25,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             Assert.Throws<NotSupportedException>(() => method.Invoke(null, new object[] { "Hello", 1, 1 }));
         }
 
+#if NET7_0_OR_GREATER
         [Fact]
         public static void MemoryExtensions_StaticWithExSpanArguments() {
             Type type = typeof(ExMemoryExtensions);
@@ -42,6 +43,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             method = type.GetMethod(nameof(BinaryPrimitives.TryReadInt16LittleEndian));
             Assert.Throws<NotSupportedException>(() => method.Invoke(null, new object[] { default, null }));
         }
+#endif // NET7_0_OR_GREATER
 
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
         [Fact]
