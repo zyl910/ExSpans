@@ -1,16 +1,9 @@
-﻿using Microsoft.Win32.SafeHandles;
-using System;
+﻿using System;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Runtime.InteropServices;
-using Zyl.ExSpans.Extensions;
 
 namespace Zyl.ExSpans.Sample {
-#if SIZE_UINTPTR
-    using TSize = UIntPtr;
-#else
-    using TSize = IntPtr;
-#endif // SIZE_UINTPTR
 
     internal class Program {
         static void Main(string[] args) {
@@ -74,10 +67,10 @@ namespace Zyl.ExSpans.Sample {
                 // Write.
                 writer.WriteLine($"[TestExSpan-{title}]");
                 span.Fill(0x01020304);
-                span[(TSize)0] = 0x12345678;
+                span[(nint)0] = 0x12345678;
                 // Read.
-                writer.WriteLine(string.Format("Data[0]: {0} // 0x{0:X}", span[(TSize)0]));
-                writer.WriteLine(string.Format("Data[1]: {0} // 0x{0:X}", span[(TSize)1]));
+                writer.WriteLine(string.Format("Data[0]: {0} // 0x{0:X}", span[(nint)0]));
+                writer.WriteLine(string.Format("Data[1]: {0} // 0x{0:X}", span[(nint)1]));
             } catch (Exception ex) {
                 writer.WriteLine(string.Format("Run TestExSpan fail! {0}", ex.ToString()));
             }
@@ -85,7 +78,7 @@ namespace Zyl.ExSpans.Sample {
 
         private static int SumExSpan(ReadOnlyExSpan<int> span) {
             int rt = 0; // Result.
-            for (TSize i = (TSize)0; i < span.Length; i += 1) { // The LessThan method is from `Zyl.ExSpans.Extensions.IntPtrExtensions.LessThan`. Since .NET 7.0, the TSize type has only begin to support the less than operator.
+            for (nint i = (nint)0; i < span.Length; i++) {
                 rt += span[i];
             }
             return rt;
@@ -98,14 +91,14 @@ namespace Zyl.ExSpans.Sample {
         static unsafe void Test2GB(TextWriter writer) {
 #if NET6_0_OR_GREATER
             const uint byteSize = 2U * 1024 * 1024 * 1024; // 2GB
-            TSize bufferSize = (TSize)(byteSize / sizeof(int));
+            nint bufferSize = (nint)(byteSize / sizeof(int));
             // Create ExSpan by Pointer.
             try {
                 void* buffer = NativeMemory.Alloc(byteSize);
                 try {
                     ExSpan<int> sizableSpan = new ExSpan<int>(buffer, bufferSize);
                     TestExSpan(writer, "2GB", sizableSpan);
-                    writer.WriteLine(string.Format("ItemsToString: {0}", sizableSpan.ItemsToString((TSize)16)));
+                    writer.WriteLine(string.Format("ItemsToString: {0}", sizableSpan.ItemsToString((nint)16)));
                     writer.WriteLine();
                 } finally {
                     NativeMemory.Free(buffer);
@@ -132,12 +125,12 @@ namespace Zyl.ExSpans.Sample {
                 writer.WriteLine("[TestMemoryMappedFile]");
                 ExSpan<int> spanInt = spanProvider.CreateExSpan<int>();
                 spanInt.Fill(0x01020304);
-                spanInt[(TSize)0] = 0x12345678;
+                spanInt[(nint)0] = 0x12345678;
                 // Read.
-                writer.WriteLine(string.Format("Data[0]: {0} // 0x{0:X}", spanInt[(TSize)0]));
-                writer.WriteLine(string.Format("Data[1]: {0} // 0x{0:X}", spanInt[(TSize)1]));
+                writer.WriteLine(string.Format("Data[0]: {0} // 0x{0:X}", spanInt[(nint)0]));
+                writer.WriteLine(string.Format("Data[1]: {0} // 0x{0:X}", spanInt[(nint)1]));
                 // Extension methods provided by ExSpanExtensions.
-                writer.WriteLine(string.Format("ItemsToString: {0}", spanProvider.ItemsToString(spanProvider.GetPinnableReadOnlyReference(), (TSize)16)));
+                writer.WriteLine(string.Format("ItemsToString: {0}", spanProvider.ItemsToString(spanProvider.GetPinnableReadOnlyReference(), (nint)16)));
                 // done.
                 writer.WriteLine();
             } catch (Exception ex) {
