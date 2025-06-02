@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 namespace Zyl.ExSpans.Tests.AExSpan {
 #nullable disable
     public static partial class AReflection {
-#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP2_0_OR_GREATER || NET40_OR_GREATER
+#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP2_0_OR_GREATER //|| NET40_OR_GREATER // .NET Framework not support AReflection.
 
         // Calling ExSpan APIs via Reflection is not supported yet.
         // These tests check that using reflection results in graceful failures. See https://github.com/dotnet/runtime/issues/10057
@@ -43,6 +43,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             Assert.Throws<NotSupportedException>(() => method.Invoke(null, new object[] { default, null }));
         }
 
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
         [Fact]
         public static void MemoryMarshal_GenericStaticReturningExSpan() {
             MethodInfo createExSpanMethod = typeof(ExMemoryMarshal).GetMethod(nameof(ExMemoryMarshal.CreateExSpan));
@@ -54,6 +55,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             MethodInfo method = createExSpanMethod.MakeGenericMethod(refIntType);
             Assert.Throws<NotSupportedException>(() => method.Invoke(null, new object[] { null, 0 }));
         }
+#endif // NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
 
         [Fact]
         public static void ExSpan_Constructor() {
