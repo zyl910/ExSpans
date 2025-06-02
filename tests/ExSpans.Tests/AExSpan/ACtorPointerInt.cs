@@ -36,6 +36,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             }
         }
 
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_0_OR_GREATER
         [Fact]
         public static void CtorPointerNoContainsReferenceEnforcement() {
             unsafe {
@@ -45,5 +46,6 @@ namespace Zyl.ExSpans.Tests.AExSpan {
                 AssertExtensions.Throws<ArgumentException>(null, () => new ExSpan<TestHelpers.StructWithReferences>((void*)null, 0).DontBox());
             }
         }
+#endif
     }
 }

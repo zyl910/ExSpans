@@ -36,6 +36,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             }
         }
 
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_0_OR_GREATER
         [Fact]
         public static void CtorPointerNoContainsReferenceEnforcement() {
             unsafe {
@@ -47,5 +48,6 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             }
         }
+#endif
     }
 }
