@@ -18,7 +18,7 @@ namespace Zyl.ExSpans.Extensions {
         [MyCLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TSize ExLength<T>(this T[] source) {
-#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP2_0_OR_GREATER || NET20_OR_GREATER
+#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP2_0_OR_GREATER || NET40_OR_GREATER_OR_GREATER
             return (TSize)source.LongLength;
 #else
             return (TSize)source.Length;

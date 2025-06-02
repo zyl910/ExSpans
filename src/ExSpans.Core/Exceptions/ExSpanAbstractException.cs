@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET20
+#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET40_OR_GREATER
 using System.Runtime.Serialization;
-#endif // NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET20
+#endif // NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET40_OR_GREATER
 using System.Text;
 
 namespace Zyl.ExSpans.Exceptions {
@@ -32,7 +32,7 @@ namespace Zyl.ExSpans.Exceptions {
         protected ExSpanAbstractException(string? message, Exception? inner) : base(message, inner) {
         }
 
-#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET20
+#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET40_OR_GREATER
 #pragma warning disable SYSLIB0051 // Type or member is obsolete
         /// <summary>
         /// Create <see cref="ExSpanAbstractException"/>, with info/context params.
@@ -42,7 +42,7 @@ namespace Zyl.ExSpans.Exceptions {
         protected ExSpanAbstractException(SerializationInfo info, StreamingContext context) : base(info, context) {
         }
 #pragma warning restore SYSLIB0051 // Type or member is obsolete
-#endif // NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET20
+#endif // NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET40_OR_GREATER
 
     }
 }

@@ -17,7 +17,7 @@ namespace Zyl.ExSpans.Impl {
         [Conditional("DEBUG")]
         //[DoesNotReturn]
         public static void Fail(string? message) {
-#if NETSTANDARD1_3_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET20_OR_GREATER
+#if NETSTANDARD1_3_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET40_OR_GREATER_OR_GREATER
             Debug.Fail(message);
 #else
             Debug.WriteLine(message);
@@ -32,7 +32,7 @@ namespace Zyl.ExSpans.Impl {
         [Conditional("DEBUG")]
         //[DoesNotReturn]
         public static void Fail(string? message, string? detailMessage) {
-#if NETSTANDARD1_3_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET20_OR_GREATER
+#if NETSTANDARD1_3_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET40_OR_GREATER_OR_GREATER
             Debug.Fail(message, detailMessage);
 #else
             Debug.WriteLine(message);

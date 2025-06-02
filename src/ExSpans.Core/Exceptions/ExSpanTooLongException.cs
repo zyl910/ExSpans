@@ -4,9 +4,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 
-#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET20
+#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET40_OR_GREATER
 using System.Runtime.Serialization;
-#endif // NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET20
+#endif // NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET40_OR_GREATER
 using System.Text;
 using Zyl.ExSpans.Extensions;
 
@@ -37,7 +37,7 @@ namespace Zyl.ExSpans.Exceptions {
         public ExSpanTooLongException(string? message, Exception? inner) : base(message, inner) {
         }
 
-#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET20
+#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET40_OR_GREATER
 #pragma warning disable SYSLIB0051 // Type or member is obsolete
         /// <summary>
         /// Create <see cref="ExSpanTooLongException"/>, with info/context params.
@@ -47,7 +47,7 @@ namespace Zyl.ExSpans.Exceptions {
         protected ExSpanTooLongException(SerializationInfo info, StreamingContext context) : base(info, context) {
         }
 #pragma warning restore SYSLIB0051 // Type or member is obsolete
-#endif // NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET20
+#endif // NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET40_OR_GREATER
 
         /// <summary>
         /// Throw exceptions constructed from length (抛出根据长度构造的异常).

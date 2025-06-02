@@ -130,7 +130,7 @@ namespace Zyl.ExSpans.Reflection {
         /// <seealso cref="Type.IsEnum"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsEnum(Type atype) {
-#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET20_OR_GREATER
+#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET40_OR_GREATER_OR_GREATER
             return atype.IsEnum;
 #else
             return atype.GetTypeInfo().IsEnum;
@@ -160,7 +160,7 @@ namespace Zyl.ExSpans.Reflection {
         /// <seealso cref="Type.IsGenericType"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsGenericType(Type atype) {
-#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET20_OR_GREATER
+#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET40_OR_GREATER_OR_GREATER
             return atype.IsGenericType;
 #else
             return atype.GetTypeInfo().IsGenericType;
@@ -190,7 +190,7 @@ namespace Zyl.ExSpans.Reflection {
         /// <seealso cref="Type.IsPrimitive"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsPrimitive(Type atype) {
-#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET20_OR_GREATER
+#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET40_OR_GREATER_OR_GREATER
             return atype.IsPrimitive;
 #else
             return atype.GetTypeInfo().IsPrimitive;
@@ -242,7 +242,7 @@ namespace Zyl.ExSpans.Reflection {
         /// <seealso cref="Type.IsValueType"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsValueType(Type atype) {
-#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET20_OR_GREATER
+#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET40_OR_GREATER_OR_GREATER
             return atype.IsValueType;
 #else
             return atype.GetTypeInfo().IsValueType;

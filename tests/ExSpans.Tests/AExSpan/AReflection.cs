@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 namespace Zyl.ExSpans.Tests.AExSpan {
 #nullable disable
     public static partial class AReflection {
-#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP2_0_OR_GREATER || NET20
+#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP2_0_OR_GREATER || NET40_OR_GREATER
 
         // Calling ExSpan APIs via Reflection is not supported yet.
         // These tests check that using reflection results in graceful failures. See https://github.com/dotnet/runtime/issues/10057
@@ -163,7 +163,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             Assert.Throws<NotSupportedException>(() => method.Invoke(manager, null));
         }
 #endif // NOT_RELATED
-#endif // NETSTANDARD2_0_OR_GREATER || NETCOREAPP2_0_OR_GREATER || NET20
+#endif // NETSTANDARD2_0_OR_GREATER || NETCOREAPP2_0_OR_GREATER || NET40_OR_GREATER
     }
 #nullable restore
 }

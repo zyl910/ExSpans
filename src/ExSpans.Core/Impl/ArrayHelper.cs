@@ -32,14 +32,14 @@ namespace Zyl.ExSpans.Impl {
             }
 
             if (!TypeHelper.IsValueType<T>() && array.GetType() != typeof(T[])) {
-#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP2_0_OR_GREATER || NET20_OR_GREATER
+#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP2_0_OR_GREATER || NET40_OR_GREATER_OR_GREATER
                 if (array.LongLength >= int.MaxValue) {
                     for (nint i = 0; i < (nint)array.LongLength; i++) {
                         array[i] = value;
                     }
                     return;
                 }
-#endif // NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET20_OR_GREATER
+#endif // NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET40_OR_GREATER_OR_GREATER
                 for (int i = 0; i < array.Length; i++) {
                     array[i] = value;
                 }
