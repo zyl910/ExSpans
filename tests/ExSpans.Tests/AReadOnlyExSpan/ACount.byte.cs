@@ -219,7 +219,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
 #if NETCOREAPP1_0_OR_GREATER || NETSTANDARD2_0_OR_GREATER || NET461_OR_GREATER
                 a[0] = a[1] = a[^1] = a[^2] = 99;
 #else
-                a[0] = a[1] = a[length - 1] = a[length - 2] = 99;
+                a[0] = a[1] = a[a.Length - 1] = a[a.Length - 2] = 99;
 #endif // NETCOREAPP1_0_OR_GREATER || NETSTANDARD2_0_OR_GREATER || NET461_OR_GREATER
 
                 var span = new ReadOnlyExSpan<byte>(a, 2, length);
