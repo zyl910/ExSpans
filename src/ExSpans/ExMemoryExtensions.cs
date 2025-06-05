@@ -27,7 +27,7 @@ using Zyl.VectorTraits;
 
 namespace Zyl.ExSpans {
     /// <summary>
-    /// Provides extension methods for the span-related types, such as <see cref="ExSpan{T}"/> and <see cref="ReadOnlyExSpan{T}"/>. It can be regarded as the <see cref="MemoryExtensions"/> of <see cref="TSize"/> index range (提供跨度相关的类型的扩展方法，例如 <see cref="ExSpan{T}"/> 和 <see cref="ReadOnlyExSpan{T}"/>. 它可以被视为 <see cref="TSize"/> 索引范围的 MemoryExtensions).
+    /// Provides extension methods for the span-related types, such as <see cref="ExSpan{T}"/> and <see cref="ReadOnlyExSpan{T}"/>. It can be regarded as the <see cref="MemoryExtensions"/> of <see cref="TSize"/> index range (提供跨度相关类型的扩展方法，例如 <see cref="ExSpan{T}"/> 和 <see cref="ReadOnlyExSpan{T}"/>. 它可以被视为 <see cref="TSize"/> 索引范围的 MemoryExtensions).
     /// </summary>
     /// <remarks>
     /// <para>Commonly extension methods such as <see cref="ExSpanExtensions.AsExSpan{T}(T[])">AsExSpan</see> are located in <see cref="ExSpanExtensions"/> (AsExSpan 等常用扩展方法位于 ExSpanExtensions).</para>

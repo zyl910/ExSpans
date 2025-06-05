@@ -1,4 +1,4 @@
-# ExSpans: Extended spans of IntPtr type indexes (IntPtr 类型索引的扩展跨度).
+# ExSpans: Extended spans of nint index range (nint 索引范围的扩展跨度).
 
 - [README](../README.md)
 - [README_Chinese](../README_Chinese.md)
