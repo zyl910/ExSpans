@@ -11,6 +11,10 @@
         }
       ],
       "dest": "api",
+      "properties": {
+        "TargetFramework": "net8.0",
+        "DefineConstants": "NETCOREAPP2_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NET5_0_OR_GREATE;NET6_0_OR_GREATE;NET7_0_OR_GREATE;NET8_0_OR_GREATER"
+      },
       "includePrivateMembers": false,
       "disableGitFeatures": false,
       "disableDefaultFilter": false,
