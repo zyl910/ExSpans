@@ -15,7 +15,7 @@ namespace Zyl.ExSpans.Reflection {
     public enum TypeNameFlags {
         /// <summary>Default (默认).</summary>
         Default = 0,
-        /// <summary>Raw type name (原始类型名). Returns <see cref="Type.FullName"/> or <see cref="Type.Name"/>.</summary>
+        /// <summary>Raw type name (原始类型名). Returns <see cref="Type.FullName">Type.FullName</see> or <see cref="Type.Name">Type.Name</see>.</summary>
         Raw = 1 << 0, // 1
         /// <summary>Do not use keyword type names. For example, instead of `long`, use `Int64` (不使用关键字类型名. 例如不使用 `long`, 而是使用 `Int64`).</summary>
         NoKeyword = 1 << 1, // 2

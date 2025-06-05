@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Zyl.ExSpans.Reflection;
 
 namespace Zyl.ExSpans {
     /// <summary>
     /// The formaters of each item (各项的格式化器集).
     /// </summary>
-    /// <seealso cref="ExSpanExtensions.ItemsToString{T}(ReadOnlyExSpan{T}, Func{nuint, T, string}?, bool)"/>
+    /// <seealso cref="ExSpanExtensions.ItemsToString{T}(ReadOnlyExSpan{T}, Func{nint, T, string}?, ItemsToStringFlags, TypeNameFlags)"/>
     public static class ItemFormaters {
 
         /// <summary>

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Zyl.ExSpans.Impl {
     /// <summary>
-    /// <see cref="BitOperations"/> Helper.
+    /// <see cref="System.Numerics.BitOperations"/> Helper.
     /// </summary>
     public static class BitOperationsHelper {
 
