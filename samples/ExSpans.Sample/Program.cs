@@ -89,24 +89,22 @@ namespace Zyl.ExSpans.Sample {
         /// </summary>
         /// <param name="writer">The <see cref="TextWriter"/>.</param>
         static unsafe void Test2GB(TextWriter writer) {
-#if NET6_0_OR_GREATER
             const uint byteSize = 2U * 1024 * 1024 * 1024; // 2GB
             nint bufferSize = (nint)(byteSize / sizeof(int));
             // Create ExSpan by Pointer.
             try {
-                void* buffer = NativeMemory.Alloc(byteSize);
+                void* buffer = ExNativeMemory.Alloc(byteSize);
                 try {
                     ExSpan<int> sizableSpan = new ExSpan<int>(buffer, bufferSize);
                     TestExSpan(writer, "2GB", sizableSpan);
                     writer.WriteLine(string.Format("ItemsToString: {0}", sizableSpan.ItemsToString((nint)16)));
                     writer.WriteLine();
                 } finally {
-                    NativeMemory.Free(buffer);
+                    ExNativeMemory.Free(buffer);
                 }
             } catch (Exception ex) {
                 writer.WriteLine(string.Format("Run Test2GB fail! {0}", ex.ToString()));
             }
-#endif // NET6_0_OR_GREATER
         }
 
         /// <summary>
