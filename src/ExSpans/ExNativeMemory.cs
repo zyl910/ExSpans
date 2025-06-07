@@ -173,7 +173,13 @@ namespace Zyl.ExSpans {
             if (byteCountUsed < 0) {
                 throw new OutOfMemoryException(string.Format("There is insufficient memory to satisfy the request. The byteCount is {0}.", byteCount));
             }
-            nint result = Marshal.ReAllocHGlobal((nint)ptr, byteCountUsed);
+            nint result;
+            if (null != ptr) {
+                result = Marshal.ReAllocHGlobal((nint)ptr, byteCountUsed);
+            } else {
+                // It is used for unit test ReallocNullPtrTest compatible with NativeMemory.
+                result = Marshal.AllocHGlobal(byteCountUsed);
+            }
             return (void*)result;
 #endif // NET6_0_OR_GREATER
         }
