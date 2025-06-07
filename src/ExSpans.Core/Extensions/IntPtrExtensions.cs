@@ -17,6 +17,28 @@ namespace Zyl.ExSpans.Extensions {
     /// </summary>
     public static class IntPtrExtensions {
 
+        /// <summary>
+        /// Represents the largest possible value of <see cref="nint"/> (表示 <see cref="nint"/> 的最大可能值).
+        /// </summary>
+        [CLSCompliant(false)]
+        public static readonly nint IntPtrMaxValue =
+#if NET5_0_OR_GREATER
+            nint.MaxValue;
+#else
+            (nint)(~(nuint)0 >> 1); // (4 == IntPtr.Size) ? (nint)int.MaxValue : (nint)long.MaxValue;
+#endif // NET5_0_OR_GREATER
+
+        /// <summary>
+        /// Represents the largest possible value of <see cref="nuint"/> (表示 <see cref="nuint"/> 的最大可能值).
+        /// </summary>
+        [CLSCompliant(false)]
+        public static readonly nuint UIntPtrMaxValue =
+#if NET5_0_OR_GREATER
+            nuint.MaxValue;
+#else
+            ~(nuint)0;
+#endif // NET5_0_OR_GREATER
+
 #if ALLOW_OBSOLETE
         /// <summary>
         /// Add (加法). <c>left + right</c>.
@@ -95,39 +117,39 @@ namespace Zyl.ExSpans.Extensions {
         }
 #endif // NET5_0_OR_GREATER
 
-//        /// <summary>
-//        /// Indicates whether the current object is equal to another object of the same type (指示当前对象是否等于同一类型的另一个对象).
-//        /// </summary>
-//        /// <param name="left">Left value (左值).</param>
-//        /// <param name="right">Right value (右值).</param>
-//        /// <returns><see langword="true"/> if equal; otherwise, <see langword="false"/></returns>
-//        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-//        public static bool Equals(this nint left, nint right) {
-//#if GENERIC_MATH
-//            return left == right;
-//#else
-//            unsafe {
-//                return (void*)left == (void*)right;
-//            }
-//#endif
-//        }
+        //        /// <summary>
+        //        /// Indicates whether the current object is equal to another object of the same type (指示当前对象是否等于同一类型的另一个对象).
+        //        /// </summary>
+        //        /// <param name="left">Left value (左值).</param>
+        //        /// <param name="right">Right value (右值).</param>
+        //        /// <returns><see langword="true"/> if equal; otherwise, <see langword="false"/></returns>
+        //        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //        public static bool Equals(this nint left, nint right) {
+        //#if GENERIC_MATH
+        //            return left == right;
+        //#else
+        //            unsafe {
+        //                return (void*)left == (void*)right;
+        //            }
+        //#endif
+        //        }
 
-//        /// <summary>
-//        /// Indicates whether the current object is equal to another object of the same type (指示当前对象是否等于同一类型的另一个对象).
-//        /// </summary>
-//        /// <param name="left">Left value (左值).</param>
-//        /// <param name="right">Right value (右值).</param>
-//        /// <returns><see langword="true"/> if equal; otherwise, <see langword="false"/></returns>
-//        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-//        public static bool Equals(this nuint left, nuint right) {
-//#if GENERIC_MATH
-//            return left == right;
-//#else
-//            unsafe {
-//                return (void*)left == (void*)right;
-//            }
-//#endif
-//        }
+        //        /// <summary>
+        //        /// Indicates whether the current object is equal to another object of the same type (指示当前对象是否等于同一类型的另一个对象).
+        //        /// </summary>
+        //        /// <param name="left">Left value (左值).</param>
+        //        /// <param name="right">Right value (右值).</param>
+        //        /// <returns><see langword="true"/> if equal; otherwise, <see langword="false"/></returns>
+        //        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //        public static bool Equals(this nuint left, nuint right) {
+        //#if GENERIC_MATH
+        //            return left == right;
+        //#else
+        //            unsafe {
+        //                return (void*)left == (void*)right;
+        //            }
+        //#endif
+        //        }
 
 #if ALLOW_OBSOLETE
         /// <summary>
