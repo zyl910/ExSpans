@@ -8,7 +8,7 @@ using Zyl.ExSpans.Impl;
 
 namespace Zyl.ExSpans {
     /// <summary>
-    /// This class contains methods that are mainly used to manage native memory. It can enable early versions NET can also use the method of <see cref="NativeMemory"/> (此类包含了主要用于管理本机内存的方法. 它能使早期版本的 .NET 也能使用 <see cref="NativeMemory"/> 的方法).
+    /// This class contains methods that are mainly used to manage native memory. It can enable early versions NET can also use the method of <see cref="NativeMemory"/>, which will revert back to the implementation of <see cref="Marshal.AllocHGlobal(IntPtr)"/> (此类包含了主要用于管理本机内存的方法. 它能使早期版本的 .NET 也能使用 <see cref="NativeMemory"/> 的方法, 此时会回退为 <see cref="Marshal.AllocHGlobal(IntPtr)"/> 的实现).
     /// </summary>
     public static class ExNativeMemory {
 
@@ -22,14 +22,16 @@ namespace Zyl.ExSpans {
         /// </remarks>
         [CLSCompliant(false)]
         public unsafe static void* Alloc(nuint byteCount) {
-            // The Windows implementation handles size == 0 as we expect
-            void* result = Interop.Ucrtbase.malloc(byteCount);
-
-            if (result == null) {
-                ThrowHelper.ThrowOutOfMemoryException();
+#if NET6_0_OR_GREATER
+            return NativeMemory.Alloc(byteCount);
+#else
+            nint byteCountUsed = (nint)byteCount;
+            if (byteCountUsed < 0) {
+                throw new OutOfMemoryException(string.Format("There is insufficient memory to satisfy the request. The byteCount is {0}.", byteCount));
             }
-
-            return result;
+            nint result = Marshal.AllocHGlobal(byteCountUsed);
+            return (void*)result;
+#endif // NET6_0_OR_GREATER
         }
 
         /// <summary>Allocates a block of memory of the specified size, in elements.</summary>
@@ -43,8 +45,12 @@ namespace Zyl.ExSpans {
         /// </remarks>
         [CLSCompliant(false)]
         public unsafe static void* Alloc(nuint elementCount, nuint elementSize) {
+#if NET6_0_OR_GREATER
+            return NativeMemory.Alloc(elementCount, elementSize);
+#else
             nuint byteCount = GetByteCount(elementCount, elementSize);
             return Alloc(byteCount);
+#endif // NET6_0_OR_GREATER
         }
 
         /// <summary>Allocates and zeroes a block of memory of the specified size, in bytes.</summary>
@@ -57,7 +63,13 @@ namespace Zyl.ExSpans {
         /// </remarks>
         [CLSCompliant(false)]
         public unsafe static void* AllocZeroed(nuint byteCount) {
-            return AllocZeroed(byteCount, elementSize: 1);
+#if NET6_0_OR_GREATER
+            return NativeMemory.AllocZeroed(byteCount);
+#else
+            void* result = Alloc(byteCount);
+            Clear(result, byteCount);
+            return result;
+#endif // NET6_0_OR_GREATER
         }
 
         /// <summary>Allocates and zeroes a block of memory of the specified size, in elements.</summary>
@@ -71,14 +83,12 @@ namespace Zyl.ExSpans {
         /// </remarks>
         [CLSCompliant(false)]
         public unsafe static void* AllocZeroed(nuint elementCount, nuint elementSize) {
-            // The Windows implementation handles num == 0 && size == 0 as we expect
-            void* result = Interop.Ucrtbase.calloc(elementCount, elementSize);
-
-            if (result == null) {
-                ThrowHelper.ThrowOutOfMemoryException();
-            }
-
-            return result;
+#if NET6_0_OR_GREATER
+            return NativeMemory.AllocZeroed(elementCount, elementSize);
+#else
+            nuint byteCount = GetByteCount(elementCount, elementSize);
+            return AllocZeroed(byteCount);
+#endif // NET6_0_OR_GREATER
         }
 
         /// <summary>Clears a block of memory.</summary>
@@ -125,9 +135,12 @@ namespace Zyl.ExSpans {
         /// </remarks>
         [CLSCompliant(false)]
         public unsafe static void Free(void* ptr) {
-            if (ptr != null) {
-                Interop.Ucrtbase.free(ptr);
-            }
+#if NET6_0_OR_GREATER
+            NativeMemory.Free(ptr);
+#else
+            if (null == ptr) return;
+            Marshal.FreeHGlobal((nint)ptr);
+#endif // NET6_0_OR_GREATER
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -147,20 +160,22 @@ namespace Zyl.ExSpans {
         /// <returns>A pointer to the reallocated block of memory.</returns>
         /// <exception cref="OutOfMemoryException">Reallocating <paramref name="byteCount" /> of memory failed.</exception>
         /// <remarks>
-        ///     <para>This method acts as <see cref="Alloc" /> if <paramref name="ptr" /> is <c>null</c>.</para>
+        ///     <para>This method acts as <see cref="Alloc(nuint)" /> if <paramref name="ptr" /> is <c>null</c>.</para>
         ///     <para>This method allows <paramref name="byteCount" /> to be <c>0</c> and will return a valid pointer that should not be dereferenced and that should be passed to free to avoid memory leaks.</para>
         ///     <para>This method is a thin wrapper over the C <c>realloc</c> API.</para>
         /// </remarks>
         [CLSCompliant(false)]
         public unsafe static void* Realloc(void* ptr, nuint byteCount) {
-            // The Windows implementation treats size == 0 as Free, we want an "empty" allocation
-            void* result = Interop.Ucrtbase.realloc(ptr, (byteCount != 0) ? byteCount : 1);
-
-            if (result == null) {
-                ThrowHelper.ThrowOutOfMemoryException();
+#if NET6_0_OR_GREATER
+            return NativeMemory.Realloc(ptr, byteCount);
+#else
+            nint byteCountUsed = (nint)byteCount;
+            if (byteCountUsed < 0) {
+                throw new OutOfMemoryException(string.Format("There is insufficient memory to satisfy the request. The byteCount is {0}.", byteCount));
             }
-
-            return result;
+            nint result = Marshal.ReAllocHGlobal((nint)ptr, byteCountUsed);
+            return (void*)result;
+#endif // NET6_0_OR_GREATER
         }
 
     }
