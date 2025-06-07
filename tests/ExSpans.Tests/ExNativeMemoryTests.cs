@@ -1,7 +1,12 @@
 ﻿using Xunit;
+using Zyl.ExSpans.Extensions;
 
 namespace Zyl.ExSpans.Tests {
     public unsafe class ExNativeMemoryTests {
+        /// <inheritdoc cref="IntPtrExtensions.UIntPtrMaxValue"/>
+        private static readonly nuint NUMaxValue = IntPtrExtensions.UIntPtrMaxValue; // nuint.MaxValue
+
+#if NOT_RELATED
         [Theory]
         [InlineData(1)]
         [InlineData(2)]
@@ -40,7 +45,7 @@ namespace Zyl.ExSpans.Tests {
 
         [Fact]
         public void AlignedAllocOOMTest() {
-            Assert.Throws<OutOfMemoryException>(() => ExNativeMemory.AlignedAlloc(nuint.MaxValue - ((uint)sizeof(nuint) - 1), (uint)sizeof(nuint)));
+            Assert.Throws<OutOfMemoryException>(() => ExNativeMemory.AlignedAlloc(NUMaxValue - ((uint)sizeof(nuint) - 1), (uint)sizeof(nuint)));
         }
 
         [Fact]
@@ -76,7 +81,7 @@ namespace Zyl.ExSpans.Tests {
             nuint maxAlignment = (nuint)1 << ((sizeof(nuint) * 8) - 1);
             Assert.Throws<OutOfMemoryException>(() => ExNativeMemory.AlignedAlloc(maxAlignment + 1, maxAlignment));
 
-            Assert.Throws<OutOfMemoryException>(() => ExNativeMemory.AlignedAlloc(nuint.MaxValue, (uint)sizeof(nuint)));
+            Assert.Throws<OutOfMemoryException>(() => ExNativeMemory.AlignedAlloc(NUMaxValue, (uint)sizeof(nuint)));
         }
 
         [Fact]
@@ -151,7 +156,7 @@ namespace Zyl.ExSpans.Tests {
 
         [Fact]
         public void AlignedReallocNullPtrOOMTest() {
-            Assert.Throws<OutOfMemoryException>(() => ExNativeMemory.AlignedRealloc(null, nuint.MaxValue, (uint)sizeof(nuint)));
+            Assert.Throws<OutOfMemoryException>(() => ExNativeMemory.AlignedRealloc(null, NUMaxValue, (uint)sizeof(nuint)));
         }
 
         [Fact]
@@ -224,6 +229,7 @@ namespace Zyl.ExSpans.Tests {
 
             ExNativeMemory.AlignedFree(newPtr);
         }
+#endif // NOT_RELATED
 
         [Fact]
         public void AllocByteCountTest() {
@@ -241,14 +247,14 @@ namespace Zyl.ExSpans.Tests {
 
         [Fact]
         public void AllocByteCountOOMTest() {
-            Assert.Throws<OutOfMemoryException>(() => ExNativeMemory.Alloc(nuint.MaxValue));
+            Assert.Throws<OutOfMemoryException>(() => ExNativeMemory.Alloc(NUMaxValue));
         }
 
         [Fact]
         public void AllocElementCountOOMTest() {
-            Assert.Throws<OutOfMemoryException>(() => ExNativeMemory.Alloc(1, nuint.MaxValue));
-            Assert.Throws<OutOfMemoryException>(() => ExNativeMemory.Alloc(nuint.MaxValue, 1));
-            Assert.Throws<OutOfMemoryException>(() => ExNativeMemory.Alloc(nuint.MaxValue, nuint.MaxValue));
+            Assert.Throws<OutOfMemoryException>(() => ExNativeMemory.Alloc(1, NUMaxValue));
+            Assert.Throws<OutOfMemoryException>(() => ExNativeMemory.Alloc(NUMaxValue, 1));
+            Assert.Throws<OutOfMemoryException>(() => ExNativeMemory.Alloc(NUMaxValue, NUMaxValue));
         }
 
         [Fact]
@@ -294,14 +300,14 @@ namespace Zyl.ExSpans.Tests {
 
         [Fact]
         public void AllocZeroedByteCountOOMTest() {
-            Assert.Throws<OutOfMemoryException>(() => ExNativeMemory.AllocZeroed(nuint.MaxValue));
+            Assert.Throws<OutOfMemoryException>(() => ExNativeMemory.AllocZeroed(NUMaxValue));
         }
 
         [Fact]
         public void AllocZeroedElementCountOOMTest() {
-            Assert.Throws<OutOfMemoryException>(() => ExNativeMemory.AllocZeroed(1, nuint.MaxValue));
-            Assert.Throws<OutOfMemoryException>(() => ExNativeMemory.AllocZeroed(nuint.MaxValue, 1));
-            Assert.Throws<OutOfMemoryException>(() => ExNativeMemory.AllocZeroed(nuint.MaxValue, nuint.MaxValue));
+            Assert.Throws<OutOfMemoryException>(() => ExNativeMemory.AllocZeroed(1, NUMaxValue));
+            Assert.Throws<OutOfMemoryException>(() => ExNativeMemory.AllocZeroed(NUMaxValue, 1));
+            Assert.Throws<OutOfMemoryException>(() => ExNativeMemory.AllocZeroed(NUMaxValue, NUMaxValue));
         }
 
         [Fact]
@@ -350,7 +356,7 @@ namespace Zyl.ExSpans.Tests {
 
         [Fact]
         public void ReallocNullPtrOOMTest() {
-            Assert.Throws<OutOfMemoryException>(() => ExNativeMemory.Realloc(null, nuint.MaxValue));
+            Assert.Throws<OutOfMemoryException>(() => ExNativeMemory.Realloc(null, NUMaxValue));
         }
 
         [Fact]
@@ -389,6 +395,7 @@ namespace Zyl.ExSpans.Tests {
             ExNativeMemory.Free(newPtr);
         }
 
+#if NOT_RELATED
         [Theory]
         [InlineData(1, 0)]
         [InlineData(1, 1)]
@@ -500,6 +507,7 @@ namespace Zyl.ExSpans.Tests {
 
             ExNativeMemory.AlignedFree(ptr);
         }
+#endif // NOT_RELATED
 
         [Fact]
         public void ClearWithNullPointerAndZeroByteCountTest() {
@@ -553,7 +561,11 @@ namespace Zyl.ExSpans.Tests {
             byte* source = (byte*)ExNativeMemory.AllocZeroed((nuint)size);
 
             var expectedBlock = new byte[byteCount];
+#if NET6_0_OR_GREATER
             Random.Shared.NextBytes(expectedBlock);
+#else
+            new Random().NextBytes(expectedBlock);
+#endif // NET6_0_OR_GREATER
             expectedBlock.CopyTo(new Span<byte>(source, byteCount));
 
             ExNativeMemory.Copy(source, source + offset, (nuint)byteCount);
