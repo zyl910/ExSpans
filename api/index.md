@@ -10,3 +10,4 @@ Commonly used types of `ExSpans.Core.dll`:
 Commonly used types of `ExSpans.dll`:
 
 - [ExMemoryExtensions](Zyl.ExSpans.ExMemoryExtensions.yml): Provides extension methods for the span-related types, such as ExSpan<T> and ReadOnlyExSpan<T>. It can be regarded as the MemoryExtensions of nint index range (提供跨度相关类型的扩展方法，例如 ExSpan<T> 和 ReadOnlyExSpan<T>. 它可以被视为 nint 索引范围的 MemoryExtensions).
+- [ExNativeMemory](Zyl.ExSpans.ExNativeMemory.yml): This class contains methods that are mainly used to manage native memory. It can enable early versions NET can also use the method of <see cref="NativeMemory"/>, which will revert back to the implementation of <see cref="Marshal.AllocHGlobal(IntPtr)"/> (此类包含了主要用于管理本机内存的方法. 它能使早期版本的 .NET 也能使用 <see cref="NativeMemory"/> 的方法, 此时会回退为 <see cref="Marshal.AllocHGlobal(IntPtr)"/> 的实现).
