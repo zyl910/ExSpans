@@ -2,11 +2,9 @@
 
 using BenchmarkDotNet.Attributes;
 using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
-using Zyl.ExSpans.Extensions;
 
 namespace Zyl.ExSpans.Benchmarks.AExSpan {
 #if BENCHMARKS_OFF
@@ -109,8 +107,8 @@ namespace Zyl.ExSpans.Benchmarks.AExSpan {
         public static TMy StaticSumForExSpan(TMy[] src, int srcCount) {
             TMy rt = 0; // Result.
             nint srcCountCur = srcCount;
-            ExSpan<TMy> span = new ExSpan<TMy>(src, (nint)0, srcCountCur);
-            for (nint i = 0; i < srcCountCur; i += 1) {
+            ExSpan<TMy> span = new ExSpan<TMy>(src, 0, srcCountCur);
+            for (nint i = 0; i < srcCountCur; ++i) {
                 rt += span[i];
             }
             return rt;
@@ -138,7 +136,7 @@ namespace Zyl.ExSpans.Benchmarks.AExSpan {
             nint srcCountCur = srcCount;
             fixed (TMy* p0 = &src[0]) {
                 ExSpan<TMy> span = new ExSpan<TMy>(p0, srcCountCur);
-                for (nint i = 0; i < srcCountCur; i += 1) {
+                for (nint i = 0; i < srcCountCur; ++i) {
                     rt += span[i];
                 }
             }
@@ -161,7 +159,7 @@ namespace Zyl.ExSpans.Benchmarks.AExSpan {
         public static unsafe TMy StaticSumForExSpanUsePtr(TMy[] src, int srcCount) {
             TMy rt = 0; // Result.
             nint srcCountCur = srcCount;
-            ExSpan<TMy> span = new ExSpan<TMy>(src, (nint)0, srcCountCur);
+            ExSpan<TMy> span = new ExSpan<TMy>(src, 0, srcCountCur);
             fixed (TMy* p0 = &span.GetPinnableReference()) {
                 TMy* pEnd = p0 + srcCount;
                 TMy* p = p0;
@@ -187,7 +185,7 @@ namespace Zyl.ExSpans.Benchmarks.AExSpan {
         public static TMy StaticSumForExSpanUseRef(TMy[] src, int srcCount) {
             TMy rt = 0; // Result.
             nint srcCountCur = srcCount;
-            ExSpan<TMy> span = new ExSpan<TMy>(src, (nint)0, srcCountCur);
+            ExSpan<TMy> span = new ExSpan<TMy>(src, 0, srcCountCur);
             ref TMy p0 = ref span.GetPinnableReference(); // Or `ref TMy p0 = ref span[0]`.
             ref TMy pEnd = ref Unsafe.Add(ref p0, srcCount);
             ref TMy p = ref p0;
