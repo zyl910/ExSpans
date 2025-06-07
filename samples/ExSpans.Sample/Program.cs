@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.IO.MemoryMappedFiles;
-using System.Runtime.InteropServices;
+using Zyl.ExSpans;
 
 namespace Zyl.ExSpans.Sample {
 
@@ -67,10 +67,10 @@ namespace Zyl.ExSpans.Sample {
                 // Write.
                 writer.WriteLine($"[TestExSpan-{title}]");
                 span.Fill(0x01020304);
-                span[(nint)0] = 0x12345678;
+                span[0] = 0x12345678;
                 // Read.
-                writer.WriteLine(string.Format("Data[0]: {0} // 0x{0:X}", span[(nint)0]));
-                writer.WriteLine(string.Format("Data[1]: {0} // 0x{0:X}", span[(nint)1]));
+                writer.WriteLine(string.Format("Data[0]: {0} // 0x{0:X}", span[0]));
+                writer.WriteLine(string.Format("Data[1]: {0} // 0x{0:X}", span[1]));
             } catch (Exception ex) {
                 writer.WriteLine(string.Format("Run TestExSpan fail! {0}", ex.ToString()));
             }
@@ -78,7 +78,7 @@ namespace Zyl.ExSpans.Sample {
 
         private static int SumExSpan(ReadOnlyExSpan<int> span) {
             int rt = 0; // Result.
-            for (nint i = (nint)0; i < span.Length; i++) {
+            for (nint i = 0; i < span.Length; i++) {
                 rt += span[i];
             }
             return rt;
@@ -123,12 +123,12 @@ namespace Zyl.ExSpans.Sample {
                 writer.WriteLine("[TestMemoryMappedFile]");
                 ExSpan<int> spanInt = spanProvider.CreateExSpan<int>();
                 spanInt.Fill(0x01020304);
-                spanInt[(nint)0] = 0x12345678;
+                spanInt[0] = 0x12345678;
                 // Read.
-                writer.WriteLine(string.Format("Data[0]: {0} // 0x{0:X}", spanInt[(nint)0]));
-                writer.WriteLine(string.Format("Data[1]: {0} // 0x{0:X}", spanInt[(nint)1]));
+                writer.WriteLine(string.Format("Data[0]: {0} // 0x{0:X}", spanInt[0]));
+                writer.WriteLine(string.Format("Data[1]: {0} // 0x{0:X}", spanInt[1]));
                 // Extension methods provided by ExSpanExtensions.
-                writer.WriteLine(string.Format("ItemsToString: {0}", spanProvider.ItemsToString(spanProvider.GetPinnableReadOnlyReference(), (nint)16)));
+                writer.WriteLine(string.Format("ItemsToString: {0}", spanProvider.ItemsToString(spanProvider.GetPinnableReadOnlyReference(), 16)));
                 // done.
                 writer.WriteLine();
             } catch (Exception ex) {

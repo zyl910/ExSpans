@@ -25,10 +25,10 @@ namespace Zyl.ExSpans {
     ///         // Write.
     ///         ExSpan&lt;int&gt; spanInt = spanProvider.CreateExSpan&lt;int&gt;();
     ///         spanInt.Fill(0x01020304);
-    ///         spanInt[(nint)0] = 0x12345678;
+    ///         spanInt[0] = 0x12345678;
     ///         // Read.
-    ///         writer.WriteLine(string.Format("Data[0]: {0} // 0x{0:X}", spanInt[(nint)0]));
-    ///         writer.WriteLine(string.Format("Data[1]: {0} // 0x{0:X}", spanInt[(nint)1]));
+    ///         writer.WriteLine(string.Format("Data[0]: {0} // 0x{0:X}", spanInt[0]));
+    ///         writer.WriteLine(string.Format("Data[1]: {0} // 0x{0:X}", spanInt[1]));
     ///     } catch (Exception ex) {
     ///         writer.WriteLine(string.Format("Run TestMemoryMappedFile fail! {0}", ex.ToString()));
     ///     }
