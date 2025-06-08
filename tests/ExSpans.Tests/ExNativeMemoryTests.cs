@@ -559,20 +559,21 @@ namespace Zyl.ExSpans.Tests {
         [InlineData(150, 50, 100)]
         public void CopyToOverlappedMemoryTest(int size, int offset, int byteCount) {
             byte* source = (byte*)ExNativeMemory.AllocZeroed((nuint)size);
-
-            var expectedBlock = new byte[byteCount];
+            try {
+                var expectedBlock = new byte[byteCount];
 #if NET6_0_OR_GREATER
-            Random.Shared.NextBytes(expectedBlock);
+                Random.Shared.NextBytes(expectedBlock);
 #else
             new Random().NextBytes(expectedBlock);
 #endif // NET6_0_OR_GREATER
-            expectedBlock.CopyTo(new Span<byte>(source, byteCount));
+                expectedBlock.CopyTo(new Span<byte>(source, byteCount));
 
-            ExNativeMemory.Copy(source, source + offset, (nuint)byteCount);
+                ExNativeMemory.Copy(source, source + offset, (nuint)byteCount);
 
-            Assert.True(expectedBlock.AsSpan().SequenceEqual(new ReadOnlySpan<byte>(source + offset, byteCount)));
-
-            ExNativeMemory.Free(source);
+                Assert.True(expectedBlock.AsSpan().SequenceEqual(new ReadOnlySpan<byte>(source + offset, byteCount)));
+            } finally {
+                ExNativeMemory.Free(source);
+            }
         }
 
         [Fact]

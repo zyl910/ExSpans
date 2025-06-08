@@ -111,6 +111,7 @@ namespace Zyl.ExSpans.Impl {
         /// <param name="elementCount">Element count(元素数量).</param>
         /// <seealso cref="TypeHelper.IsBlittable"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //[MethodImpl(MethodImplOptions.NoInlining)]
         internal static void MemmoveBlittable<T>(ref T destination, ref readonly T source, nuint elementCount) {
             nuint sourceBytesToCopy = ExUnsafe.GetByteSize<T>(elementCount);
             ref byte p0 = ref Unsafe.As<T, byte>(ref Unsafe.AsRef(in source));
@@ -119,6 +120,7 @@ namespace Zyl.ExSpans.Impl {
                 void* psrc = Unsafe.AsPointer(ref p0);
                 void* pdst = Unsafe.AsPointer(ref destination);
                 ulong cnt = (ulong)sourceBytesToCopy;
+                //Console.WriteLine("MemoryCopy: {0}, {1}, {2}", (nint)psrc, (nint)pdst, cnt);
                 Buffer.MemoryCopy(psrc, pdst, cnt, cnt);
             }
 #else

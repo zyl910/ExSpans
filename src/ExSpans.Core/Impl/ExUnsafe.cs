@@ -154,13 +154,18 @@ namespace Zyl.ExSpans.Impl {
         /// <returns>Returns added pointer (返回相加后的指针).</returns>
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //[MethodImpl(MethodImplOptions.NoInlining)]
         public unsafe static nuint AddPointer<T>(nuint source, nuint elementOffset)
 #if ALLOWS_REF_STRUCT
                 where T : allows ref struct
 #endif // ALLOWS_REF_STRUCT
                 {
             ref T p = ref AddAsRef<T>(source, elementOffset);
-            return (nuint)Unsafe.AsPointer(ref p);
+            nuint rt = (nuint)Unsafe.AsPointer(ref p);
+#if NETSTANDARD1_3_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET46_OR_GREATER
+            //Console.WriteLine("AddPointer: {0}, {1}, {2}", source, elementOffset, (nuint)rt);
+#endif
+            return rt;
         }
 
         /// <summary>
@@ -209,12 +214,17 @@ namespace Zyl.ExSpans.Impl {
         /// <returns>The byte length (字节长度).</returns>
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //[MethodImpl(MethodImplOptions.NoInlining)]
         public static nuint GetByteSize<T>(nuint length)
 #if ALLOWS_REF_STRUCT
                 where T : allows ref struct
 #endif // ALLOWS_REF_STRUCT
                 {
-            return AddPointer<T>(UIntPtr.Zero, length);
+#if NETCOREAPP3_0_OR_GREATER
+            return AddPointer<T>(0, length);
+#else
+            return length * (nuint)Unsafe.SizeOf<T>();
+#endif // NETCOREAPP3_0_OR_GREATER
         }
 
         /// <summary>
