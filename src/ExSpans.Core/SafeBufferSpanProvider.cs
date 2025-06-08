@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using Zyl.ExSpans.Extensions;
-using Zyl.ExSpans.Impl;
 
 namespace Zyl.ExSpans {
     /// <summary>
@@ -40,13 +38,13 @@ namespace Zyl.ExSpans {
     /// </example>
     /// </remarks>
     public unsafe readonly struct SafeBufferSpanProvider : IDisposable, IExLength, IReadOnlyExSpanProvider<byte>, IExSpanProvider<byte> {
-        private readonly SafeBuffer _source;
+        private readonly SafeBuffer? _source;
         private readonly byte* _pointer;
 
         /// <summary>
         /// Create SafeBufferSpanProvider (创建 SafeBufferSpanProvider).
         /// </summary>
-        /// <param name="source"></param>
+        /// <param name="source">The source (源对象).</param>
         public SafeBufferSpanProvider(SafeBuffer source) {
             _source = source;
             if (null != source) {
@@ -102,7 +100,7 @@ namespace Zyl.ExSpans {
         /// <summary>
         /// Get source <see cref="SafeBuffer"/> (取得源 <see cref="SafeBuffer"/>).
         /// </summary>
-        public SafeBuffer Source { get { return _source; } }
+        public SafeBuffer? Source { get { return _source; } }
 
         /// <inheritdoc/>
         [MyCLSCompliant(false)]
