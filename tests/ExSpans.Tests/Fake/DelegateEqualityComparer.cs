@@ -35,6 +35,8 @@ namespace Zyl.ExSpans.Tests.Fake {
             return _equals.GetHashCode() | _getHashCode.GetHashCode();
         }
 
+#if NET8_0_OR_GREATER
+#else
         /// <summary>
         /// Creates an <see cref="EqualityComparer{T}"/> by using the specified delegates as the implementation of the comparer's
         /// <see cref="EqualityComparer{T}.Equals"/> and <see cref="EqualityComparer{T}.GetHashCode"/> methods.
@@ -56,6 +58,7 @@ namespace Zyl.ExSpans.Tests.Fake {
             return new DelegateEqualityComparer<T>(equals, getHashCode);
 #endif // NET8_0_OR_GREATER
         }
+#endif // NET8_0_OR_GREATER
 
     }
 }

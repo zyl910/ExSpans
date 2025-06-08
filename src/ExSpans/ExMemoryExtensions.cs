@@ -2210,7 +2210,11 @@ namespace Zyl.ExSpans {
         /// <param name="span">The span to search.</param>
         /// <param name="value0">One of the values to search for.</param>
         /// <param name="value1">One of the values to search for.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if NET7_0_OR_GREATER
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] // Bug on before .net 7.0: Unit test AIndexOfAny.MakeSureNoChecksGoOutOfRangeTwo_Char and more run fail on Release. The _byteOffset field value is wrong.
+#else
+        [MethodImpl(MethodImplOptions.NoInlining)]
+#endif // NET7_0_OR_GREATER
         public static TSize IndexOfAny<T>(this ReadOnlyExSpan<T> span, T value0, T value1) where T : IEquatable<T>? {
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte)) {
@@ -2238,7 +2242,11 @@ namespace Zyl.ExSpans {
         /// <param name="value0">One of the values to search for.</param>
         /// <param name="value1">One of the values to search for.</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if NET7_0_OR_GREATER
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] // Bug on before .net 7.0: Unit test AIndexOfAny.MakeSureNoChecksGoOutOfRangeTwo_Char and more run fail on Release. The _byteOffset field value is wrong.
+#else
+        [MethodImpl(MethodImplOptions.NoInlining)]
+#endif // NET7_0_OR_GREATER
         public static TSize IndexOfAny<T>(this ReadOnlyExSpan<T> span, T value0, T value1, IEqualityComparer<T>? comparer = null) {
             if (TypeHelper.IsValueType<T>() && (comparer is null || comparer == EqualityComparer<T>.Default)) {
                 if (TypeHelper.IsBitwiseEquatable<T>()) {
@@ -2291,7 +2299,11 @@ namespace Zyl.ExSpans {
         /// <param name="value0">One of the values to search for.</param>
         /// <param name="value1">One of the values to search for.</param>
         /// <param name="value2">One of the values to search for.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if NET7_0_OR_GREATER
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] // Bug on before .net 7.0: Unit test AIndexOfAny.MakeSureNoChecksGoOutOfRangeTwo_Char and more run fail on Release. The _byteOffset field value is wrong.
+#else
+        [MethodImpl(MethodImplOptions.NoInlining)]
+#endif // NET7_0_OR_GREATER
         public static TSize IndexOfAny<T>(this ReadOnlyExSpan<T> span, T value0, T value1, T value2) where T : IEquatable<T>? {
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte)) {
@@ -2322,7 +2334,11 @@ namespace Zyl.ExSpans {
         /// <param name="value1">One of the values to search for.</param>
         /// <param name="value2">One of the values to search for.</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if NET7_0_OR_GREATER
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] // Bug on before .net 7.0: Unit test AIndexOfAny.MakeSureNoChecksGoOutOfRangeTwo_Char and more run fail on Release. The _byteOffset field value is wrong.
+#else
+        [MethodImpl(MethodImplOptions.NoInlining)]
+#endif // NET7_0_OR_GREATER
         public static TSize IndexOfAny<T>(this ReadOnlyExSpan<T> span, T value0, T value1, T value2, IEqualityComparer<T>? comparer = null) {
             if (TypeHelper.IsValueType<T>() && (comparer is null || comparer == EqualityComparer<T>.Default)) {
                 if (TypeHelper.IsBitwiseEquatable<T>()) {
@@ -2377,7 +2393,11 @@ namespace Zyl.ExSpans {
         /// </summary>
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if NET7_0_OR_GREATER
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] // Bug on before .net 7.0: Unit test AIndexOfAny.MakeSureNoChecksGoOutOfRangeTwo_Char and more run fail on Release. The _byteOffset field value is wrong.
+#else
+        [MethodImpl(MethodImplOptions.NoInlining)]
+#endif // NET7_0_OR_GREATER
         public static TSize IndexOfAny<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> values) where T : IEquatable<T>? {
             if (TypeHelper.IsBitwiseEquatable<T>()) {
                 if (Unsafe.SizeOf<T>() == sizeof(byte)) {
@@ -2493,6 +2513,11 @@ namespace Zyl.ExSpans {
         /// <param name="span">The span to search.</param>
         /// <param name="values">The set of values to search for.</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> implementation to use when comparing elements, or <see langword="null"/> to use the default <see cref="IEqualityComparer{T}"/> for the type of an element.</param>
+#if NET7_0_OR_GREATER
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)] // Bug on before .net 7.0: Unit test AIndexOfAny.MakeSureNoChecksGoOutOfRangeTwo_Char and more run fail on Release. The _byteOffset field value is wrong.
+#else
+        [MethodImpl(MethodImplOptions.NoInlining)]
+#endif // NET7_0_OR_GREATER
         public static TSize IndexOfAny<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> values, IEqualityComparer<T>? comparer = null) {
             switch (values.Length) {
                 case 0:

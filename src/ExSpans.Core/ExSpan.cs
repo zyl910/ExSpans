@@ -428,6 +428,12 @@ namespace Zyl.ExSpans {
         /// Defines an implicit conversion of a <see cref="ExSpan{T}"/> to a <see cref="ReadOnlyExSpan{T}"/> (定义 <see cref="ExSpan{T}"/> 到 <see cref="ReadOnlyExSpan{T}"/> 的隐式转换).
         /// </summary>
         /// <param name="span">The object to convert (要转换的对象).</param>
+#if NET7_0_OR_GREATER
+        // No need [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        // Bug on before .net 7.0: Unit test  AIndexOfAny.MakeSureNoChecksGoOutOfRangeTwo_Char and more run fail on Release. The _byteOffset field value is wrong.
+#else
+        [MethodImpl(MethodImplOptions.NoInlining)]
+#endif // NET7_0_OR_GREATER
         public static implicit operator ReadOnlyExSpan<T>(ExSpan<T> span) {
 #if STRUCT_REF_FIELD
             return new ReadOnlyExSpan<T>(ref span._reference, span._length);

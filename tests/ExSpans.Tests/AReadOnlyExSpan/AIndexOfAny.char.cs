@@ -142,6 +142,9 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                 a[0] = (char)99;
                 a[length + 1] = (char)98;
                 ReadOnlyExSpan<char> span = new ReadOnlyExSpan<char>(a, 1, length - 1);
+                //if (span.Length > 0) {
+                //    Console.WriteLine("length={0}, span[0]={1}, span[^1]={2}", length, (short)span[0], (short)span[span.Length - 1]);
+                //}
                 TSize index = span.IndexOfAny<char>((char)99, (char)98);
                 Assert.Equal(-1, index);
             }
