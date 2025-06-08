@@ -131,7 +131,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                 second[length + 1] = (char)100;
                 var span1 = new ReadOnlyExSpan<char>(first, 1, length);
                 var span2 = new ReadOnlyExSpan<char>(second, 1, length);
-                Assert.True(span1.Equals(span2, StringComparison.Ordinal));
+                Assert.True(span1.Equals(span2, StringComparison.Ordinal), $"length={length}");
 
                 Assert.True(span1.Equals(span2, StringComparison.CurrentCulture));
                 Assert.True(span1.Equals(span2, StringComparison.CurrentCultureIgnoreCase));

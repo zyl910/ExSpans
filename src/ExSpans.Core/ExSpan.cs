@@ -44,7 +44,11 @@ namespace Zyl.ExSpans {
         /// <param name="array">The target array (指定数组).</param>
         /// <remarks>Returns default when <paramref name="array"/> is null (当 array 为 null 时返回默认值).</remarks>
         /// <exception cref="ArrayTypeMismatchException">Thrown when <paramref name="array"/> is covariant and array's type is not exactly T[].</exception>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if NET7_0_OR_GREATER
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] // Bug on before .net 7.0: Unit test AEquals.MakeSureNoEqualsChecksGoOutOfRange_StringComparison and more run fail on Release. The _byteOffset field value is wrong.
+#else
+        [MethodImpl(MethodImplOptions.NoInlining)]
+#endif // NET7_0_OR_GREATER
         public ExSpan(T[]? array) {
             if (array == null || array.Length <= 0) {
                 this = default;
@@ -74,7 +78,11 @@ namespace Zyl.ExSpans {
         /// Thrown when the specified <paramref name="start"/> or end index is not in the range (&lt;0 or &gt;Length).
         /// </exception>
         [MyCLSCompliant(false)]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if NET7_0_OR_GREATER
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] // Bug on before .net 7.0: Unit test AEquals.MakeSureNoEqualsChecksGoOutOfRange_StringComparison and more run fail on Release. The _byteOffset field value is wrong.
+#else
+        [MethodImpl(MethodImplOptions.NoInlining)]
+#endif // NET7_0_OR_GREATER
         public ExSpan(T[]? array, TSize start, TSize length) {
             if (array == null || array.Length <= 0) {
                 if (start != (TSize)0 || length != (TSize)0)
@@ -110,7 +118,11 @@ namespace Zyl.ExSpans {
         /// Thrown when the specified <paramref name="length"/> is negative.
         /// </exception>
         [CLSCompliant(false)]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if NET7_0_OR_GREATER
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] // Bug on before .net 7.0: Unit test AEquals.MakeSureNoEqualsChecksGoOutOfRange_StringComparison and more run fail on Release. The _byteOffset field value is wrong.
+#else
+        [MethodImpl(MethodImplOptions.NoInlining)]
+#endif // NET7_0_OR_GREATER
         public unsafe ExSpan(void* pointer, TSize length) {
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_0_OR_GREATER
             if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
@@ -135,7 +147,11 @@ namespace Zyl.ExSpans {
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
         /// <summary>Creates a new <see cref="ExSpan{T}"/> of length 1 around the specified reference (在指定的引用周围创建长度为 1 的新 <see cref="ExSpan{T}"/>).</summary>
         /// <param name="reference">A reference to data (数据的引用).</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if NET7_0_OR_GREATER
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] // Bug on before .net 7.0: Unit test AEquals.MakeSureNoEqualsChecksGoOutOfRange_StringComparison and more run fail on Release. The _byteOffset field value is wrong.
+#else
+        [MethodImpl(MethodImplOptions.NoInlining)]
+#endif // NET7_0_OR_GREATER
         public ExSpan(ref T reference) {
             _length = (TSize)1;
 #if STRUCT_REF_FIELD
@@ -147,7 +163,11 @@ namespace Zyl.ExSpans {
         }
 
         // Constructor for internal use only. It is not safe to expose publicly, and is instead exposed via the unsafe MemoryMarshal.CreateExSpan.
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if NET7_0_OR_GREATER
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] // Bug on before .net 7.0: Unit test AEquals.MakeSureNoEqualsChecksGoOutOfRange_StringComparison and more run fail on Release. The _byteOffset field value is wrong.
+#else
+        [MethodImpl(MethodImplOptions.NoInlining)]
+#endif // NET7_0_OR_GREATER
         internal ExSpan(ref T reference, TSize length) {
             Debug.Assert(length >= (TSize)0);
 
@@ -163,7 +183,11 @@ namespace Zyl.ExSpans {
 
 #if STRUCT_REF_FIELD
 #else
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if NET7_0_OR_GREATER
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] // Bug on before .net 7.0: Unit test AEquals.MakeSureNoEqualsChecksGoOutOfRange_StringComparison and more run fail on Release. The _byteOffset field value is wrong.
+#else
+        [MethodImpl(MethodImplOptions.NoInlining)]
+#endif // NET7_0_OR_GREATER
         internal ExSpan(Span<T> referenceSpan, TSize byteOffse, TSize length) {
             _length = length;
             _byteOffset = byteOffse;

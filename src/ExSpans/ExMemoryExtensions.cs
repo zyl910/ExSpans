@@ -2919,6 +2919,7 @@ namespace Zyl.ExSpans {
         /// <param name="other">The second sequence to compare (要比较的第二个序列).</param>
         /// <returns>true if the two sequences are equal; otherwise, false (如果两个序列相等, 则 true; 否则 false).</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //[MethodImpl(MethodImplOptions.NoInlining)]
         public static bool SequenceEqual<T>(this ReadOnlyExSpan<T> span, ReadOnlyExSpan<T> other) where T : IEquatable<T>? {
             if (span.Length != other.Length) {
                 return false;

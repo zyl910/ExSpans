@@ -45,6 +45,7 @@ namespace Zyl.ExSpans {
         /// <param name="comparisonType">One of the enumeration values that determines how the <paramref name="span"/> and <paramref name="other"/> are compared.</param>
         /// <exception cref="ExSpanTooLongException">Throws an exception if the length is out of the range of Int32.</exception>
         //[Intrinsic] // Unrolled and vectorized for half-constant input (Ordinal)
+        //[MethodImpl(MethodImplOptions.NoInlining)]
         public static bool Equals(this ReadOnlyExSpan<char> span, ReadOnlyExSpan<char> other, StringComparison comparisonType) {
 #if INTERNAL && TODO
             StringHelper.CheckStringComparison(comparisonType);
