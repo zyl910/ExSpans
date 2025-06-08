@@ -365,7 +365,11 @@ namespace Zyl.ExSpans {
         /// <exception cref="ArgumentException">
         /// Thrown when the destination span is shorter than the source span.
         /// </exception>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if NET7_0_OR_GREATER
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] // Bug on before .net 7.0: Unit test ACopyTo.CopyToVaryingSizes and more run fail on Release. The _byteOffset field value is wrong.
+#else
+        [MethodImpl(MethodImplOptions.NoInlining)]
+#endif // NET7_0_OR_GREATER
         public void CopyTo(ExSpan<T> destination) {
             // Using "if (!TryCopyTo(...))" results in two branches: one for the length
             // check, and one for the result of TryCopyTo. Since these checks are equivalent,
@@ -459,6 +463,7 @@ namespace Zyl.ExSpans {
         /// </exception>
         [MyCLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //[MethodImpl(MethodImplOptions.NoInlining)]
         public ReadOnlyExSpan<T> Slice(TSize start, TSize length) {
             if (start.ToUIntPtr() > _length.ToUIntPtr())
                 ThrowHelper.ThrowArgumentOutOfRangeException();

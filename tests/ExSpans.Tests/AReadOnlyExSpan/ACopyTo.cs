@@ -188,6 +188,8 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
             byte[] inputArray = new byte[MaxLength];
             ReadOnlyExSpan<byte> inputExSpan = inputArray;
             ExSpan<byte> outputExSpan = new byte[MaxLength];
+            //byte[] outputArray = new byte[MaxLength];
+            //ExSpan<byte> outputExSpan = outputArray;
             ExSpan<byte> allZerosExSpan = new byte[MaxLength];
 
             // Test all inputs from size 0 .. MaxLength (inclusive) to make sure we don't have
@@ -201,6 +203,7 @@ namespace Zyl.ExSpans.Tests.AReadOnlyExSpan {
                 // Act
 
                 inputExSpan.Slice((TSize)0, (TSize)i).CopyTo(outputExSpan);
+                //Console.WriteLine(string.Format("i={1},outputExSpan[0]: {0} // {0:X}", outputExSpan[0], i));
 
                 // Assert
 

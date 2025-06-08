@@ -360,7 +360,7 @@ namespace Zyl.ExSpans {
                 ExMemoryMarshal.ClearWithoutReferences(ref Unsafe.As<T, byte>(ref GetPinnableReference()), _length.ToUIntPtr() * (nuint)Unsafe.SizeOf<T>());
             }
         }
-        
+
         /// <summary>
         /// Copies the contents of this span into destination span. If the source
         /// and destinations overlap, this method behaves as if the original values in
@@ -371,7 +371,11 @@ namespace Zyl.ExSpans {
         /// <exception cref="ArgumentException">
         /// Thrown when the destination span is shorter than the source span.
         /// </exception>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if NET7_0_OR_GREATER
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] // Bug on before .net 7.0: Unit test ACopyTo.CopyToVaryingSizes and more run fail on Release. The _byteOffset field value is wrong.
+#else
+        [MethodImpl(MethodImplOptions.NoInlining)]
+#endif // NET7_0_OR_GREATER
         public void CopyTo(ExSpan<T> destination) {
             // Using "if (!TryCopyTo(...))" results in two branches: one for the length
             // check, and one for the result of TryCopyTo. Since these checks are equivalent,
