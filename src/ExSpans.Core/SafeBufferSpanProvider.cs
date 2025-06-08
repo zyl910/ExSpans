@@ -16,8 +16,8 @@ namespace Zyl.ExSpans {
     /// <code>
     /// static void TestMemoryMappedFile(TextWriter writer) {
     ///     try {
-    ///         const string MemoryMappedFileMapName = "ExSpans.Sample.tmp";
-    ///         const string MemoryMappedFilePath = MemoryMappedFileMapName;
+    ///         const string MemoryMappedFilePath = "ExSpans.Sample.tmp";
+    ///         const string? MemoryMappedFileMapName = null; // If it is not null, MacOS will throw an exception. System.PlatformNotSupportedException: Named maps are not supported.
     ///         const long MemoryMappedFileSize = 1 * 1024 * 1024; // 1MB
     ///         using MemoryMappedFile mappedFile = MemoryMappedFile.CreateFromFile(MemoryMappedFilePath, FileMode.Create, MemoryMappedFileMapName, MemoryMappedFileSize);
     ///         using MemoryMappedViewAccessor accessor = mappedFile.CreateViewAccessor();
