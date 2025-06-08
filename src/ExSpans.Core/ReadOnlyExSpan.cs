@@ -390,6 +390,12 @@ namespace Zyl.ExSpans {
         /// </summary>
         /// <param name="destination">The destination span (目标跨度).</param>
         /// <returns>true if the copy operation succeeded; otherwise, false (如果复制操作已成功，则为 true；否则，为 false).</returns>
+#if NET7_0_OR_GREATER
+        // No need [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        // Bug on before .net 7.0: Unit test ATryWrite.AppendLiteral and more run fail on Release. The _byteOffset field value is wrong.
+#else
+        [MethodImpl(MethodImplOptions.NoInlining)]
+#endif // NET7_0_OR_GREATER
         public bool TryCopyTo(ExSpan<T> destination) {
             bool retVal = false;
             if (_length <= destination.Length) {
