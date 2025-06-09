@@ -28,6 +28,7 @@
     <InvariantGlobalization>true</InvariantGlobalization>
     <RootNamespace>Zyl.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
     <DefineConstants>$(DefineConstants);SIZE_UINTPTR0;INVOKE_SPAN_METHOD</DefineConstants>
+      <PublishAot Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net7.0'))">true</PublishAot>
 
       <!--
       <PlatformTarget>ARM32</PlatformTarget>
