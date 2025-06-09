@@ -8,5 +8,12 @@ Package:
 
 - ExSpans
 - ExSpans.Core
-- ExSpans.Buffers
-- ExSpans.Tensors
+
+## Documentation
+
+- Online document: https://zyl910.github.io/ExSpans_doc/
+- DocFX: Run `docfx_serve.bat`. Then browse http://localhost:8080/ .
+
+## ChangeLog
+
+Full list: [ChangeLog](ChangeLog.md)

@@ -46,14 +46,22 @@
     <FileVersion>$(VersionPrefix).0</FileVersion>
     <CurrentYear>$([System.DateTime]::Now.ToString(yyyy))</CurrentYear>
     <Copyright>Copyright (c) 2025~$(CurrentYear) zyl910</Copyright>
-    <Description>Spans of Ex range (大范围的跨度).</Description>
+    <Description>ExSpans: Extended spans of nint index range (nint 索引范围的扩展跨度).</Description>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <RepositoryUrl>https://github.com/zyl910/ExSpans</RepositoryUrl>
     <PackageProjectUrl>https://github.com/zyl910/ExSpans</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>Span;Memory;Pointer</PackageTags>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReadmeFile>ExSpans.md</PackageReadmeFile>
+    <PackageIcon>ExSpan_logo.png</PackageIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\images\ExSpan_logo.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="VectorTraits" Version="3.1.0" />
@@ -83,6 +91,13 @@
 
     <ItemGroup>
       <ProjectReference Include="..\ExSpans.Core\ExSpans.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="ExSpans.md">
+        <Pack>True</Pack>
+        <PackagePath>\</PackagePath>
+      </None>
     </ItemGroup>
 
 </Project>
