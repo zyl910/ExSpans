@@ -100,7 +100,11 @@ namespace Zyl.ExSpans {
         /// </remarks>
         [CLSCompliant(false)]
         public unsafe static void Clear(void* ptr, nuint byteCount) {
+#if NET7_0_OR_GREATER
+            NativeMemory.Clear(ptr, byteCount);
+#else
             ExMemoryMarshal.ClearWithoutReferences(ref *(byte*)ptr, byteCount);
+#endif // NET7_0_OR_GREATER
         }
 
         /// <summary>
@@ -112,7 +116,11 @@ namespace Zyl.ExSpans {
         /// <param name="byteCount">The size, in bytes, to be copied from the source location to the destination (要从源位置复制到目标的大小（以字节为单位）).</param>
         [CLSCompliant(false)]
         public unsafe static void Copy(void* source, void* destination, nuint byteCount) {
+#if NET7_0_OR_GREATER
+            NativeMemory.Copy(source, destination, byteCount);
+#else
             BufferHelper.Memmove(ref *(byte*)destination, ref *(byte*)source, byteCount);
+#endif // NET7_0_OR_GREATER
         }
 
         /// <summary>
@@ -124,7 +132,11 @@ namespace Zyl.ExSpans {
         /// <param name="value">The value to be set (要设置的值).</param>
         [CLSCompliant(false)]
         public unsafe static void Fill(void* ptr, nuint byteCount, byte value) {
+#if NET7_0_OR_GREATER
+            NativeMemory.Fill(ptr, byteCount, value);
+#else
             ExSpanHelpers.Fill(ref *(byte*)ptr, byteCount, value);
+#endif // NET7_0_OR_GREATER
         }
 
         /// <summary>Frees a block of memory (释放内存块).</summary>
