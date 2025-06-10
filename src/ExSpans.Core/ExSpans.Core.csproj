@@ -41,8 +41,10 @@
     <Product>ExSpans</Product>
     <Authors>zyl910</Authors>
     <Company>zyl910</Company>
-    <AssemblyVersion>$(VersionPrefix).0</AssemblyVersion>
-    <FileVersion>$(VersionPrefix).0</FileVersion>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <Version>$(ProductVersion)</Version>
+    <AssemblyVersion>$(AssemblyVersion)</AssemblyVersion>
+    <FileVersion>$(VersionPrefix)</FileVersion>
     <CurrentYear>$([System.DateTime]::Now.ToString(yyyy))</CurrentYear>
     <Copyright>Copyright (c) 2025~$(CurrentYear) zyl910</Copyright>
     <Description>ExSpans.Core: Extended spans of nint index range - Core type (nint 索引范围的扩展跨度 - 核心类型).</Description>
