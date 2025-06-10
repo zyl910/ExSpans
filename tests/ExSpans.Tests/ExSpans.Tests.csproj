@@ -44,18 +44,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-      <PackageReference Include="Microsoft.TestPlatform.TestHost" Version="17.3.3" />
-      <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.3" />
-      <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+      <PackageReference Include="Microsoft.TestPlatform.TestHost" Version="$(MicrosoftTestPlatformTestHostPackageVersion)" />
+      <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftNETTestSdkPackageVersion)" />
+      <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitRunnerVisualstudioPackageVersion)">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       </PackageReference>
-      <PackageReference Include="xunit" Version="2.9.3" />
+      <PackageReference Include="xunit" Version="$(XunitPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">
       <PackageReference Include="Microsoft.NetCore.App" Version="2.1.29" />
-      <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="5.0.0" />
+      <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="$(SystemRuntimeCompilerServicesUnsafePackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>

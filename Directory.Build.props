@@ -1,0 +1,20 @@
+<Project>
+    <PropertyGroup>
+
+        <VersionPrefix>0.9.9</VersionPrefix>
+
+        <BenchmarkDotNetPackageVersion>"0.14.0</BenchmarkDotNetPackageVersion>
+        <MicrosoftBclMemoryPackageVersion>9.0.0-preview.7.24405.7</MicrosoftBclMemoryPackageVersion>
+        <SystemMemoryPackageVersion>4.5.5</SystemMemoryPackageVersion>
+        <SystemNumericsVectorsPackageVersion>4.5.0</SystemNumericsVectorsPackageVersion>
+        <SystemRuntimeCompilerServicesUnsafePackageVersion>5.0.0</SystemRuntimeCompilerServicesUnsafePackageVersion>
+        <SystemValueTuplePackageVersion>4.5.0</SystemValueTuplePackageVersion>
+        <VectorTraitsPackageVersion>3.1.0</VectorTraitsPackageVersion>
+
+        <MicrosoftNETTestSdkPackageVersion>17.3.3</MicrosoftNETTestSdkPackageVersion>
+        <MicrosoftTestPlatformTestHostPackageVersion>17.3.3</MicrosoftTestPlatformTestHostPackageVersion>
+        <XunitPackageVersion>2.9.3</XunitPackageVersion>
+        <XunitRunnerVisualstudioPackageVersion>2.4.1</XunitRunnerVisualstudioPackageVersion>
+
+    </PropertyGroup>
+</Project>
