@@ -1,6 +1,4 @@
-﻿#if NETCOREAPP3_0_OR_GREATER
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -88,4 +86,3 @@ namespace Zyl.ExSpans.Text {
         }
     }
 }
-#endif // NETCOREAPP3_0_OR_GREATER

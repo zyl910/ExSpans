@@ -8,7 +8,6 @@ using Xunit;
 
 namespace Zyl.ExSpans.Tests.AExSpan {
     public static partial class AEnumerateLines {
-#if NETCOREAPP3_0_OR_GREATER
 
         // newline chars given by Unicode Standard, Sec. 5.8, Recommendation R4 and Table 5-2
         public static IEnumerable<object[]> NewLineChars => new object[][]
@@ -36,6 +35,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             Assert.False(enumerator.MoveNext());
         }
 
+#if NETCOREAPP3_0_OR_GREATER
 #nullable disable
         [Theory]
         [InlineData(null, new[] { ".." })]
@@ -123,6 +123,7 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             }
         }
 #nullable restore
+#endif // NETCOREAPP3_0_OR_GREATER
 
 #if INTERNAL && TODO
         [Theory]
@@ -157,6 +158,5 @@ namespace Zyl.ExSpans.Tests.AExSpan {
         }
 #endif // INTERNAL && TODO
 
-#endif // NETCOREAPP3_0_OR_GREATER
     }
 }
