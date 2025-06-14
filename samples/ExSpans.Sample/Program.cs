@@ -15,6 +15,10 @@ namespace Zyl.ExSpans.Sample {
             ATestMemoryMappedFile.TestMemoryMappedFile(writer);
         }
 
+        /// <summary>
+        /// Output header (输出头部信息).
+        /// </summary>
+        /// <param name="writer">The <see cref="TextWriter"/>.</param>
         internal static void OutputHeader(TextWriter writer) {
             writer.WriteLine("ExSpans.Sample");
             EnvironmentOutput.OutputEnvironment(writer);
@@ -39,11 +43,11 @@ namespace Zyl.ExSpans.Sample {
             //TestExSpan(writer, "Span", sourceSpan.AsExSpan()); // Or use extension method.
 
             // Convert ExSpan to Span.
-            ExSpan<int> sizableSpan = sourceSpan; // Implicit conversion Span to ExSpan.
-            Span<int> span = (Span<int>)sizableSpan; // Use explicit conversion.
-            //Span<int> span = sizableSpan.AsSpan(); // Or use extension method.
+            ExSpan<int> intSpan = sourceSpan; // Implicit conversion Span to ExSpan.
+            Span<int> span = (Span<int>)intSpan; // Use explicit conversion.
+            //Span<int> span = intSpan.AsSpan(); // Or use extension method.
             writer.WriteLine(string.Format("Span[1]: {0} // 0x{0:X}", span[1]));
-            int checkSum = SumExSpan(sizableSpan); // Implicit conversion ExSpan to ReadOnlyExSpan.
+            int checkSum = SumExSpan(intSpan); // Implicit conversion ExSpan to ReadOnlyExSpan.
             writer.WriteLine(string.Format("CheckSum: {0} // 0x{0:X}", checkSum));
             writer.WriteLine();
 
@@ -92,15 +96,25 @@ namespace Zyl.ExSpans.Sample {
         /// </summary>
         /// <param name="writer">The <see cref="TextWriter"/>.</param>
         static unsafe void Test2GB(TextWriter writer) {
-            const uint byteSize = 2U * 1024 * 1024 * 1024; // 2GB
+            const nint OutputMaxLength = 16;
+            nuint byteSize = 2U * 1024 * 1024 * 1024; // 2GB
+            if (IntPtr.Size > sizeof(int)) {
+                byteSize += sizeof(int);
+            }
             nint bufferSize = (nint)(byteSize / sizeof(int));
             // Create ExSpan by Pointer.
             try {
                 void* buffer = ExNativeMemory.Alloc(byteSize);
                 try {
-                    ExSpan<int> sizableSpan = new ExSpan<int>(buffer, bufferSize);
-                    TestExSpan(writer, "2GB", sizableSpan);
-                    writer.WriteLine(string.Format("ItemsToString: {0}", sizableSpan.ItemsToString((nint)16)));
+                    ExSpan<int> intSpan = new ExSpan<int>(buffer, bufferSize);
+                    TestExSpan(writer, "2GB", intSpan);
+                    writer.WriteLine(string.Format("ItemsToString: {0}", intSpan.ItemsToString(OutputMaxLength)));
+                    writer.WriteLine(string.Format("intSpan.Length: {0} // 0x{0:X}", (long)intSpan.Length));
+                    // Cast to byte.
+                    ExSpan<byte> byteSpan = ExMemoryMarshal.Cast<int, byte>(intSpan);
+                    writer.WriteLine(string.Format("byteSpan.Length: {0} // 0x{0:X}", (long)byteSpan.Length));
+                    writer.WriteLine(string.Format("byteSpan[0]: {0} // 0x{0:X}", byteSpan[0]));
+                    writer.WriteLine(string.Format("byteSpan.ItemsToString: {0}", byteSpan.ItemsToString(OutputMaxLength)));
                     writer.WriteLine();
                 } finally {
                     ExNativeMemory.Free(buffer);
@@ -108,6 +122,16 @@ namespace Zyl.ExSpans.Sample {
             } catch (Exception ex) {
                 writer.WriteLine(string.Format("Run Test2GB fail! {0}", ex.ToString()));
             }
+
+            // Output:
+            // [TestExSpan-2GB]
+            // Data[0]: 305419896 // 0x12345678
+            // Data[1]: 16909060 // 0x1020304
+            // ItemsToString: ExSpan<int>[536870913]{305419896, 16909060, 16909060, 16909060, 16909060, 16909060, 16909060, 16909060, 16909060, 16909060, 16909060, 16909060, 16909060, 16909060, 16909060, 16909060, ...}
+            // intSpan.Length: 536870913 // 0x20000001
+            // byteSpan.Length: 2147483652 // 0x80000004
+            // byteSpan[0]: 120 // 0x78
+            // byteSpan.ItemsToString: ExSpan<byte>[2147483652]{120, 86, 52, 18, 4, 3, 2, 1, 4, 3, 2, 1, 4, 3, 2, 1, ...}
         }
 
     }
