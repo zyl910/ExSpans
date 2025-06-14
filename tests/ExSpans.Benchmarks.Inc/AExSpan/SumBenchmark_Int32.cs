@@ -126,7 +126,6 @@ namespace Zyl.ExSpans.Benchmarks.AExSpan {
 
         /// <summary>
         /// Summation using index access to ExSpan created by pointer (使用索引访问 指针创建的ExSpan 实现求和).
-        /// Sum for ExSpan by pointer constructor.
         /// </summary>
         /// <param name="src">Source array.</param>
         /// <param name="srcCount">Source count</param>
@@ -151,7 +150,6 @@ namespace Zyl.ExSpans.Benchmarks.AExSpan {
 
         /// <summary>
         /// Summation using native pointer access to ExSpan (使用原生指针访问 ExSpan 实现求和).
-        /// Sum for ExSpan use pointer.
         /// </summary>
         /// <param name="src">Source array.</param>
         /// <param name="srcCount">Source count</param>

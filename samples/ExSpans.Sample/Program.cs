@@ -55,12 +55,16 @@ namespace Zyl.ExSpans.Sample {
             // [TestExSpan-Array]
             // Data[0]: 305419896 // 0x12345678
             // Data[1]: 16909060 // 0x1020304
+            // Data[^1]: 2018915346 // 0x78563412
+            // Count(Data[1]): 14 // 0xE
             // 
             // [TestExSpan-Span]
             // Data[0]: 305419896 // 0x12345678
             // Data[1]: 16909060 // 0x1020304
+            // Data[^1]: 2018915346 // 0x78563412
+            // Count(Data[1]): 14 // 0xE
             // Span[1]: 16909060 // 0x1020304
-            // CheckSum: 559055796 // 0x215283B4
+            // CheckSum: -1733905214 // 0x98A6B4C2
         }
 
         /// <summary>
@@ -75,9 +79,12 @@ namespace Zyl.ExSpans.Sample {
                 writer.WriteLine($"[TestExSpan-{title}]");
                 span.Fill(0x01020304);
                 span[0] = 0x12345678;
+                span[span.Length - 1] = 0x78563412;
                 // Read.
                 writer.WriteLine(string.Format("Data[0]: {0} // 0x{0:X}", span[0]));
                 writer.WriteLine(string.Format("Data[1]: {0} // 0x{0:X}", span[1]));
+                writer.WriteLine(string.Format("Data[^1]: {0} // 0x{0:X}", span[span.Length - 1]));
+                writer.WriteLine(string.Format("Count(Data[1]): {0} // 0x{0:X}", (long)span.Count(span[1])));
             } catch (Exception ex) {
                 writer.WriteLine(string.Format("Run TestExSpan fail! {0}", ex.ToString()));
             }
@@ -96,7 +103,7 @@ namespace Zyl.ExSpans.Sample {
         /// </summary>
         /// <param name="writer">The <see cref="TextWriter"/>.</param>
         static unsafe void Test2GB(TextWriter writer) {
-            const nint OutputMaxLength = 16;
+            const nint OutputMaxLength = 8;
             nuint byteSize = 2U * 1024 * 1024 * 1024; // 2GB
             if (IntPtr.Size > sizeof(int)) {
                 byteSize += sizeof(int);
@@ -108,13 +115,15 @@ namespace Zyl.ExSpans.Sample {
                 try {
                     ExSpan<int> intSpan = new ExSpan<int>(buffer, bufferSize);
                     TestExSpan(writer, "2GB", intSpan);
-                    writer.WriteLine(string.Format("ItemsToString: {0}", intSpan.ItemsToString(OutputMaxLength)));
+                    writer.WriteLine(string.Format("ItemsToString: {0}", intSpan.ItemsToString(OutputMaxLength, OutputMaxLength)));
+                    writer.WriteLine(string.Format("intSpan.Count(): {0} // 0x{0:X}", (long)intSpan.Count(intSpan[1])));
                     writer.WriteLine(string.Format("intSpan.Length: {0} // 0x{0:X}", (long)intSpan.Length));
                     // Cast to byte.
                     ExSpan<byte> byteSpan = ExMemoryMarshal.Cast<int, byte>(intSpan);
                     writer.WriteLine(string.Format("byteSpan.Length: {0} // 0x{0:X}", (long)byteSpan.Length));
                     writer.WriteLine(string.Format("byteSpan[0]: {0} // 0x{0:X}", byteSpan[0]));
-                    writer.WriteLine(string.Format("byteSpan.ItemsToString: {0}", byteSpan.ItemsToString(OutputMaxLength)));
+                    writer.WriteLine(string.Format("byteSpan.ItemsToString: {0}", byteSpan.ItemsToString(OutputMaxLength, OutputMaxLength)));
+                    writer.WriteLine(string.Format("byteSpan.Count(): {0} // 0x{0:X}", (long)byteSpan.Count(byteSpan[1])));
                     writer.WriteLine();
                 } finally {
                     ExNativeMemory.Free(buffer);
@@ -127,11 +136,15 @@ namespace Zyl.ExSpans.Sample {
             // [TestExSpan-2GB]
             // Data[0]: 305419896 // 0x12345678
             // Data[1]: 16909060 // 0x1020304
-            // ItemsToString: ExSpan<int>[536870913]{305419896, 16909060, 16909060, 16909060, 16909060, 16909060, 16909060, 16909060, 16909060, 16909060, 16909060, 16909060, 16909060, 16909060, 16909060, 16909060, ...}
+            // Data[^1]: 2018915346 // 0x78563412
+            // Count(Data[1]): 536870911 // 0x1FFFFFFF
+            // ItemsToString: ExSpan<int>[536870913]{305419896, 16909060, 16909060, 16909060, 16909060, 16909060, 16909060, 16909060, ..., 16909060, 16909060, 16909060, 16909060, 16909060, 16909060, 16909060, 2018915346}
+            // intSpan.Count(): 536870911 // 0x1FFFFFFF
             // intSpan.Length: 536870913 // 0x20000001
             // byteSpan.Length: 2147483652 // 0x80000004
             // byteSpan[0]: 120 // 0x78
-            // byteSpan.ItemsToString: ExSpan<byte>[2147483652]{120, 86, 52, 18, 4, 3, 2, 1, 4, 3, 2, 1, 4, 3, 2, 1, ...}
+            // byteSpan.ItemsToString: ExSpan<byte>[2147483652]{120, 86, 52, 18, 4, 3, 2, 1, ..., 4, 3, 2, 1, 18, 52, 86, 120}
+            // byteSpan.Count(): 2 // 0x2
         }
 
     }
