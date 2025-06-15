@@ -1,9 +1,9 @@
 <Project>
     <PropertyGroup>
 
-        <ProductVersion>0.9</ProductVersion>
-        <AssemblyVersion>0.9.0.0</AssemblyVersion>
-        <VersionPrefix>0.9.9</VersionPrefix>
+        <ProductVersion>1.0.0</ProductVersion>
+        <AssemblyVersion>1.0.0</AssemblyVersion>
+        <VersionPrefix>1.0.0</VersionPrefix>
 
         <BenchmarkDotNetPackageVersion>0.14.0</BenchmarkDotNetPackageVersion>
         <MicrosoftBclMemoryPackageVersion>9.0.0-preview.7.24405.7</MicrosoftBclMemoryPackageVersion>
