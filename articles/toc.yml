@@ -5,3 +5,7 @@
 - name: ChangeLog
   href: ../ChangeLog.md
 
+- name: Release note
+  items:
+  - name: v1.0 (Chinese)
+    href: ReleaseNote/v1.0_Chinese.md
