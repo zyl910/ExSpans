@@ -34,16 +34,20 @@
       <PlatformTarget>ARM32</PlatformTarget>
       <PlatformTarget>x86</PlatformTarget>
       -->
+      <UseNuget>true</UseNuget>
   </PropertyGroup>
 
     <ItemGroup Condition=" '$(PlatformTarget)' == 'x86' ">
         <PackageReference Include="dotnetCampus.LargeAddressAware" Version="1.0.0" />
     </ItemGroup>
 
-    <ItemGroup>
-    <ProjectReference Include="..\..\src\ExSpans\ExSpans.csproj" />
-  </ItemGroup>
+    <ItemGroup Condition="'$(UseNuget)' != 'true'">
+        <ProjectReference Include="..\..\src\ExSpans\ExSpans.csproj" />
+    </ItemGroup>
+    <ItemGroup Condition="'$(UseNuget)' == 'true'">
+        <PackageReference Include="ExSpans" Version="1.0.0" />
+    </ItemGroup>
 
-  <Import Project="..\..\src\ExSpans.InfoInc\ExSpans.InfoInc.projitems" Label="Shared" />
+    <Import Project="..\..\src\ExSpans.InfoInc\ExSpans.InfoInc.projitems" Label="Shared" />
 
 </Project>
