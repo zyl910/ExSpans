@@ -1,7 +1,6 @@
 # ExSpans: Extended spans of nint index range (nint 索引范围的扩展跨度).
 
 - [README](../README.md)
-- [README_Chinese](../README_Chinese.md)
 - [ChangeLog](../ChangeLog.md)
 - [Api Documentation](../api/index.md)
 
