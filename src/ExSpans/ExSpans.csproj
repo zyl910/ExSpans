@@ -35,6 +35,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <IsAotCompatible Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net7.0'))">true</IsAotCompatible>
     <Title>ExSpans</Title>
     <AssemblyTitle>$(Title)</AssemblyTitle>
@@ -99,10 +100,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="ExSpans.md">
-        <Pack>True</Pack>
-        <PackagePath>\</PackagePath>
-      </None>
+      <None Include="ExSpans.md" Pack="true" PackagePath=""/>
     </ItemGroup>
 
 </Project>

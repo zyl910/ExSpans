@@ -9,7 +9,7 @@ Commonly used types of `ExSpans.Core.dll`:
 - `ReadOnlyExSpan<T>`: Provides a type-safe and memory-safe read-only representation of a contiguous region of arbitrary memory. It can be regarded as the `ReadOnlySpan<T>` of nint index range (提供任意内存连续区域的类型安全且内存安全的只读表示形式. 它可以被视为 nint 索引范围的 `ReadOnlySpan<T>`).
 - `SafeBufferSpanProvider`: The span provider that manages the pointer acquire for SafeBuffer (管理 SafeBuffer 指针获取的跨度提供者). For example, it can provide span access for memory mapped files (例如它可以为内存映射文件提供跨度访问器).
 
-## Documentation
+## See more
 
 - Online document: https://zyl910.github.io/ExSpans_doc/
-- DocFX: Run `docfx_serve.bat`. Then browse http://localhost:8080/ .
+- Source code: https://github.com/zyl910/ExSpans
