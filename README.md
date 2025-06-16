@@ -11,9 +11,9 @@ ExSpans: Extended spans of nint index range (nint 索引范围的扩展跨度).
 
 [Span](https://learn.microsoft.com/en-us/dotnet/api/system.span-1?view=net-9.0), introduced in C# 7.2, is a new structure that allows developers to access contiguous regions of arbitrary memory in a type-safe manner. It works with both managed memory (e.g., arrays) and unmanaged memory (e.g., memory allocated via `Marshal.AllocHGlobal`), and does not require memory copying, thus improving performance ([Span](https://learn.microsoft.com/zh-cn/dotnet/api/system.span-1?view=net-9.0) 是 C# 7.2 引入的一种新结构, 允许开发者以类型安全的方式访问任意内存的连续区域. 它既可以用于托管内存（如数组）, 又可以用于非托管内存（如通过 `Marshal.AllocHGlobal` 分配的内存）, 并且不需要进行内存复制, 从而提高性能).
 
-However, Span has a limitation: it uses `int` (Int32: 32-bit integer) indexing. Even on 64-bit operating systems, it can only access data up to 2G(`2^31`) in length. The `Marshal.AllocHGlobal` method supports `nint` (IntPtr: native-sized integer) lengths for memory allocation, allowing allocations exceeding 2GB on 64-bit systems—something Span struggles with. Manually manipulating unmanaged memory without Span is cumbersome and the code is not very generalizable (然而 Span 存在一个局限性, 它使用的是 int (Int32: 32位整数) 类型的索引. 即使是在 64位操作系统中, 它仅能访问最长 2G(`2^31`) 的数据. 而 `Marshal.AllocHGlobal` 方法在分配内存时支持 nint (IntPtr: 原生整数) 类型的长度, 在 64位系统上能分配超过 2GB 的非托管内存, Span 难以支持这么长的数据. 在没有 Span 的时候, 手动操作非托管内存是非常繁琐的, 而且代码的通用性不高).
+However, Span has a limitation: it uses `int` (Int32: 32-bit integer) index. Even on 64-bit operating systems, it can only access data up to 2G(`2^31`) in length. The `Marshal.AllocHGlobal` method supports `nint` (IntPtr: native-sized integer) lengths for memory allocation, allowing allocations exceeding 2GB on 64-bit systems—something Span struggles with. Manually manipulating unmanaged memory without Span is cumbersome and the code is not very generalizable (然而 Span 存在一个局限性, 它使用的是 int (Int32: 32位整数) 类型的索引. 即使是在 64位操作系统中, 它仅能访问最长 2G(`2^31`) 的数据. 而 `Marshal.AllocHGlobal` 方法在分配内存时支持 nint (IntPtr: 原生整数) 类型的长度, 在 64位系统上能分配超过 2GB 的非托管内存, Span 难以支持这么长的数据. 在没有 Span 的时候, 手动操作非托管内存是非常繁琐的, 而且代码的通用性不高).
 
-ExSpan solves this limitation by using `nint` type indexes. The byte size of `nint` matches that of a native pointer, enabling 64-bit indexing on 64-bit systems. ExSpan is used in exactly the same way as Span, and provides a large number of utility functions like Span. This makes it suitable for image processing, video processing, deep learning, and other large-scale data areas (ExSpan 解决了这一局限性, 它使用 `nint` 类型的索引. `nint` 类型的字节大小, 与原生指针完全相同, 故在64位系统上能以64位的索引来访问数据. ExSpan 的用法与 Span 完全相同, 且像 Span 那样提供了大量的工具函数. 这使得它适用于 图像处理、视频处理、深度学习等大规模数据的领域).
+ExSpan solves this limitation by using `nint` type indexes. The byte size of `nint` matches that of a native pointer, enabling 64-bit index on 64-bit systems. ExSpan is used in exactly the same way as Span, and provides a large number of utility functions like Span. This makes it suitable for image processing, video processing, deep learning, and other large-scale data areas (ExSpan 解决了这一局限性, 它使用 `nint` 类型的索引. `nint` 类型的字节大小, 与原生指针完全相同, 故在64位系统上能以64位的索引来访问数据. ExSpan 的用法与 Span 完全相同, 且像 Span 那样提供了大量的工具函数. 这使得它适用于 图像处理、视频处理、深度学习等大规模数据的领域).
 
 ExSpan inherits the advantages of Span (ExSpan 继承了Span 的优点):
 
@@ -227,9 +227,9 @@ byteSpan.Count(): 2 // 0x2
 
 ### Manipulating Memory Mapped Files with ExSpan (使用 ExSpan 操作内存映射文件)
 
-Because of the cumbersome way of manipulating data in memory-mapped files, I had hoped to use Span to manipulate memory-mapped files. However, memory-mapped files use 64-bit indexing, and Span's 32-bit indexing is not sufficient (由于内存映射文件的数据操作方法用起来比较繁琐, 曾经希望能用 Span 来操作内存映射文件. 但内存映射文件用了 64位索引, Span的32索引力不从心).
+Because of the cumbersome way of manipulating data in memory-mapped files, I had hoped to use Span to manipulate memory-mapped files. However, memory-mapped files use 64-bit index, and Span's 32-bit index is not sufficient (由于内存映射文件的数据操作方法用起来比较繁琐, 曾经希望能用 Span 来操作内存映射文件. 但内存映射文件用了 64位索引, Span的32索引力不从心).
 
-Now ExSpan uses a range of nint indexing, which are 64-bit on 64-bit operating systems, and are very suitable for memory-mapped files with 64-bit indexing (现在 ExSpan 使用 nint 索引的范围, 在64位操作系统上是64位的, 非常适合64位索引的内存映射文件).
+Now ExSpan uses a range of nint index, which are 64-bit on 64-bit operating systems, and are very suitable for memory-mapped files with 64-bit index (现在 ExSpan 使用 nint 索引的范围, 在64位操作系统上是64位的, 非常适合64位索引的内存映射文件).
 
 And this library also provides SafeBufferSpanProvider class to simplify this operation (而且本库还提供了 SafeBufferSpanProvider 类来简化这一操作).
 
@@ -353,7 +353,7 @@ public void SumForSpan() {
 
 #### SumForExSpan: Summation using index access to ExSpan (使用索引访问 ExSpan 实现求和)
 
-Simply change Span to ExSpan and change the indexing type from int to nint, and you're done (仅需将 Span 改为 ExSpan, 再将索引类型从 int 改为 nint, 便完成了改造)!
+Simply change Span to ExSpan and change the index type from int to nint, and you're done (仅需将 Span 改为 ExSpan, 再将索引类型从 int 改为 nint, 便完成了改造)!
 
 ```cs
 public static TMy StaticSumForExSpan(TMy[] src, int srcCount) {
