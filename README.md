@@ -231,7 +231,7 @@ Because of the cumbersome way of manipulating data in memory-mapped files, I had
 
 Now ExSpan uses a range of nint index, which are 64-bit on 64-bit operating systems, and are very suitable for memory-mapped files with 64-bit index (现在 ExSpan 使用 nint 索引的范围, 在64位操作系统上是64位的, 非常适合64位索引的内存映射文件).
 
-And this library also provides SafeBufferSpanProvider class to simplify this operation (而且本库还提供了 SafeBufferSpanProvider 类来简化这一操作).
+And this library also provides SafeBufferSpanProvider type to simplify this operation (而且本库还提供了 SafeBufferSpanProvider 类型来简化这一操作).
 
 1. Use CreateSpanProvider extension method to create SafeBufferSpanProvider based on SafeMemoryMappedViewHandle of memory mapped file (使用 CreateSpanProvider 扩展方法, 基于 内存映射文件的SafeMemoryMappedViewHandle 来创建 SafeBufferSpanProvider).
 2. SafeBufferSpanProvider supports using statement, which can automatically manage the release of unmanaged data (SafeBufferSpanProvider 支持 using 语句, 能自动管理非托管数据的释放).
@@ -452,7 +452,29 @@ Apple M2, 1 CPU, 8 logical and 8 physical cores
 | SumForExSpanUseRef | 262144 |  89.04 us | 0.338 us | 0.506 us |  0.94 |    0.01 |
 ```
 
-It can be seen that the performance of ExSpan is very similar to Span, slightly slower by about 20% This is because on the Arm architecture, JIT has special optimizations for Span (可见, ExSpan 的性能与 Span 很接近, 稍微慢了 20% 左右. 这是因为Arm架构上, JIT 对 Span 有特殊的优化).
+It can be seen that the performance of ExSpan is very similar to Span, slightly slower by about 26% (可见, ExSpan 的性能与 Span 很接近, 慢了 (121.74 / 96.30 - 1 =) 26% 左右).
+
+#### .NET 9
+
+```
+BenchmarkDotNet v0.14.0, macOS Sequoia 15.5 (24F74) [Darwin 24.5.0]
+Apple M2, 1 CPU, 8 logical and 8 physical cores
+.NET SDK 9.0.102
+  [Host]    : .NET 9.0.1 (9.0.124.61010), Arm64 RyuJIT AdvSIMD
+  MediumRun : .NET 9.0.1 (9.0.124.61010), Arm64 RyuJIT AdvSIMD
+
+| Method             | N      | Mean      | Error    | StdDev   | Ratio |
+|------------------- |------- |----------:|---------:|---------:|------:|
+| SumForArray        | 262144 |  86.25 us | 0.069 us | 0.103 us |  1.00 |
+| SumForPtr          | 262144 |  76.78 us | 0.335 us | 0.492 us |  0.89 |
+| SumForSpan         | 262144 |  93.34 us | 0.238 us | 0.326 us |  1.08 |
+| SumForExSpan       | 262144 | 104.89 us | 0.087 us | 0.131 us |  1.22 |
+| SumForExSpanByPtr  | 262144 | 104.72 us | 0.072 us | 0.105 us |  1.21 |
+| SumForExSpanUsePtr | 262144 |  78.05 us | 0.841 us | 1.259 us |  0.90 |
+| SumForExSpanUseRef | 262144 |  78.02 us | 0.854 us | 1.252 us |  0.90 |
+```
+
+The performance of .NET 9 has made progress again, and the performance of ExSpan is very close to Span The difference is only about 12% (.NET 9 时性能又有进度, ExSpan 的性能与 Span 很接近了. 仅相差 (104.89 / 93.34 - 1 =) 12% 左右).
 
 If you want to pursue optimal performance, you can also use pointers for optimization You can refer to SumForExSpanUsePtr or SumForExSpanUseRef, both of which are faster than SumForSpan (若想追求最佳性能, 也可利用指针进行优化. 可参考 SumForExSpanUsePtr 或 SumForExSpanUseRef, 它们都比 SumForSpan 快).
 
