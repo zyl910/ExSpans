@@ -474,7 +474,7 @@ Apple M2, 1 CPU, 8 logical and 8 physical cores
 | SumForExSpanUseRef | 262144 |  78.02 us | 0.854 us | 1.252 us |  0.90 |
 ```
 
-The performance of .NET 9 has made progress again, and the performance of ExSpan is very close to Span The difference is only about 12% (.NET 9 时性能又有进度, ExSpan 的性能与 Span 很接近了. 仅相差 (104.89 / 93.34 - 1 =) 12% 左右).
+The performance of .NET 9 has made progress again, and the performance of ExSpan is very close to Span The difference is only about 12% (.NET 9 时性能又有进步, ExSpan 的性能与 Span 很接近了. 仅相差 (104.89 / 93.34 - 1 =) 12% 左右).
 
 If you want to pursue optimal performance, you can also use pointers for optimization You can refer to SumForExSpanUsePtr or SumForExSpanUseRef, both of which are faster than SumForSpan (若想追求最佳性能, 也可利用指针进行优化. 可参考 SumForExSpanUsePtr 或 SumForExSpanUseRef, 它们都比 SumForSpan 快).
 
