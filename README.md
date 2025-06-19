@@ -407,6 +407,27 @@ AMD Ryzen 7 7840H w/ Radeon 780M Graphics, 1 CPU, 16 logical and 8 physical core
 
 It can be seen that the performance of ExSpan is the same as Span (可见, ExSpan 的性能与 Span 相同).
 
+#### .NET 6
+
+```
+AMD Ryzen 7 7840H w/ Radeon 780M Graphics, 1 CPU, 16 logical and 8 physical cores
+.NET SDK 9.0.301
+  [Host]    : .NET 6.0.36 (6.0.3624.51421), X64 RyuJIT AVX2
+  MediumRun : .NET 6.0.36 (6.0.3624.51421), X64 RyuJIT AVX2
+
+| Method             | N      | Mean      | Error    | StdDev   | Ratio | RatioSD | Code Size |
+|------------------- |------- |----------:|---------:|---------:|------:|--------:|----------:|
+| SumForArray        | 262144 |  68.11 us | 0.207 us | 0.311 us |  1.00 |    0.01 |   1,600 B |
+| SumForPtr          | 262144 |  58.67 us | 0.157 us | 0.231 us |  0.86 |    0.01 |     147 B |
+| SumForSpan         | 262144 |  60.25 us | 0.176 us | 0.264 us |  0.88 |    0.01 |     206 B |
+| SumForExSpan       | 262144 | 165.34 us | 0.777 us | 1.162 us |  2.43 |    0.02 |     715 B |
+| SumForExSpanByPtr  | 262144 | 171.65 us | 0.705 us | 1.055 us |  2.52 |    0.02 |     331 B |
+| SumForExSpanUsePtr | 262144 |  59.83 us | 0.334 us | 0.500 us |  0.88 |    0.01 |     676 B |
+| SumForExSpanUseRef | 262144 |  61.23 us | 0.599 us | 0.859 us |  0.90 |    0.01 |     663 B |
+```
+
+As you can see, before .NET 7, ExSpan's performance was a bit slower than Span (可见, 在 .NET 7 之前, ExSpan 的性能比 Span 慢一些).
+﻿
 #### .NET Framework
 
 ```
@@ -426,8 +447,8 @@ AMD Ryzen 7 7840H w/ Radeon 780M Graphics, 1 CPU, 16 logical and 8 physical core
 | SumForExSpanUseRef | 262144 |  58.72 us | 0.187 us |  0.279 us |  0.85 |    0.01 |     614 B |
 ```
 
-As you can see, before .NET 7, ExSpan's performance was a bit slower than Span (可见, 在 .NET 7 之前, ExSpan 的性能比 Span 慢一些).
-﻿
+ExSpan can also run in the NET Framework, but it is slower (ExSpan在 .NET Framework 中也能运行, 只是更慢一些).
+
 There is a way around this performance issue - use ExSpan only as a passing parameter, and then use pointers to manipulate the data. See SumForExSpanUsePtr or SumForExSpanUseRef, both of which are faster than SumForArray/SumForSpan. This library's ExMemoryExtensions and other types are optimized in this way (有一种办法可以解决这种性能问题——仅将 ExSpan 用做传参, 随后用指针进行数据处理. 可参考 SumForExSpanUsePtr 或 SumForExSpanUseRef, 它们都比 SumForArray/SumForSpan 快. 本库的 ExMemoryExtensions 等类型, 就是用这个办法进行优化的).
 
 ### Benchmarks of Arm architecture
