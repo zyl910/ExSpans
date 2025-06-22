@@ -34,7 +34,7 @@
       <PlatformTarget>ARM32</PlatformTarget>
       <PlatformTarget>x86</PlatformTarget>
       -->
-      <UseNuget>true</UseNuget>
+      <UseNuget>false</UseNuget>
   </PropertyGroup>
 
     <ItemGroup Condition=" '$(PlatformTarget)' == 'x86' ">
