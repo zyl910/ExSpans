@@ -131,7 +131,17 @@ namespace Zyl.ExSpans {
                 ThrowHelper.ThrowInvalidTypeWithPointersNotSupported(typeof(TFrom));
             if (TypeHelper.IsReferenceOrContainsReferences<TTo>())
                 ThrowHelper.ThrowInvalidTypeWithPointersNotSupported(typeof(TTo));
+            return CastUnsafe<TFrom, TTo>(span);
+        }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static ExSpan<TTo> CastUnsafe<TFrom, TTo>(ExSpan<TFrom> span)
+#if STRUCT_REF_FIELD
+#else
+            where TFrom : struct
+            where TTo : struct
+#endif // STRUCT_REF_FIELD
+            {
             // Use unsigned integers - unsigned division by constant (especially by power of 2)
             // and checked casts are faster and smaller.
             uint fromSize = (uint)Unsafe.SizeOf<TFrom>();
@@ -186,7 +196,17 @@ namespace Zyl.ExSpans {
                 ThrowHelper.ThrowInvalidTypeWithPointersNotSupported(typeof(TFrom));
             if (TypeHelper.IsReferenceOrContainsReferences<TTo>())
                 ThrowHelper.ThrowInvalidTypeWithPointersNotSupported(typeof(TTo));
+            return CastUnsafe<TFrom, TTo>(span);
+        }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static ReadOnlyExSpan<TTo> CastUnsafe<TFrom, TTo>(ReadOnlyExSpan<TFrom> span)
+#if STRUCT_REF_FIELD
+#else
+            where TFrom : struct
+            where TTo : struct
+#endif // STRUCT_REF_FIELD
+            {
             // Use unsigned integers - unsigned division by constant (especially by power of 2)
             // and checked casts are faster and smaller.
             uint fromSize = (uint)Unsafe.SizeOf<TFrom>();

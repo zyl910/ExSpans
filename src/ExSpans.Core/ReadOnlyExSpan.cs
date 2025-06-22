@@ -404,9 +404,9 @@ namespace Zyl.ExSpans {
             }
             return retVal;
         }
-        
+
         /// <summary>
-        /// Returns a value that indicates whether two <see cref="ReadOnlySpan{T}"/> instances are equal (返回一个值，该值指示两个 <see cref="ReadOnlySpan{T}"/> 实例是否相等).
+        /// Returns a value that indicates whether two <see cref="ReadOnlyExSpan{T}"/> instances are equal (返回一个值，该值指示两个 <see cref="ReadOnlyExSpan{T}"/> 实例是否相等).
         /// </summary>
         public static bool operator ==(ReadOnlyExSpan<T> left, ReadOnlyExSpan<T> right) =>
             left._length == right._length &&
