@@ -13,29 +13,32 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Zyl.ExSpans.Extensions;
 using Zyl.ExSpans.Impl;
+using Zyl.ExSpans.Reflection;
 using EditorBrowsableAttribute = System.ComponentModel.EditorBrowsableAttribute;
 using EditorBrowsableState = System.ComponentModel.EditorBrowsableState;
 
 namespace Zyl.ExSpans {
     /// <summary>
     /// ExMemory represents a contiguous region of arbitrary memory similar to <see cref="Span{T}"/>.
-    /// Unlike <see cref="Span{T}"/>, it is not a byref-like type.
+    /// Unlike <see cref="Span{T}"/>, it is not a byref-like type
+    /// (代表内存的连续区域，类似于 ExSpan. 与 ExSpan 不同的是，它不是 类似byref 的类型. 它可以被视为 <see cref="TSize"/> 索引范围的 <see cref="Memory{T}"/>).
     /// </summary>
-    [DebuggerTypeProxy(typeof(ExMemoryDebugView<>))]
+    /// <typeparam name="T">The element type (元素的类型).</typeparam>
+    //[DebuggerTypeProxy(typeof(ExMemoryDebugView<>))]
     [DebuggerDisplay("{ToString(),raw}")]
-    public readonly struct ExMemory<T> : IEquatable<ExMemory<T>> {
+    public readonly partial struct ExMemory<T> : IEquatable<ExMemory<T>> {
         // The highest order bit of _index is used to discern whether _object is a pre-pinned array.
         // (_index < 0) => _object is a pre-pinned array, so Pin() will not allocate a new GCHandle
         //       (else) => Pin() needs to allocate a new GCHandle to pin the object.
         private readonly object? _object;
-        private readonly int _index;
-        private readonly int _length;
+        private readonly TSize _index;
+        private readonly TSize _length;
 
         /// <summary>
-        /// Creates a new memory over the entirety of the target array.
+        /// Creates a new memory over the entirety of the target array (在整个目标数组上创建新的内存区域).
         /// </summary>
-        /// <param name="array">The target array.</param>
-        /// <remarks>Returns default when <paramref name="array"/> is null.</remarks>
+        /// <param name="array">The target array (目标数组).</param>
+        /// <remarks>Returns default when <paramref name="array"/> is null (当 <paramref name="array"/> 为 null时返回 default).</remarks>
         /// <exception cref="ArrayTypeMismatchException">Thrown when <paramref name="array"/> is covariant and array's type is not exactly T[].</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ExMemory(T[]? array) {
@@ -43,7 +46,7 @@ namespace Zyl.ExSpans {
                 this = default;
                 return; // returns default
             }
-            if (!typeof(T).IsValueType && array.GetType() != typeof(T[]))
+            if (!TypeHelper.IsValueType<T>() && array.GetType() != typeof(T[]))
                 ThrowHelper.ThrowArrayTypeMismatchException();
 
             _object = array;
@@ -52,16 +55,16 @@ namespace Zyl.ExSpans {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ExMemory(T[]? array, int start) {
+        internal ExMemory(T[]? array, TSize start) {
             if (array == null) {
                 if (start != 0)
                     ThrowHelper.ThrowArgumentOutOfRangeException();
                 this = default;
                 return; // returns default
             }
-            if (!typeof(T).IsValueType && array.GetType() != typeof(T[]))
+            if (!TypeHelper.IsValueType<T>() && array.GetType() != typeof(T[]))
                 ThrowHelper.ThrowArrayTypeMismatchException();
-            if ((uint)start > (uint)array.Length)
+            if ((nuint)start > (nuint)array.ExLength())
                 ThrowHelper.ThrowArgumentOutOfRangeException();
 
             _object = array;
@@ -71,34 +74,31 @@ namespace Zyl.ExSpans {
 
         /// <summary>
         /// Creates a new memory over the portion of the target array beginning
-        /// at 'start' index and ending at 'end' index (exclusive).
+        /// at 'start' index and ending at 'end' index (exclusive)
+        /// (在目标数组的一部分上创建新的内存区域，从指定位置开始并包含指定数量的元素).
         /// </summary>
-        /// <param name="array">The target array.</param>
-        /// <param name="start">The index at which to begin the memory.</param>
-        /// <param name="length">The number of items in the memory.</param>
-        /// <remarks>Returns default when <paramref name="array"/> is null.</remarks>
+        /// <param name="array">The target array (目标数组).</param>
+        /// <param name="start">The index at which to begin the memory (开始内存区域的索引).</param>
+        /// <param name="length">The number of items in the memory (内存区域中的项数).</param>
+        /// <remarks>Returns default when <paramref name="array"/> is null (当 <paramref name="array"/> 为 null时返回 default).</remarks>
         /// <exception cref="ArrayTypeMismatchException">Thrown when <paramref name="array"/> is covariant and array's type is not exactly T[].</exception>
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown when the specified <paramref name="start"/> or end index is not in the range (&lt;0 or &gt;Length).
         /// </exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ExMemory(T[]? array, int start, int length) {
+        public ExMemory(T[]? array, TSize start, TSize length) {
             if (array == null) {
                 if (start != 0 || length != 0)
                     ThrowHelper.ThrowArgumentOutOfRangeException();
                 this = default;
                 return; // returns default
             }
-            if (!typeof(T).IsValueType && array.GetType() != typeof(T[]))
+            if (!TypeHelper.IsValueType<T>() && array.GetType() != typeof(T[]))
                 ThrowHelper.ThrowArrayTypeMismatchException();
-#if TARGET_64BIT
-            // See comment in Span<T>.Slice for how this works.
-            if ((ulong)(uint)start + (ulong)(uint)length > (ulong)(uint)array.Length)
+            TUSize srcLength = array.ExLength().ToUIntPtr();
+            if (start.ToUIntPtr() > srcLength || length.ToUIntPtr() > (srcLength - start.ToUIntPtr())) {
                 ThrowHelper.ThrowArgumentOutOfRangeException();
-#else
-            if ((uint)start > (uint)array.Length || (uint)length > (uint)(array.Length - start))
-                ThrowHelper.ThrowArgumentOutOfRangeException();
-#endif
+            }
 
             _object = array;
             _index = start;
@@ -107,16 +107,17 @@ namespace Zyl.ExSpans {
 
         /// <summary>
         /// Creates a new memory from a memory manager that provides specific method implementations beginning
-        /// at 0 index and ending at 'end' index (exclusive).
+        /// at 0 index and ending at 'end' index (exclusive)
+        /// (在内存管理者的一部分上创建新的内存区域，从0开始并包含指定数量的元素).
         /// </summary>
-        /// <param name="manager">The memory manager.</param>
-        /// <param name="length">The number of items in the memory.</param>
+        /// <param name="manager">The memory manager (内存管理者).</param>
+        /// <param name="length">The number of items in the memory (内存区域中的项数).</param>
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown when the specified <paramref name="length"/> is negative.
         /// </exception>
         /// <remarks>For internal infrastructure only</remarks>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ExMemory(ExMemoryManager<T> manager, int length) {
+        internal ExMemory(MemoryManager<T> manager, TSize length) {
             Debug.Assert(manager != null);
 
             if (length < 0)
@@ -129,17 +130,18 @@ namespace Zyl.ExSpans {
 
         /// <summary>
         /// Creates a new memory from a memory manager that provides specific method implementations beginning
-        /// at 'start' index and ending at 'end' index (exclusive).
+        /// at 'start' index and ending at 'end' index (exclusive)
+        /// (在内存管理者的一部分上创建新的内存区域，从指定位置开始并包含指定数量的元素).
         /// </summary>
-        /// <param name="manager">The memory manager.</param>
-        /// <param name="start">The index at which to begin the memory.</param>
-        /// <param name="length">The number of items in the memory.</param>
+        /// <param name="manager">The memory manager (内存管理者).</param>
+        /// <param name="start">The index at which to begin the memory (开始内存区域的索引).</param>
+        /// <param name="length">The number of items in the memory (内存区域中的项数).</param>
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown when the specified <paramref name="start"/> or <paramref name="length"/> is negative.
         /// </exception>
         /// <remarks>For internal infrastructure only</remarks>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ExMemory(ExMemoryManager<T> manager, int start, int length) {
+        internal ExMemory(MemoryManager<T> manager, TSize start, TSize length) {
             Debug.Assert(manager != null);
 
             if (length < 0 || start < 0)
@@ -151,14 +153,16 @@ namespace Zyl.ExSpans {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ExMemory(object? obj, int start, int length) {
+        internal ExMemory(object? obj, TSize start, TSize length) {
             // No validation performed in release builds; caller must provide any necessary validation.
 
             // 'obj is T[]' below also handles things like int[] <-> uint[] being convertible
             Debug.Assert((obj == null)
                 || (typeof(T) == typeof(char) && obj is string)
                 || (obj is T[])
-                || (obj is ExMemoryManager<T>));
+                || (obj is MemoryManager<T>)
+                //|| (obj is ExMemoryManager<T>)
+                );
 
             _object = obj;
             _index = start;
@@ -166,58 +170,61 @@ namespace Zyl.ExSpans {
         }
 
         /// <summary>
-        /// Defines an implicit conversion of an array to a <see cref="ExMemory{T}"/>
+        /// Defines an implicit conversion of an array to a <see cref="ExMemory{T}"/> (定义数组到 <see cref="ExMemory{T}"/> 的隐式转换)
         /// </summary>
         public static implicit operator ExMemory<T>(T[]? array) => new ExMemory<T>(array);
 
         /// <summary>
-        /// Defines an implicit conversion of a <see cref="ArraySegment{T}"/> to a <see cref="ExMemory{T}"/>
+        /// Defines an implicit conversion of a <see cref="ArraySegment{T}"/> to a <see cref="ExMemory{T}"/> (定义 <see cref="ArraySegment{T}"/> 到 <see cref="ExMemory{T}"/> 的隐式转换)
         /// </summary>
         public static implicit operator ExMemory<T>(ArraySegment<T> segment) => new ExMemory<T>(segment.Array, segment.Offset, segment.Count);
 
         /// <summary>
-        /// Defines an implicit conversion of a <see cref="ExMemory{T}"/> to a <see cref="ReadOnlyExMemory{T}"/>
+        /// Defines an implicit conversion of a <see cref="ExMemory{T}"/> to a <see cref="ReadOnlyExMemory{T}"/> (定义 <see cref="ExMemory{T}"/> 到 <see cref="ReadOnlyExMemory{T}"/> 的隐式转换)
         /// </summary>
         public static implicit operator ReadOnlyExMemory<T>(ExMemory<T> memory) =>
             new ReadOnlyExMemory<T>(memory._object, memory._index, memory._length);
 
         /// <summary>
-        /// Returns an empty <see cref="ExMemory{T}"/>
+        /// Returns an empty <see cref="ExMemory{T}"/> (返回空的 <see cref="ExMemory{T}"/>).
         /// </summary>
         public static ExMemory<T> Empty => default;
 
         /// <summary>
-        /// The number of items in the memory.
+        /// The number of items in the memory (内存中的项数).
         /// </summary>
-        public int Length => _length;
+        public TSize Length => _length;
 
         /// <summary>
-        /// Returns true if Length is 0.
+        /// Gets a value indicating whether this <see cref="ReadOnlyExMemory{T}"/> is empty (返回一个值，该值指示当前只读内存为空).
         /// </summary>
+        /// <value>Returns true if Length is 0.</value>
         public bool IsEmpty => _length == 0;
 
         /// <summary>
         /// For <see cref="ExMemory{Char}"/>, returns a new instance of string that represents the characters pointed to by the memory.
-        /// Otherwise, returns a <see cref="string"/> with the name of the type and the number of elements.
+        /// Otherwise, returns a <see cref="string"/> with the name of the type and the number of elements
+        ///  (返回此 <see cref="ReadOnlyExMemory{Char}"/> 的字符串表示形式).
         /// </summary>
         public override string ToString() {
-            if (typeof(T) == typeof(char)) {
-                return (_object is string str) ? str.Substring(_index, _length) : Span.ToString();
+            if (typeof(T) == typeof(char) && _length.IsLengthInInt32()) {
+                return (_object is string str) ? str.Substring((int)_index, (int)_length) : Span.ToString();
             }
-            return $"System.ExMemory<{typeof(T).Name}>[{_length}]";
+            return $"Zyl.ExSpans.ExMemory<{typeof(T).Name}>[{_length}]";
         }
 
         /// <summary>
-        /// Forms a slice out of the given memory, beginning at 'start'.
+        /// Forms a slice out of the given memory region, beginning at a specified position and continuing to its end (从给定的内存区域形成切片，从指定位置开始，然后继续到其末尾).
         /// </summary>
-        /// <param name="start">The index at which to begin this slice.</param>
+        /// <param name="start">The index at which to begin this slice (开始切片处的索引).</param>
+        /// <returns>A read-only memory region representing the desired slice (表示切片后的只读内存区域).</returns>
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown when the specified <paramref name="start"/> index is not in range (&lt;0 or &gt;Length).
         /// </exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ExMemory<T> Slice(int start) {
-            if ((uint)start > (uint)_length) {
-                ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.start);
+        public ExMemory<T> Slice(TSize start) {
+            if ((TUSize)start > (TUSize)_length) {
+                ThrowHelper.ThrowArgumentOutOfRangeException();
             }
 
             // It is expected for _index + start to be negative if the memory is already pre-pinned.
@@ -225,30 +232,27 @@ namespace Zyl.ExSpans {
         }
 
         /// <summary>
-        /// Forms a slice out of the given memory, beginning at 'start', of given length
+        /// Forms a slice out of the given memory, beginning at 'start', of given length (从给定的内存区域形成切片，从指定位置开始，根据所给长度).
         /// </summary>
-        /// <param name="start">The index at which to begin this slice.</param>
-        /// <param name="length">The desired length for the slice (exclusive).</param>
+        /// <param name="start">The index at which to begin this slice (开始切片处的索引).</param>
+        /// <param name="length">The desired length for the slice (exclusive) (切片所需的长度).</param>
+        /// <returns>A read-only memory region representing the desired slice (表示切片后的只读内存区域).</returns>
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown when the specified <paramref name="start"/> or end index is not in range (&lt;0 or &gt;Length).
         /// </exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ExMemory<T> Slice(int start, int length) {
-#if TARGET_64BIT
-            // See comment in Span<T>.Slice for how this works.
-            if ((ulong)(uint)start + (ulong)(uint)length > (ulong)(uint)_length)
+        public ExMemory<T> Slice(TSize start, TSize length) {
+            TUSize srcLength = _length.ToUIntPtr();
+            if (start.ToUIntPtr() > srcLength || length.ToUIntPtr() > (srcLength - start.ToUIntPtr())) {
                 ThrowHelper.ThrowArgumentOutOfRangeException();
-#else
-            if ((uint)start > (uint)_length || (uint)length > (uint)(_length - start))
-                ThrowHelper.ThrowArgumentOutOfRangeException();
-#endif
+            }
 
             // It is expected for _index + start to be negative if the memory is already pre-pinned.
             return new ExMemory<T>(_object, _index + start, length);
         }
 
         /// <summary>
-        /// Returns a span from the memory.
+        /// Returns a span from the memory (从内存获取跨度).
         /// </summary>
         public Span<T> Span {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -260,19 +264,30 @@ namespace Zyl.ExSpans {
                 // in which case that's the dangerous operation performed by the dev, and we're just following
                 // suit here to make it work as best as possible.
 
+#if CREATE_SPAN_BY_REF
                 ref T refToReturn = ref Unsafe.NullRef<T>();
                 int lengthOfUnderlyingSpan = 0;
+#endif // CREATE_SPAN_BY_REF
 
                 // Copy this field into a local so that it can't change out from under us mid-operation.
 
                 object? tmpObject = _object;
                 if (tmpObject != null) {
-                    if (typeof(T) == typeof(char) && tmpObject.GetType() == typeof(string)) {
+                    nint indexFix = _index & ReadOnlyExMemory<T>.RemoveFlagsBitMask;
+                    if (typeof(T) == typeof(char) && tmpObject is string str) {
                         // Special-case string since it's the most common for ROM<char>.
 
-                        refToReturn = ref Unsafe.As<char, T>(ref Unsafe.As<string>(tmpObject).GetRawStringData());
-                        lengthOfUnderlyingSpan = Unsafe.As<string>(tmpObject).Length;
-                    } else if (RuntimeHelpers.ObjectHasComponentSize(tmpObject)) {
+                        //refToReturn = ref Unsafe.As<char, T>(ref Unsafe.As<string>(tmpObject).GetRawStringData());
+                        //lengthOfUnderlyingSpan = Unsafe.As<string>(tmpObject).Length;
+#if CREATE_SPAN_BY_REF
+                        ReadOnlySpan<char> spanChar = str.AsSpan();
+                        refToReturn = ref Unsafe.As<char, T>(ref Unsafe.AsRef(in spanChar[0]));
+                        lengthOfUnderlyingSpan = str.Length;
+#else
+                        Memory<char> memChar = MemoryMarshal.AsMemory(str.AsMemory().Slice((int)indexFix, (int)_length));
+                        return Unsafe.As<Memory<char>, Memory<T>>(ref memChar).Span;
+#endif // CREATE_SPAN_BY_REF
+                    } else if (tmpObject is T[] arr) { // RuntimeHelpers.ObjectHasComponentSize(tmpObject)
                         // We know the object is not null, it's not a string, and it is variable-length. The only
                         // remaining option is for it to be a T[] (or a U[] which is blittable to T[], like int[]
                         // and uint[]). As a special case of this, ROM<T> allows some amount of array variance
@@ -283,23 +298,36 @@ namespace Zyl.ExSpans {
                         // preventing type safety violations due to misuse of reflection is out of scope of this logic.
 
                         // 'tmpObject is T[]' below also handles things like int[] <-> uint[] being convertible
-                        Debug.Assert(tmpObject is T[]);
+                        //Debug.Assert(tmpObject is T[]);
 
-                        refToReturn = ref ExMemoryMarshal.GetArrayDataReference(Unsafe.As<T[]>(tmpObject));
-                        lengthOfUnderlyingSpan = Unsafe.As<T[]>(tmpObject).Length;
-                    } else {
+                        //refToReturn = ref ExMemoryMarshal.GetArrayDataReference(Unsafe.As<T[]>(tmpObject));
+                        //lengthOfUnderlyingSpan = Unsafe.As<T[]>(tmpObject).Length;
+#if CREATE_SPAN_BY_REF
+                        refToReturn = ref arr[0];
+                        lengthOfUnderlyingSpan = arr.Length;
+#else
+                        return arr.AsMemory().Slice((int)indexFix, (int)_length).Span;
+#endif // CREATE_SPAN_BY_REF
+                    } else if (tmpObject is MemoryManager<T> mgr) {
                         // We know the object is not null, and it's not variable-length, so it must be a ExMemoryManager<T>.
                         // Otherwise somebody used private reflection to set this field, and we're not too worried about
                         // type safety violations at that point. Note that it can't be a ExMemoryManager<U>, even if U and
                         // T are blittable (e.g., ExMemoryManager<int> to ExMemoryManager<uint>), since there exists no
                         // constructor or other public API which would allow such a conversion.
 
-                        Debug.Assert(tmpObject is ExMemoryManager<T>);
-                        Span<T> memoryManagerSpan = Unsafe.As<ExMemoryManager<T>>(tmpObject).GetSpan();
-                        refToReturn = ref ExMemoryMarshal.GetReference(memoryManagerSpan);
+                        //Debug.Assert(tmpObject is MemoryManager<T>);
+#if CREATE_SPAN_BY_REF
+                        Span<T> memoryManagerSpan = mgr.GetSpan(); // Unsafe.As<MemoryManager<T>>(tmpObject).GetSpan();
+                        refToReturn = ref MemoryMarshal.GetReference(memoryManagerSpan);
                         lengthOfUnderlyingSpan = memoryManagerSpan.Length;
+#else
+                        return mgr.Memory.Slice((int)indexFix, (int)_length).Span;
+#endif // CREATE_SPAN_BY_REF
+                    } else {
+                        throw new NotSupportedException("ExMemory not support `" + tmpObject.GetType().Name + "` type!");
                     }
 
+#if CREATE_SPAN_BY_REF
                     // If the ExMemory<T> or ReadOnlyExMemory<T> instance is torn, this property getter has undefined behavior.
                     // We try to detect this condition and throw an exception, but it's possible that a torn struct might
                     // appear to us to be valid, and we'll return an undesired span. Such a span is always guaranteed at
@@ -309,34 +337,29 @@ namespace Zyl.ExSpans {
                     // We use 'nuint' because it gives us a free early zero-extension to 64 bits when running on a 64-bit platform.
                     nuint desiredStartIndex = (uint)_index & (uint)ReadOnlyExMemory<T>.RemoveFlagsBitMask;
 
-                    int desiredLength = _length;
+                    int desiredLength = (int)_length;
 
-#if TARGET_64BIT
-                    // See comment in Span<T>.Slice for how this works.
-                    if ((ulong)desiredStartIndex + (ulong)(uint)desiredLength > (ulong)(uint)lengthOfUnderlyingSpan)
-                    {
+                    if (desiredStartIndex > (nuint)lengthOfUnderlyingSpan || (nuint)desiredLength > (nuint)lengthOfUnderlyingSpan - desiredStartIndex) {
                         ThrowHelper.ThrowArgumentOutOfRangeException();
                     }
-#else
-                    if ((uint)desiredStartIndex > (uint)lengthOfUnderlyingSpan || (uint)desiredLength > (uint)lengthOfUnderlyingSpan - (uint)desiredStartIndex) {
-                        ThrowHelper.ThrowArgumentOutOfRangeException();
-                    }
-#endif
 
-                    refToReturn = ref Unsafe.Add(ref refToReturn, desiredStartIndex);
+                    refToReturn = ref ExUnsafe.Add(ref refToReturn, desiredStartIndex);
                     lengthOfUnderlyingSpan = desiredLength;
+                    //return new Span<T>(ref refToReturn, lengthOfUnderlyingSpan);
+                    return MemoryMarshal.CreateSpan<T>(ref refToReturn, lengthOfUnderlyingSpan);
+#endif // CREATE_SPAN_BY_REF
                 }
-
-                return new Span<T>(ref refToReturn, lengthOfUnderlyingSpan);
+                return Span<T>.Empty;
             }
         }
 
         /// <summary>
         /// Copies the contents of the memory into the destination. If the source
         /// and destination overlap, this method behaves as if the original values are in
-        /// a temporary location before the destination is overwritten.
+        /// a temporary location before the destination is overwritten
+        /// (将内存对象的内容复制到目标内存对象. 此方法将当前实例的所有内容复制到 destination,  即使当前实例的内容 和 destination 重叠也是如此).
         /// </summary>
-        /// <param name="destination">The ExMemory to copy items into.</param>
+        /// <param name="destination">The memory to copy items into (目标内存对象).</param>
         /// <exception cref="ArgumentException">
         /// Thrown when the destination is shorter than the source.
         /// </exception>
@@ -345,22 +368,27 @@ namespace Zyl.ExSpans {
         /// <summary>
         /// Copies the contents of the memory into the destination. If the source
         /// and destination overlap, this method behaves as if the original values are in
-        /// a temporary location before the destination is overwritten.
+        /// a temporary location before the destination is overwritten
+        /// (尝试将内存对象的内容复制到目标内存对象. 此方法将当前实例的所有内容复制到 destination,  即使当前实例的内容 和 destination 重叠也是如此).
         /// </summary>
+        /// <param name="destination">The memory to copy items into (目标内存对象).</param>
         /// <returns>If the destination is shorter than the source, this method
-        /// return false and no data is written to the destination.</returns>
-        /// <param name="destination">The span to copy items into.</param>
+        /// return false and no data is written to the destination
+        /// (如果复制操作成功，则为 true；否则为 false).
+        /// </returns>
         public bool TryCopyTo(ExMemory<T> destination) => Span.TryCopyTo(destination.Span);
 
         /// <summary>
         /// Creates a handle for the memory.
-        /// The GC will not move the memory until the returned <see cref="ExMemoryHandle"/>
-        /// is disposed, enabling taking and using the memory's address.
+        /// The GC will not move the memory until the returned <see cref="MemoryHandle"/>
+        /// is disposed, enabling taking and using the memory's address
+        /// (为内存创建一个句柄. 在处置(disposed)返回的 MemoryHandle 之前，GC 不会移动内存，从而可以获取并使用内存地址)
         /// </summary>
+        /// <returns>A handle for the memory (内存的句柄).</returns>
         /// <exception cref="ArgumentException">
         /// An instance with nonprimitive (non-blittable) members cannot be pinned.
         /// </exception>
-        public unsafe ExMemoryHandle Pin() {
+        public unsafe MemoryHandle Pin() {
             // Just like the Span property getter, we have special support for a mutable ExMemory<char>
             // that wraps an immutable String instance. This might happen if a caller creates an
             // immutable ROM<char> wrapping a String, then uses Unsafe.As to create a mutable M<char>.
@@ -374,29 +402,35 @@ namespace Zyl.ExSpans {
 
             object? tmpObject = _object;
             if (tmpObject != null) {
+                nint indexFix = _index & ReadOnlyExMemory<T>.RemoveFlagsBitMask;
                 if (typeof(T) == typeof(char) && tmpObject is string s) {
                     // Unsafe.AsPointer is safe since the handle pins it
                     GCHandle handle = GCHandle.Alloc(tmpObject, GCHandleType.Pinned);
-                    ref char stringData = ref Unsafe.Add(ref s.GetRawStringData(), _index);
-                    return new ExMemoryHandle(Unsafe.AsPointer(ref stringData), handle);
-                } else if (RuntimeHelpers.ObjectHasComponentSize(tmpObject)) {
+                    ref char stringData = ref Unsafe.Add(ref Unsafe.AsRef(in s.AsSpan()[0]), indexFix);
+                    return new MemoryHandle(Unsafe.AsPointer(ref stringData), handle);
+                } else if (tmpObject is T[] arr) { // RuntimeHelpers.ObjectHasComponentSize(tmpObject)
                     // 'tmpObject is T[]' below also handles things like int[] <-> uint[] being convertible
-                    Debug.Assert(tmpObject is T[]);
+                    //Debug.Assert(tmpObject is T[]);
 
                     // Array is already pre-pinned
                     if (_index < 0) {
                         // Unsafe.AsPointer is safe since it's pinned
-                        void* pointer = Unsafe.Add<T>(Unsafe.AsPointer(ref ExMemoryMarshal.GetArrayDataReference(Unsafe.As<T[]>(tmpObject))), _index & ReadOnlyExMemory<T>.RemoveFlagsBitMask);
-                        return new ExMemoryHandle(pointer);
+                        void* pointer = Unsafe.AsPointer(ref arr[(int)indexFix]);
+                        return new MemoryHandle(pointer);
                     } else {
                         // Unsafe.AsPointer is safe since the handle pins it
                         GCHandle handle = GCHandle.Alloc(tmpObject, GCHandleType.Pinned);
-                        void* pointer = Unsafe.Add<T>(Unsafe.AsPointer(ref ExMemoryMarshal.GetArrayDataReference(Unsafe.As<T[]>(tmpObject))), _index);
-                        return new ExMemoryHandle(pointer, handle);
+#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET40_OR_GREATER
+                        System.Threading.Thread.MemoryBarrier();
+#endif // NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET40_OR_GREATER
+                        void* pointer = Unsafe.AsPointer(ref arr[(int)indexFix]);
+                        return new MemoryHandle(pointer, handle);
                     }
+                } else if (tmpObject is MemoryManager<T> mgr) {
+                    //Debug.Assert(tmpObject is MemoryManager<T>);
+                    return mgr.Pin((int)indexFix);
                 } else {
-                    Debug.Assert(tmpObject is ExMemoryManager<T>);
-                    return Unsafe.As<ExMemoryManager<T>>(tmpObject).Pin(_index);
+                    throw new NotSupportedException("ExMemory not support `" + tmpObject.GetType().Name + "` type!");
                 }
             }
 
@@ -406,13 +440,14 @@ namespace Zyl.ExSpans {
         /// <summary>
         /// Copies the contents from the memory into a new array.  This heap
         /// allocates, so should generally be avoided, however it is sometimes
-        /// necessary to bridge the gap with APIs written in terms of arrays.
+        /// necessary to bridge the gap with APIs written in terms of arrays
+        /// (将内存中的内容复制到一个新数组中. 该操作会进行堆分配，因此一般应避免使用，但有时需要与以数组编写的应用程序接口弥合差距).
         /// </summary>
         public T[] ToArray() => Span.ToArray();
 
         /// <summary>
-        /// Determines whether the specified object is equal to the current object.
-        /// Returns true if the object is ExMemory or ReadOnlyExMemory and if both objects point to the same array and have the same length.
+        /// Determines whether the specified object is equal to the current object (确定指定的对象是否等于当前对象).
+        /// Returns true if the object is ExMemory or ReadOnlyExMemory and if both objects point to the same array and have the same length
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override bool Equals([NotNullWhen(true)] object? obj) {
@@ -426,9 +461,12 @@ namespace Zyl.ExSpans {
         }
 
         /// <summary>
-        /// Returns true if the memory points to the same array and has the same length.  Note that
-        /// this does *not* check to see if the *contents* are equal.
+        /// Determines whether the current instance and a specified <see cref="ExMemory{T}"/> objects are equal (确定当前实例与指定的 <see cref="ExMemory{T}"/> 对象是否相等).
         /// </summary>
+        /// <returns>
+        /// Returns true if the memory points to the same array and has the same length.  Note that
+        /// this does *not* check to see if the *contents* are equal
+        /// </returns>
         public bool Equals(ExMemory<T> other) {
             return
                 _object == other._object &&
@@ -436,14 +474,12 @@ namespace Zyl.ExSpans {
                 _length == other._length;
         }
 
-        /// <summary>
-        /// Serves as the default hash function.
-        /// </summary>
+        /// <summary>Returns the hash code for this <see cref="ExMemory{T}"/></summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override int GetHashCode() {
             // We use RuntimeHelpers.GetHashCode instead of Object.GetHashCode because the hash
             // code is based on object identity and referential equality, not deep equality (as common with string).
-            return (_object != null) ? HashCode.Combine(RuntimeHelpers.GetHashCode(_object), _index, _length) : 0;
+            return (_object != null) ? HashCodeHelper.Combine(RuntimeHelpers.GetHashCode(_object), _index, _length) : 0;
         }
     }
 }

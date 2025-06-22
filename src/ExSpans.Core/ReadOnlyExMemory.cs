@@ -55,8 +55,8 @@ namespace Zyl.ExSpans {
 
         /// <summary>
         /// Creates a new memory over the portion of the target array beginning
-        /// at 'start' index and ending at 'end' index (exclusive).
-        /// (在目标数组的一部分上创建新的内存区域，从指定位置开始并包含指定数量的元素)
+        /// at 'start' index and ending at 'end' index (exclusive)
+        /// (在目标数组的一部分上创建新的内存区域，从指定位置开始并包含指定数量的元素).
         /// </summary>
         /// <param name="array">The target array (目标数组).</param>
         /// <param name="start">The index at which to begin the memory (开始内存区域的索引).</param>
@@ -139,10 +139,10 @@ namespace Zyl.ExSpans {
         /// Otherwise, returns a <see cref="string"/> with the name of the type and the number of elements.
         /// </returns>
         public override string ToString() {
-            if (typeof(T) == typeof(char) && _length < int.MaxValue && _index < _length) {
+            if (typeof(T) == typeof(char) && _length.IsLengthInInt32()) {
                 return (_object is string str) ? str.Substring((int)_index, (int)_length) : Span.ToString();
             }
-            return $"System.ReadOnlyExMemory<{typeof(T).Name}>[{_length}]";
+            return $"Zyl.ExSpans.ReadOnlyExMemory<{typeof(T).Name}>[{_length}]";
         }
 
         /// <summary>
