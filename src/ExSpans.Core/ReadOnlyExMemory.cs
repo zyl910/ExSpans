@@ -282,13 +282,13 @@ namespace Zyl.ExSpans {
             }
         }
 
-#if TODO
         /// <summary>
         /// Copies the contents of the read-only memory into the destination. If the source
         /// and destination overlap, this method behaves as if the original values are in
-        /// a temporary location before the destination is overwritten.
+        /// a temporary location before the destination is overwritten
+        /// (将只读内存对象的内容复制到目标. 此方法将当前实例的所有内容复制到 destination,  即使当前实例的内容 和 destination 重叠也是如此).
         /// </summary>
-        /// <param name="destination">The ExMemory to copy items into.</param>
+        /// <param name="destination">The memory to copy items into (目标内存对象).</param>
         /// <exception cref="ArgumentException">
         /// Thrown when the destination is shorter than the source.
         /// </exception>
@@ -297,13 +297,15 @@ namespace Zyl.ExSpans {
         /// <summary>
         /// Copies the contents of the readonly-only memory into the destination. If the source
         /// and destination overlap, this method behaves as if the original values are in
-        /// a temporary location before the destination is overwritten.
+        /// a temporary location before the destination is overwritten
+        /// (尝试将只读内存对象的内容复制到目标. 此方法将当前实例的所有内容复制到 destination,  即使当前实例的内容 和 destination 重叠也是如此).
         /// </summary>
+        /// <param name="destination">The memory to copy items into (目标内存对象).</param>
         /// <returns>If the destination is shorter than the source, this method
-        /// return false and no data is written to the destination.</returns>
-        /// <param name="destination">The span to copy items into.</param>
+        /// return false and no data is written to the destination
+        /// (如果复制操作成功，则为 true；否则为 false).
+        /// </returns>
         public bool TryCopyTo(ExMemory<T> destination) => Span.TryCopyTo(destination.Span);
-#endif // (TODO)
 
         /// <summary>
         /// Creates a handle for the memory.
@@ -372,10 +374,8 @@ namespace Zyl.ExSpans {
         public override bool Equals([NotNullWhen(true)] object? obj) {
             if (obj is ReadOnlyExMemory<T> readOnlyExMemory) {
                 return Equals(readOnlyExMemory);
-#if TODO
             } else if (obj is ExMemory<T> memory) {
                 return Equals(memory);
-#endif // (TODO)
             } else {
                 return false;
             }

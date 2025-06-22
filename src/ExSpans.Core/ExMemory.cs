@@ -357,7 +357,7 @@ namespace Zyl.ExSpans {
         /// Copies the contents of the memory into the destination. If the source
         /// and destination overlap, this method behaves as if the original values are in
         /// a temporary location before the destination is overwritten
-        /// (将内存对象的内容复制到目标内存对象. 此方法将当前实例的所有内容复制到 destination,  即使当前实例的内容 和 destination 重叠也是如此).
+        /// (将内存对象的内容复制到目标. 此方法将当前实例的所有内容复制到 destination,  即使当前实例的内容 和 destination 重叠也是如此).
         /// </summary>
         /// <param name="destination">The memory to copy items into (目标内存对象).</param>
         /// <exception cref="ArgumentException">
@@ -369,7 +369,7 @@ namespace Zyl.ExSpans {
         /// Copies the contents of the memory into the destination. If the source
         /// and destination overlap, this method behaves as if the original values are in
         /// a temporary location before the destination is overwritten
-        /// (尝试将内存对象的内容复制到目标内存对象. 此方法将当前实例的所有内容复制到 destination,  即使当前实例的内容 和 destination 重叠也是如此).
+        /// (尝试将内存对象的内容复制到目标. 此方法将当前实例的所有内容复制到 destination,  即使当前实例的内容 和 destination 重叠也是如此).
         /// </summary>
         /// <param name="destination">The memory to copy items into (目标内存对象).</param>
         /// <returns>If the destination is shorter than the source, this method
