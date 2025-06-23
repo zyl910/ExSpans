@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Zyl.ExSpans.Buffers;
 using Zyl.ExSpans.Extensions;
 using Zyl.ExSpans.Impl;
 using EditorBrowsableAttribute = System.ComponentModel.EditorBrowsableAttribute;
@@ -97,7 +98,6 @@ namespace Zyl.ExSpans {
                 || (typeof(T) == typeof(char) && obj is string)
                 || (obj is T[])
                 || (obj is MemoryManager<T>)
-                //|| (obj is ExMemoryManager<T>)
                 );
 
             _object = obj;
@@ -189,97 +189,109 @@ namespace Zyl.ExSpans {
         public ReadOnlySpan<T> Span {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get {
-#if CREATE_SPAN_BY_REF
-                ref T refToReturn = ref Unsafe.NullRef<T>();
-                int lengthOfUnderlyingSpan = 0;
-#endif // CREATE_SPAN_BY_REF
-
-                // Copy this field into a local so that it can't change out from under us mid-operation.
-
                 object? tmpObject = _object;
                 if (tmpObject != null) {
-                    nint indexFix = _index & RemoveFlagsBitMask;
-                    if (typeof(T) == typeof(char) && tmpObject is string str) {
-                        // Special-case string since it's the most common for ROM<char>.
-
-                        //refToReturn = ref Unsafe.As<char, T>(ref Unsafe.As<string>(tmpObject).GetRawStringData());
-                        //lengthOfUnderlyingSpan = Unsafe.As<string>(tmpObject).Length;
-#if CREATE_SPAN_BY_REF
-                        ReadOnlySpan<char> spanChar = str.AsSpan();
-                        refToReturn = ref Unsafe.As<char, T>(ref Unsafe.AsRef(in spanChar[0]));
-                        lengthOfUnderlyingSpan = str.Length;
-#else
-                        //spanChar = spanChar.Slice((int)indexFix, (int)_length);
-                        //return MemoryMarshal.Cast<char, T>(spanChar); // CS0453 The type 'T' must be a non-nullable value type in order to use it as parameter 'TTo' in the generic type or method 'MemoryMarshal.Cast<TFrom, TTo>(ReadOnlySpan<TFrom>)'.
-                        //return Unsafe.As<ReadOnlySpan<char>, ReadOnlySpan<T>>(ref spanChar); // CS9244 The type 'ReadOnlySpan<char>' may not be a ref struct or a type parameter allowing ref structs in order to use it as parameter 'TFrom' in the generic type or method 'Unsafe.As<TFrom, TTo>(ref TFrom)'.
-                        //throw new NotSupportedException("Before .NET Standard 2.1 (Or .NET Core 3.0), ReadOnlyExMemory did not support string type!");
-                        ReadOnlyMemory<char> memChar = str.AsMemory().Slice((int)indexFix, (int)_length);
-                        return Unsafe.As<ReadOnlyMemory<char>, ReadOnlyMemory<T>>(ref memChar).Span;
-#endif // CREATE_SPAN_BY_REF
-                    } else if (tmpObject is T[] arr) { // RuntimeHelpers.ObjectHasComponentSize(tmpObject)
-                        // We know the object is not null, it's not a string, and it is variable-length. The only
-                        // remaining option is for it to be a T[] (or a U[] which is blittable to T[], like int[]
-                        // and uint[]). As a special case of this, ROM<T> allows some amount of array variance
-                        // that ExMemory<T> disallows. For example, an array of actual type string[] cannot be turned
-                        // into a ExMemory<object> or a Span<object>, but it can be turned into a ROM/ROS<object>.
-                        // We'll assume these checks succeeded because they're performed during ExMemory<T> construction.
-                        // It's always possible for somebody to use private reflection to bypass these checks, but
-                        // preventing type safety violations due to misuse of reflection is out of scope of this logic.
-
-                        // 'tmpObject is T[]' below also handles things like int[] <-> uint[] being convertible
-                        //Debug.Assert(tmpObject is T[]);
-
-                        //refToReturn = ref ExMemoryMarshal.GetArrayDataReference(Unsafe.As<T[]>(tmpObject));
-                        //lengthOfUnderlyingSpan = Unsafe.As<T[]>(tmpObject).Length;
-#if CREATE_SPAN_BY_REF
-                        refToReturn = ref arr[0];
-                        lengthOfUnderlyingSpan = arr.Length;
-#else
-                        return arr.AsMemory().Slice((int)indexFix, (int)_length).Span;
-#endif // CREATE_SPAN_BY_REF
-                    } else if (tmpObject is MemoryManager<T> mgr) {
-                        // We know the object is not null, and it's not variable-length, so it must be a ExMemoryManager<T>.
-                        // Otherwise somebody used private reflection to set this field, and we're not too worried about
-                        // type safety violations at that point. Note that it can't be a ExMemoryManager<U>, even if U and
-                        // T are blittable (e.g., ExMemoryManager<int> to ExMemoryManager<uint>), since there exists no
-                        // constructor or other public API which would allow such a conversion.
-
-                        //Debug.Assert(tmpObject is ExMemoryManager<T>);
-#if CREATE_SPAN_BY_REF
-                        Span<T> memoryManagerSpan = mgr.GetSpan(); // Unsafe.As<MemoryManager<T>>(tmpObject).GetSpan();
-                        refToReturn = ref MemoryMarshal.GetReference(memoryManagerSpan);
-                        lengthOfUnderlyingSpan = memoryManagerSpan.Length;
-#else
-                        return mgr.Memory.Slice((int)indexFix, (int)_length).Span;
-#endif // CREATE_SPAN_BY_REF
-                    } else {
-                        throw new NotSupportedException("ReadOnlyExMemory not support `" + tmpObject.GetType().Name + "` type!");
+                    if (tmpObject is ExMemoryManager<T> mgr) {
+                        nint indexFix = _index & RemoveFlagsBitMask;
+                        return mgr.GetExSpan().Slice(indexFix, _length).AsSpan();
                     }
-
-#if CREATE_SPAN_BY_REF
-                    // If the ExMemory<T> or ReadOnlyExMemory<T> instance is torn, this property getter has undefined behavior.
-                    // We try to detect this condition and throw an exception, but it's possible that a torn struct might
-                    // appear to us to be valid, and we'll return an undesired span. Such a span is always guaranteed at
-                    // least to be in-bounds when compared with the original ExMemory<T> instance, so using the span won't
-                    // AV the process.
-
-                    // We use 'nuint' because it gives us a free early zero-extension to 64 bits when running on a 64-bit platform.
-                    nuint desiredStartIndex = (nuint)indexFix;
-
-                    int desiredLength = (int)_length;
-
-                    if (desiredStartIndex > (nuint)lengthOfUnderlyingSpan || (nuint)desiredLength > (nuint)lengthOfUnderlyingSpan - desiredStartIndex) {
-                        ThrowHelper.ThrowArgumentOutOfRangeException();
-                    }
-
-                    refToReturn = ref ExUnsafe.Add(ref refToReturn, desiredStartIndex);
-                    lengthOfUnderlyingSpan = desiredLength;
-                    //return new ReadOnlySpan<T>(ref refToReturn, lengthOfUnderlyingSpan);
-                    return MemoryMarshal.CreateReadOnlySpan<T>(ref refToReturn, lengthOfUnderlyingSpan);
-#endif // CREATE_SPAN_BY_REF
                 }
-                return ReadOnlySpan<T>.Empty;
+                return GetSpanCore();
             }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private ReadOnlySpan<T> GetSpanCore() {
+#if CREATE_SPAN_BY_REF
+            ref T refToReturn = ref Unsafe.NullRef<T>();
+            int lengthOfUnderlyingSpan = 0;
+#endif // CREATE_SPAN_BY_REF
+
+            // Copy this field into a local so that it can't change out from under us mid-operation.
+
+            object? tmpObject = _object;
+            if (tmpObject != null) {
+                nint indexFix = _index & RemoveFlagsBitMask;
+                if (typeof(T) == typeof(char) && tmpObject is string str) {
+                    // Special-case string since it's the most common for ROM<char>.
+
+                    //refToReturn = ref Unsafe.As<char, T>(ref Unsafe.As<string>(tmpObject).GetRawStringData());
+                    //lengthOfUnderlyingSpan = Unsafe.As<string>(tmpObject).Length;
+#if CREATE_SPAN_BY_REF
+                    ReadOnlySpan<char> spanChar = str.AsSpan();
+                    refToReturn = ref Unsafe.As<char, T>(ref Unsafe.AsRef(in spanChar[0]));
+                    lengthOfUnderlyingSpan = str.Length;
+#else
+                    //spanChar = spanChar.Slice((int)indexFix, (int)_length);
+                    //return MemoryMarshal.Cast<char, T>(spanChar); // CS0453 The type 'T' must be a non-nullable value type in order to use it as parameter 'TTo' in the generic type or method 'MemoryMarshal.Cast<TFrom, TTo>(ReadOnlySpan<TFrom>)'.
+                    //return Unsafe.As<ReadOnlySpan<char>, ReadOnlySpan<T>>(ref spanChar); // CS9244 The type 'ReadOnlySpan<char>' may not be a ref struct or a type parameter allowing ref structs in order to use it as parameter 'TFrom' in the generic type or method 'Unsafe.As<TFrom, TTo>(ref TFrom)'.
+                    //throw new NotSupportedException("Before .NET Standard 2.1 (Or .NET Core 3.0), ReadOnlyExMemory did not support string type!");
+                    ReadOnlyMemory<char> memChar = str.AsMemory().Slice((int)indexFix, (int)_length);
+                    return Unsafe.As<ReadOnlyMemory<char>, ReadOnlyMemory<T>>(ref memChar).Span;
+#endif // CREATE_SPAN_BY_REF
+                } else if (tmpObject is T[] arr) { // RuntimeHelpers.ObjectHasComponentSize(tmpObject)
+                    // We know the object is not null, it's not a string, and it is variable-length. The only
+                    // remaining option is for it to be a T[] (or a U[] which is blittable to T[], like int[]
+                    // and uint[]). As a special case of this, ROM<T> allows some amount of array variance
+                    // that ExMemory<T> disallows. For example, an array of actual type string[] cannot be turned
+                    // into a ExMemory<object> or a Span<object>, but it can be turned into a ROM/ROS<object>.
+                    // We'll assume these checks succeeded because they're performed during ExMemory<T> construction.
+                    // It's always possible for somebody to use private reflection to bypass these checks, but
+                    // preventing type safety violations due to misuse of reflection is out of scope of this logic.
+
+                    // 'tmpObject is T[]' below also handles things like int[] <-> uint[] being convertible
+                    //Debug.Assert(tmpObject is T[]);
+
+                    //refToReturn = ref ExMemoryMarshal.GetArrayDataReference(Unsafe.As<T[]>(tmpObject));
+                    //lengthOfUnderlyingSpan = Unsafe.As<T[]>(tmpObject).Length;
+#if CREATE_SPAN_BY_REF
+                    refToReturn = ref arr[0];
+                    lengthOfUnderlyingSpan = arr.Length;
+#else
+                    return arr.AsMemory().Slice((int)indexFix, (int)_length).Span;
+#endif // CREATE_SPAN_BY_REF
+                } else if (tmpObject is MemoryManager<T> mgr) {
+                    // We know the object is not null, and it's not variable-length, so it must be a ExMemoryManager<T>.
+                    // Otherwise somebody used private reflection to set this field, and we're not too worried about
+                    // type safety violations at that point. Note that it can't be a ExMemoryManager<U>, even if U and
+                    // T are blittable (e.g., ExMemoryManager<int> to ExMemoryManager<uint>), since there exists no
+                    // constructor or other public API which would allow such a conversion.
+
+                    //Debug.Assert(tmpObject is ExMemoryManager<T>);
+#if CREATE_SPAN_BY_REF
+                    Span<T> memoryManagerSpan = mgr.GetSpan(); // Unsafe.As<MemoryManager<T>>(tmpObject).GetSpan();
+                    refToReturn = ref MemoryMarshal.GetReference(memoryManagerSpan);
+                    lengthOfUnderlyingSpan = memoryManagerSpan.Length;
+#else
+                    return mgr.Memory.Slice((int)indexFix, (int)_length).Span;
+#endif // CREATE_SPAN_BY_REF
+                } else {
+                    throw new NotSupportedException("ReadOnlyExMemory not support `" + tmpObject.GetType().Name + "` type!");
+                }
+
+#if CREATE_SPAN_BY_REF
+                // If the ExMemory<T> or ReadOnlyExMemory<T> instance is torn, this property getter has undefined behavior.
+                // We try to detect this condition and throw an exception, but it's possible that a torn struct might
+                // appear to us to be valid, and we'll return an undesired span. Such a span is always guaranteed at
+                // least to be in-bounds when compared with the original ExMemory<T> instance, so using the span won't
+                // AV the process.
+
+                // We use 'nuint' because it gives us a free early zero-extension to 64 bits when running on a 64-bit platform.
+                nuint desiredStartIndex = (nuint)indexFix;
+
+                int desiredLength = (int)_length;
+
+                if (desiredStartIndex > (nuint)lengthOfUnderlyingSpan || (nuint)desiredLength > (nuint)lengthOfUnderlyingSpan - desiredStartIndex) {
+                    ThrowHelper.ThrowArgumentOutOfRangeException();
+                }
+
+                refToReturn = ref ExUnsafe.Add(ref refToReturn, desiredStartIndex);
+                lengthOfUnderlyingSpan = desiredLength;
+                //return new ReadOnlySpan<T>(ref refToReturn, lengthOfUnderlyingSpan);
+                return MemoryMarshal.CreateReadOnlySpan<T>(ref refToReturn, lengthOfUnderlyingSpan);
+#endif // CREATE_SPAN_BY_REF
+            }
+            return ReadOnlySpan<T>.Empty;
         }
 
         /// <summary>

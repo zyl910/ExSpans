@@ -257,6 +257,13 @@ namespace Zyl.ExSpans {
         public Span<T> Span {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get {
+                object? tmpObject = _object;
+                if (tmpObject != null) {
+                    if (tmpObject is ExMemoryManager<T> mgr) {
+                        nint indexFix = _index & ReadOnlyExMemory<T>.RemoveFlagsBitMask;
+                        return mgr.GetExSpan().Slice(indexFix, _length).AsSpan();
+                    }
+                }
                 return GetSpanCore();
             }
         }
@@ -271,8 +278,8 @@ namespace Zyl.ExSpans {
             // suit here to make it work as best as possible.
 
 #if CREATE_SPAN_BY_REF
-                ref T refToReturn = ref Unsafe.NullRef<T>();
-                int lengthOfUnderlyingSpan = 0;
+            ref T refToReturn = ref Unsafe.NullRef<T>();
+            int lengthOfUnderlyingSpan = 0;
 #endif // CREATE_SPAN_BY_REF
 
             // Copy this field into a local so that it can't change out from under us mid-operation.
