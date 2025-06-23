@@ -364,7 +364,7 @@ namespace Zyl.ExSpans {
                     //Debug.Assert(tmpObject is MemoryManager<T>);
                     return mgr.Pin((int)indexFix);
                 } else {
-                    throw new NotSupportedException("ReadOnlyExMemory not support `" + tmpObject.GetType().Name + "` type!");
+                    throw new NotSupportedException("ReadOnlyExMemory supported source type(" + tmpObject.GetType().Name + ")!");
                 }
             }
 

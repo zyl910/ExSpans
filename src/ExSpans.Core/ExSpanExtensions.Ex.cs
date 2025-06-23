@@ -3,8 +3,10 @@
 #endif // NET9_0_OR_GREATER
 
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using Zyl.ExSpans.Extensions;
 using Zyl.ExSpans.Impl;
@@ -12,6 +14,70 @@ using Zyl.ExSpans.Reflection;
 
 namespace Zyl.ExSpans {
     partial class ExSpanExtensions {
+
+        /// <summary>
+        /// An conversion of a <see cref="ReadOnlyMemory{T}"/> to a <see cref="ReadOnlyExMemory{T}"/> (<see cref="ReadOnlyMemory{T}"/> 到 <see cref="ReadOnlyExMemory{T}"/> 的转换).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="mem">The object to convert (要转换的对象).</param>
+        /// <returns>a <see cref="ReadOnlyExMemory{T}"/></returns>
+        [Obsolete("Please change to use the IExMemoryOwner properties to get ReadOnlyMemory or ReadOnlyExMemory (请改为使用 IExMemoryOwner 的属性来获取 Memory 或 ExMemory).")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static ReadOnlyExMemory<T> AsReadOnlyExMemory<T>(this ReadOnlyMemory<T> mem) {
+            //return (ReadOnlyExMemory<T>)mem;
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// An conversion of a <see cref="ExMemory{T}"/> to a <see cref="ReadOnlyExMemory{T}"/> (<see cref="ExMemory{T}"/> 到 <see cref="ReadOnlyExMemory{T}"/> 的转换).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="mem">The object to convert (要转换的对象).</param>
+        /// <returns>a <see cref="ReadOnlyExMemory{T}"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlyExMemory<T> AsReadOnlyExMemory<T>(this ExMemory<T> mem) {
+            return (ReadOnlyExMemory<T>)mem;
+        }
+
+        /// <summary>
+        /// An conversion of a <see cref="ReadOnlyExMemory{T}"/> to a <see cref="ReadOnlyMemory{T}"/>. The length will saturating limited to the maximum length it supports (<see cref="ReadOnlyExMemory{T}"/> 到 <see cref="ReadOnlyMemory{T}"/> 的转换. 长度会饱和限制为它所支持的最大长度).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="mem">The object to convert (要转换的对象).</param>
+        /// <returns>a <see cref="ReadOnlyMemory{T}"/></returns>
+        /// <exception cref="ArgumentOutOfRangeException">The index value out of 32-bit range!</exception>
+        /// <exception cref="NotSupportedException">Not supported source type!</exception>
+        /// <remarks>
+        /// Cannot be converted from <see cref="ReadOnlyMemory{T}"/> to <see cref="ReadOnlyExMemory{T}"/>. Please change to use the IExMemoryOwner properties to get ReadOnlyMemory or ReadOnlyExMemory (不能从 ReadOnlyMemory 转为 ReadOnlyExMemory. 请改为使用 IExMemoryOwner 的属性来获取 Memory 或 ExMemory).
+        /// </remarks>
+        /// <seealso cref="MemoryMarshalHelper.GetMemorySaturatingLength"/>
+        //-// <seealso cref="LastAsReadOnlyMemory{T}(ReadOnlyExMemory{T})"/>
+        public static ReadOnlyMemory<T> AsReadOnlyMemory<T>(this ReadOnlyExMemory<T> mem) {
+            object? obj = mem.GetObjectStartLength(out TSize index, out TSize length);
+            if (obj is null) return ReadOnlyMemory<T>.Empty;
+            int idx = (int)index;
+            int len = (int)length;
+            if (IntPtr.Size > sizeof(int)) {
+                if ((long)index > (long)int.MaxValue) throw new ArgumentOutOfRangeException(nameof(index), string.Format("The index value({0}) out of 32-bit range!", index));
+                int max = int.MaxValue - idx;
+                if (len > max) len = max;
+            }
+            ReadOnlyMemory<T> rt;
+            if (typeof(T) == typeof(char) && obj is string str) {
+                ReadOnlyMemory<char> memChar = str.AsMemory();
+                rt = Unsafe.As<ReadOnlyMemory<char>, ReadOnlyMemory<T>>(ref memChar);
+            } else if (obj is T[] arr) {
+                rt = arr.AsMemory();
+            } else if (obj is MemoryManager<T> mgr) {
+                rt = mgr.Memory;
+            } else {
+                throw new NotSupportedException("Not supported source type(" + obj.GetType().Name + ")!");
+            }
+            if (rt.Length > len) {
+                rt = rt.Slice(idx, len);
+            }
+            return rt;
+        }
 
         /// <summary>
         /// An conversion of a <see cref="ReadOnlySpan{T}"/> to a <see cref="ReadOnlyExSpan{T}"/> (<see cref="ReadOnlySpan{T}"/> 到 <see cref="ReadOnlyExSpan{T}"/> 的转换).
@@ -77,6 +143,59 @@ namespace Zyl.ExSpans {
             if (length < 0)
                 ThrowHelper.ThrowArgumentOutOfRangeException();
             return (ReadOnlySpan<T>)span.Slice(start, (TSize)(uint)length);
+        }
+
+        /// <summary>
+        /// An conversion of a <see cref="Memory{T}"/> to a <see cref="ExMemory{T}"/> (<see cref="Memory{T}"/> 到 <see cref="ExMemory{T}"/> 的转换).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="mem">The object to convert (要转换的对象).</param>
+        /// <returns>a <see cref="ExMemory{T}"/></returns>
+        [Obsolete("Please change to use the IExMemoryOwner properties to get Memory or ExMemory (请改为使用 IExMemoryOwner 的属性来获取 Memory 或 ExMemory).")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static ExMemory<T> AsExMemory<T>(this Memory<T> mem) {
+            //return (ExMemory<T>)mem;
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// An conversion of a <see cref="ExMemory{T}"/> to a <see cref="Memory{T}"/>. The length will saturating limited to the maximum length it supports (<see cref="ExMemory{T}"/> 到 <see cref="Memory{T}"/> 的转换. 长度会饱和限制为它所支持的最大长度).
+        /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="mem">The object to convert (要转换的对象).</param>
+        /// <returns>a <see cref="Memory{T}"/></returns>
+        /// <exception cref="ArgumentOutOfRangeException">The index value out of 32-bit range!</exception>
+        /// <exception cref="NotSupportedException">Not supported source type!</exception>
+        /// <remarks>
+        /// Cannot be converted from <see cref="Memory{T}"/> to <see cref="ExMemory{T}"/>. Please change to use the IExMemoryOwner properties to get Memory or ExMemory (不能从 Memory 转为 ExMemory. 请改为使用 IExMemoryOwner 的属性来获取 Memory 或 ExMemory).
+        /// </remarks>
+        /// <seealso cref="MemoryMarshalHelper.GetMemorySaturatingLength"/>
+        //-// <seealso cref="LastAsMemory{T}(ExMemory{T})"/>
+        public static Memory<T> AsMemory<T>(this ExMemory<T> mem) {
+            object? obj = mem.GetObjectStartLength(out TSize index, out TSize length);
+            if (obj is null) return Memory<T>.Empty;
+            int idx = (int)index;
+            int len = (int)length;
+            if (IntPtr.Size > sizeof(int)) {
+                if ((long)index > (long)int.MaxValue) throw new ArgumentOutOfRangeException(nameof(index), string.Format("The index value({0}) out of 32-bit range!", index));
+                int max = int.MaxValue - idx;
+                if (len > max) len = max;
+            }
+            Memory<T> rt;
+            if (typeof(T) == typeof(char) && obj is string str) {
+                Memory<char> memChar = MemoryMarshal.AsMemory(str.AsMemory());
+                rt = Unsafe.As<Memory<char>, Memory<T>>(ref memChar);
+            } else if (obj is T[] arr) {
+                rt = arr.AsMemory();
+            } else if (obj is MemoryManager<T> mgr) {
+                rt = mgr.Memory;
+            } else {
+                throw new NotSupportedException("Not supported source type(" + obj.GetType().Name + ")!");
+            }
+            if (rt.Length > len) {
+                rt = rt.Slice(idx, len);
+            }
+            return rt;
         }
 
         /// <summary>

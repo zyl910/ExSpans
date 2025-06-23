@@ -337,7 +337,7 @@ namespace Zyl.ExSpans {
                     return mgr.Memory.Slice((int)indexFix, (int)_length).Span;
 #endif // CREATE_SPAN_BY_REF
                 } else {
-                    throw new NotSupportedException("ExMemory not support `" + tmpObject.GetType().Name + "` type!");
+                    throw new NotSupportedException("ExMemory supported source type(" + tmpObject.GetType().Name + ")!");
                 }
 
 #if CREATE_SPAN_BY_REF
@@ -492,6 +492,17 @@ namespace Zyl.ExSpans {
             // We use RuntimeHelpers.GetHashCode instead of Object.GetHashCode because the hash
             // code is based on object identity and referential equality, not deep equality (as common with string).
             return (_object != null) ? HashCodeHelper.Combine(RuntimeHelpers.GetHashCode(_object), _index, _length) : 0;
+        }
+
+        /// <summary>Gets the state of the memory as individual fields.</summary>
+        /// <param name="start">The offset.</param>
+        /// <param name="length">The count.</param>
+        /// <returns>The object.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal object? GetObjectStartLength(out TSize start, out TSize length) {
+            start = _index;
+            length = _length;
+            return _object;
         }
     }
 }
