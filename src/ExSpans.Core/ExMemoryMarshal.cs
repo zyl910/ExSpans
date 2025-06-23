@@ -3,7 +3,10 @@
 #endif // NET7_0_OR_GREATER
 
 using System;
+using System.Buffers;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -316,12 +319,180 @@ namespace Zyl.ExSpans {
 
 #endif // NET6_0_OR_GREATER
 
-        // -- No need to support
-        // public static bool TryGetArray<T>(ReadOnlyMemory<T> memory, out ArraySegment<T> segment);
-        // public static bool TryGetMemoryManager<T, TManager>(ReadOnlyMemory<T> memory, [NotNullWhen(true)] out TManager? manager) where TManager : MemoryManager<T>
-        // public static bool TryGetMemoryManager<T, TManager>(ReadOnlyMemory<T> memory, [NotNullWhen(true)] out TManager? manager, out int start, out int length) where TManager : MemoryManager<T>;
-        // public static IEnumerable<T> ToEnumerable<T>(ReadOnlyMemory<T> memory);
-        // public static bool TryGetString(ReadOnlyMemory<char> memory, [NotNullWhen(true)] out string? text, out int start, out int length);
+        /// <summary>
+        /// Get an array segment from the underlying memory.
+        /// If unable to get the array segment, return false with a default array segment.
+        /// </summary>
+        public static bool TryGetArray<T>(ReadOnlyExMemory<T> memory, out ArraySegment<T> segment) {
+            object? obj = memory.GetObjectStartLength(out int index, out int length);
+
+            // As an optimization, we skip the "is string?" check below if typeof(T) is not char,
+            // as ExMemory<T> / ROM<T> can't possibly contain a string instance in this case.
+
+            if (obj != null && !(
+                (typeof(T) == typeof(char) && obj.GetType() == typeof(string))
+                )) {
+                if (RuntimeHelpers.ObjectHasComponentSize(obj)) {
+                    // The object has a component size, which means it's variable-length, but we already
+                    // checked above that it's not a string. The only remaining option is that it's a T[]
+                    // or a U[] which is blittable to a T[] (e.g., int[] and uint[]).
+
+                    // The array may be prepinned, so remove the high bit from the start index in the line below.
+                    // The ArraySegment<T> ctor will perform bounds checking on index & length.
+
+                    segment = new ArraySegment<T>(Unsafe.As<T[]>(obj), index & ReadOnlyExMemory<T>.RemoveFlagsBitMask, length);
+                    return true;
+                } else {
+                    // The object isn't null, and it's not variable-length, so the only remaining option
+                    // is MemoryManager<T>. The ArraySegment<T> ctor will perform bounds checking on index & length.
+
+                    Debug.Assert(obj is MemoryManager<T>);
+                    if (Unsafe.As<MemoryManager<T>>(obj).TryGetArray(out ArraySegment<T> tempArraySegment)) {
+                        segment = new ArraySegment<T>(tempArraySegment.Array!, tempArraySegment.Offset + index, length);
+                        return true;
+                    }
+                }
+            }
+
+            // If we got to this point, the object is null, or it's a string, or it's a MemoryManager<T>
+            // which isn't backed by an array. We'll quickly homogenize all zero-length ExMemory<T> instances
+            // to an empty array for the purposes of reporting back to our caller.
+
+            if (length == 0) {
+                segment = ArraySegment<T>.Empty;
+                return true;
+            }
+
+            // Otherwise, there's *some* data, but it's not convertible to T[].
+
+            segment = default;
+            return false;
+        }
+
+        /// <summary>
+        /// Gets an <see cref="MemoryManager{T}"/> from the underlying read-only memory.
+        /// If unable to get the <typeparamref name="TManager"/> type, returns false.
+        /// </summary>
+        /// <typeparam name="T">The element type of the <paramref name="memory" />.</typeparam>
+        /// <typeparam name="TManager">The type of <see cref="MemoryManager{T}"/> to try and retrieve.</typeparam>
+        /// <param name="memory">The memory to get the manager for.</param>
+        /// <param name="manager">The returned manager of the <see cref="ReadOnlyExMemory{T}"/>.</param>
+        /// <returns>A <see cref="bool"/> indicating if it was successful.</returns>
+        public static bool TryGetMemoryManager<T, TManager>(ReadOnlyExMemory<T> memory, [NotNullWhen(true)] out TManager? manager)
+            where TManager : MemoryManager<T> {
+            TManager? localManager; // Use register for null comparison rather than byref
+            manager = localManager = memory.GetObjectStartLength(out _, out _) as TManager;
+#pragma warning disable 8762 // "Parameter 'manager' may not have a null value when exiting with 'true'."
+            return localManager != null;
+#pragma warning restore 8762
+        }
+
+        /// <summary>
+        /// Gets an <see cref="MemoryManager{T}"/> and <paramref name="start" />, <paramref name="length" /> from the underlying read-only memory.
+        /// If unable to get the <typeparamref name="TManager"/> type, returns false.
+        /// </summary>
+        /// <typeparam name="T">The element type of the <paramref name="memory" />.</typeparam>
+        /// <typeparam name="TManager">The type of <see cref="MemoryManager{T}"/> to try and retrieve.</typeparam>
+        /// <param name="memory">The memory to get the manager for.</param>
+        /// <param name="manager">The returned manager of the <see cref="ReadOnlyExMemory{T}"/>.</param>
+        /// <param name="start">The offset from the start of the <paramref name="manager" /> that the <paramref name="memory" /> represents.</param>
+        /// <param name="length">The length of the <paramref name="manager" /> that the <paramref name="memory" /> represents.</param>
+        /// <returns>A <see cref="bool"/> indicating if it was successful.</returns>
+        public static bool TryGetMemoryManager<T, TManager>(ReadOnlyExMemory<T> memory, [NotNullWhen(true)] out TManager? manager, out int start, out int length)
+           where TManager : MemoryManager<T> {
+            TManager? localManager; // Use register for null comparison rather than byref
+            manager = localManager = memory.GetObjectStartLength(out start, out length) as TManager;
+
+            Debug.Assert(length >= 0);
+
+            if (localManager == null) {
+                start = default;
+                length = default;
+                return false;
+            }
+#pragma warning disable 8762 // "Parameter 'manager' may not have a null value when exiting with 'true'."
+            return true;
+#pragma warning restore 8762
+        }
+
+        /// <summary>
+        /// Creates an <see cref="IEnumerable{T}"/> view of the given <paramref name="memory" /> to allow
+        /// the <paramref name="memory" /> to be used in existing APIs that take an <see cref="IEnumerable{T}"/>.
+        /// </summary>
+        /// <typeparam name="T">The element type of the <paramref name="memory" />.</typeparam>
+        /// <param name="memory">The ReadOnlyExMemory to view as an <see cref="IEnumerable{T}"/></param>
+        /// <returns>An <see cref="IEnumerable{T}"/> view of the given <paramref name="memory" /></returns>
+        public static IEnumerable<T> ToEnumerable<T>(ReadOnlyExMemory<T> memory) {
+            object? obj = memory.GetObjectStartLength(out int index, out int length);
+
+            // If the memory is empty, just return an empty array as the enumerable.
+            if (length is 0 || obj is null) {
+                return Array.Empty<T>();
+            }
+
+            // If the object is a string, we can optimize. If it isn't a slice, just return the string as the
+            // enumerable. Otherwise, return an iterator dedicated to enumerating the object; while we could
+            // use the general one for any ReadOnlyExMemory, that will incur a .Span access for every element.
+            if (typeof(T) == typeof(char) && obj is string str) {
+                return (IEnumerable<T>)(object)(index == 0 && length == str.Length ?
+                    str :
+                    FromString(str, index, length));
+
+                static IEnumerable<char> FromString(string s, int offset, int count) {
+                    for (int i = 0; i < count; i++) {
+                        yield return s[offset + i];
+                    }
+                }
+            }
+
+            // If the object is an array, we can optimize. If it isn't a slice, just return the array as the
+            // enumerable. Otherwise, return an iterator dedicated to enumerating the object.
+            if (RuntimeHelpers.ObjectHasComponentSize(obj)) // Same check as in TryGetArray to confirm that obj is a T[] or a U[] which is blittable to a T[].
+            {
+                T[] array = Unsafe.As<T[]>(obj);
+                index &= ReadOnlyExMemory<T>.RemoveFlagsBitMask; // the array may be prepinned, so remove the high bit from the start index in the line below.
+                return index == 0 && length == array.Length ?
+                    array :
+                    FromArray(array, index, length);
+
+                static IEnumerable<T> FromArray(T[] array, int offset, int count) {
+                    for (int i = 0; i < count; i++) {
+                        yield return array[offset + i];
+                    }
+                }
+            }
+
+            // The ROM<T> wraps a MemoryManager<T>. The best we can do is iterate, accessing .Span on each MoveNext.
+            return FromMemoryManager(memory);
+
+            static IEnumerable<T> FromMemoryManager(ReadOnlyExMemory<T> memory) {
+                for (int i = 0; i < memory.Length; i++) {
+                    yield return memory.Span[i];
+                }
+            }
+        }
+
+        /// <summary>Attempts to get the underlying <see cref="string"/> from a <see cref="ReadOnlyExMemory{T}"/>.</summary>
+        /// <param name="memory">The memory that may be wrapping a <see cref="string"/> object.</param>
+        /// <param name="text">The string.</param>
+        /// <param name="start">The starting location in <paramref name="text"/>.</param>
+        /// <param name="length">The number of items in <paramref name="text"/>.</param>
+        /// <returns></returns>
+        public static bool TryGetString(ReadOnlyExMemory<char> memory, [NotNullWhen(true)] out string? text, out int start, out int length) {
+            if (memory.GetObjectStartLength(out int offset, out int count) is string s) {
+                Debug.Assert(offset >= 0);
+                Debug.Assert(count >= 0);
+                text = s;
+                start = offset;
+                length = count;
+                return true;
+            } else {
+                text = null;
+                start = 0;
+                length = 0;
+                return false;
+            }
+        }
 
         /// <summary>
         /// Reads a structure of type <typeparamref name="T"/> out of a read-only span of bytes (从字节的只读跨度中读取的 <typeparamref name="T"/> 类型结构体).
@@ -460,8 +631,36 @@ namespace Zyl.ExSpans {
             return ref Unsafe.As<byte, T>(ref GetReference(span));
         }
 
-        // -- No need to support
-        //public static Memory<T> CreateFromPinnedArray<T>(T[]? array, int start, int length);
+        /// <summary>
+        /// Creates a new memory over the portion of the pre-pinned target array beginning
+        /// at 'start' index and ending at 'end' index (exclusive).
+        /// </summary>
+        /// <param name="array">The pre-pinned target array.</param>
+        /// <param name="start">The index at which to begin the memory.</param>
+        /// <param name="length">The number of items in the memory.</param>
+        /// <remarks>This method should only be called on an array that is already pinned and
+        /// that array should not be unpinned while the returned ExMemory<typeparamref name="T"/> is still in use.
+        /// Calling this method on an unpinned array could result in memory corruption.</remarks>
+        /// <remarks>Returns default when <paramref name="array"/> is null.</remarks>
+        /// <exception cref="ArrayTypeMismatchException">Thrown when <paramref name="array"/> is covariant and array's type is not exactly T[].</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// Thrown when the specified <paramref name="start"/> or end index is not in the range (&lt;0 or &gt;=Length).
+        /// </exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ExMemory<T> CreateFromPinnedArray<T>(T[]? array, int start, int length) {
+            if (array == null) {
+                if (start != 0 || length != 0)
+                    ThrowHelper.ThrowArgumentOutOfRangeException();
+                return default;
+            }
+            if (!typeof(T).IsValueType && array.GetType() != typeof(T[]))
+                ThrowHelper.ThrowArrayTypeMismatchException();
+            if ((uint)start > (uint)array.Length || (uint)length > (uint)(array.Length - start))
+                ThrowHelper.ThrowArgumentOutOfRangeException();
+
+            // Before using _index, check if _index < 0, then 'and' it with RemoveFlagsBitMask
+            return new ExMemory<T>((object)array, start | (1 << 31), length);
+        }
 
     }
 }
