@@ -116,12 +116,11 @@ namespace Zyl.ExSpans.Tests {
             // This space intentionally left blank.
         }
 
-#if NOT_RELATED
-        public static void Validate<T>(this Memory<T> memory, params T[] expected) where T : IEquatable<T> {
+        public static void Validate<T>(this ExMemory<T> memory, params T[] expected) where T : IEquatable<T> {
             Assert.True(memory.ExSpan.SequenceEqual(expected));
         }
 
-        public static void ValidateReferenceType<T>(this Memory<T> memory, params T[] expected) where T : class {
+        public static void ValidateReferenceType<T>(this ExMemory<T> memory, params T[] expected) where T : class {
             T[] bufferArray = memory.ToArray();
             Assert.Equal(memory.Length, expected.Length);
             for (int i = 0; i < expected.Length; i++) {
@@ -130,11 +129,11 @@ namespace Zyl.ExSpans.Tests {
             }
         }
 
-        public static void Validate<T>(this ReadOnlyMemory<T> memory, params T[] expected) where T : IEquatable<T> {
+        public static void Validate<T>(this ReadOnlyExMemory<T> memory, params T[] expected) where T : IEquatable<T> {
             Assert.True(memory.ExSpan.SequenceEqual(expected));
         }
 
-        public static void ValidateReferenceType<T>(this ReadOnlyMemory<T> memory, params T[] expected) where T : class {
+        public static void ValidateReferenceType<T>(this ReadOnlyExMemory<T> memory, params T[] expected) where T : class {
             T[] bufferArray = memory.ToArray();
             Assert.Equal(memory.Length, expected.Length);
             for (int i = 0; i < expected.Length; i++) {
@@ -142,7 +141,6 @@ namespace Zyl.ExSpans.Tests {
                 Assert.Same(expected[i], actual);
             }
         }
-#endif // NOT_RELATED
 
         public static void Validate<T>(ExSpan<byte> span, T value) where T : struct {
             T read = ExMemoryMarshal.Read<T>(span);
@@ -339,23 +337,21 @@ namespace Zyl.ExSpans.Tests {
             }
         }
 
-#if NOT_RELATED
-        /// <summary>Creates a <see cref="Memory{T}"/> with the specified values in its backing field.</summary>
-        public static Memory<T> DangerousCreateMemory<T>(object obj, int offset, int length) {
-            Memory<T> mem = default;
-            object boxedMemory = mem;
+        /// <summary>Creates a <see cref="ExMemory{T}"/> with the specified values in its backing field.</summary>
+        public static ExMemory<T> DangerousCreateExMemory<T>(object obj, TSize offset, TSize length) {
+            ExMemory<T> mem = default;
+            object boxedExMemory = mem;
 
-            typeof(Memory<T>).GetField("_object", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(boxedMemory, obj);
-            typeof(Memory<T>).GetField("_index", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(boxedMemory, offset);
-            typeof(Memory<T>).GetField("_length", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(boxedMemory, length);
+            typeof(ExMemory<T>).GetField("_object", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(boxedExMemory, obj);
+            typeof(ExMemory<T>).GetField("_index", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(boxedExMemory, offset);
+            typeof(ExMemory<T>).GetField("_length", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(boxedExMemory, length);
 
-            return (Memory<T>)boxedMemory;
+            return (ExMemory<T>)boxedExMemory;
         }
 
-        /// <summary>Creates a <see cref="ReadOnlyMemory{T}"/> with the specified values in its backing field.</summary>
-        public static ReadOnlyMemory<T> DangerousCreateReadOnlyMemory<T>(object obj, int offset, int length) =>
-            DangerousCreateMemory<T>(obj, offset, length);
-#endif // NOT_RELATED
+        /// <summary>Creates a <see cref="ReadOnlyExMemory{T}"/> with the specified values in its backing field.</summary>
+        public static ReadOnlyExMemory<T> DangerousCreateReadOnlyExMemory<T>(object obj, TSize offset, TSize length) =>
+            DangerousCreateExMemory<T>(obj, offset, length);
 
 #nullable disable
         public static TheoryData<string[], bool> ContainsNullData => new TheoryData<string[], bool>()
