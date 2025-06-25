@@ -26,7 +26,7 @@ ExSpan inherits the advantages of Span (ExSpan 继承了Span 的优点):
 
 This library also has these advantages (本库还具有这些优点).
 ﻿
-- **Multiple .NET versions are supported**. Since NET Framework 4.5, to the latest .NET 9, all supported. Also supported NET Standard 1.1 ~ .NET Standard 2.1 (**支持多种 .NET版本**. 从 .NET Framework 4.5, 到最新的 .NET 9, 全都支持. 而且支持 .NET Standard 1.1 ~ .NET Standard 2.1).
+- **Multiple .NET versions are supported**. Since .NET Framework 4.5, to the latest .NET 9, all supported. Also supported .NET Standard 1.1 ~ .NET Standard 2.1 (**支持多种 .NET版本**. 从 .NET Framework 4.5, 到最新的 .NET 9, 全都支持. 而且支持 .NET Standard 1.1 ~ .NET Standard 2.1).
 - **Porting new versions of features**. It provides the latest Span functionality to earlier versions of `.NET`, such as `.NET 6.0`'s added `MemoryExtensions.TryWrite` methods (**移植新版本的功能**. 能给早期版本的.NET, 提供最新的 Span功能. 例如 .NET 6.0 新增的 `MemoryExtensions.TryWrite` 方法).
 - **Cross-platform**. It is composed entirely of managed code and supports Windows, Linux, MacOS, iOS, Android, Wasm, and more. It avoids the tedious task of "choosing a different native dll for the current platform" (**跨平台**. 它完全由托管代码所组成, 能够支持 Windows, Linux, MacOS, iOS, Android, Wasm 等平台. 能避免繁琐的“根据当前平台选择不同的原生dll”工作).
 - **Native AOT supported**. Native AOT technology can be used to compile the program into native code (machine code) for the target platform when needed. NET runtime is no longer needed and has the advantage of faster startup (**支持原生AOT**. 当需要时, 可以利用原生AOT技术, 将程序编译为目标平台的原生代码(机器码). 此时不再需要 .NET 运行时, 且具有启动速度快等优点).
