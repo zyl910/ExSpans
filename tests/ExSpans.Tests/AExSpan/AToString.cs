@@ -44,13 +44,12 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             Assert.Equal("Zyl.ExSpans.ExSpan<String>[3]", span.ToString());
         }
 
-#if NOT_RELATED
         [Fact]
         public static void ToStringExSpanOverFullStringDoesNotReturnOriginal() {
             string original = TestHelpers.BuildString(10, 42);
 
-            ReadOnlyMemory<char> readOnlyMemory = original.AsMemory();
-            Memory<char> memory = ExMemoryMarshal.AsMemory(readOnlyMemory);
+            ReadOnlyExMemory<char> readOnlyExMemory = original.AsExMemory();
+            ExMemory<char> memory = ExMemoryMarshal.AsExMemory(readOnlyExMemory);
 
             ExSpan<char> span = memory.ExSpan;
 
@@ -79,6 +78,5 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             Assert.NotSame(subString1, subString3);
             Assert.NotSame(subString2, subString3);
         }
-#endif // NOT_RELATED
     }
 }

@@ -4,6 +4,7 @@ using System.Buffers.Binary;
 using System.Reflection;
 using System.Runtime.InteropServices;
 //using System.MemoryTests;
+using Zyl.ExSpans.Buffers;
 
 namespace Zyl.ExSpans.Tests.AExSpan {
 #nullable disable
@@ -141,32 +142,30 @@ namespace Zyl.ExSpans.Tests.AExSpan {
             Assert.Throws<NotSupportedException>(() => method.Invoke(default, new object[] { default }));
         }
 
-#if NOT_RELATED
         [Fact]
-        public static void Memory_PropertyReturningExSpan() {
-            Type type = typeof(Memory<int>);
+        public static void ExMemory_PropertyReturningExSpan() {
+            Type type = typeof(ExMemory<int>);
 
-            PropertyInfo property = type.GetProperty(nameof(Memory<int>.ExSpan));
+            PropertyInfo property = type.GetProperty(nameof(ExMemory<int>.ExSpan));
             Assert.Throws<NotSupportedException>(() => property.GetValue(null));
         }
 
         [Fact]
-        public static void ReadOnlyMemory_PropertyReturningReadOnlyExSpan() {
-            Type type = typeof(ReadOnlyMemory<int>);
+        public static void ReadOnlyExMemory_PropertyReturningReadOnlyExSpan() {
+            Type type = typeof(ReadOnlyExMemory<int>);
 
-            PropertyInfo property = type.GetProperty(nameof(ReadOnlyMemory<int>.ExSpan));
+            PropertyInfo property = type.GetProperty(nameof(ReadOnlyExMemory<int>.ExSpan));
             Assert.Throws<NotSupportedException>(() => property.GetValue(null));
         }
 
         [Fact]
-        public static void MemoryManager_MethodReturningExSpan() {
-            Type type = typeof(MemoryManager<int>);
+        public static void ExMemoryManager_MethodReturningExSpan() {
+            Type type = typeof(ExMemoryManager<int>);
 
-            MemoryManager<int> manager = new CustomMemoryForTest<int>(new int[10]);
-            MethodInfo method = type.GetMethod(nameof(MemoryManager<int>.GetExSpan), BindingFlags.Public | BindingFlags.Instance);
+            ExMemoryManager<int> manager = new CustomExMemoryForTest<int>(new int[10]);
+            MethodInfo method = type.GetMethod(nameof(ExMemoryManager<int>.GetExSpan), BindingFlags.Public | BindingFlags.Instance);
             Assert.Throws<NotSupportedException>(() => method.Invoke(manager, null));
         }
-#endif // NOT_RELATED
 #endif // NETSTANDARD2_0_OR_GREATER || NETCOREAPP2_0_OR_GREATER || NET40_OR_GREATER
     }
 #nullable restore
