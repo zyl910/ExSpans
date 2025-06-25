@@ -53,8 +53,9 @@ namespace Zyl.ExSpans {
         /// <seealso cref="MemoryMarshalHelper.GetMemorySaturatingLength"/>
         //-// <seealso cref="LastAsReadOnlyMemory{T}(ReadOnlyExMemory{T})"/>
         public static ReadOnlyMemory<T> AsReadOnlyMemory<T>(this ReadOnlyExMemory<T> mem) {
-            object? obj = mem.GetObjectStartLength(out TSize index, out TSize length);
+            object? obj = mem.GetObjectStartLength(out TSize indexRaw, out TSize length);
             if (obj is null) return ReadOnlyMemory<T>.Empty;
+            nint index = indexRaw & ReadOnlyExMemory<T>.RemoveFlagsBitMask;
             int idx = (int)index;
             int len = (int)length;
             if (IntPtr.Size > sizeof(int)) {
@@ -67,6 +68,10 @@ namespace Zyl.ExSpans {
                 ReadOnlyMemory<char> memChar = str.AsMemory();
                 rt = Unsafe.As<ReadOnlyMemory<char>, ReadOnlyMemory<T>>(ref memChar);
             } else if (obj is T[] arr) {
+                if (indexRaw < 0) {
+                    rt = MemoryMarshal.CreateFromPinnedArray(arr, idx, len);
+                    return rt;
+                }
                 rt = arr.AsMemory();
             } else if (obj is MemoryManager<T> mgr) {
                 rt = mgr.Memory;
@@ -172,8 +177,9 @@ namespace Zyl.ExSpans {
         /// <seealso cref="MemoryMarshalHelper.GetMemorySaturatingLength"/>
         //-// <seealso cref="LastAsMemory{T}(ExMemory{T})"/>
         public static Memory<T> AsMemory<T>(this ExMemory<T> mem) {
-            object? obj = mem.GetObjectStartLength(out TSize index, out TSize length);
+            object? obj = mem.GetObjectStartLength(out TSize indexRaw, out TSize length);
             if (obj is null) return Memory<T>.Empty;
+            nint index = indexRaw & ReadOnlyExMemory<T>.RemoveFlagsBitMask;
             int idx = (int)index;
             int len = (int)length;
             if (IntPtr.Size > sizeof(int)) {
@@ -186,6 +192,10 @@ namespace Zyl.ExSpans {
                 Memory<char> memChar = MemoryMarshal.AsMemory(str.AsMemory());
                 rt = Unsafe.As<Memory<char>, Memory<T>>(ref memChar);
             } else if (obj is T[] arr) {
+                if (indexRaw < 0) {
+                    rt = MemoryMarshal.CreateFromPinnedArray(arr, idx, len);
+                    return rt;
+                }
                 rt = arr.AsMemory();
             } else if (obj is MemoryManager<T> mgr) {
                 rt = mgr.Memory;

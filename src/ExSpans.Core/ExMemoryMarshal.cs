@@ -10,7 +10,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using Zyl.ExSpans.Buffers;
 using Zyl.ExSpans.Extensions;
+using Zyl.ExSpans.Impl;
 using Zyl.ExSpans.Reflection;
 
 namespace Zyl.ExSpans {
@@ -71,6 +73,21 @@ namespace Zyl.ExSpans {
 #else
             return new ReadOnlyExSpan<byte>(MemoryMarshal.AsBytes(span._referenceSpan), span._byteOffset, len);
 #endif // STRUCT_REF_FIELD
+        }
+
+        /// <summary>Creates a <see cref="ExMemory{T}"/> from a <see cref="ReadOnlyExMemory{T}"/> (通过 <see cref="ExMemory{T}"/> 创建 <see cref="ReadOnlyExMemory{T}"/> 实例).</summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="memory">The <see cref="ReadOnlyExMemory{T}"/> (只读内存缓冲区).</param>
+        /// <returns>A <see cref="ExMemory{T}"/> representing the same memory as the <see cref="ReadOnlyExMemory{T}"/>, but writable (表示与 <see cref="ReadOnlyExMemory{T}"/> 相同的内存的内存块, 但能写).</returns>
+        /// <remarks>
+        /// <see cref="AsExMemory{T}(ReadOnlyExMemory{T})"/> must be used with extreme caution.  <see cref="ReadOnlyExMemory{T}"/> is used
+        /// to represent immutable data and other memory that is not meant to be written to; <see cref="ExMemory{T}"/> instances created
+        /// by <see cref="AsExMemory{T}(ReadOnlyExMemory{T})"/> should not be written to.  The method exists to enable variables typed
+        /// as <see cref="ExMemory{T}"/> but only used for reading to store a <see cref="ReadOnlyExMemory{T}"/>
+        /// (使用此方法时必须格外小心. <see cref="ReadOnlyExMemory{T}"/> 用于表示不可变数据和不打算写入的其他内存。 不应将此方法创建的 <see cref="ExMemory{T}"/>实例进行写入。 此方法的目的是允许类型化为 <see cref="ExMemory{T}"/>, 但仅用于读取存储在 <see cref="ReadOnlyExMemory{T}"/>里的的变量).
+        /// </remarks>
+        public static ExMemory<T> AsExMemory<T>(ReadOnlyExMemory<T> memory) {
+            return new ExMemory<T>(memory._object, memory._index, memory._length);
         }
 
         /// <summary>
@@ -321,10 +338,15 @@ namespace Zyl.ExSpans {
 
         /// <summary>
         /// Get an array segment from the underlying memory.
-        /// If unable to get the array segment, return false with a default array segment.
+        /// If unable to get the array segment, return false with a default array segment
+        /// (从底层内存中获取数组段。如果无法获取数组段，则使用默认数组段并返回false).
         /// </summary>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="memory">The <see cref="ReadOnlyExMemory{T}"/> (只读内存缓冲区).</param>
+        /// <param name="segment">When this method returns, contains the array segment retrieved from the underlying read-only memory buffer. If the method fails, the method returns a default array segment (此方法返回时，将包含从基础只读内存缓冲区中检索的数组段。 如果此方法失败，则将返回默认数组段)</param>
+        /// <returns>true if the method call succeeds; false otherwise (如果方法调用成功，则为 true；否则为 false).</returns>
         public static bool TryGetArray<T>(ReadOnlyExMemory<T> memory, out ArraySegment<T> segment) {
-            object? obj = memory.GetObjectStartLength(out int index, out int length);
+            object? obj = memory.GetObjectStartLength(out TSize index, out TSize length);
 
             // As an optimization, we skip the "is string?" check below if typeof(T) is not char,
             // as ExMemory<T> / ROM<T> can't possibly contain a string instance in this case.
@@ -332,7 +354,7 @@ namespace Zyl.ExSpans {
             if (obj != null && !(
                 (typeof(T) == typeof(char) && obj.GetType() == typeof(string))
                 )) {
-                if (RuntimeHelpers.ObjectHasComponentSize(obj)) {
+                if (obj is T[] arr) {
                     // The object has a component size, which means it's variable-length, but we already
                     // checked above that it's not a string. The only remaining option is that it's a T[]
                     // or a U[] which is blittable to a T[] (e.g., int[] and uint[]).
@@ -340,17 +362,19 @@ namespace Zyl.ExSpans {
                     // The array may be prepinned, so remove the high bit from the start index in the line below.
                     // The ArraySegment<T> ctor will perform bounds checking on index & length.
 
-                    segment = new ArraySegment<T>(Unsafe.As<T[]>(obj), index & ReadOnlyExMemory<T>.RemoveFlagsBitMask, length);
+                    segment = new ArraySegment<T>(arr, (int)(index & ReadOnlyExMemory<T>.RemoveFlagsBitMask), (int)length);
                     return true;
-                } else {
+                } else if (obj is MemoryManager<T> mgr) {
                     // The object isn't null, and it's not variable-length, so the only remaining option
                     // is MemoryManager<T>. The ArraySegment<T> ctor will perform bounds checking on index & length.
 
-                    Debug.Assert(obj is MemoryManager<T>);
-                    if (Unsafe.As<MemoryManager<T>>(obj).TryGetArray(out ArraySegment<T> tempArraySegment)) {
-                        segment = new ArraySegment<T>(tempArraySegment.Array!, tempArraySegment.Offset + index, length);
-                        return true;
-                    }
+                    //Debug.Assert(obj is MemoryManager<T>);
+                    //if (mgr.TryGetArray(out ArraySegment<T> tempArraySegment)) { // CS0122	'MemoryManager<T>.TryGetArray(out ArraySegment<T>)' is inaccessible due to its protection level
+                    //    segment = new ArraySegment<T>(tempArraySegment.Array!, tempArraySegment.Offset + index, length);
+                    //    return true;
+                    //}
+                    ReadOnlyMemory<T> memoryRead = memory.AsReadOnlyMemory();
+                    return MemoryMarshal.TryGetArray(memoryRead, out segment);
                 }
             }
 
@@ -359,8 +383,10 @@ namespace Zyl.ExSpans {
             // to an empty array for the purposes of reporting back to our caller.
 
             if (length == 0) {
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_0_OR_GREATER
                 segment = ArraySegment<T>.Empty;
                 return true;
+#endif // NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_0_OR_GREATER
             }
 
             // Otherwise, there's *some* data, but it's not convertible to T[].
@@ -371,13 +397,14 @@ namespace Zyl.ExSpans {
 
         /// <summary>
         /// Gets an <see cref="MemoryManager{T}"/> from the underlying read-only memory.
-        /// If unable to get the <typeparamref name="TManager"/> type, returns false.
+        /// If unable to get the <typeparamref name="TManager"/> type, returns false
+        /// (从底层只读内存中获取 <see cref="MemoryManager{T}"/>. 如果无法获取，则返回false).
         /// </summary>
-        /// <typeparam name="T">The element type of the <paramref name="memory" />.</typeparam>
-        /// <typeparam name="TManager">The type of <see cref="MemoryManager{T}"/> to try and retrieve.</typeparam>
-        /// <param name="memory">The memory to get the manager for.</param>
-        /// <param name="manager">The returned manager of the <see cref="ReadOnlyExMemory{T}"/>.</param>
-        /// <returns>A <see cref="bool"/> indicating if it was successful.</returns>
+        /// <typeparam name="T">The element type of the <paramref name="memory" /> (<paramref name="memory" /> 中的元素类型).</typeparam>
+        /// <typeparam name="TManager">The type of <see cref="MemoryManager{T}"/> to try and retrieve (要获取的 <see cref="MemoryManager{T}"/> 的类型).</typeparam>
+        /// <param name="memory">The read-only memory to get the manager for (为其获取内存管理器的只读内存).</param>
+        /// <param name="manager">The returned manager of the <see cref="ReadOnlyExMemory{T}"/> (返回内存管理器).</param>
+        /// <returns>A <see cref="bool"/> indicating if it was successful (一个bool，表示是否成功).</returns>
         public static bool TryGetMemoryManager<T, TManager>(ReadOnlyExMemory<T> memory, [NotNullWhen(true)] out TManager? manager)
             where TManager : MemoryManager<T> {
             TManager? localManager; // Use register for null comparison rather than byref
@@ -389,16 +416,17 @@ namespace Zyl.ExSpans {
 
         /// <summary>
         /// Gets an <see cref="MemoryManager{T}"/> and <paramref name="start" />, <paramref name="length" /> from the underlying read-only memory.
-        /// If unable to get the <typeparamref name="TManager"/> type, returns false.
+        /// If unable to get the <typeparamref name="TManager"/> type, returns false
+        /// (从底层只读内存中获取 <see cref="MemoryManager{T}"/>, 与 <paramref name="start" />, <paramref name="length" />. 如果无法获取，则返回false).
         /// </summary>
-        /// <typeparam name="T">The element type of the <paramref name="memory" />.</typeparam>
-        /// <typeparam name="TManager">The type of <see cref="MemoryManager{T}"/> to try and retrieve.</typeparam>
-        /// <param name="memory">The memory to get the manager for.</param>
-        /// <param name="manager">The returned manager of the <see cref="ReadOnlyExMemory{T}"/>.</param>
+        /// <typeparam name="T">The element type of the <paramref name="memory" /> (<paramref name="memory" /> 中的元素类型).</typeparam>
+        /// <typeparam name="TManager">The type of <see cref="MemoryManager{T}"/> to try and retrieve (要获取的 <see cref="MemoryManager{T}"/> 的类型).</typeparam>
+        /// <param name="memory">The read-only memory to get the manager for (为其获取内存管理器的只读内存).</param>
+        /// <param name="manager">The returned manager of the <see cref="ReadOnlyExMemory{T}"/> (返回内存管理器).</param>
         /// <param name="start">The offset from the start of the <paramref name="manager" /> that the <paramref name="memory" /> represents.</param>
         /// <param name="length">The length of the <paramref name="manager" /> that the <paramref name="memory" /> represents.</param>
-        /// <returns>A <see cref="bool"/> indicating if it was successful.</returns>
-        public static bool TryGetMemoryManager<T, TManager>(ReadOnlyExMemory<T> memory, [NotNullWhen(true)] out TManager? manager, out int start, out int length)
+        /// <returns>A <see cref="bool"/> indicating if it was successful (一个bool，表示是否成功).</returns>
+        public static bool TryGetMemoryManager<T, TManager>(ReadOnlyExMemory<T> memory, [NotNullWhen(true)] out TManager? manager, out TSize start, out TSize length)
            where TManager : MemoryManager<T> {
             TManager? localManager; // Use register for null comparison rather than byref
             manager = localManager = memory.GetObjectStartLength(out start, out length) as TManager;
@@ -417,17 +445,20 @@ namespace Zyl.ExSpans {
 
         /// <summary>
         /// Creates an <see cref="IEnumerable{T}"/> view of the given <paramref name="memory" /> to allow
-        /// the <paramref name="memory" /> to be used in existing APIs that take an <see cref="IEnumerable{T}"/>.
+        /// the <paramref name="memory" /> to be used in existing APIs that take an <see cref="IEnumerable{T}"/>
+        /// (创建给定的只读内存缓冲区的 <see cref="IEnumerable{T}"/> 视图).
         /// </summary>
-        /// <typeparam name="T">The element type of the <paramref name="memory" />.</typeparam>
-        /// <param name="memory">The ReadOnlyExMemory to view as an <see cref="IEnumerable{T}"/></param>
-        /// <returns>An <see cref="IEnumerable{T}"/> view of the given <paramref name="memory" /></returns>
+        /// <typeparam name="T">The element type of the <paramref name="memory" /> (<paramref name="memory" /> 中的元素类型).</typeparam>
+        /// <param name="memory">The read-only memory to view as an <see cref="IEnumerable{T}"/> (预枚举的只读内存缓冲区)</param>
+        /// <returns>An <see cref="IEnumerable{T}"/> view of the given <paramref name="memory" /> (<paramref name="memory" /> 的可枚举<see cref="IEnumerable{T}"/>视图)</returns>
         public static IEnumerable<T> ToEnumerable<T>(ReadOnlyExMemory<T> memory) {
-            object? obj = memory.GetObjectStartLength(out int index, out int length);
+            object? obj = memory.GetObjectStartLength(out TSize index, out TSize length);
+            int idx = (int)index;
+            int len = (int)length;
 
             // If the memory is empty, just return an empty array as the enumerable.
             if (length is 0 || obj is null) {
-                return Array.Empty<T>();
+                return ArrayHelper.Empty<T>();
             }
 
             // If the object is a string, we can optimize. If it isn't a slice, just return the string as the
@@ -436,7 +467,7 @@ namespace Zyl.ExSpans {
             if (typeof(T) == typeof(char) && obj is string str) {
                 return (IEnumerable<T>)(object)(index == 0 && length == str.Length ?
                     str :
-                    FromString(str, index, length));
+                    FromString(str, idx, len));
 
                 static IEnumerable<char> FromString(string s, int offset, int count) {
                     for (int i = 0; i < count; i++) {
@@ -447,13 +478,12 @@ namespace Zyl.ExSpans {
 
             // If the object is an array, we can optimize. If it isn't a slice, just return the array as the
             // enumerable. Otherwise, return an iterator dedicated to enumerating the object.
-            if (RuntimeHelpers.ObjectHasComponentSize(obj)) // Same check as in TryGetArray to confirm that obj is a T[] or a U[] which is blittable to a T[].
+            if (obj is T[] array) // Same check as in TryGetArray to confirm that obj is a T[] or a U[] which is blittable to a T[].
             {
-                T[] array = Unsafe.As<T[]>(obj);
                 index &= ReadOnlyExMemory<T>.RemoveFlagsBitMask; // the array may be prepinned, so remove the high bit from the start index in the line below.
                 return index == 0 && length == array.Length ?
                     array :
-                    FromArray(array, index, length);
+                    FromArray(array, idx, len);
 
                 static IEnumerable<T> FromArray(T[] array, int offset, int count) {
                     for (int i = 0; i < count; i++) {
@@ -466,20 +496,20 @@ namespace Zyl.ExSpans {
             return FromMemoryManager(memory);
 
             static IEnumerable<T> FromMemoryManager(ReadOnlyExMemory<T> memory) {
-                for (int i = 0; i < memory.Length; i++) {
-                    yield return memory.Span[i];
+                for (nint i = 0; i < memory.Length; i++) {
+                    yield return memory.ExSpan[i];
                 }
             }
         }
 
-        /// <summary>Attempts to get the underlying <see cref="string"/> from a <see cref="ReadOnlyExMemory{T}"/>.</summary>
-        /// <param name="memory">The memory that may be wrapping a <see cref="string"/> object.</param>
-        /// <param name="text">The string.</param>
-        /// <param name="start">The starting location in <paramref name="text"/>.</param>
-        /// <param name="length">The number of items in <paramref name="text"/>.</param>
-        /// <returns></returns>
-        public static bool TryGetString(ReadOnlyExMemory<char> memory, [NotNullWhen(true)] out string? text, out int start, out int length) {
-            if (memory.GetObjectStartLength(out int offset, out int count) is string s) {
+        /// <summary>Attempts to get the underlying <see cref="string"/> from a <see cref="ReadOnlyExMemory{T}"/> (尝试从 <see cref="ReadOnlyExMemory{T}"/> 中获取基础字符串).</summary>
+        /// <param name="memory">The memory that may be wrapping a <see cref="string"/> object (包含字符块的只读内存).</param>
+        /// <param name="text">The string (返回字符串).</param>
+        /// <param name="start">The starting location in <paramref name="text"/> (text 中的起始位置).</param>
+        /// <param name="length">The number of items in <paramref name="text"/> (text 中的字符数).</param>
+        /// <returns>true if the method successfully retrieves the underlying string; otherwise, false (如果此方法成功检索到基础字符串，则为 true；否则为 false)</returns>
+        public static bool TryGetString(ReadOnlyExMemory<char> memory, [NotNullWhen(true)] out string? text, out TSize start, out TSize length) {
+            if (memory.GetObjectStartLength(out TSize offset, out TSize count) is string s) {
                 Debug.Assert(offset >= 0);
                 Debug.Assert(count >= 0);
                 text = s;
@@ -633,14 +663,19 @@ namespace Zyl.ExSpans {
 
         /// <summary>
         /// Creates a new memory over the portion of the pre-pinned target array beginning
-        /// at 'start' index and ending at 'end' index (exclusive).
+        /// at 'start' index and ending at 'end' index (exclusive)
+        /// (从 start 索引开始并包含 length 项，在预钉住目标数组的一部分之上创建新的内存缓冲区)
         /// </summary>
-        /// <param name="array">The pre-pinned target array.</param>
-        /// <param name="start">The index at which to begin the memory.</param>
-        /// <param name="length">The number of items in the memory.</param>
+        /// <typeparam name="T">The element type (元素的类型).</typeparam>
+        /// <param name="array">The pre-pinned target array (预钉住目标数组).</param>
+        /// <param name="start">The index at which to begin the memory (内存块的开始索引).</param>
+        /// <param name="length">The number of items in the memory (内存块的项数).</param>
+        /// <returns>A block of memory over the specified elements of array. If array is null, or if start and length are 0, the method returns a <see cref="ExMemory{T}"/> instance of Length zero (array 的指定元素之上的内存块. 如果 array 是 null，或者如果 start 和 length 为 0，则此方法将返回长度为零的 <see cref="ExMemory{T}"/> 实例).</returns>
         /// <remarks>This method should only be called on an array that is already pinned and
-        /// that array should not be unpinned while the returned ExMemory<typeparamref name="T"/> is still in use.
-        /// Calling this method on an unpinned array could result in memory corruption.</remarks>
+        /// that array should not be unpinned while the returned <see cref="ExMemory{T}"/> is still in use.
+        /// Calling this method on an unpinned array could result in memory corruption
+        /// (在调用此方法之前，数组必须已钉住，并且当它返回的 <see cref="ExMemory{T}"/> 缓冲区仍在使用时，该数组不得取消钉住。 在未钉住的数组上调用此方法可能会导致内存损坏)
+        /// </remarks>
         /// <remarks>Returns default when <paramref name="array"/> is null.</remarks>
         /// <exception cref="ArrayTypeMismatchException">Thrown when <paramref name="array"/> is covariant and array's type is not exactly T[].</exception>
         /// <exception cref="ArgumentOutOfRangeException">
@@ -653,13 +688,13 @@ namespace Zyl.ExSpans {
                     ThrowHelper.ThrowArgumentOutOfRangeException();
                 return default;
             }
-            if (!typeof(T).IsValueType && array.GetType() != typeof(T[]))
+            if (!TypeHelper.IsValueType<T>() && array.GetType() != typeof(T[]))
                 ThrowHelper.ThrowArrayTypeMismatchException();
-            if ((uint)start > (uint)array.Length || (uint)length > (uint)(array.Length - start))
+            if ((ulong)start > (ulong)array.Length || (ulong)length > (ulong)(array.Length - start))
                 ThrowHelper.ThrowArgumentOutOfRangeException();
 
             // Before using _index, check if _index < 0, then 'and' it with RemoveFlagsBitMask
-            return new ExMemory<T>((object)array, start | (1 << 31), length);
+            return new ExMemory<T>((object)array, start | (~ReadOnlyExMemory<T>.RemoveFlagsBitMask), length);
         }
 
     }

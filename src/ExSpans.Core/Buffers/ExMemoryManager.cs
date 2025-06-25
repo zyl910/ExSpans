@@ -4,7 +4,8 @@ using System.Runtime.CompilerServices;
 
 namespace Zyl.ExSpans.Buffers {
     /// <summary>
-    /// Manager of <see cref="ExMemory{T}"/> that provides the implementation (用于实现的 <see cref="ExMemory{T}"/> 管理器).
+    /// Manager of <see cref="ExMemory{T}"/> that provides the implementation. It can be regarded as the <see cref="MemoryManager{T}"/> of <see cref="TSize"/> index range
+    /// (用于实现的 <see cref="ExMemory{T}"/> 管理器. 它可以被视为 <see cref="TSize"/> 索引范围的 <see cref="MemoryManager{T}"/>).
     /// </summary>
     public abstract class ExMemoryManager<T> : MemoryManager<T>, IExMemoryOwner<T>, IPinnable {
         /// <summary>
