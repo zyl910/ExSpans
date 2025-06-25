@@ -46,6 +46,11 @@ namespace Zyl.ExSpans {
         }
 
         [DoesNotReturn]
+        internal static void ThrowArgumentOutOfRangeException(string paramName) {
+            throw new ArgumentOutOfRangeException(paramName);
+        }
+
+        [DoesNotReturn]
         internal static void ThrowArrayTypeMismatchException() {
             throw new ArrayTypeMismatchException();
         }

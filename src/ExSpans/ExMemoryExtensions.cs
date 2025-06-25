@@ -34,44 +34,44 @@ namespace Zyl.ExSpans {
     /// </remarks>
     public static partial class ExMemoryExtensions {
 
-#if NOT_RELATED
-        /// <summary>Creates a new <see cref="ReadOnlyMemory{T}"/> over the portion of the target string.</summary>
+        /// <summary>Creates a new <see cref="ReadOnlyExMemory{T}"/> over the portion of the target string.</summary>
         /// <param name="text">The target string.</param>
         /// <remarks>Returns default when <paramref name="text"/> is null.</remarks>
-        public static ReadOnlyMemory<char> AsMemory(this string? text) {
+        public static ReadOnlyExMemory<char> AsExMemory(this string? text) {
             if (text == null)
                 return default;
 
-            return new ReadOnlyMemory<char>(text, 0, text.Length);
+            return new ReadOnlyExMemory<char>(text, 0, text.Length);
         }
 
-        /// <summary>Creates a new <see cref="ReadOnlyMemory{T}"/> over the portion of the target string.</summary>
+        /// <summary>Creates a new <see cref="ReadOnlyExMemory{T}"/> over the portion of the target string.</summary>
         /// <param name="text">The target string.</param>
         /// <param name="start">The index at which to begin this slice.</param>
         /// <remarks>Returns default when <paramref name="text"/> is null.</remarks>
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown when the specified <paramref name="start"/> index is not in range (&lt;0 or &gt;text.Length).
         /// </exception>
-        public static ReadOnlyMemory<char> AsMemory(this string? text, int start) {
+        public static ReadOnlyExMemory<char> AsExMemory(this string? text, int start) {
             if (text == null) {
                 if (start != 0)
-                    ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.start);
+                    ThrowHelper.ThrowArgumentOutOfRangeException(nameof(start));
                 return default;
             }
 
             if ((uint)start > (uint)text.Length)
-                ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.start);
+                ThrowHelper.ThrowArgumentOutOfRangeException(nameof(start));
 
-            return new ReadOnlyMemory<char>(text, start, text.Length - start);
+            return new ReadOnlyExMemory<char>(text, start, text.Length - start);
         }
 
-        /// <summary>Creates a new <see cref="ReadOnlyMemory{T}"/> over the portion of the target string.</summary>
+#if NET8_0_OR_GREATER && TODO // [TODO why] NRange need System.Numerics.Tensors.dll
+        /// <summary>Creates a new <see cref="ReadOnlyExMemory{T}"/> over the portion of the target string.</summary>
         /// <param name="text">The target string.</param>
         /// <param name="startIndex">The index at which to begin this slice.</param>
-        public static ReadOnlyMemory<char> AsMemory(this string? text, Index startIndex) {
+        public static ReadOnlyExMemory<char> AsExMemory(this string? text, Index startIndex) {
             if (text == null) {
                 if (!startIndex.Equals(Index.Start))
-                    ThrowHelper.ThrowArgumentNullException(ExceptionArgument.text);
+                    throw new ArgumentNullException(nameof(text));
 
                 return default;
             }
@@ -80,10 +80,11 @@ namespace Zyl.ExSpans {
             if ((uint)actualIndex > (uint)text.Length)
                 ThrowHelper.ThrowArgumentOutOfRangeException();
 
-            return new ReadOnlyMemory<char>(text, actualIndex, text.Length - actualIndex);
+            return new ReadOnlyExMemory<char>(text, actualIndex, text.Length - actualIndex);
         }
+#endif // NET8_0_OR_GREATER
 
-        /// <summary>Creates a new <see cref="ReadOnlyMemory{T}"/> over the portion of the target string.</summary>
+        /// <summary>Creates a new <see cref="ReadOnlyExMemory{T}"/> over the portion of the target string.</summary>
         /// <param name="text">The target string.</param>
         /// <param name="start">The index at which to begin this slice.</param>
         /// <param name="length">The desired length for the slice (exclusive).</param>
@@ -91,43 +92,38 @@ namespace Zyl.ExSpans {
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown when the specified <paramref name="start"/> index or <paramref name="length"/> is not in range.
         /// </exception>
-        public static ReadOnlyMemory<char> AsMemory(this string? text, int start, int length) {
+        public static ReadOnlyExMemory<char> AsExMemory(this string? text, int start, int length) {
             if (text == null) {
                 if (start != 0 || length != 0)
-                    ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.start);
+                    ThrowHelper.ThrowArgumentOutOfRangeException(nameof(start));
                 return default;
             }
 
-#if TARGET_64BIT
-            // See comment in ExSpan<T>.Slice for how this works.
-            if ((ulong)(uint)start + (ulong)(uint)length > (ulong)(uint)text.Length)
-                ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.start);
-#else
-            if ((uint)start > (uint)text.Length || (uint)length > (uint)(text.Length - start))
-                ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.start);
-#endif
+            if ((TUSize)(TSize)start > (TUSize)(TSize)text.Length || (TUSize)(TSize)length > (TUSize)(TSize)(text.Length - start))
+                ThrowHelper.ThrowArgumentOutOfRangeException(nameof(start));
 
-            return new ReadOnlyMemory<char>(text, start, length);
+            return new ReadOnlyExMemory<char>(text, start, length);
         }
 
-        /// <summary>Creates a new <see cref="ReadOnlyMemory{T}"/> over the portion of the target string.</summary>
+#if NET8_0_OR_GREATER && TODO // [TODO why] NRange need System.Numerics.Tensors.dll
+        /// <summary>Creates a new <see cref="ReadOnlyExMemory{T}"/> over the portion of the target string.</summary>
         /// <param name="text">The target string.</param>
         /// <param name="range">The range used to indicate the start and length of the sliced string.</param>
-        public static ReadOnlyMemory<char> AsMemory(this string? text, Range range) {
+        public static ReadOnlyExMemory<char> AsExMemory(this string? text, Range range) {
             if (text == null) {
                 Index startIndex = range.Start;
                 Index endIndex = range.End;
 
                 if (!startIndex.Equals(Index.Start) || !endIndex.Equals(Index.Start))
-                    ThrowHelper.ThrowArgumentNullException(ExceptionArgument.text);
+                    ThrowHelper.throw new ArgumentNullException(nameof(text));
 
                 return default;
             }
 
             (int start, int length) = range.GetOffsetAndLength(text.Length);
-            return new ReadOnlyMemory<char>(text, start, length);
+            return new ReadOnlyExMemory<char>(text, start, length);
         }
-#endif // NOT_RELATED
+#endif // NET8_0_OR_GREATER
 
         /// <inheritdoc cref="Contains{T}(ReadOnlyExSpan{T}, T)"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -3259,11 +3255,10 @@ namespace Zyl.ExSpans {
             }
         }
 
-#if NOT_RELATED
         /// <summary>
         /// Creates a new memory over the target array.
         /// </summary>
-        public static Memory<T> AsMemory<T>(this T[]? array) => new Memory<T>(array);
+        public static ExMemory<T> AsExMemory<T>(this T[]? array) => new ExMemory<T>(array);
 
         /// <summary>
         /// Creates a new memory over the portion of the target array beginning
@@ -3276,13 +3271,14 @@ namespace Zyl.ExSpans {
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown when the specified <paramref name="start"/> or end index is not in the range (&lt;0 or &gt;array.Length).
         /// </exception>
-        public static Memory<T> AsMemory<T>(this T[]? array, int start) => new Memory<T>(array, start);
+        public static ExMemory<T> AsExMemory<T>(this T[]? array, int start) => new ExMemory<T>(array, start);
 
+#if NET8_0_OR_GREATER && TODO // [TODO why] NRange need System.Numerics.Tensors.dll
         /// <summary>
         /// Creates a new memory over the portion of the target array starting from
         /// 'startIndex' to the end of the array.
         /// </summary>
-        public static Memory<T> AsMemory<T>(this T[]? array, Index startIndex) {
+        public static ExMemory<T> AsExMemory<T>(this T[]? array, Index startIndex) {
             if (array == null) {
                 if (!startIndex.Equals(Index.Start))
                     ThrowHelper.ThrowArgumentNullException(ExceptionArgument.array);
@@ -3291,8 +3287,9 @@ namespace Zyl.ExSpans {
             }
 
             int actualIndex = startIndex.GetOffset(array.Length);
-            return new Memory<T>(array, actualIndex);
+            return new ExMemory<T>(array, actualIndex);
         }
+#endif // NET8_0_OR_GREATER
 
         /// <summary>
         /// Creates a new memory over the portion of the target array beginning
@@ -3306,13 +3303,14 @@ namespace Zyl.ExSpans {
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown when the specified <paramref name="start"/> or end index is not in the range (&lt;0 or &gt;Length).
         /// </exception>
-        public static Memory<T> AsMemory<T>(this T[]? array, int start, int length) => new Memory<T>(array, start, length);
+        public static ExMemory<T> AsExMemory<T>(this T[]? array, int start, int length) => new ExMemory<T>(array, start, length);
 
+#if NET8_0_OR_GREATER && TODO // [TODO why] NRange need System.Numerics.Tensors.dll
         /// <summary>
         /// Creates a new memory over the portion of the target array beginning at inclusive start index of the range
         /// and ending at the exclusive end index of the range.
         /// </summary>
-        public static Memory<T> AsMemory<T>(this T[]? array, Range range) {
+        public static ExMemory<T> AsExMemory<T>(this T[]? array, Range range) {
             if (array == null) {
                 Index startIndex = range.Start;
                 Index endIndex = range.End;
@@ -3323,13 +3321,14 @@ namespace Zyl.ExSpans {
             }
 
             (int start, int length) = range.GetOffsetAndLength(array.Length);
-            return new Memory<T>(array, start, length);
+            return new ExMemory<T>(array, start, length);
         }
+#endif // NET8_0_OR_GREATER
 
         /// <summary>
         /// Creates a new memory over the portion of the target array.
         /// </summary>
-        public static Memory<T> AsMemory<T>(this ArraySegment<T> segment) => new Memory<T>(segment.Array, segment.Offset, segment.Count);
+        public static ExMemory<T> AsExMemory<T>(this ArraySegment<T> segment) => new ExMemory<T>(segment.Array, segment.Offset, segment.Count);
 
         /// <summary>
         /// Creates a new memory over the portion of the target array beginning
@@ -3342,11 +3341,11 @@ namespace Zyl.ExSpans {
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown when the specified <paramref name="start"/> or end index is not in the range (&lt;0 or &gt;segment.Count).
         /// </exception>
-        public static Memory<T> AsMemory<T>(this ArraySegment<T> segment, int start) {
+        public static ExMemory<T> AsExMemory<T>(this ArraySegment<T> segment, int start) {
             if (((uint)start) > (uint)segment.Count)
-                ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.start);
+                ThrowHelper.ThrowArgumentOutOfRangeException(nameof(start));
 
-            return new Memory<T>(segment.Array, segment.Offset + start, segment.Count - start);
+            return new ExMemory<T>(segment.Array, segment.Offset + start, segment.Count - start);
         }
 
         /// <summary>
@@ -3361,13 +3360,13 @@ namespace Zyl.ExSpans {
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown when the specified <paramref name="start"/> or end index is not in the range (&lt;0 or &gt;segment.Count).
         /// </exception>
-        public static Memory<T> AsMemory<T>(this ArraySegment<T> segment, int start, int length) {
+        public static ExMemory<T> AsExMemory<T>(this ArraySegment<T> segment, int start, int length) {
             if (((uint)start) > (uint)segment.Count)
-                ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.start);
+                ThrowHelper.ThrowArgumentOutOfRangeException(nameof(start));
             if (((uint)length) > (uint)(segment.Count - start))
-                ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.length);
+                ThrowHelper.ThrowArgumentOutOfRangeException(nameof(length));
 
-            return new Memory<T>(segment.Array, segment.Offset + start, length);
+            return new ExMemory<T>(segment.Array, segment.Offset + start, length);
         }
 
         /// <summary>
@@ -3396,10 +3395,9 @@ namespace Zyl.ExSpans {
         /// Thrown when the destination is shorter than the source array.
         /// </exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void CopyTo<T>(this T[]? source, Memory<T> destination) {
-            source.CopyTo(destination.ExSpan);
+        public static void CopyTo<T>(this T[]? source, ExMemory<T> destination) {
+            CopyTo(source, destination.ExSpan);
         }
-#endif // NOT_RELATED
 
         //
         //  Overlaps
