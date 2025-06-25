@@ -8,16 +8,15 @@ using Zyl.ExSpans.Extensions;
 namespace Zyl.ExSpans {
     partial class ExMemoryExtensions {
 
-#if NOT_RELATED
         /// <summary>
         /// Removes all leading and trailing occurrences of a specified element from the memory.
         /// </summary>
         /// <param name="memory">The source memory from which the element is removed.</param>
         /// <param name="trimElement">The specified element to look for and remove.</param>
-        public static Memory<T> Trim<T>(this Memory<T> memory, T trimElement) where T : IEquatable<T>? {
+        public static ExMemory<T> Trim<T>(this ExMemory<T> memory, T trimElement) where T : IEquatable<T>? {
             ReadOnlyExSpan<T> span = memory.ExSpan;
-            int start = ClampStart(span, trimElement);
-            int length = ClampEnd(span, start, trimElement);
+            TSize start = ClampStart(span, trimElement);
+            TSize length = ClampEnd(span, start, trimElement);
             return memory.Slice(start, length);
         }
 
@@ -26,7 +25,7 @@ namespace Zyl.ExSpans {
         /// </summary>
         /// <param name="memory">The source memory from which the element is removed.</param>
         /// <param name="trimElement">The specified element to look for and remove.</param>
-        public static Memory<T> TrimStart<T>(this Memory<T> memory, T trimElement) where T : IEquatable<T>?
+        public static ExMemory<T> TrimStart<T>(this ExMemory<T> memory, T trimElement) where T : IEquatable<T>?
             => memory.Slice(ClampStart(memory.ExSpan, trimElement));
 
         /// <summary>
@@ -34,7 +33,7 @@ namespace Zyl.ExSpans {
         /// </summary>
         /// <param name="memory">The source memory from which the element is removed.</param>
         /// <param name="trimElement">The specified element to look for and remove.</param>
-        public static Memory<T> TrimEnd<T>(this Memory<T> memory, T trimElement) where T : IEquatable<T>?
+        public static ExMemory<T> TrimEnd<T>(this ExMemory<T> memory, T trimElement) where T : IEquatable<T>?
             => memory.Slice(0, ClampEnd(memory.ExSpan, 0, trimElement));
 
         /// <summary>
@@ -42,10 +41,10 @@ namespace Zyl.ExSpans {
         /// </summary>
         /// <param name="memory">The source memory from which the element is removed.</param>
         /// <param name="trimElement">The specified element to look for and remove.</param>
-        public static ReadOnlyMemory<T> Trim<T>(this ReadOnlyMemory<T> memory, T trimElement) where T : IEquatable<T>? {
+        public static ReadOnlyExMemory<T> Trim<T>(this ReadOnlyExMemory<T> memory, T trimElement) where T : IEquatable<T>? {
             ReadOnlyExSpan<T> span = memory.ExSpan;
-            int start = ClampStart(span, trimElement);
-            int length = ClampEnd(span, start, trimElement);
+            TSize start = ClampStart(span, trimElement);
+            TSize length = ClampEnd(span, start, trimElement);
             return memory.Slice(start, length);
         }
 
@@ -54,7 +53,7 @@ namespace Zyl.ExSpans {
         /// </summary>
         /// <param name="memory">The source memory from which the element is removed.</param>
         /// <param name="trimElement">The specified element to look for and remove.</param>
-        public static ReadOnlyMemory<T> TrimStart<T>(this ReadOnlyMemory<T> memory, T trimElement) where T : IEquatable<T>?
+        public static ReadOnlyExMemory<T> TrimStart<T>(this ReadOnlyExMemory<T> memory, T trimElement) where T : IEquatable<T>?
             => memory.Slice(ClampStart(memory.ExSpan, trimElement));
 
         /// <summary>
@@ -62,9 +61,8 @@ namespace Zyl.ExSpans {
         /// </summary>
         /// <param name="memory">The source memory from which the element is removed.</param>
         /// <param name="trimElement">The specified element to look for and remove.</param>
-        public static ReadOnlyMemory<T> TrimEnd<T>(this ReadOnlyMemory<T> memory, T trimElement) where T : IEquatable<T>?
+        public static ReadOnlyExMemory<T> TrimEnd<T>(this ReadOnlyExMemory<T> memory, T trimElement) where T : IEquatable<T>?
             => memory.Slice(0, ClampEnd(memory.ExSpan, 0, trimElement));
-#endif // NOT_RELATED
 
         /// <summary>
         /// Removes all leading and trailing occurrences of a specified element from the span.
@@ -174,7 +172,6 @@ namespace Zyl.ExSpans {
             return end - start + 1;
         }
 
-#if NOT_RELATED
         /// <summary>
         /// Removes all leading and trailing occurrences of a set of elements specified
         /// in a readonly span from the memory.
@@ -182,11 +179,11 @@ namespace Zyl.ExSpans {
         /// <param name="memory">The source memory from which the elements are removed.</param>
         /// <param name="trimElements">The span which contains the set of elements to remove.</param>
         /// <remarks>If <paramref name="trimElements"/> is empty, the memory is returned unaltered.</remarks>
-        public static Memory<T> Trim<T>(this Memory<T> memory, ReadOnlyExSpan<T> trimElements) where T : IEquatable<T>? {
+        public static ExMemory<T> Trim<T>(this ExMemory<T> memory, ReadOnlyExSpan<T> trimElements) where T : IEquatable<T>? {
             if (trimElements.Length > 1) {
                 ReadOnlyExSpan<T> span = memory.ExSpan;
-                int start = ClampStart(span, trimElements);
-                int length = ClampEnd(span, start, trimElements);
+                TSize start = ClampStart(span, trimElements);
+                TSize length = ClampEnd(span, start, trimElements);
                 return memory.Slice(start, length);
             }
 
@@ -204,7 +201,7 @@ namespace Zyl.ExSpans {
         /// <param name="memory">The source memory from which the elements are removed.</param>
         /// <param name="trimElements">The span which contains the set of elements to remove.</param>
         /// <remarks>If <paramref name="trimElements"/> is empty, the memory is returned unaltered.</remarks>
-        public static Memory<T> TrimStart<T>(this Memory<T> memory, ReadOnlyExSpan<T> trimElements) where T : IEquatable<T>? {
+        public static ExMemory<T> TrimStart<T>(this ExMemory<T> memory, ReadOnlyExSpan<T> trimElements) where T : IEquatable<T>? {
             if (trimElements.Length > 1) {
                 return memory.Slice(ClampStart(memory.ExSpan, trimElements));
             }
@@ -223,7 +220,7 @@ namespace Zyl.ExSpans {
         /// <param name="memory">The source memory from which the elements are removed.</param>
         /// <param name="trimElements">The span which contains the set of elements to remove.</param>
         /// <remarks>If <paramref name="trimElements"/> is empty, the memory is returned unaltered.</remarks>
-        public static Memory<T> TrimEnd<T>(this Memory<T> memory, ReadOnlyExSpan<T> trimElements) where T : IEquatable<T>? {
+        public static ExMemory<T> TrimEnd<T>(this ExMemory<T> memory, ReadOnlyExSpan<T> trimElements) where T : IEquatable<T>? {
             if (trimElements.Length > 1) {
                 return memory.Slice(0, ClampEnd(memory.ExSpan, 0, trimElements));
             }
@@ -242,11 +239,11 @@ namespace Zyl.ExSpans {
         /// <param name="memory">The source memory from which the elements are removed.</param>
         /// <param name="trimElements">The span which contains the set of elements to remove.</param>
         /// <remarks>If <paramref name="trimElements"/> is empty, the memory is returned unaltered.</remarks>
-        public static ReadOnlyMemory<T> Trim<T>(this ReadOnlyMemory<T> memory, ReadOnlyExSpan<T> trimElements) where T : IEquatable<T>? {
+        public static ReadOnlyExMemory<T> Trim<T>(this ReadOnlyExMemory<T> memory, ReadOnlyExSpan<T> trimElements) where T : IEquatable<T>? {
             if (trimElements.Length > 1) {
                 ReadOnlyExSpan<T> span = memory.ExSpan;
-                int start = ClampStart(span, trimElements);
-                int length = ClampEnd(span, start, trimElements);
+                TSize start = ClampStart(span, trimElements);
+                TSize length = ClampEnd(span, start, trimElements);
                 return memory.Slice(start, length);
             }
 
@@ -264,7 +261,7 @@ namespace Zyl.ExSpans {
         /// <param name="memory">The source memory from which the elements are removed.</param>
         /// <param name="trimElements">The span which contains the set of elements to remove.</param>
         /// <remarks>If <paramref name="trimElements"/> is empty, the memory is returned unaltered.</remarks>
-        public static ReadOnlyMemory<T> TrimStart<T>(this ReadOnlyMemory<T> memory, ReadOnlyExSpan<T> trimElements) where T : IEquatable<T>? {
+        public static ReadOnlyExMemory<T> TrimStart<T>(this ReadOnlyExMemory<T> memory, ReadOnlyExSpan<T> trimElements) where T : IEquatable<T>? {
             if (trimElements.Length > 1) {
                 return memory.Slice(ClampStart(memory.ExSpan, trimElements));
             }
@@ -283,7 +280,7 @@ namespace Zyl.ExSpans {
         /// <param name="memory">The source memory from which the elements are removed.</param>
         /// <param name="trimElements">The span which contains the set of elements to remove.</param>
         /// <remarks>If <paramref name="trimElements"/> is empty, the memory is returned unaltered.</remarks>
-        public static ReadOnlyMemory<T> TrimEnd<T>(this ReadOnlyMemory<T> memory, ReadOnlyExSpan<T> trimElements) where T : IEquatable<T>? {
+        public static ReadOnlyExMemory<T> TrimEnd<T>(this ReadOnlyExMemory<T> memory, ReadOnlyExSpan<T> trimElements) where T : IEquatable<T>? {
             if (trimElements.Length > 1) {
                 return memory.Slice(0, ClampEnd(memory.ExSpan, 0, trimElements));
             }
@@ -294,7 +291,6 @@ namespace Zyl.ExSpans {
 
             return memory;
         }
-#endif // NOT_RELATED
 
         /// <summary>
         /// Removes all leading and trailing occurrences of a set of elements specified
@@ -452,15 +448,14 @@ namespace Zyl.ExSpans {
             return end - start + 1;
         }
 
-#if NOT_RELATED
         /// <summary>
         /// Removes all leading and trailing white-space characters from the memory.
         /// </summary>
         /// <param name="memory">The source memory from which the characters are removed.</param>
-        public static Memory<char> Trim(this Memory<char> memory) {
+        public static ExMemory<char> Trim(this ExMemory<char> memory) {
             ReadOnlyExSpan<char> span = memory.ExSpan;
-            int start = ClampStart(span);
-            int length = ClampEnd(span, start);
+            TSize start = ClampStart(span);
+            TSize length = ClampEnd(span, start);
             return memory.Slice(start, length);
         }
 
@@ -468,24 +463,24 @@ namespace Zyl.ExSpans {
         /// Removes all leading white-space characters from the memory.
         /// </summary>
         /// <param name="memory">The source memory from which the characters are removed.</param>
-        public static Memory<char> TrimStart(this Memory<char> memory)
+        public static ExMemory<char> TrimStart(this ExMemory<char> memory)
             => memory.Slice(ClampStart(memory.ExSpan));
 
         /// <summary>
         /// Removes all trailing white-space characters from the memory.
         /// </summary>
         /// <param name="memory">The source memory from which the characters are removed.</param>
-        public static Memory<char> TrimEnd(this Memory<char> memory)
+        public static ExMemory<char> TrimEnd(this ExMemory<char> memory)
             => memory.Slice(0, ClampEnd(memory.ExSpan, 0));
 
         /// <summary>
         /// Removes all leading and trailing white-space characters from the memory.
         /// </summary>
         /// <param name="memory">The source memory from which the characters are removed.</param>
-        public static ReadOnlyMemory<char> Trim(this ReadOnlyMemory<char> memory) {
+        public static ReadOnlyExMemory<char> Trim(this ReadOnlyExMemory<char> memory) {
             ReadOnlyExSpan<char> span = memory.ExSpan;
-            int start = ClampStart(span);
-            int length = ClampEnd(span, start);
+            TSize start = ClampStart(span);
+            TSize length = ClampEnd(span, start);
             return memory.Slice(start, length);
         }
 
@@ -493,16 +488,15 @@ namespace Zyl.ExSpans {
         /// Removes all leading white-space characters from the memory.
         /// </summary>
         /// <param name="memory">The source memory from which the characters are removed.</param>
-        public static ReadOnlyMemory<char> TrimStart(this ReadOnlyMemory<char> memory)
+        public static ReadOnlyExMemory<char> TrimStart(this ReadOnlyExMemory<char> memory)
             => memory.Slice(ClampStart(memory.ExSpan));
 
         /// <summary>
         /// Removes all trailing white-space characters from the memory.
         /// </summary>
         /// <param name="memory">The source memory from which the characters are removed.</param>
-        public static ReadOnlyMemory<char> TrimEnd(this ReadOnlyMemory<char> memory)
+        public static ReadOnlyExMemory<char> TrimEnd(this ReadOnlyExMemory<char> memory)
             => memory.Slice(0, ClampEnd(memory.ExSpan, 0));
-#endif // NOT_RELATED
 
         /// <summary>
         /// Removes all leading and trailing white-space characters from the span.
