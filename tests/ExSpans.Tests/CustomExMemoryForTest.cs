@@ -21,7 +21,7 @@ namespace Zyl.ExSpans.Tests {
         }
 
         public CustomExMemoryForTest(T[] array, int offset, int length) {
-            if (_array is null) throw new ArgumentNullException("array");
+            if (array is null) throw new ArgumentNullException("array");
             _array = array;
             _offset = offset;
             _length = length;

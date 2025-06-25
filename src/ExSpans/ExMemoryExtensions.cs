@@ -3370,21 +3370,6 @@ namespace Zyl.ExSpans {
         }
 
         /// <summary>
-        /// Copies the contents of the array into the span. If the source
-        /// and destinations overlap, this method behaves as if the original values in
-        /// a temporary location before the destination is overwritten.
-        /// </summary>
-        ///<param name="source">The array to copy items from.</param>
-        /// <param name="destination">The span to copy items into.</param>
-        /// <exception cref="ArgumentException">
-        /// Thrown when the destination ExSpan is shorter than the source array.
-        /// </exception>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void CopyTo<T>(this T[]? source, ExSpan<T> destination) {
-            new ReadOnlyExSpan<T>(source).CopyTo(destination);
-        }
-
-        /// <summary>
         /// Copies the contents of the array into the memory. If the source
         /// and destinations overlap, this method behaves as if the original values are in
         /// a temporary location before the destination is overwritten.
@@ -3396,7 +3381,7 @@ namespace Zyl.ExSpans {
         /// </exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CopyTo<T>(this T[]? source, ExMemory<T> destination) {
-            CopyTo(source, destination.ExSpan);
+            source.CopyTo(destination.ExSpan);
         }
 
         //
