@@ -100,7 +100,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Include="ExSpans.md" Pack="true" PackagePath=""/>
+      <None Include="ExSpans.md" Pack="true" PackagePath="" />
     </ItemGroup>
 
 </Project>
