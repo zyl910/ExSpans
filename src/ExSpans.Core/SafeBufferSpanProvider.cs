@@ -36,6 +36,7 @@ namespace Zyl.ExSpans {
     /// }
     /// </code>
     /// </example>
+    /// <para><see cref="SafeBufferSpanProvider"/> is a lightweight, low overhead approach that only supports synchronous code. Although PointerExMemoryManager has a higher overhead, but it supports <see cref="Memory{T}"/> types, and supports not only synchronous code, but also asynchronous code. (SafeBufferSpanProvider是一种轻量级低开销的办法, 仅支持同步代码. 而 PointerExMemoryManager 虽然开销大一些, 但它支持 Memory 类型, 且不仅支持同步代码，还支持异步代码).</para>
     /// </remarks>
     public unsafe readonly struct SafeBufferSpanProvider : IDisposable, IExLength, IReadOnlyExSpanProvider<byte>, IExSpanProvider<byte> {
         private readonly SafeBuffer? _source;

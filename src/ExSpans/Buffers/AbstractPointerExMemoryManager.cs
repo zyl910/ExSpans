@@ -24,9 +24,13 @@ namespace Zyl.ExSpans.Buffers {
         /// <param name="owner">The owner of pointer (指针的所有者).</param>
         /// <param name="pointer">Pointer of unmanaged data (非托管数据的指针).</param>
         /// <param name="length">Length of unmanaged data (非托管数据的长度).</param>
-        /// <param name="needFree">Is it need to free pointer (是否需要释放指针).</param>
+        /// <param name="needFree">Is it need to free pointer. If it is true, Dispose will execute the free operation (是否需要释放指针. 若它为 true 时, Dispose 会执行释放操作).</param>
+        /// <exception cref="ArgumentOutOfRangeException">The length parameter must be greater than or equal to 0.</exception>
         [CLSCompliant(false)]
         protected AbstractPointerExMemoryManager(TOwner? owner, void* pointer, nint length, bool needFree) {
+            if (length<0) {
+                throw new ArgumentOutOfRangeException(nameof(length), "The length parameter must be greater than or equal to 0.");
+            }
             Owner = owner;
             Pointer = pointer;
             Length = length;
@@ -78,16 +82,28 @@ namespace Zyl.ExSpans.Buffers {
 
         /// <summary>Pointer of unmanaged data (非托管数据的指针).</summary>
         [CLSCompliant(false)]
-        public unsafe void* Pointer { get => _pointer; protected set => _pointer = value; }
+        public unsafe void* Pointer {
+            get => _pointer;
+            protected set => _pointer = value;
+        }
 
         /// <summary>Length of unmanaged data (非托管数据的长度).</summary>
-        public nint Length { get => _length; protected set => _length = value; }
+        public nint Length {
+            get => _length;
+            protected set => _length = value;
+        }
 
-        /// <summary>The owner of pointer. When Dispose occurs and NeedFree is true, if Owner is empty, its Dispose method will be called; otherwise, the <see cref="ExNativeMemory.Free(void*)"/> method will be called (指针的所有者. 在 Dispose 发生且 NeedFree 为 true 时, 若 Owner 为空会调用它的 Dispose 方法, 否则会调用 <see cref="ExNativeMemory.Free(void*)"/> 方法).</summary>
-        public TOwner? Owner { get => _owner; protected set => _owner = value; }
+        /// <summary>The owner of pointer. When Dispose occurs and NeedFree is true, if Owner is not null, its Dispose method will be called; otherwise, the <see cref="ExNativeMemory.Free(void*)"/> method will be called (指针的所有者. 在 Dispose 发生且 NeedFree 为 true 时, 若 Owner 为非空会调用它的 Dispose 方法, 否则会调用 <see cref="ExNativeMemory.Free(void*)"/> 方法).</summary>
+        public TOwner? Owner { 
+            get => _owner;
+            protected set => _owner = value;
+        }
 
-        /// <summary>Is it need to free pointer. If it is true, Dispose will perform the free operation (是否需要释放指针. 若它为 true 时, Dispose 会执行释放操作).</summary>
-        public bool NeedFree { get => _needFree; protected set => _needFree = value; }
+        /// <summary>Is it need to free pointer. If it is true, Dispose will perform the execute operation (是否需要释放指针. 若它为 true 时, Dispose 会执行释放操作).</summary>
+        public bool NeedFree {
+            get => _needFree;
+            protected set => _needFree = value;
+        }
 
         /// <summary>Is it Disposed (是否已处置).</summary>
         protected bool IsDisposed { get => _isDisposed; }

@@ -33,7 +33,8 @@ namespace Zyl.ExSpans.Buffers {
         /// <param name="owner">The owner of pointer (指针的所有者).</param>
         /// <param name="pointer">Pointer of unmanaged data (非托管数据的指针).</param>
         /// <param name="length">Length of unmanaged data (非托管数据的长度).</param>
-        /// <param name="needFree">Is it need to free pointer (是否需要释放指针).</param>
+        /// <param name="needFree">Is it need to free pointer. If it is true, Dispose will execute the free operation (是否需要释放指针. 若它为 true 时, Dispose 会执行释放操作).</param>
+        /// <exception cref="ArgumentOutOfRangeException">The length parameter must be greater than or equal to 0.</exception>
         [CLSCompliant(false)]
         public PointerExMemoryManager(IDisposable? owner, void* pointer, nint length, bool needFree) : base(owner, pointer, length, needFree) {
         }
@@ -44,6 +45,7 @@ namespace Zyl.ExSpans.Buffers {
         /// <param name="owner">The owner of pointer (指针的所有者).</param>
         /// <param name="pointer">Pointer of unmanaged data (非托管数据的指针).</param>
         /// <param name="length">Length of unmanaged data (非托管数据的长度).</param>
+        /// <exception cref="ArgumentOutOfRangeException">The length parameter must be greater than or equal to 0.</exception>
         [CLSCompliant(false)]
         public PointerExMemoryManager(IDisposable? owner, void* pointer, nint length) : this(owner, pointer, length, true) {
         }
@@ -53,7 +55,8 @@ namespace Zyl.ExSpans.Buffers {
         /// </summary>
         /// <param name="pointer">Pointer of unmanaged data (非托管数据的指针).</param>
         /// <param name="length">Length of unmanaged data (非托管数据的长度).</param>
-        /// <param name="needFree">Is it need to free pointer (是否需要释放指针).</param>
+        /// <param name="needFree">Is it need to free pointer. If it is true, Dispose will execute the free operation (是否需要释放指针. 若它为 true 时, Dispose 会执行释放操作).</param>
+        /// <exception cref="ArgumentOutOfRangeException">The length parameter must be greater than or equal to 0.</exception>
         [CLSCompliant(false)]
         public PointerExMemoryManager(void* pointer, nint length, bool needFree) : this(null, pointer, length, needFree) {
         }
@@ -63,6 +66,7 @@ namespace Zyl.ExSpans.Buffers {
         /// </summary>
         /// <param name="pointer">Pointer of unmanaged data (非托管数据的指针).</param>
         /// <param name="length">Length of unmanaged data (非托管数据的长度).</param>
+        /// <exception cref="ArgumentOutOfRangeException">The length parameter must be greater than or equal to 0.</exception>
         [CLSCompliant(false)]
         public PointerExMemoryManager(void* pointer, nint length) : this(null, pointer, length, true) {
         }
