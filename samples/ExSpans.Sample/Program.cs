@@ -10,9 +10,8 @@ namespace Zyl.ExSpans.Sample {
             OutputHeader(writer);
 
             // Test some.
-            TestSimple(writer);
-            Test2GB(writer);
-            ATestMemoryMappedFile.TestMemoryMappedFile(writer);
+            TestMain(writer);
+            ATestMemoryMappedFile.TestMain(writer);
         }
 
         /// <summary>
@@ -23,6 +22,15 @@ namespace Zyl.ExSpans.Sample {
             writer.WriteLine("ExSpans.Sample");
             EnvironmentOutput.OutputEnvironment(writer);
             writer.WriteLine();
+        }
+
+        /// <summary>
+        /// Test main (测试主入口).
+        /// </summary>
+        /// <param name="writer">The <see cref="TextWriter"/>.</param>
+        internal static void TestMain(TextWriter writer) {
+            TestSimple(writer);
+            Test2GB(writer);
         }
 
         /// <summary>
