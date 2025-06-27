@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-using Zyl.ExSpans.Buffers;
 
-namespace Zyl.ExSpans {
+namespace Zyl.ExSpans.Buffers {
     /// <summary>
     /// Provides extension methods for the <see cref="ExMemoryManager{T}"/> types (提供 <see cref="ExMemoryManager{T}"/>相关类型的扩展方法).
     /// </summary>
