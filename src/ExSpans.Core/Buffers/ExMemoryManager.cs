@@ -8,6 +8,8 @@ namespace Zyl.ExSpans.Buffers {
     /// (用于实现的 <see cref="ExMemory{T}"/> 管理器. 它可以被视为 <see cref="TSize"/> 索引范围的 <see cref="MemoryManager{T}"/>).
     /// </summary>
     /// <typeparam name="T">The element type (元素的类型).</typeparam>
+    /// <seealso cref="ExMemory{T}"/>
+    /// <seealso cref="ExSpan{T}"/>
     public abstract class ExMemoryManager<T> : MemoryManager<T>, IExMemoryOwner<T>, IDisposable, IPinnable {
         /// <summary>
         /// Returns a <see cref="ExMemory{T}"/> (返回 <see cref="ExMemory{T}"/>).

@@ -24,6 +24,9 @@ namespace Zyl.ExSpans {
     /// (代表只读内存的连续区域，类似于 ReadOnlyExSpan. 与 ReadOnlyExSpan 不同的是，它不是 类似byref 的类型. 它可以被视为 <see cref="TSize"/> 索引范围的 <see cref="ReadOnlyMemory{T}"/>).
     /// </summary>
     /// <typeparam name="T">The element type (元素的类型).</typeparam>
+    /// <seealso cref="ReadOnlyMemory{T}"/>
+    /// <seealso cref="ReadOnlyExSpan{T}"/>
+    /// <seealso cref="ExMemory{T}"/>
     //[DebuggerTypeProxy(typeof(ExMemoryDebugView<>))]
     [DebuggerDisplay("{ToString(),raw}")]
     public readonly partial struct ReadOnlyExMemory<T> : IEquatable<ReadOnlyExMemory<T>> {

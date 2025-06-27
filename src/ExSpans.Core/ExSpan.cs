@@ -22,6 +22,9 @@ namespace Zyl.ExSpans {
     /// Provides a type-safe and memory-safe representation of a contiguous region of arbitrary memory. It can be regarded as the <see cref="Span{T}"/> of <see cref="TSize"/> index range (提供任意内存的连续区域的类型安全和内存安全表示形式. 它可以被视为 <see cref="TSize"/> 索引范围的 <see cref="Span{T}"/>).
     /// </summary>
     /// <typeparam name="T">The element type (元素的类型).</typeparam>
+    /// <seealso cref="Memory{T}"/>
+    /// <seealso cref="Span{T}"/>
+    /// <seealso cref="ReadOnlyExSpan{T}"/>
     [DebuggerTypeProxy(typeof(ExSpanDebugView<>))]
     [DebuggerDisplay("{ToString(),raw}")]
     //[NativeMarshalling(typeof(ExSpanMarshaller<,>))]
