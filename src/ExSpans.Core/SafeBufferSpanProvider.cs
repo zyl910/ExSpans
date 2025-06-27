@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -108,6 +109,13 @@ namespace Zyl.ExSpans {
         public TSize Length {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => (_source?.ByteLength ?? 0).SaturatingToTSize();
+        }
+
+        /// <summary>Pointer of unmanaged data (非托管数据的指针).</summary>
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        [CLSCompliant(false)]
+        public byte* Pointer {
+            get => _pointer;
         }
 
     }

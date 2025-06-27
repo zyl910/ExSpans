@@ -16,7 +16,7 @@ namespace Zyl.ExSpans.Buffers {
         /// <param name="source">The source (源).</param>
         /// <returns>Returns a memory manager (返回内存管理者).</returns>
         public static unsafe PointerExMemoryManager<byte, SafeBufferSpanProvider> CreatePointerExMemoryManager(this SafeBufferSpanProvider source) {
-            void* pointer = Unsafe.AsPointer(ref source.GetPinnableReference());
+            void* pointer = source.Pointer;
             return new PointerExMemoryManager<byte, SafeBufferSpanProvider>(source, pointer, source.Length);
         }
 
