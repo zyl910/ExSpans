@@ -16,7 +16,7 @@ namespace Zyl.ExSpans.Buffers {
         private nint _length;
         private TOwner? _owner;
         private bool _needFree;
-        private bool _isDisposed;
+        private bool _isDisposed = false;
 
         /// <summary>
         /// Create AbstractPointerExMemoryManager.
@@ -35,6 +35,22 @@ namespace Zyl.ExSpans.Buffers {
             Pointer = pointer;
             Length = length;
             NeedFree = needFree;
+        }
+
+        /// <summary>
+        /// Dispose.
+        /// </summary>
+        /// <param name="disposing">Is disposing.</param>
+        protected override void Dispose(bool disposing) {
+            if (_isDisposed) return;
+            _isDisposed = true;
+            if (NeedFree) {
+                if (Owner is null) {
+                    ExNativeMemory.Free(Pointer);
+                } else {
+                    Owner?.Dispose();
+                }
+            }
         }
 
         /// <inheritdoc/>
@@ -61,23 +77,7 @@ namespace Zyl.ExSpans.Buffers {
 
         /// <inheritdoc cref="IPinnable.Unpin"/>
         public override void Unpin() {
-            // No work.
-        }
-
-        /// <summary>
-        /// Dispose.
-        /// </summary>
-        /// <param name="disposing">Is disposing.</param>
-        protected override void Dispose(bool disposing) {
-            if (_isDisposed) return;
-            _isDisposed = true;
-            if (NeedFree) {
-                if (Owner is null) {
-                    ExNativeMemory.Free(Pointer);
-                } else {
-                    Owner?.Dispose();
-                }
-            }
+            // No work required.
         }
 
         /// <summary>Pointer of unmanaged data (非托管数据的指针).</summary>
