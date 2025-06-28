@@ -112,9 +112,9 @@ namespace Zyl.ExSpans {
         /// <summary>
         /// Creates a new memory from a memory manager that provides specific method implementations beginning
         /// at 0 index and ending at 'end' index (exclusive)
-        /// (在内存管理者的一部分上创建新的内存区域，从0开始并包含指定数量的元素).
+        /// (在内存管理器的一部分上创建新的内存区域，从0开始并包含指定数量的元素).
         /// </summary>
-        /// <param name="manager">The memory manager (内存管理者).</param>
+        /// <param name="manager">The memory manager (内存管理器).</param>
         /// <param name="length">The number of items in the memory (内存区域中的项数).</param>
         /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown when the specified <paramref name="length"/> is negative.
@@ -135,9 +135,9 @@ namespace Zyl.ExSpans {
         /// <summary>
         /// Creates a new memory from a memory manager that provides specific method implementations beginning
         /// at 'start' index and ending at 'end' index (exclusive)
-        /// (在内存管理者的一部分上创建新的内存区域，从指定位置开始并包含指定数量的元素).
+        /// (在内存管理器的一部分上创建新的内存区域，从指定位置开始并包含指定数量的元素).
         /// </summary>
-        /// <param name="manager">The memory manager (内存管理者).</param>
+        /// <param name="manager">The memory manager (内存管理器).</param>
         /// <param name="start">The index at which to begin the memory (开始内存区域的索引).</param>
         /// <param name="length">The number of items in the memory (内存区域中的项数).</param>
         /// <exception cref="ArgumentOutOfRangeException">

@@ -5,7 +5,7 @@ using System.Text;
 namespace Zyl.ExSpans.Buffers {
     /// <summary>
     /// Pointer based memory manager. It also supports the Owner parameter, which can support <see cref="SafeBufferSpanProvider"/> types
-    /// (基于指针的内存管理者. 它还支持 Owner 参数, 它可支持 <see cref="SafeBufferSpanProvider"/> 类型).
+    /// (基于指针的内存管理器. 它还支持 Owner 参数, 它可支持 <see cref="SafeBufferSpanProvider"/> 类型).
     /// </summary>
     /// <typeparam name="T">The element type (元素的类型).</typeparam>
     /// <typeparam name="TOwner">The owner type (所有者的类型).</typeparam>
@@ -58,7 +58,7 @@ namespace Zyl.ExSpans.Buffers {
     /// <para>The <see cref="PointerExMemoryManager{T}"/> applies when Owner is a reference type. The <see cref="PointerExMemoryManager{T, TOwner}"/> applies when Owner is a value type
     /// (<see cref="PointerExMemoryManager{T}"/> 适用于Owner是引用类型时. <see cref="PointerExMemoryManager{T, TOwner}"/> 适用于Owner是值类型时).</para>
     /// </remarks>
-    public unsafe sealed class PointerExMemoryManager<T, TOwner> : AbstractPointerExMemoryManager<T, TOwner> where TOwner : IDisposable, IDisposable {
+    public unsafe sealed class PointerExMemoryManager<T, TOwner> : AbstractPointerExMemoryManager<T, TOwner>, IDisposable where TOwner : IDisposable {
 
 #pragma warning disable CA2015
         /// <summary>

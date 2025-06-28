@@ -29,8 +29,8 @@ namespace Zyl.ExSpans.Buffers {
     }
 
     /// <summary>
-    /// Array pool based abstract memory manager. It will rent the array from the array pool based on the length parameter, and return array to the array pool when when Dispose
-    /// (基于数组池的抽象内存管理者. 它会根据长度参数, 从数组池中租借数组, 并在 Dispose 时归还数组到数组池).
+    /// Array pool based abstract memory manager. It will rent the array from the array pool based on the length parameter, and return array to the array pool when when <see cref="IDisposable.Dispose"/>. Please note that the maximum length of an array is <see cref="Array.MaxLength"/> and generally cannot exceed 2GB
+    /// (基于数组池的抽象内存管理器. 它会根据长度参数, 从数组池中租借数组, 并在 Dispose 时归还数组到数组池. 请注意, 数组的最大长度为 <see cref="Array.MaxLength"/>, 一般不能超过 2GB).
     /// </summary>
     /// <typeparam name="T">The element type (元素的类型).</typeparam>
     public abstract class AbstractArrayExMemoryManager<T> : ExMemoryManager<T> {
@@ -74,7 +74,7 @@ namespace Zyl.ExSpans.Buffers {
         }
 
         /// <summary>
-        /// Dispose.
+        /// Clean up of any leftover managed and unmanaged resources.
         /// </summary>
         /// <param name="disposing">Is disposing.</param>
         protected override void Dispose(bool disposing) {

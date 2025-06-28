@@ -7,7 +7,7 @@ using System.Text;
 namespace Zyl.ExSpans.Buffers {
     /// <summary>
     /// Pointer based abstract memory manager. It also supports the Owner parameter, which can support <see cref="SafeBufferSpanProvider"/> types
-    /// (基于指针的抽象内存管理者. 它还支持 Owner 参数, 它可支持 SafeBufferSpanProvider 类型).
+    /// (基于指针的抽象内存管理器. 它还支持 Owner 参数, 它可支持 SafeBufferSpanProvider 类型).
     /// </summary>
     /// <typeparam name="T">The element type (元素的类型).</typeparam>
     /// <typeparam name="TOwner">The owner type (所有者的类型).</typeparam>
@@ -38,7 +38,7 @@ namespace Zyl.ExSpans.Buffers {
         }
 
         /// <summary>
-        /// Dispose.
+        /// Clean up of any leftover managed and unmanaged resources.
         /// </summary>
         /// <param name="disposing">Is disposing.</param>
         protected override void Dispose(bool disposing) {

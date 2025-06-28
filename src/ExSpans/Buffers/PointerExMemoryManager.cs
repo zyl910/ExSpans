@@ -5,7 +5,7 @@ using System.Text;
 namespace Zyl.ExSpans.Buffers {
     /// <summary>
     /// Pointer based memory manager
-    /// (基于指针的内存管理者).
+    /// (基于指针的内存管理器).
     /// </summary>
     /// <typeparam name="T">The element type (元素的类型).</typeparam>
     /// <remarks>

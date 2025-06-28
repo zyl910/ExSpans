@@ -14,7 +14,7 @@ namespace Zyl.ExSpans.Buffers {
         /// Create <see cref="PointerExMemoryManager{T, TOwner}"/> based on <see cref="SafeBufferSpanProvider"/> (根据 SafeBufferSpanProvider 创建 PointerExMemoryManager).
         /// </summary>
         /// <param name="source">The source (源).</param>
-        /// <returns>Returns a memory manager (返回内存管理者).</returns>
+        /// <returns>Returns a memory manager (返回内存管理器).</returns>
         public static unsafe PointerExMemoryManager<byte, SafeBufferSpanProvider> CreatePointerExMemoryManager(this SafeBufferSpanProvider source) {
             void* pointer = source.Pointer;
             return new PointerExMemoryManager<byte, SafeBufferSpanProvider>(source, pointer, source.Length);
@@ -25,7 +25,7 @@ namespace Zyl.ExSpans.Buffers {
         /// </summary>
         /// <typeparam name="TSafeBuffer">The <see cref="SafeBuffer"/> type (SafeBuffer的类型).</typeparam>
         /// <param name="source">The source (源).</param>
-        /// <returns>Returns a memory manager (返回内存管理者).</returns>
+        /// <returns>Returns a memory manager (返回内存管理器).</returns>
         public static unsafe PointerExMemoryManager<byte, SafeBufferSpanProvider> CreatePointerExMemoryManager<TSafeBuffer>(this TSafeBuffer source) where TSafeBuffer : SafeBuffer {
             SafeBufferSpanProvider spanProvider = source.CreateSpanProvider();
             return spanProvider.CreatePointerExMemoryManager();
