@@ -41,13 +41,12 @@ namespace Zyl.ExSpans.Buffers {
         private bool _isDisposed = false;
 
         /// <summary>
-        /// Create AbstractPointerExMemoryManager.
+        /// Create AbstractArrayExMemoryManager.
         /// </summary>
         /// <param name="length">Length of unmanaged data (非托管数据的长度).</param>
         /// <param name="pool">The <see cref="ArrayPool{T}"/> instance used to rent array. Defaults to <see cref="ArrayPool{T}.Shared"/> if it is null (用于租用数组的 <see cref="ArrayPool{T}"/> 实例. 它为空时默认为 <see cref="ArrayPool{T}.Shared"/>).</param>
         /// <param name="flags">Memory alloc flags (内存分配标志). This class supports these flags: <see cref="MemoryAllocFlags.ClearAlloc"/>, <see cref="MemoryAllocFlags.ClearFree"/>.</param>
         /// <exception cref="ArgumentOutOfRangeException">The length parameter must be greater than or equal to 0. The length parameter out of array max length.</exception>
-        [CLSCompliant(false)]
         protected AbstractArrayExMemoryManager(nint length, ArrayPool<T>? pool = null, MemoryAllocFlags flags = default) {
             // Check.
             if (length < 0) {
@@ -65,7 +64,7 @@ namespace Zyl.ExSpans.Buffers {
             if (pool is null) {
                 pool = ArrayPool<T>.Shared;
             }
-            _dataArray = pool.Rent((int)length);
+            _dataArray = (length > 0) ? pool.Rent((int)length) : null;
             _length = length;
             _pool = pool;
             _flags = flags;

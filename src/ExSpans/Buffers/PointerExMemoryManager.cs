@@ -12,7 +12,7 @@ namespace Zyl.ExSpans.Buffers {
     /// <para>The <see cref="PointerExMemoryManager{T}"/> applies when Owner is a reference type. The <see cref="PointerExMemoryManager{T, TOwner}"/> applies when Owner is a value type
     /// (<see cref="PointerExMemoryManager{T}"/> 适用于Owner是引用类型时. <see cref="PointerExMemoryManager{T, TOwner}"/> 适用于Owner是值类型时).</para>
     /// </remarks>
-    public unsafe sealed class PointerExMemoryManager<T> : AbstractPointerExMemoryManager<T, IDisposable> {
+    public unsafe sealed class PointerExMemoryManager<T> : AbstractPointerExMemoryManager<T, IDisposable>, IDisposable {
 
 #pragma warning disable CA2015
         /// <summary>
