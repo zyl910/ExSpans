@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Zyl.ExSpans.Buffers {
     /// <summary>
-    /// A memory manager that supports automatic memory allocation and alignment. When the length is less than PoolMaxArrayLength, it uses array pooling; otherwise, it uses native memory
+    /// A memory manager that supports automatic memory allocation and alignment. When the length is less than <see cref="ExSpansGlobal.PoolMaxArrayLength"/>, it uses array pooling; otherwise, it uses native memory
     /// (支持自动内存分配和对齐的内存管理器. 当长度小于 PoolMaxArrayLength 时它使用数组池，否则它就使用原生内存).
     /// </summary>
     /// <typeparam name="T">The element type (元素的类型).</typeparam>
