@@ -221,10 +221,10 @@ namespace Zyl.ExSpans.Impl {
 #endif // ALLOWS_REF_STRUCT
                 {
 #if NETCOREAPP3_0_OR_GREATER
-            return AddPointer<T>(0, length);
+            //return AddPointer<T>(0, length);
 #else
-            return length * (nuint)Unsafe.SizeOf<T>();
 #endif // NETCOREAPP3_0_OR_GREATER
+            return length * (nuint)Unsafe.SizeOf<T>();
         }
 
         /// <summary>
