@@ -8,7 +8,7 @@ namespace Zyl.ExSpans.Buffers {
     /// <summary>
     /// Utility functions for pointers (指针的工具函数).
     /// </summary>
-    public static class PointerUtil {
+    public static partial class PointerUtil {
 
         /// <summary>
         /// Check if the alignment value is valid, an exception will be thrown if it is invalid. It must be a positive number and a power of 2 (检查对齐值是否有效, 无效时会抛出异常. 它必须是正数且为2的幂).
@@ -58,6 +58,55 @@ namespace Zyl.ExSpans.Buffers {
             if (!flag) {
                 throw new ArgumentException(string.Format("The alignment value({0}) is invalid.", (ulong)alignment), nameof(alignment));
             }
+        }
+
+        /// <summary>
+        /// Get the offset required to align the address to the target value (取得地址对齐到指定值所需的偏移量).
+        /// </summary>
+        /// <param name="address">The pointer address (指针地址).</param>
+        /// <param name="alignment">Alignment value. Note that this method does not check if the alignment value is valid, please use <see cref="IsAlignmentValid(nint)"/> to check it first (对齐值. 注意本方法不会检查对齐值是否有效, 请先使用 IsAlignmentValid 来检查).</param>
+        /// <returns>Returns the offset (返回偏移量).</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static nint GetAlignOffset(nint address, nint alignment) {
+            return (nint)GetAlignOffset((nuint)address, (nuint)alignment);
+        }
+
+        /// <summary>
+        /// Get the offset required to align the address to the target value (取得地址对齐到指定值所需的偏移量).
+        /// </summary>
+        /// <param name="address">The pointer address (指针地址).</param>
+        /// <param name="alignment">Alignment value. Note that this method does not check if the alignment value is valid, please use <see cref="IsAlignmentValid(nuint)"/> to check it first (对齐值. 注意本方法不会检查对齐值是否有效, 请先使用 IsAlignmentValid 来检查).</param>
+        /// <returns>Returns the offset (返回偏移量).</returns>
+        [CLSCompliant(false)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static nuint GetAlignOffset(nuint address, nuint alignment) {
+            nuint diff = address & (alignment - 1);
+            if (0 == diff) return 0;
+            return alignment - diff;
+        }
+
+        /// <summary>
+        /// Get the offset required to align the address to the target value (取得地址对齐到指定值所需的偏移量).
+        /// </summary>
+        /// <param name="address">The pointer address (指针地址).</param>
+        /// <param name="alignment">Alignment value. Note that this method does not check if the alignment value is valid, please use <see cref="IsAlignmentValid(nint)"/> to check it first (对齐值. 注意本方法不会检查对齐值是否有效, 请先使用 IsAlignmentValid 来检查).</param>
+        /// <returns>Returns the offset (返回偏移量).</returns>
+        [CLSCompliant(false)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe static nint GetAlignOffset(void* address, nint alignment) {
+            return GetAlignOffset((nint)address, alignment);
+        }
+
+        /// <summary>
+        /// Get the offset required to align the address to the target value (取得地址对齐到指定值所需的偏移量).
+        /// </summary>
+        /// <param name="address">The pointer address (指针地址).</param>
+        /// <param name="alignment">Alignment value. Note that this method does not check if the alignment value is valid, please use <see cref="IsAlignmentValid(nuint)"/> to check it first (对齐值. 注意本方法不会检查对齐值是否有效, 请先使用 IsAlignmentValid 来检查).</param>
+        /// <returns>Returns the offset (返回偏移量).</returns>
+        [CLSCompliant(false)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe static nuint GetAlignOffset(void* address, nuint alignment) {
+            return GetAlignOffset((nuint)address, alignment);
         }
 
         /// <summary>
