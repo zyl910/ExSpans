@@ -13,7 +13,7 @@ namespace Zyl.ExSpans.Buffers {
     /// <typeparam name="TOwner">The owner type (所有者的类型).</typeparam>
     public unsafe abstract class AbstractPointerExMemoryManager<T, TOwner> : ExMemoryManager<T> where TOwner: IDisposable {
         private void* _pointer;
-        private nint _length;
+        private TSize _length;
         private TOwner? _owner;
         private bool _needFree;
         private bool _isDisposed = false;
@@ -27,7 +27,7 @@ namespace Zyl.ExSpans.Buffers {
         /// <param name="needFree">Is it need to free pointer. If it is true, Dispose will execute the free operation (是否需要释放指针. 若它为 true 时, Dispose 会执行释放操作).</param>
         /// <exception cref="ArgumentOutOfRangeException">The length parameter must be greater than or equal to 0.</exception>
         [CLSCompliant(false)]
-        protected AbstractPointerExMemoryManager(TOwner? owner, void* pointer, nint length, bool needFree) {
+        protected AbstractPointerExMemoryManager(TOwner? owner, void* pointer, TSize length, bool needFree) {
             if (length<0) {
                 throw new ArgumentOutOfRangeException(nameof(length), "The length parameter must be greater than or equal to 0.");
             }
@@ -88,7 +88,7 @@ namespace Zyl.ExSpans.Buffers {
         }
 
         /// <summary>Length of unmanaged data (非托管数据的长度).</summary>
-        public nint Length {
+        public TSize Length {
             get => _length;
             protected set => _length = value;
         }

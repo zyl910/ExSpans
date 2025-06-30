@@ -82,7 +82,7 @@ namespace Zyl.ExSpans.Buffers {
         /// <param name="needFree">Is it need to free pointer. If it is true, Dispose will execute the free operation (是否需要释放指针. 若它为 true 时, Dispose 会执行释放操作).</param>
         /// <exception cref="ArgumentOutOfRangeException">The length parameter must be greater than or equal to 0.</exception>
         [CLSCompliant(false)]
-        public PointerExMemoryManager(TOwner owner, void* pointer, nint length, bool needFree) : base(owner, pointer, length, needFree) {
+        public PointerExMemoryManager(TOwner owner, void* pointer, TSize length, bool needFree) : base(owner, pointer, length, needFree) {
         }
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace Zyl.ExSpans.Buffers {
         /// <param name="length">Length of unmanaged data (非托管数据的长度).</param>
         /// <exception cref="ArgumentOutOfRangeException">The length parameter must be greater than or equal to 0.</exception>
         [CLSCompliant(false)]
-        public PointerExMemoryManager(TOwner owner, void* pointer, nint length) : this(owner, pointer, length, true) {
+        public PointerExMemoryManager(TOwner owner, void* pointer, TSize length) : this(owner, pointer, length, true) {
         }
 
     }

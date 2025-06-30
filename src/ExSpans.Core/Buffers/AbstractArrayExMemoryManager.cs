@@ -34,20 +34,31 @@ namespace Zyl.ExSpans.Buffers {
     /// </summary>
     /// <typeparam name="T">The element type (元素的类型).</typeparam>
     public abstract class AbstractArrayExMemoryManager<T> : ExMemoryManager<T> {
-        private nint _length;
+        private TSize _length;
         private ArrayPool<T>? _pool;
-        private MemoryAllocFlags _flags;
+        private readonly MemoryAllocFlags _flags;
         private T[]? _dataArray;
         private bool _isDisposed = false;
 
         /// <summary>
+        /// Create AbstractArrayExMemoryManager without create array.
+        /// </summary>
+        /// <param name="flags">Memory alloc flags (内存分配标志).</param>
+        protected AbstractArrayExMemoryManager(MemoryAllocFlags flags = default) {
+            _pool = null;
+            _length = 0;
+            _flags = flags;
+            _dataArray = null;
+        }
+
+        /// <summary>
         /// Create AbstractArrayExMemoryManager.
         /// </summary>
-        /// <param name="length">Length of unmanaged data (非托管数据的长度).</param>
         /// <param name="pool">The <see cref="ArrayPool{T}"/> instance used to rent array. Defaults to <see cref="ArrayPool{T}.Shared"/> if it is null (用于租用数组的 <see cref="ArrayPool{T}"/> 实例. 它为空时默认为 <see cref="ArrayPool{T}.Shared"/>).</param>
+        /// <param name="length">Length of unmanaged data (非托管数据的长度).</param>
         /// <param name="flags">Memory alloc flags (内存分配标志). This class supports these flags: <see cref="MemoryAllocFlags.ClearAlloc"/>, <see cref="MemoryAllocFlags.ClearFree"/>.</param>
         /// <exception cref="ArgumentOutOfRangeException">The length parameter must be greater than or equal to 0. The length parameter out of array max length.</exception>
-        protected AbstractArrayExMemoryManager(nint length, ArrayPool<T>? pool = null, MemoryAllocFlags flags = default) {
+        protected AbstractArrayExMemoryManager(ArrayPool<T>? pool, TSize length, MemoryAllocFlags flags = default) {
             // Check.
             if (length < 0) {
                 throw new ArgumentOutOfRangeException(nameof(length), "The length parameter must be greater than or equal to 0.");
@@ -115,10 +126,10 @@ namespace Zyl.ExSpans.Buffers {
 
         /// <inheritdoc cref="IPinnable.Pin(int)"/>
         public unsafe override MemoryHandle Pin(int elementIndex = 0) {
-            if (_dataArray is null) {
+            if (_dataArray is null || Length <= 0) {
                 return default;
             } else {
-                if (elementIndex>= _length) {
+                if (elementIndex >= _length) {
                     throw new ArgumentOutOfRangeException(nameof(elementIndex), string.Format("The elementIndex({0}) parameter out of length({1}).", (long)elementIndex, (long)_length));
                 }
                 GCHandle handle = GCHandle.Alloc(_dataArray, GCHandleType.Pinned);
@@ -149,7 +160,7 @@ namespace Zyl.ExSpans.Buffers {
         protected bool IsDisposed { get => _isDisposed; }
 
         /// <summary>Length of data (数据的长度).</summary>
-        public nint Length {
+        public TSize Length {
             get => _length;
             protected set => _length = value;
         }
