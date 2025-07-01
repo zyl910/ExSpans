@@ -19,7 +19,7 @@ namespace Zyl.ExSpans.Buffers {
     /// <typeparam name="T">The element type (元素的类型).</typeparam>
     public unsafe abstract class AbstractAllocExMemoryManager<T> : AbstractArrayExMemoryManager<T> {
         private TSize _alignment = 0;
-        private TSize _capacityRaw = 0;
+        private TSize _capacity = 0;
         private TSize _offset = 0;
         private void* _pointerAligned = null;
         private GCHandle _arrayHandle = default;
@@ -30,7 +30,7 @@ namespace Zyl.ExSpans.Buffers {
         /// <param name="pool">The <see cref="ArrayPool{T}"/> instance used to rent array. If it is null, only unmanaged memory will be used (用于租用数组的 <see cref="ArrayPool{T}"/> 实例. 若它为空, 则仅使用非托管内存).</param>
         /// <param name="length">Length of unmanaged data (非托管数据的长度).</param>
         /// <param name="alignment">The alignment value (in bytes) of the memory block. This must be a power of <c>2</c>. When it is 1, it means no alignment is required. When it is 0, use the previous value (内存块的对齐值（以字节为单位）. 这必须是 2的幂. 为 1时表示无需对齐.为0时使用上一次的值).</param>
-        /// <param name="flags">Memory alloc flags (内存分配标志). This class supports these flags: <see cref="MemoryAllocFlags.ClearAlloc"/>, <see cref="MemoryAllocFlags.ClearFree"/>.</param>
+        /// <param name="flags">Memory alloc flags (内存分配标志). This class supports these flags: <see cref="MemoryAllocFlags.ClearAlloc"/>, <see cref="MemoryAllocFlags.ClearFree"/>, <see cref="MemoryAllocFlags.NoPressure"/>.</param>
         /// <exception cref="ArgumentOutOfRangeException">The length parameter must be greater than or equal to 0. The length parameter out of array max length.</exception>
         public AbstractAllocExMemoryManager(ArrayPool<T>? pool, TSize length, TSize alignment = 0, MemoryAllocFlags flags = default) : base(flags) {
             // Check.
@@ -46,15 +46,15 @@ namespace Zyl.ExSpans.Buffers {
                 return;
             }
             // Try array.
-            TSize capacityRaw = length; // TODO: T 不是字节时, 计算结果不对. 拟改为 byteCountRaw.
+            TSize capacity = length; // TODO: T 不是字节时, 计算结果不对. 拟改为 byteCountRaw.
             if (alignmentUsed) {
-                capacityRaw += alignment;
+                capacity += alignment;
             }
             Offset = 0;
             PointerAligned = null;
-            if (pool is not null && PointerUtil.IsArrayLengthValidInPool(capacityRaw)) {
+            if (pool is not null && PointerUtil.IsArrayLengthValidInPool(capacity)) {
                 try {
-                    DataArray = pool.Rent((int)capacityRaw);
+                    DataArray = pool.Rent((int)capacity);
                 } catch (Exception ex) {
                     Debug.WriteLine(string.Format("Array pool rent array fail! The length is {0}. {1}", length, ex.Message));
                 }
@@ -73,7 +73,7 @@ namespace Zyl.ExSpans.Buffers {
                             PointerAligned = (byte*)pointer + Offset;
                         }
                         // Done.
-                        CapacityRaw = capacityRaw;
+                        Capacity = capacity;
                         return;
                     } catch (Exception ex) {
                         Debug.WriteLine(string.Format("Array pool config array fail! The length is {0}. {1}", length, ex.Message));
@@ -92,7 +92,7 @@ namespace Zyl.ExSpans.Buffers {
                 nint byteCountRaw = byteCount;
                 if (alignmentUsed) {
 #if NATIVE_MEMORY_ALIGNED
-                    CapacityRaw = length;
+                    Capacity = length;
                     //Offset = 0;
                     PointerAligned = NativeMemory.AlignedAlloc((nuint)byteCountRaw, (nuint)alignment);
                     if (!Flags.HasFlag(MemoryAllocFlags.NoPressure)) {
@@ -122,7 +122,7 @@ namespace Zyl.ExSpans.Buffers {
                 }
                 PointerAligned = (byte*)pointer + Offset;
                 // Done.
-                CapacityRaw = capacityRaw;
+                Capacity = capacity;
             } catch (Exception ex) {
                 Debug.WriteLine(string.Format("Alloc native memory fail! The length is {0}. {1}", length, ex.Message));
                 throw;
@@ -210,10 +210,10 @@ namespace Zyl.ExSpans.Buffers {
             set => _arrayHandle = value;
         }
 
-        /// <summary>The raw value of the capacity. This value is not affected by alignment (容量的原始值. 该值不受对齐的影响).</summary>
-        protected TSize CapacityRaw {
-            get => _capacityRaw;
-            set => _capacityRaw = value;
+        /// <summary>The value of the capacity. This value is not affected by alignment (容量值).</summary>
+        protected TSize Capacity {
+            get => _capacity;
+            set => _capacity = value;
         }
 
         /// <summary>Offset of the aligned data (in bytes) (已对齐数据的偏移, 以字节为单位).</summary>
