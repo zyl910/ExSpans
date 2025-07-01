@@ -19,6 +19,7 @@ namespace Zyl.ExSpans.Buffers {
     /// <typeparam name="T">The element type (元素的类型).</typeparam>
     public unsafe abstract class AbstractAllocExMemoryManager<T> : AbstractArrayExMemoryManager<T> {
         private TSize _alignment = 0;
+        private TSize _byteCount = 0;
         private TSize _capacity = 0;
         private TSize _offset = 0;
         private void* _pointerAligned = null;
@@ -88,32 +89,34 @@ namespace Zyl.ExSpans.Buffers {
             }
             // Try native memory.
             try {
-                nint byteCount = checked(length * Unsafe.SizeOf<T>());
-                nint byteCountRaw = byteCount;
+                nint byteCountBody = checked(length * Unsafe.SizeOf<T>());
+                nint byteCount = byteCountBody;
                 if (alignmentUsed) {
 #if NATIVE_MEMORY_ALIGNED
                     Capacity = length;
                     //Offset = 0;
-                    PointerAligned = NativeMemory.AlignedAlloc((nuint)byteCountRaw, (nuint)alignment);
+                    PointerAligned = NativeMemory.AlignedAlloc((nuint)byteCount, (nuint)alignment);
+                    ByteCount = byteCount;
                     if (!Flags.HasFlag(MemoryAllocFlags.NoPressure)) {
-                        GC.AddMemoryPressure(byteCountRaw);
+                        GC.AddMemoryPressure(ByteCount);
                     }
                     if (Flags.HasFlag(MemoryAllocFlags.ClearAlloc)) {
-                        ExMemoryMarshal.ClearWithoutReferences(ref Unsafe.AsRef<byte>(PointerAligned), (nuint)byteCountRaw);
+                        ExMemoryMarshal.ClearWithoutReferences(ref Unsafe.AsRef<byte>(PointerAligned), (nuint)byteCount);
                     }
                     return;
 #else
-                    byteCountRaw = checked(byteCount + alignment);
+                    byteCount = checked(byteCountBody + alignment);
 #endif // NATIVE_MEMORY_ALIGNED
                 } else {
                     // byteCountRaw = byteCount;
                 }
-                void* pointer = ExNativeMemory.Alloc((nuint)byteCountRaw);
+                void* pointer = ExNativeMemory.Alloc((nuint)byteCount);
+                ByteCount = byteCount;
                 if (!Flags.HasFlag(MemoryAllocFlags.NoPressure)) {
-                    GC.AddMemoryPressure(byteCountRaw);
+                    GC.AddMemoryPressure(ByteCount);
                 }
                 if (Flags.HasFlag(MemoryAllocFlags.ClearAlloc)) {
-                    ExMemoryMarshal.ClearWithoutReferences(ref Unsafe.AsRef<byte>(pointer), (nuint)byteCountRaw);
+                    ExMemoryMarshal.ClearWithoutReferences(ref Unsafe.AsRef<byte>(pointer), (nuint)byteCount);
                 }
                 if (alignmentUsed) {
                     Offset = PointerUtil.GetAlignOffset(pointer, Alignment);
@@ -150,6 +153,9 @@ namespace Zyl.ExSpans.Buffers {
                         ExNativeMemory.Free(pointer);
 #endif // NATIVE_MEMORY_ALIGNED
                         PointerAligned = null;
+                        if (!Flags.HasFlag(MemoryAllocFlags.NoPressure)) {
+                            GC.RemoveMemoryPressure(ByteCount);
+                        }
                     }
                 }
             } finally {
@@ -208,6 +214,12 @@ namespace Zyl.ExSpans.Buffers {
         protected GCHandle ArrayHandle {
             get => _arrayHandle;
             set => _arrayHandle = value;
+        }
+
+        /// <summary>The byte count of unmanaged data .This value is only valid for unmanaged data and represents the actual count of bytes allocated (非托管数据的字节数量. 该值仅对非托管数据有效, 表示实际分配的字节数).</summary>
+        protected TSize ByteCount {
+            get => _byteCount;
+            set => _byteCount = value;
         }
 
         /// <summary>The value of the capacity. This value is not affected by alignment (容量值).</summary>
