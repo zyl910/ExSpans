@@ -110,6 +110,29 @@ namespace Zyl.ExSpans.Buffers {
         }
 
         /// <summary>
+        /// Get a enough number of items based on byte count (根据字节数, 获得足够的项目数量)
+        /// </summary>
+        /// <param name="byteCount">Total byte count (总字节数).</param>
+        /// <param name="itemSize">The byte count of item (项目的字节数).</param>
+        /// <returns>Returns a enough number of items (返回足够的项目数量)</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static nint GetEnoughItemCount(nint byteCount, nint itemSize) {
+            return (byteCount - 1 + itemSize) / itemSize;
+        }
+
+        /// <summary>
+        /// Get a enough number of items based on byte count (根据字节数, 获得足够的项目数量)
+        /// </summary>
+        /// <param name="byteCount">Total byte count (总字节数).</param>
+        /// <param name="itemSize">The byte count of item (项目的字节数).</param>
+        /// <returns>Returns a enough number of items (返回足够的项目数量)</returns>
+        [CLSCompliant(false)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static nuint GetEnoughItemCount(nuint byteCount, nuint itemSize) {
+            return (byteCount - 1 + itemSize) / itemSize;
+        }
+
+        /// <summary>
         /// Is the address aligned (地址是否已对齐).
         /// </summary>
         /// <param name="address">The pointer address (指针地址).</param>
