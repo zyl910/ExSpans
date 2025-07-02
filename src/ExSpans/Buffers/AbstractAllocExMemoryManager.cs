@@ -47,20 +47,24 @@ namespace Zyl.ExSpans.Buffers {
                 return;
             }
             // Try array.
-            TSize capacity = length; // TODO: T 不是字节时, 计算结果不对. 拟改为 byteCountRaw.
+            TSize capacity = length;
+            TSize itemsOfAlignment = 0;
             if (alignmentUsed) {
-                capacity += alignment;
+                itemsOfAlignment = PointerUtil.GetEnoughItemCount(alignment, Unsafe.SizeOf<T>());
             }
+            TSize capacityFull = capacity + itemsOfAlignment;
             Offset = 0;
             PointerAligned = null;
-            if (pool is not null && PointerUtil.IsArrayLengthValidInPool(capacity)) {
+            ByteCount = 0;
+            if (pool is not null && PointerUtil.IsArrayLengthValidInPool(capacityFull)) {
                 try {
-                    DataArray = pool.Rent((int)capacity);
+                    DataArray = pool.Rent((int)capacityFull);
                 } catch (Exception ex) {
                     Debug.WriteLine(string.Format("Array pool rent array fail! The length is {0}. {1}", length, ex.Message));
                 }
                 if (DataArray is not null) {
                     try {
+                        capacity = DataArray.Length - itemsOfAlignment;
                         if (Flags.HasFlag(MemoryAllocFlags.ClearAlloc)) {
                             DataArray.AsExSpan().Clear();
                         }
@@ -91,32 +95,26 @@ namespace Zyl.ExSpans.Buffers {
             try {
                 nint byteCountBody = checked(length * Unsafe.SizeOf<T>());
                 nint byteCount = byteCountBody;
+                void* pointer = null;
                 if (alignmentUsed) {
 #if NATIVE_MEMORY_ALIGNED
-                    Capacity = length;
-                    //Offset = 0;
                     PointerAligned = NativeMemory.AlignedAlloc((nuint)byteCount, (nuint)alignment);
-                    ByteCount = byteCount;
-                    if (!Flags.HasFlag(MemoryAllocFlags.NoPressure)) {
-                        GC.AddMemoryPressure(ByteCount);
-                    }
-                    if (Flags.HasFlag(MemoryAllocFlags.ClearAlloc)) {
-                        ExMemoryMarshal.ClearWithoutReferences(ref Unsafe.AsRef<byte>(PointerAligned), (nuint)byteCount);
-                    }
-                    return;
 #else
+                    // byteCount with alignment.
                     byteCount = checked(byteCountBody + alignment);
 #endif // NATIVE_MEMORY_ALIGNED
                 } else {
-                    // byteCountRaw = byteCount;
+                    // byteCount is raw.
                 }
-                void* pointer = ExNativeMemory.Alloc((nuint)byteCount);
+                if (null == pointer) {
+                    ExNativeMemory.Alloc((nuint)byteCount);
+                }
                 ByteCount = byteCount;
                 if (!Flags.HasFlag(MemoryAllocFlags.NoPressure)) {
                     GC.AddMemoryPressure(ByteCount);
                 }
                 if (Flags.HasFlag(MemoryAllocFlags.ClearAlloc)) {
-                    ExMemoryMarshal.ClearWithoutReferences(ref Unsafe.AsRef<byte>(pointer), (nuint)byteCount);
+                    ExMemoryMarshal.ClearWithoutReferences(ref Unsafe.AsRef<byte>(pointer), (nuint)ByteCount);
                 }
                 if (alignmentUsed) {
                     Offset = PointerUtil.GetAlignOffset(pointer, Alignment);
@@ -144,7 +142,7 @@ namespace Zyl.ExSpans.Buffers {
                             ArrayHandle.Free();
                             ArrayHandle = default;
                         }
-                        // base free DataArray.
+                        // Free DataArray on base.
                     } else if (null != PointerAligned) {
 #if NATIVE_MEMORY_ALIGNED
                         NativeMemory.Free(PointerAligned);
