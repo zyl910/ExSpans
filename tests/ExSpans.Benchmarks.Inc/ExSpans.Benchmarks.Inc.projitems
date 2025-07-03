@@ -9,8 +9,9 @@
     <Import_RootNamespace>Zyl.ExSpans.Benchmarks</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)AloneTestUtil.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AExSpan\CopyBenchmark_Int32.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AExSpan\SumBenchmark_Int32.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AloneTestUtil.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BenchmarkMain.cs" />
   </ItemGroup>
 </Project>
