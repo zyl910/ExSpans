@@ -13,11 +13,12 @@ using Zyl.ExSpans.Impl;
 
 namespace Zyl.ExSpans.Buffers {
     /// <summary>
-    /// A memory manager that supports automatic memory allocation and alignment. When the length is less than <see cref="ExSpansGlobal.PoolMaxArrayLength"/>, it uses array pooling; otherwise, it uses native memory
-    /// (支持自动内存分配和对齐的内存管理器. 当长度小于 PoolMaxArrayLength 时它使用数组池，否则它就使用原生内存).
+    /// A memory manager that supports automatic memory allocation and alignment. When the length is less than <see cref="MaxArrayLength"/>, it uses array pooling; otherwise, it uses native memory
+    /// (支持自动内存分配和对齐的内存管理器. 当长度小于 <see cref="MaxArrayLength"/> 时它使用数组池，否则它就使用原生内存).
     /// </summary>
     /// <typeparam name="T">The element type (元素的类型).</typeparam>
     public unsafe abstract class AbstractAllocExMemoryManager<T> : AbstractArrayExMemoryManager<T> {
+        private readonly TSize _maxArrayLength;
         private TSize _alignment = 0;
         private TSize _byteCount = 0;
         private TSize _capacity = 0;
@@ -32,8 +33,10 @@ namespace Zyl.ExSpans.Buffers {
         /// <param name="length">Length of unmanaged data (非托管数据的长度).</param>
         /// <param name="alignment">The alignment value (in bytes) of the memory block. This must be a power of <c>2</c>. When it is 1, it means no alignment is required. When it is 0, use the previous value (内存块的对齐值（以字节为单位）. 这必须是 2的幂. 为 1时表示无需对齐.为0时使用上一次的值).</param>
         /// <param name="flags">Memory alloc flags (内存分配标志). This class supports these flags: <see cref="MemoryAllocFlags.ClearAlloc"/>, <see cref="MemoryAllocFlags.ClearFree"/>, <see cref="MemoryAllocFlags.NoPressure"/>.</param>
+        /// <param name="maxArrayLength">Maximum array length for array pool allocation. Defaults to <see cref="ExSpansGlobal.PoolMaxArrayLength"/> if it is 0 (数组池分配时的最大数组长度. 它为0时默认为 <see cref="ExSpansGlobal.PoolMaxArrayLength"/>). </param>
         /// <exception cref="ArgumentOutOfRangeException">The length parameter must be greater than or equal to 0. The length parameter out of array max length.</exception>
-        public AbstractAllocExMemoryManager(ArrayPool<T>? pool, TSize length, TSize alignment = 0, MemoryAllocFlags flags = default) : base(flags) {
+        public AbstractAllocExMemoryManager(ArrayPool<T>? pool, TSize length, TSize alignment = 0, MemoryAllocFlags flags = default, TSize maxArrayLength = 0) : base(flags) {
+            _maxArrayLength = maxArrayLength;
             // Check.
             if (length < 0) {
                 throw new ArgumentOutOfRangeException(nameof(length), "The length parameter must be greater than or equal to 0.");
@@ -56,7 +59,7 @@ namespace Zyl.ExSpans.Buffers {
             Offset = 0;
             PointerAligned = null;
             ByteCount = 0;
-            if (pool is not null && PointerUtil.IsArrayLengthValidInPool(capacityFull)) {
+            if (pool is not null && PointerUtil.IsArrayLengthValidInPool(capacityFull, maxArrayLength)) {
                 try {
                     DataArray = pool.Rent((int)capacityFull);
                 } catch (Exception ex) {
@@ -237,6 +240,11 @@ namespace Zyl.ExSpans.Buffers {
         protected void* PointerAligned {
             get => _pointerAligned;
             set => _pointerAligned = value;
+        }
+
+        /// <summary>Maximum array length for array pool allocation. Defaults to <see cref="ExSpansGlobal.PoolMaxArrayLength"/> if it is 0 (数组池分配时的最大数组长度. 它为0时默认为 <see cref="ExSpansGlobal.PoolMaxArrayLength"/>).</summary>
+        public TSize MaxArrayLength {
+            get => _maxArrayLength;
         }
 
     }
