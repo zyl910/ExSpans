@@ -96,6 +96,7 @@ namespace Zyl.ExSpans.Buffers {
                 bool clearArray = Flags.HasFlag(MemoryAllocFlags.ClearFree);
                 _pool.Return(_dataArray, clearArray);
                 _dataArray = null;
+                _length = 0;
             }
         }
 

@@ -22,7 +22,10 @@ namespace Zyl.ExSpans.Buffers {
         /// <returns>Returns a span (返回一个跨度).</returns>
         public abstract ExSpan<T> GetExSpan();
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Returns a <see cref="Span{T}"/> wrapping the underlying memory (返回包装了底层内存的 <see cref="Span{T}"/>).
+        /// </summary>
+        /// <returns>Returns a span (返回一个跨度).</returns>
         public override Span<T> GetSpan() {
             return GetExSpan().AsSpan();
         }

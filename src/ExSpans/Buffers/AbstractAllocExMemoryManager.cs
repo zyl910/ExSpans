@@ -34,8 +34,9 @@ namespace Zyl.ExSpans.Buffers {
         /// <param name="alignment">The alignment value (in bytes) of the memory block. This must be a power of <c>2</c>. When it is 1, it means no alignment is required. When it is 0, use the previous value (内存块的对齐值（以字节为单位）. 这必须是 2的幂. 为 1时表示无需对齐.为0时使用上一次的值).</param>
         /// <param name="flags">Memory alloc flags (内存分配标志). This class supports these flags: <see cref="MemoryAllocFlags.ClearAlloc"/>, <see cref="MemoryAllocFlags.ClearFree"/>, <see cref="MemoryAllocFlags.NoPressure"/>.</param>
         /// <param name="maxArrayLength">Maximum array length for array pool allocation. Defaults to <see cref="ExSpansGlobal.PoolMaxArrayLength"/> if it is 0 (数组池分配时的最大数组长度. 它为0时默认为 <see cref="ExSpansGlobal.PoolMaxArrayLength"/>). </param>
+        /// <param name="capacity">Initial capacity. It is valid when it is greater than <paramref name="length"/> (初始容量. 它大于 length 时有效).</param>
         /// <exception cref="ArgumentOutOfRangeException">The length parameter must be greater than or equal to 0. The length parameter out of array max length.</exception>
-        public AbstractAllocExMemoryManager(ArrayPool<T>? pool, TSize length, TSize alignment = 0, MemoryAllocFlags flags = default, TSize maxArrayLength = 0) : base(flags) {
+        public AbstractAllocExMemoryManager(ArrayPool<T>? pool, TSize length, TSize alignment = 0, MemoryAllocFlags flags = default, TSize maxArrayLength = 0, TSize capacity = 0) : base(flags) {
             _maxArrayLength = maxArrayLength;
             // Check.
             if (length < 0) {
@@ -46,24 +47,31 @@ namespace Zyl.ExSpans.Buffers {
             Pool = pool;
             Length = length;
             Alignment = alignment;
-            if (length <= 0) {
+            if (capacity == 0) {
+                capacity = length;
+            } else {
+                if (capacity < length) {
+                    throw new ArgumentOutOfRangeException(nameof(capacity), string.Format("The capacity({0}) parameter must be greater than length({1}).", (long)capacity, (long)length));
+                }
+            }
+            Offset = 0;
+            PointerAligned = null;
+            ByteCount = 0;
+            if (capacity == 0) {
+                Capacity = capacity;
                 return;
             }
             // Try array.
-            TSize capacity = length;
             TSize itemsOfAlignment = 0;
             if (alignmentUsed) {
                 itemsOfAlignment = PointerUtil.GetEnoughItemCount(alignment, Unsafe.SizeOf<T>());
             }
             TSize capacityFull = capacity + itemsOfAlignment;
-            Offset = 0;
-            PointerAligned = null;
-            ByteCount = 0;
             if (pool is not null && PointerUtil.IsArrayLengthValidInPool(capacityFull, maxArrayLength)) {
                 try {
                     DataArray = pool.Rent((int)capacityFull);
                 } catch (Exception ex) {
-                    Debug.WriteLine(string.Format("Array pool rent array fail! The length is {0}. {1}", length, ex.Message));
+                    Debug.WriteLine(string.Format("Array pool rent array fail! The length is {0}. {1}", (long)capacity, ex.Message));
                 }
                 if (DataArray is not null) {
                     try {
@@ -84,20 +92,21 @@ namespace Zyl.ExSpans.Buffers {
                         Capacity = capacity;
                         return;
                     } catch (Exception ex) {
-                        Debug.WriteLine(string.Format("Array pool config array fail! The length is {0}. {1}", length, ex.Message));
+                        Debug.WriteLine(string.Format("Array pool config array fail! The length is {0}. {1}", (long)length, ex.Message));
                         try {
                             pool.Return(DataArray);
                             DataArray = null;
                         } catch (Exception ex1) {
-                            Debug.WriteLine(string.Format("Array pool return array fail! The length is {0}. {1}", length, ex1.Message));
+                            Debug.WriteLine(string.Format("Array pool return array fail! The length is {0}. {1}", (long)length, ex1.Message));
                         }
                     }
                 }
             }
             // Try native memory.
+            nint byteCount = capacity;
             try {
-                nint byteCountBody = checked(length * Unsafe.SizeOf<T>());
-                nint byteCount = byteCountBody;
+                nint byteCountBody = checked(capacity * Unsafe.SizeOf<T>());
+                byteCount = byteCountBody;
                 void* pointer = null;
                 if (alignmentUsed) {
 #if NATIVE_MEMORY_ALIGNED
@@ -128,7 +137,7 @@ namespace Zyl.ExSpans.Buffers {
                 // Done.
                 Capacity = capacity;
             } catch (Exception ex) {
-                Debug.WriteLine(string.Format("Alloc native memory fail! The length is {0}. {1}", length, ex.Message));
+                Debug.WriteLine(string.Format("Alloc native memory fail! The length is {0}. The byte count is {1}. {2}", (long)length, (long)byteCount, ex.Message));
                 throw;
             }
         }
@@ -137,7 +146,7 @@ namespace Zyl.ExSpans.Buffers {
         protected override void Dispose(bool disposing) {
             bool oldIsDisposed = IsDisposed;
             try {
-                if (!oldIsDisposed && Length > 0) {
+                if (!oldIsDisposed) {
                     bool alignmentUsed = PointerUtil.IsAlignmentUsed(Alignment);
                     T[]? array = DataArray;
                     if (array is not null) {
@@ -146,7 +155,7 @@ namespace Zyl.ExSpans.Buffers {
                             ArrayHandle = default;
                         }
                         // Free DataArray on base.
-                    } else if (null != PointerAligned) {
+                    } else if (null != PointerAligned && ByteCount > 0) {
 #if NATIVE_MEMORY_ALIGNED
                         NativeMemory.Free(PointerAligned);
 #else
@@ -158,6 +167,7 @@ namespace Zyl.ExSpans.Buffers {
                             GC.RemoveMemoryPressure(ByteCount);
                         }
                     }
+                    _capacity = 0;
                 }
             } finally {
                 base.Dispose(disposing);
