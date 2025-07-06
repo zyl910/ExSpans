@@ -15,7 +15,7 @@ namespace Zyl.ExSpans.Buffers {
         /// Create ArrayExMemoryManager. It contains parameters <paramref name="pool"/>, <paramref name="length"/>, <paramref name="flags"/>.
         /// </summary>
         /// <param name="pool">The <see cref="ArrayPool{T}"/> instance used to rent array. Defaults to <see cref="ArrayPool{T}.Shared"/> if it is null (用于租用数组的 <see cref="ArrayPool{T}"/> 实例. 它为空时默认为 <see cref="ArrayPool{T}.Shared"/>).</param>
-        /// <param name="length">Length of unmanaged data (非托管数据的长度).</param>
+        /// <param name="length">Length of data (数据的长度).</param>
         /// <param name="flags">Memory alloc flags (内存分配标志). This class supports these flags: <see cref="MemoryAllocFlags.ClearAlloc"/>, <see cref="MemoryAllocFlags.ClearFree"/>.</param>
         /// <exception cref="ArgumentOutOfRangeException">The length parameter must be greater than or equal to 0. The length parameter out of array max length.</exception>
         public ArrayExMemoryManager(ArrayPool<T>? pool, TSize length, MemoryAllocFlags flags = default) : base(pool, length, flags) {
@@ -24,7 +24,7 @@ namespace Zyl.ExSpans.Buffers {
         /// <summary>
         /// Create ArrayExMemoryManager. It contains parameters <paramref name="length"/>, <paramref name="flags"/>.
         /// </summary>
-        /// <param name="length">Length of unmanaged data (非托管数据的长度).</param>
+        /// <param name="length">Length of data (数据的长度).</param>
         /// <param name="flags">Memory alloc flags (内存分配标志). This class supports these flags: <see cref="MemoryAllocFlags.ClearAlloc"/>, <see cref="MemoryAllocFlags.ClearFree"/>.</param>
         /// <exception cref="ArgumentOutOfRangeException">The length parameter must be greater than or equal to 0. The length parameter out of array max length.</exception>
         public ArrayExMemoryManager(TSize length, MemoryAllocFlags flags) : this(null, length, flags) {
@@ -33,7 +33,7 @@ namespace Zyl.ExSpans.Buffers {
         /// <summary>
         /// Create ArrayExMemoryManager. It contains parameters <paramref name="length"/>.
         /// </summary>
-        /// <param name="length">Length of unmanaged data (非托管数据的长度).</param>
+        /// <param name="length">Length of data (数据的长度).</param>
         /// <exception cref="ArgumentOutOfRangeException">The length parameter must be greater than or equal to 0. The length parameter out of array max length.</exception>
         public ArrayExMemoryManager(TSize length) : this(null, length) {
         }
