@@ -24,8 +24,8 @@ namespace Zyl.ExSpans.Buffers {
         KeepRealloc = 4,
         /// <summary>No set memory pressure. Without this flag, call <see cref="GC.AddMemoryPressure(long)"/> method when unmanaged memory allocated, and call <see cref="GC.RemoveMemoryPressure(long)"/> method when unmanaged memory freed. (不设置内存压力. 没有此标志时, 分配非托管内存时会调用 AddMemoryPressure 方法, 释放非托管内存时会调用 RemoveMemoryPressure 方法).</summary>
         NoPressure = 8,
-        /// <summary>Manual trim. When the length decreases, the TrimExcess method is generally not automatically called and needs to be manually called (手动修剪. 当长度变小时, 一般不会自动调用 TrimExcess 方法 , 需要手动调用该方法).</summary>
-        TrimManual = 0x10,
+        /// <summary>When the length is less than half of the capacity, is it automatically trimmed. When there is no such identifier, please manually call the TrimExcess method as needed (当长度小于容量的一半时, 是否自动修剪. 当没有此标识时, 请按需手动调用 TrimExcess 方法).</summary>
+        TrimOnHalf = 0x10,
     }
 
     /// <summary>

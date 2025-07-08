@@ -27,7 +27,7 @@ namespace Zyl.ExSpans.Buffers {
         private GCHandle _arrayHandle = default;
 
         /// <summary>
-        /// Create AbstractAllocExMemoryManager. It contains parameters <paramref name="pool"/>, <paramref name="length"/>, <paramref name="alignment"/>, <paramref name="flags"/>, <paramref name="maxArrayLength"/>.
+        /// Create AbstractAllocExMemoryManager. It contains parameters <paramref name="pool"/>, <paramref name="length"/>, <paramref name="alignment"/>, <paramref name="flags"/>, <paramref name="maxArrayLength"/>, <paramref name="capacity"/>.
         /// </summary>
         /// <param name="pool">The <see cref="ArrayPool{T}"/> instance used to rent array. If it is null, only unmanaged memory will be used (用于租用数组的 <see cref="ArrayPool{T}"/> 实例. 若它为空, 则仅使用非托管内存).</param>
         /// <param name="length">Length of data (数据的长度).</param>
@@ -233,7 +233,7 @@ namespace Zyl.ExSpans.Buffers {
             set => _byteCount = value;
         }
 
-        /// <summary>The value of the capacity. This value is not affected by alignment (容量值).</summary>
+        /// <summary>The value of the capacity (容量值).</summary>
         protected TSize Capacity {
             get => _capacity;
             set => _capacity = value;
