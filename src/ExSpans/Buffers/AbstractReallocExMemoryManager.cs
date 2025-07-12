@@ -18,12 +18,14 @@ namespace Zyl.ExSpans.Buffers {
     /// <param name="oldLength">Old length (旧的长度).</param>
     /// <param name="oldCapacity">Old capacity (旧的容量).</param>
     /// <param name="newLength">New length (新的长度).</param>
+    /// <param name="newAlignment">New alignment value (in bytes) of the memory block. This must be a power of <c>2</c>. When it is 1, it means no alignment is required. When it is 0, use the previous value (新的内存块的对齐值（以字节为单位）. 这必须是 2的幂. 为 1时表示无需对齐.为0时使用上一次的值).</param>
     /// <param name="newCapacity">New capacity (新的容量).</param>
+    /// <param name="suggestCapacity">Suggest capacity. It is valid when it is greater than 0 (建议容量. 它大于 0 时有效).</param>
     /// <returns>Returns the modified capacity. When not modified, The <paramref name="newCapacity"/> should be returned (返回修改后的容量. 不修改时, 应返回 newCapacity).</returns>
     /// <remarks>
-    /// <para>If <paramref name="oldLength"/> is the same as <paramref name="newLength"/>, it means only adjusting the capacity. It is recommended not to modify the capacity at this time, but to directly return <paramref name="newCapacity"/> (如果 oldLength 与 newLength 相同, 表示仅调整容量. 建议此时不要修改容量, 而是直接返回 newCapacity)</para>
+    /// <para>If <paramref name="suggestCapacity"/> is greater than 0, it means only adjusting the capacity. It is recommended not to modify the capacity at this time, but to directly return <paramref name="newCapacity"/> (如果 suggestCapacity 大于 0, 表示仅调整容量. 建议此时不要修改容量, 而是直接返回 newCapacity)</para>
     /// </remarks>
-    public delegate nint MeasureCapacityFunc(object sender, nint oldLength, nint oldCapacity, nint newLength, nint newCapacity);
+    public delegate nint MeasureCapacityFunc(object sender, nint oldLength, nint oldCapacity, nint newLength, nint newAlignment, nint newCapacity, nint suggestCapacity);
 
     /// <summary>
     /// A memory manager that supports automatic memory reallocation and alignment. When the length is less than <see cref="AbstractAllocExMemoryManager{T}.MaxArrayLength"/>, it uses array pooling; otherwise, it uses native memory
@@ -52,10 +54,10 @@ namespace Zyl.ExSpans.Buffers {
         /// <summary>
         /// [Dangerous] Reallocate memory based on the new length. It is a dangerous operation that will invalidate any <see cref="Span{T}"/> or <see cref="Memory{T}"/> previously created, so please recreate the Span or Memory type after the call (根据新的长度，重新分配内存. 它是危险操作, 会导致先前创建的 Span 或 Memory 均失效, 请在调用后重新创建 Span 或 Memory 等类型).
         /// </summary>
-        /// <param name="capacity">New capacity (新的容量).</param>
+        /// <param name="suggestCapacity">Suggest capacity. It is valid when it is greater than 0 (建议容量. 它大于 0 时有效).</param>
         /// <exception cref="OutOfMemoryException">There is not enough memory available on the system</exception>
-        public virtual void DangerousSetCapacity(TSize capacity) {
-            Realloc(Length, 0, capacity);
+        public virtual void DangerousSetCapacity(TSize suggestCapacity) {
+            Realloc(Length, 0, suggestCapacity);
         }
 
         /// <summary>
@@ -73,84 +75,83 @@ namespace Zyl.ExSpans.Buffers {
         /// </summary>
         /// <param name="length">New length (新的长度). If old Length is the same as new <paramref name="length"/>, it means only adjusting the capacity (如果 旧 Length 与 新 length 相同, 表示仅调整容量).</param>
         /// <param name="alignment">New alignment value (in bytes) of the memory block. This must be a power of <c>2</c>. When it is 1, it means no alignment is required. When it is 0, use the previous value (新的内存块的对齐值（以字节为单位）. 这必须是 2的幂. 为 1时表示无需对齐.为0时使用上一次的值).</param>
-        /// <param name="capacity">New capacity. It is valid when it is greater than <paramref name="length"/> (新的容量. 它大于 length 时有效).</param>
+        /// <param name="suggestCapacity">Suggest capacity. It is valid when it is greater than 0 (建议容量. 它大于 0 时有效).</param>
         /// <exception cref="OutOfMemoryException">There is not enough memory available on the system</exception>
         /// <exception cref="ArgumentOutOfRangeException">The length parameter must be greater than or equal to 0. The length parameter out of array max length.</exception>
-        protected virtual void Realloc(TSize length, TSize alignment, TSize capacity) {
+        protected virtual void Realloc(TSize length, TSize alignment, TSize suggestCapacity) {
             // Check.
             if (length < 0) {
                 throw new ArgumentOutOfRangeException(nameof(length), "The length parameter must be greater than or equal to 0.");
             }
-            if (capacity < 0) {
-                throw new ArgumentOutOfRangeException(nameof(capacity), "The capacity parameter must be greater than or equal to 0.");
+            if (suggestCapacity < 0) {
+                throw new ArgumentOutOfRangeException(nameof(suggestCapacity), "The suggestCapacity parameter must be greater than or equal to 0.");
             }
             PointerUtil.CheckAlignmentValidOrUnused(alignment);
             //bool alignmentUsed = PointerUtil.IsAlignmentUsed(alignment);
             // Do.
-            TSize newCapacity = capacity;
-            newCapacity = ReallocMeasure(length, alignment, newCapacity);
-            ReallocProcess(length, alignment, newCapacity);
+            TSize newCapacity = ReallocMeasure(length, alignment, suggestCapacity);
+            ReallocProcess(length, alignment, newCapacity, suggestCapacity);
         }
 
         /// <summary>
-        /// [Dangerous] Reallocate memory - Measure capacity (重新分配内存 - 测量容量).
+        /// [Dangerous] Reallocate memory - Measure suggestCapacity (重新分配内存 - 测量容量).
         /// </summary>
-        /// <param name="length">New length (新的长度). If old Length is the same as new <paramref name="length"/>, it means only adjusting the capacity (如果 旧 Length 与 新 length 相同, 表示仅调整容量).</param>
+        /// <param name="length">New length (新的长度). If old Length is the same as new <paramref name="length"/>, it means only adjusting the suggestCapacity (如果 旧 Length 与 新 length 相同, 表示仅调整容量).</param>
         /// <param name="alignment">New alignment value (in bytes) of the memory block. This must be a power of <c>2</c>. When it is 1, it means no alignment is required. When it is 0, use the previous value (新的内存块的对齐值（以字节为单位）. 这必须是 2的幂. 为 1时表示无需对齐.为0时使用上一次的值).</param>
-        /// <param name="capacity">New capacity (新的容量).</param>
-        /// <returns>Returns the modified capacity (返回修改后的容量).</returns>
-        protected virtual nint ReallocMeasure(TSize length, TSize alignment, TSize capacity) {
-            TSize newCapacity = ReallocMeasureBody(length, alignment, capacity);
-            newCapacity = ReallocMeasureFire(length, alignment, newCapacity);
+        /// <param name="suggestCapacity">Suggest capacity. It is valid when it is greater than 0 (建议容量. 它大于 0 时有效).</param>
+        /// <returns>Returns the modified suggestCapacity (返回修改后的容量).</returns>
+        protected virtual nint ReallocMeasure(TSize length, TSize alignment, TSize suggestCapacity) {
+            TSize newCapacity = ReallocMeasureBody(length, alignment, suggestCapacity);
+            newCapacity = ReallocMeasureFire(length, alignment, newCapacity, suggestCapacity);
             return newCapacity;
         }
 
         /// <summary>
-        /// [Dangerous] Reallocate memory - Measure capacity - Body (重新分配内存 - 测量容量 - 主体).
+        /// [Dangerous] Reallocate memory - Measure suggestCapacity - Body (重新分配内存 - 测量容量 - 主体).
         /// </summary>
         /// <inheritdoc cref="ReallocMeasure(nint, nint, nint)"/>
-        protected virtual nint ReallocMeasureBody(TSize length, TSize alignment, TSize capacity) {
-            if (capacity > 0) {
-                if (capacity < length) {
-                    throw new ArgumentOutOfRangeException(nameof(capacity), string.Format("The capacity({0}) parameter must be greater than length({1}).", (long)capacity, (long)length));
+        protected virtual nint ReallocMeasureBody(TSize length, TSize alignment, TSize suggestCapacity) {
+            if (suggestCapacity > 0) {
+                if (suggestCapacity < length) {
+                    throw new ArgumentOutOfRangeException(nameof(suggestCapacity), string.Format("The suggestCapacity({0}) parameter must be greater than length({1}).", (long)suggestCapacity, (long)length));
                 }
-                return capacity;
+                return suggestCapacity;
             }
             if (this.Length == length) {
-                if (capacity == 0 && length > 0) {
-                    capacity = length;
+                if (suggestCapacity == 0 && length > 0) {
+                    suggestCapacity = length;
                 }
-                return capacity;
+                return suggestCapacity;
             }
             if (this.Length < length) {
                 // Grow.
-                capacity = length + (length / 2); // + 50%
+                suggestCapacity = length + (length / 2); // + 50%
             } else {
                 // Trim.
                 if (Flags.HasFlag(MemoryAllocFlags.TrimOnHalf)) {
                     nint m = this.Capacity / 2; // 50%
                     if (length < m) {
-                        capacity = length;
+                        suggestCapacity = length;
                     } else {
-                        capacity = this.Capacity;
+                        suggestCapacity = this.Capacity;
                     }
                 } else {
-                    capacity = this.Capacity;
+                    suggestCapacity = this.Capacity;
                 }
             }
-            return capacity;
+            return suggestCapacity;
         }
 
         /// <summary>
-        /// [Dangerous] Reallocate memory - Measure capacity - Fire notify (重新分配内存 - 测量容量 - 触发通知).
+        /// [Dangerous] Reallocate memory - Measure suggestCapacity - Fire notify (重新分配内存 - 测量容量 - 触发通知).
         /// </summary>
         /// <inheritdoc cref="ReallocMeasure(nint, nint, nint)"/>
-        protected virtual nint ReallocMeasureFire(TSize length, TSize alignment, TSize capacity) {
+        protected virtual nint ReallocMeasureFire(TSize length, TSize alignment, TSize capacity, TSize suggestCapacity) {
             MeasureCapacityFunc? func = OnMeasureCapacity;
             if (func != null) {
-                capacity = func(this, this.Length, this.Capacity, length, capacity);
+                suggestCapacity = func(this, this.Length, this.Capacity, length, alignment, capacity, suggestCapacity);
             }
-            return capacity;
+            return suggestCapacity;
         }
 
         /// <summary>
@@ -159,55 +160,59 @@ namespace Zyl.ExSpans.Buffers {
         /// <param name="length">New length (新的长度). If old Length is the same as new <paramref name="length"/>, it means only adjusting the capacity (如果 旧 Length 与 新 length 相同, 表示仅调整容量).</param>
         /// <param name="alignment">New alignment value (in bytes) of the memory block. This must be a power of <c>2</c>. When it is 1, it means no alignment is required. When it is 0, use the previous value (新的内存块的对齐值（以字节为单位）. 这必须是 2的幂. 为 1时表示无需对齐.为0时使用上一次的值).</param>
         /// <param name="capacity">New capacity (新的容量).</param>
+        /// <param name="suggestCapacity">Suggest capacity. It is valid when it is greater than 0 (建议容量. 它大于 0 时有效).</param>
         /// <exception cref="OutOfMemoryException">There is not enough memory available on the system</exception>
-        protected virtual void ReallocProcess(TSize length, TSize alignment, TSize capacity) {
-            if (capacity == this.Capacity) {
+        protected virtual void ReallocProcess(TSize length, TSize alignment, TSize capacity, TSize suggestCapacity) {
+            bool triedLength = false;
+            if (capacity == this.Capacity && 0 == suggestCapacity) {
+                triedLength = true;
                 if (ReallocProcessLength(length, alignment, capacity)) {
                     return;
                 }
             }
             // Try capacity.
             try {
-                ReallocProcessCapacity(length, alignment, capacity);
+                ReallocProcessCapacity(length, alignment, capacity, suggestCapacity);
             } catch (Exception ex) {
                 Debug.WriteLine(string.Format("The ReallocProcessCapacity run fail! The params is ({0}, {1}, {2}). {3}", (long)length, (long)alignment, (long)capacity, ex.Message));
-                if (length >= capacity) {
+                if (length >= capacity || suggestCapacity > 0) {
                     throw;
                 }
             }
             // Try length.
             try {
-                ReallocProcessCapacity(length, alignment, length);
+                ReallocProcessCapacity(length, alignment, length, 0);
             } catch (Exception ex) {
                 Debug.WriteLine(string.Format("The ReallocProcessCapacity run fail! The params is ({0}, {1}, {2}). {3}", (long)length, (long)alignment, (long)length, ex.Message));
                 // try ReallocProcessLength.
-                if (length != this.Length) {
+                if (triedLength) {
+                    throw;
                 }
-                throw;
             }
-            // Try length.
             // Fallback.
-            if (length > this.Capacity) {
-                ReallocProcessCapacity(length, alignment, length);
-            } else {
-                ReallocProcessLength(length, alignment, this.Capacity);
+            if (ReallocProcessLength(length, alignment, capacity)) {
+                return;
             }
+            throw new OutOfMemoryException($"There is not enough memory available on the system. length={(long)length}, alignment={(long)alignment}.");
         }
 
         /// <summary>
         /// [Dangerous] Reallocate memory - Process capacity change (重新分配内存 - 处理容量变化).
         /// </summary>
-        /// <inheritdoc cref="ReallocProcess(nint, nint, nint)"/>
-        private void ReallocProcessCapacity(TSize length, TSize alignment, TSize capacity) {
+        /// <inheritdoc cref="ReallocProcess(nint, nint, nint, nint)"/>
+        private void ReallocProcessCapacity(TSize length, TSize alignment, TSize capacity, TSize suggestCapacity) {
         }
 
         /// <summary>
         /// [Dangerous] Reallocate memory - Process length change (重新分配内存 - 处理长度变化).
         /// </summary>
+        /// <param name="length">New length (新的长度). If old Length is the same as new <paramref name="length"/>, it means only adjusting the capacity (如果 旧 Length 与 新 length 相同, 表示仅调整容量).</param>
+        /// <param name="alignment">New alignment value (in bytes) of the memory block. This must be a power of <c>2</c>. When it is 1, it means no alignment is required. When it is 0, use the previous value (新的内存块的对齐值（以字节为单位）. 这必须是 2的幂. 为 1时表示无需对齐.为0时使用上一次的值).</param>
+        /// <param name="capacity">New capacity (新的容量).</param>
         /// <returns>Returns true if successful, false otherwise (成功时返回true, 否则为false).</returns>
-        /// <inheritdoc cref="ReallocProcess(nint, nint, nint)"/>
         private bool ReallocProcessLength(TSize length, TSize alignment, TSize capacity) {
             nint oldLength = this.Length;
+            _ = capacity;
             if (alignment == 0 || alignment <= this.Alignment) {
                 if (alignment > 0 && alignment < this.Alignment) {
 #if NATIVE_MEMORY_ALIGNED
