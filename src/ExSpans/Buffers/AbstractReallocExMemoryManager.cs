@@ -7,6 +7,7 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Zyl.ExSpans.Buffers {
@@ -117,29 +118,30 @@ namespace Zyl.ExSpans.Buffers {
                 }
                 return suggestCapacity;
             }
+            TSize newCapacity = this.Capacity;
             if (this.Length == length) {
-                if (suggestCapacity == 0 && length > 0) {
-                    suggestCapacity = length;
-                }
-                return suggestCapacity;
-            }
-            if (this.Length < length) {
+                // Keep old.
+            } else if (this.Length < length) {
                 // Grow.
-                suggestCapacity = length + (length / 2); // + 50%
+                newCapacity = unchecked(this.Capacity * 2);
+                if (newCapacity < 0 || newCapacity < length) {
+                    newCapacity = length;
+                }
             } else {
                 // Trim.
                 if (Flags.HasFlag(MemoryAllocFlags.TrimOnHalf)) {
                     nint m = this.Capacity / 2; // 50%
-                    if (length < m) {
-                        suggestCapacity = length;
+                    if (length <= m) {
+                        newCapacity = length;
                     } else {
-                        suggestCapacity = this.Capacity;
+                        // Keep old.
+                        //newCapacity = this.Capacity;
                     }
                 } else {
-                    suggestCapacity = this.Capacity;
+                    // Keep old.
                 }
             }
-            return suggestCapacity;
+            return newCapacity;
         }
 
         /// <summary>
@@ -149,9 +151,9 @@ namespace Zyl.ExSpans.Buffers {
         protected virtual nint ReallocMeasureFire(TSize length, TSize alignment, TSize capacity, TSize suggestCapacity) {
             MeasureCapacityFunc? func = OnMeasureCapacity;
             if (func != null) {
-                suggestCapacity = func(this, this.Length, this.Capacity, length, alignment, capacity, suggestCapacity);
+                capacity = func(this, this.Length, this.Capacity, length, alignment, capacity, suggestCapacity);
             }
-            return suggestCapacity;
+            return capacity;
         }
 
         /// <summary>
@@ -200,7 +202,7 @@ namespace Zyl.ExSpans.Buffers {
         /// [Dangerous] Reallocate memory - Process capacity change (重新分配内存 - 处理容量变化).
         /// </summary>
         /// <inheritdoc cref="ReallocProcess(nint, nint, nint, nint)"/>
-        private void ReallocProcessCapacity(TSize length, TSize alignment, TSize capacity, TSize suggestCapacity) {
+        protected virtual void ReallocProcessCapacity(TSize length, TSize alignment, TSize capacity, TSize suggestCapacity) {
         }
 
         /// <summary>
@@ -210,34 +212,89 @@ namespace Zyl.ExSpans.Buffers {
         /// <param name="alignment">New alignment value (in bytes) of the memory block. This must be a power of <c>2</c>. When it is 1, it means no alignment is required. When it is 0, use the previous value (新的内存块的对齐值（以字节为单位）. 这必须是 2的幂. 为 1时表示无需对齐.为0时使用上一次的值).</param>
         /// <param name="capacity">New capacity (新的容量).</param>
         /// <returns>Returns true if successful, false otherwise (成功时返回true, 否则为false).</returns>
-        private bool ReallocProcessLength(TSize length, TSize alignment, TSize capacity) {
-            nint oldLength = this.Length;
+        protected unsafe virtual bool ReallocProcessLength(TSize length, TSize alignment, TSize capacity) {
             _ = capacity;
-            if (alignment == 0 || alignment <= this.Alignment) {
-                if (alignment > 0 && alignment < this.Alignment) {
-#if NATIVE_MEMORY_ALIGNED
-#else
-#endif // NATIVE_MEMORY_ALIGNED
-                }
-                this.Length = length;
+            TSize oldLength = this.Length;
+            T[]? oldArray = this.DataArray;
+            TSize alignmentActual = alignment;
+            if (0 == alignmentActual) alignmentActual = this.Alignment;
+            bool alignmentUsedNew = PointerUtil.IsAlignmentUsed(alignmentActual);
+            bool alignmentUsedUnusedAlway = (alignment <= 1 && this.Alignment <= 1);
+            if (oldLength == length && alignmentActual == this.Alignment) {
+                // No change.
                 if (alignment > 0) {
                     this.Alignment = alignment;
                 }
-                if (length > oldLength && Flags.HasFlag(MemoryAllocFlags.ClearAlloc)) {
-                    ExSpan<T> span = GetExSpan().Slice(oldLength);
-                    span.Clear();
-                }
+                return true;
+            }
+            if (length > this.Capacity) {
+                return false;
+            }
+            if ((alignmentActual != this.Alignment && !alignmentUsedUnusedAlway) && oldArray is null) {
+#if NATIVE_MEMORY_ALIGNEDs
+                // Changed alignment.
+                return false;
+#else
+                // Next.
+#endif // NATIVE_MEMORY_ALIGNED
+            }
+            // Check body.
+            if (alignment == 0 || alignment <= this.Alignment || alignmentUsedUnusedAlway) {
+                // OK.
             } else {
-                T[]? oldArray = this.DataArray;
+                // -- When alignment > this.Alignment
+                if (Flags.HasFlag(MemoryAllocFlags.KeepRealloc)) {
+                    return false;
+                }
                 if (oldArray is not null) {
                     TSize itemsOfAlignment = PointerUtil.GetEnoughItemCount(alignment, Unsafe.SizeOf<T>());
                     if ((oldArray.Length - itemsOfAlignment) < length) {
                         return false;
                     }
-                    // TODO.
+                    // Pin.
+                    if (alignmentUsedNew && null== PointerAligned) {
+                    }
+                    // Set PointerAligned.
+                    ArrayHandle = GCHandle.Alloc(oldArray, GCHandleType.Pinned);
+#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET40_OR_GREATER
+                    System.Threading.Thread.MemoryBarrier();
+#endif // NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET40_OR_GREATER
+                    void* pointer = Unsafe.AsPointer(ref oldArray[0]);
+                    Offset = PointerUtil.GetAlignOffset(pointer, Alignment);
+                    PointerAligned = (byte*)pointer + Offset;
                 } else {
-                    nint byteCountBody = checked(capacity * Unsafe.SizeOf<T>());
-                    nint byteCount = byteCountBody;
+#if NATIVE_MEMORY_ALIGNEDs
+                    return false;
+#else
+                    TSize byteCountBody = checked(capacity * Unsafe.SizeOf<T>());
+                    TSize byteCount = byteCountBody + alignment;
+                    if (byteCount > this.ByteCount) {
+                        return false;
+                    }
+                    // Set PointerAligned.
+                    void* pointer = (byte*)PointerAligned - Offset;
+                    Offset = PointerUtil.GetAlignOffset(pointer, alignment);
+                    PointerAligned = (byte*)pointer + Offset;
+                    Capacity = (this.ByteCount - alignment) / Unsafe.SizeOf<T>();
+#endif // NATIVE_MEMORY_ALIGNED
+                }
+            }
+            // Done.
+            this.Length = length;
+            if (alignment > 0) {
+                this.Alignment = alignment;
+            }
+            if (Flags.HasFlag(MemoryAllocFlags.ClearAlloc)) {
+                ExSpan<T> span = GetExSpan();
+                if (Flags.HasFlag(MemoryAllocFlags.KeepRealloc)) {
+                    if (length > oldLength) {
+                        span = span.Slice(oldLength);
+                        span.Clear();
+                    } else {
+                        // No.
+                    }
+                } else {
+                    span.Clear();
                 }
             }
             return true;

@@ -103,9 +103,9 @@ namespace Zyl.ExSpans.Buffers {
                 }
             }
             // Try native memory.
-            nint byteCount = capacity;
+            TSize byteCount = capacity;
             try {
-                nint byteCountBody = checked(capacity * Unsafe.SizeOf<T>());
+                TSize byteCountBody = checked(capacity * Unsafe.SizeOf<T>());
                 byteCount = byteCountBody;
                 void* pointer = null;
                 if (alignmentUsed) {
@@ -147,12 +147,12 @@ namespace Zyl.ExSpans.Buffers {
             bool oldIsDisposed = IsDisposed;
             try {
                 if (!oldIsDisposed) {
-                    bool alignmentUsed = PointerUtil.IsAlignmentUsed(Alignment);
                     T[]? array = DataArray;
                     if (array is not null) {
-                        if (alignmentUsed) {
+                        if (null != PointerAligned) {
                             ArrayHandle.Free();
                             ArrayHandle = default;
+                            PointerAligned = null;
                         }
                         // Free DataArray on base.
                     } else if (null != PointerAligned && ByteCount > 0) {
@@ -179,8 +179,7 @@ namespace Zyl.ExSpans.Buffers {
             if (Length <= 0) {
                 return ExSpan<T>.Empty;
             }
-            bool alignmentUsed = PointerUtil.IsAlignmentUsed(Alignment);
-            if (DataArray is not null && !alignmentUsed) {
+            if (DataArray is not null && null== PointerAligned) {
                 return new ExSpan<T>(DataArray, 0, Length);
             }
             return new ExSpan<T>(PointerAligned, Length);
@@ -199,10 +198,9 @@ namespace Zyl.ExSpans.Buffers {
             if (elementIndex >= Length) {
                 throw new ArgumentOutOfRangeException(nameof(elementIndex), string.Format("The elementIndex({0}) parameter out of length({1}).", (long)elementIndex, (long)Length));
             }
-            bool alignmentUsed = PointerUtil.IsAlignmentUsed(Alignment);
             void* pointer;
             if (DataArray is not null) {
-                if (!alignmentUsed) {
+                if (null == PointerAligned) {
                     GCHandle handle = GCHandle.Alloc(DataArray, GCHandleType.Pinned);
 #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET40_OR_GREATER
                     System.Threading.Thread.MemoryBarrier();
@@ -234,9 +232,9 @@ namespace Zyl.ExSpans.Buffers {
         }
 
         /// <summary>The value of the capacity (容量值).</summary>
-        protected TSize Capacity {
+        public TSize Capacity {
             get => _capacity;
-            set => _capacity = value;
+            protected set => _capacity = value;
         }
 
         /// <summary>Offset of the aligned data (in bytes) (已对齐数据的偏移, 以字节为单位).</summary>
