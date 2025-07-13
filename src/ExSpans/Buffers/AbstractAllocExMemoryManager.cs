@@ -17,7 +17,7 @@ namespace Zyl.ExSpans.Buffers {
     /// (支持自动内存分配和对齐的内存管理器. 当长度小于 <see cref="MaxArrayLength"/> 时它使用数组池，否则它就使用原生内存).
     /// </summary>
     /// <typeparam name="T">The element type (元素的类型).</typeparam>
-    public unsafe abstract class AbstractAllocExMemoryManager<T> : AbstractArrayExMemoryManager<T> {
+    public unsafe abstract class AbstractAllocExMemoryManager<T> : AbstractArrayExMemoryManager<T> where T : unmanaged {
         private readonly TSize _maxArrayLength;
         private TSize _alignment = 0;
         private TSize _byteCount = 0;
@@ -179,7 +179,7 @@ namespace Zyl.ExSpans.Buffers {
             if (Length <= 0) {
                 return ExSpan<T>.Empty;
             }
-            if (DataArray is not null && null== PointerAligned) {
+            if (DataArray is not null && null == PointerAligned) {
                 return new ExSpan<T>(DataArray, 0, Length);
             }
             return new ExSpan<T>(PointerAligned, Length);

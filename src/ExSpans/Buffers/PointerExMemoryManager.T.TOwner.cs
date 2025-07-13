@@ -58,7 +58,7 @@ namespace Zyl.ExSpans.Buffers {
     /// <para>The <see cref="PointerExMemoryManager{T}"/> applies when Owner is a reference type. The <see cref="PointerExMemoryManager{T, TOwner}"/> applies when Owner is a value type
     /// (<see cref="PointerExMemoryManager{T}"/> 适用于Owner是引用类型时. <see cref="PointerExMemoryManager{T, TOwner}"/> 适用于Owner是值类型时).</para>
     /// </remarks>
-    public unsafe sealed class PointerExMemoryManager<T, TOwner> : AbstractPointerExMemoryManager<T, TOwner>, IDisposable where TOwner : IDisposable {
+    public sealed class PointerExMemoryManager<T, TOwner> : AbstractPointerExMemoryManager<T, TOwner>, IDisposable where TOwner : IDisposable where T : unmanaged {
 
 #pragma warning disable CA2015
         /// <summary>
@@ -82,7 +82,7 @@ namespace Zyl.ExSpans.Buffers {
         /// <param name="needFree">Is it need to free pointer. If it is true, Dispose will execute the free operation (是否需要释放指针. 若它为 true 时, Dispose 会执行释放操作).</param>
         /// <exception cref="ArgumentOutOfRangeException">The length parameter must be greater than or equal to 0.</exception>
         [CLSCompliant(false)]
-        public PointerExMemoryManager(TOwner owner, void* pointer, TSize length, bool needFree) : base(owner, pointer, length, needFree) {
+        public unsafe PointerExMemoryManager(TOwner owner, void* pointer, TSize length, bool needFree) : base(owner, pointer, length, needFree) {
         }
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace Zyl.ExSpans.Buffers {
         /// <param name="length">Length of unmanaged data (非托管数据的长度).</param>
         /// <exception cref="ArgumentOutOfRangeException">The length parameter must be greater than or equal to 0.</exception>
         [CLSCompliant(false)]
-        public PointerExMemoryManager(TOwner owner, void* pointer, TSize length) : this(owner, pointer, length, true) {
+        public unsafe PointerExMemoryManager(TOwner owner, void* pointer, TSize length) : this(owner, pointer, length, true) {
         }
 
     }

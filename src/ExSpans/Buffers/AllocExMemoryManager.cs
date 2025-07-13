@@ -10,7 +10,7 @@ namespace Zyl.ExSpans.Buffers {
     /// (支持自动内存分配和对齐的内存管理器. 当长度小于 <see cref="MaxArrayLength"/> 时它使用数组池，否则它就使用原生内存).
     /// </summary>
     /// <typeparam name="T">The element type (元素的类型).</typeparam>
-    public class AllocExMemoryManager<T> : AbstractAllocExMemoryManager<T>, IDisposable {
+    public sealed class AllocExMemoryManager<T> : AbstractAllocExMemoryManager<T>, IDisposable where T : unmanaged {
 
 #pragma warning disable CA2015
         /// <summary>

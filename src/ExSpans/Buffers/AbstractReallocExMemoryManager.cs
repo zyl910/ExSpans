@@ -33,7 +33,7 @@ namespace Zyl.ExSpans.Buffers {
     /// (支持自动内存重新分配和对齐的内存管理器. 当长度小于 <see cref="AbstractAllocExMemoryManager{T}.MaxArrayLength"/> 时它使用数组池，否则它就使用原生内存).
     /// </summary>
     /// <typeparam name="T">The element type (元素的类型).</typeparam>
-    public abstract class AbstractReallocExMemoryManager<T> : AbstractAllocExMemoryManager<T> {
+    public abstract class AbstractReallocExMemoryManager<T> : AbstractAllocExMemoryManager<T> where T : unmanaged {
         private readonly MeasureCapacityFunc? _onMeasureCapacity;
 
         /// <summary>
@@ -252,7 +252,7 @@ namespace Zyl.ExSpans.Buffers {
                         return false;
                     }
                     // Pin.
-                    if (alignmentUsedNew && null== PointerAligned) {
+                    if (alignmentUsedNew && null == PointerAligned) {
                     }
                     // Set PointerAligned.
                     ArrayHandle = GCHandle.Alloc(oldArray, GCHandleType.Pinned);

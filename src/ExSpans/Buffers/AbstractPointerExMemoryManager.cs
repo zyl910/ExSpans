@@ -11,7 +11,7 @@ namespace Zyl.ExSpans.Buffers {
     /// </summary>
     /// <typeparam name="T">The element type (元素的类型).</typeparam>
     /// <typeparam name="TOwner">The owner type (所有者的类型).</typeparam>
-    public unsafe abstract class AbstractPointerExMemoryManager<T, TOwner> : ExMemoryManager<T> where TOwner: IDisposable {
+    public unsafe abstract class AbstractPointerExMemoryManager<T, TOwner> : ExMemoryManager<T> where TOwner: IDisposable where T : unmanaged {
         private void* _pointer;
         private TSize _length;
         private TOwner? _owner;
