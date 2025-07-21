@@ -1,4 +1,10 @@
-﻿using System;
+﻿#if DEBUG
+#else
+#define RELEASE
+#endif
+
+using System;
+using System.Diagnostics;
 using System.IO;
 using Zyl.ExSpans;
 
@@ -12,6 +18,7 @@ namespace Zyl.ExSpans.Sample {
             // Test some.
             TestMain(writer);
             ATestMemoryMappedFile.TestMain(writer);
+            ATestMemory.TestMain(writer);
         }
 
         /// <summary>
@@ -110,6 +117,7 @@ namespace Zyl.ExSpans.Sample {
         /// Test 2GB data (测试2GB数据).
         /// </summary>
         /// <param name="writer">The <see cref="TextWriter"/>.</param>
+        [Conditional("RELEASE")]
         static unsafe void Test2GB(TextWriter writer) {
             const nint OutputMaxLength = 8;
             nuint byteSize = 2U * 1024 * 1024 * 1024; // 2GB
