@@ -61,6 +61,8 @@ namespace Zyl.ExSpans.Buffers {
                 Capacity = capacity;
                 return;
             }
+            bool isClearAlloc = Flags.HasFlag(MemoryAllocFlags.ClearAlloc);
+            bool isNoPressure = Flags.HasFlag(MemoryAllocFlags.NoPressure);
             // Try array.
             TSize itemsOfAlignment = 0;
             if (alignmentUsed) {
@@ -76,7 +78,7 @@ namespace Zyl.ExSpans.Buffers {
                 if (DataArray is not null) {
                     try {
                         capacity = DataArray.Length - itemsOfAlignment;
-                        if (Flags.HasFlag(MemoryAllocFlags.ClearAlloc)) {
+                        if (isClearAlloc) {
                             DataArray.AsExSpan().Clear();
                         }
                         if (alignmentUsed) {
@@ -122,10 +124,10 @@ namespace Zyl.ExSpans.Buffers {
                     ExNativeMemory.Alloc((nuint)byteCount);
                 }
                 ByteCount = byteCount;
-                if (!Flags.HasFlag(MemoryAllocFlags.NoPressure)) {
+                if (!isNoPressure) {
                     GC.AddMemoryPressure(ByteCount);
                 }
-                if (Flags.HasFlag(MemoryAllocFlags.ClearAlloc)) {
+                if (isClearAlloc) {
                     ExMemoryMarshal.ClearWithoutReferences(ref Unsafe.AsRef<byte>(pointer), (nuint)ByteCount);
                 }
                 if (alignmentUsed) {
@@ -147,6 +149,7 @@ namespace Zyl.ExSpans.Buffers {
             bool oldIsDisposed = IsDisposed;
             try {
                 if (!oldIsDisposed) {
+                    bool isClearFree = Flags.HasFlag(MemoryAllocFlags.ClearFree);
                     T[]? array = DataArray;
                     if (array is not null) {
                         if (null != PointerAligned) {
@@ -156,6 +159,9 @@ namespace Zyl.ExSpans.Buffers {
                         }
                         // Free DataArray on base.
                     } else if (null != PointerAligned && ByteCount > 0) {
+                        if (isClearFree) {
+                            GetExSpan().Clear();
+                        }
 #if NATIVE_MEMORY_ALIGNED
                         NativeMemory.Free(PointerAligned);
 #else

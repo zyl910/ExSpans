@@ -29,7 +29,7 @@ namespace Zyl.ExSpans.Buffers {
     public delegate nint MeasureCapacityFunc(object sender, nint oldLength, nint oldCapacity, nint newLength, nint newAlignment, nint newCapacity, nint suggestCapacity);
 
     /// <summary>
-    /// A memory manager that supports automatic memory reallocation and alignment. When the length is less than <see cref="AbstractAllocExMemoryManager{T}.MaxArrayLength"/>, it uses array pooling; otherwise, it uses native memory
+    /// A memory manager that supports automatic memory reallocation and alignment. When the length is less than <see cref="AbstractAllocExMemoryManager{T}.MaxArrayLength"/>, it uses array Pooling; otherwise, it uses native memory
     /// (支持自动内存重新分配和对齐的内存管理器. 当长度小于 <see cref="AbstractAllocExMemoryManager{T}.MaxArrayLength"/> 时它使用数组池，否则它就使用原生内存).
     /// </summary>
     /// <typeparam name="T">The element type (元素的类型).</typeparam>
@@ -37,18 +37,18 @@ namespace Zyl.ExSpans.Buffers {
         private readonly MeasureCapacityFunc? _onMeasureCapacity;
 
         /// <summary>
-        /// Create AbstractReallocExMemoryManager. It contains parameters <paramref name="pool"/>, <paramref name="length"/>, <paramref name="alignment"/>, <paramref name="flags"/>, <paramref name="maxArrayLength"/>, <paramref name="capacity"/>, <paramref name="onMeasureCapacity"/>.
+        /// Create AbstractReallocExMemoryManager. It contains parameters <paramref name="Pool"/>, <paramref name="length"/>, <paramref name="alignment"/>, <paramref name="flags"/>, <paramref name="maxArrayLength"/>, <paramref name="capacity"/>, <paramref name="onMeasureCapacity"/>.
         /// </summary>
-        /// <param name="pool">The <see cref="ArrayPool{T}"/> instance used to rent array. If it is null, only unmanaged memory will be used (用于租用数组的 <see cref="ArrayPool{T}"/> 实例. 若它为空, 则仅使用非托管内存).</param>
+        /// <param name="Pool">The <see cref="ArrayPool{T}"/> instance used to rent array. If it is null, only unmanaged memory will be used (用于租用数组的 <see cref="ArrayPool{T}"/> 实例. 若它为空, 则仅使用非托管内存).</param>
         /// <param name="length">Length of data (数据的长度).</param>
         /// <param name="alignment">The alignment value (in bytes) of the memory block. This must be a power of <c>2</c>. When it is 1, it means no alignment is required. When it is 0, use the previous value (内存块的对齐值（以字节为单位）. 这必须是 2的幂. 为 1时表示无需对齐.为0时使用上一次的值).</param>
         /// <param name="flags">Memory alloc flags (内存分配标志).</param>
-        /// <param name="maxArrayLength">Maximum array length for array pool allocation. Defaults to <see cref="ExSpansGlobal.PoolMaxArrayLength"/> if it is 0 (数组池分配时的最大数组长度. 它为0时默认为 <see cref="ExSpansGlobal.PoolMaxArrayLength"/>). </param>
+        /// <param name="maxArrayLength">Maximum array length for array Pool allocation. Defaults to <see cref="ExSpansGlobal.PoolMaxArrayLength"/> if it is 0 (数组池分配时的最大数组长度. 它为0时默认为 <see cref="ExSpansGlobal.PoolMaxArrayLength"/>). </param>
         /// <param name="capacity">Initial capacity. It is valid when it is greater than <paramref name="length"/> (初始容量. 它大于 length 时有效).</param>
         /// <param name="onMeasureCapacity">Function for measure capacity (测量容量的函数).</param>
         /// <exception cref="ArgumentOutOfRangeException">The length parameter must be greater than or equal to 0. The length parameter out of array max length.</exception>
-        public AbstractReallocExMemoryManager(ArrayPool<T>? pool, TSize length, TSize alignment = 0, MemoryAllocFlags flags = default, TSize maxArrayLength = 0, TSize capacity = 0, MeasureCapacityFunc? onMeasureCapacity = null)
-            : base(pool, length, alignment, flags, maxArrayLength, capacity) {
+        public AbstractReallocExMemoryManager(ArrayPool<T>? Pool, TSize length, TSize alignment = 0, MemoryAllocFlags flags = default, TSize maxArrayLength = 0, TSize capacity = 0, MeasureCapacityFunc? onMeasureCapacity = null)
+            : base(Pool, length, alignment, flags, maxArrayLength, capacity) {
             _onMeasureCapacity = onMeasureCapacity;
         }
 
@@ -202,7 +202,114 @@ namespace Zyl.ExSpans.Buffers {
         /// [Dangerous] Reallocate memory - Process capacity change (重新分配内存 - 处理容量变化).
         /// </summary>
         /// <inheritdoc cref="ReallocProcess(nint, nint, nint, nint)"/>
-        protected virtual void ReallocProcessCapacity(TSize length, TSize alignment, TSize capacity, TSize suggestCapacity) {
+        protected unsafe virtual void ReallocProcessCapacity(TSize length, TSize alignment, TSize capacity, TSize suggestCapacity) {
+            if (capacity < length) {
+                throw new ArgumentOutOfRangeException(nameof(capacity), string.Format("The capacity({0}) parameter must be greater than length({1}).", (long)capacity, (long)length));
+            }
+            bool isClearAlloc = Flags.HasFlag(MemoryAllocFlags.ClearAlloc);
+            bool isClearFree = Flags.HasFlag(MemoryAllocFlags.ClearFree);
+            bool isKeepRealloc = Flags.HasFlag(MemoryAllocFlags.KeepRealloc);
+            bool isNoPressure = Flags.HasFlag(MemoryAllocFlags.NoPressure);
+            T[]? arrayOld = DataArray;
+            bool arrayOldIsPin = arrayOld is not null && null != PointerAligned;
+            if (0 == capacity) {
+                // TrimExcess all.
+                if (Capacity > 0) {
+                    if (arrayOld is not null) {
+                        if (arrayOldIsPin) {
+                            ArrayHandle.Free();
+                        }
+                        // Free DataArray.
+                        if (arrayOld is not null && Pool is not null) {
+                            Pool.Return(arrayOld, isClearFree);
+                        }
+                    } else if (null != PointerAligned && ByteCount > 0) {
+                        if (isClearFree) {
+                            GetExSpan().Clear();
+                        }
+#if NATIVE_MEMORY_ALIGNED
+                        NativeMemory.Free(PointerAligned);
+#else
+                        void* pointer = (byte*)PointerAligned - Offset;
+                        ExNativeMemory.Free(pointer);
+#endif // NATIVE_MEMORY_ALIGNED
+                        PointerAligned = null;
+                        if (!isNoPressure) {
+                            GC.RemoveMemoryPressure(ByteCount);
+                        }
+                    }
+                    Length = length;
+                    Alignment = alignment;
+                    Capacity = capacity;
+                    DataArray = null;
+                    ArrayHandle = default;
+                    ByteCount = 0;
+                    Offset = 0;
+                    PointerAligned = null;
+                }
+                return;
+            }
+            // == On (0 != capacity) ==
+            T[]? array = null;
+            GCHandle arrayHandle = default;
+            TSize byteCount = 0;
+            TSize offset = 0;
+            void*  pointerAligned = null;
+            bool alignmentUsed = PointerUtil.IsAlignmentUsed(alignment);
+            // Try array.
+            TSize itemsOfAlignment = 0;
+            if (alignmentUsed) {
+                itemsOfAlignment = PointerUtil.GetEnoughItemCount(alignment, Unsafe.SizeOf<T>());
+            }
+            TSize capacityFull = capacity + itemsOfAlignment;
+            if (Pool is not null && PointerUtil.IsArrayLengthValidInPool(capacityFull, MaxArrayLength)) {
+                try {
+                    array = Pool.Rent((int)capacityFull);
+                } catch (Exception ex) {
+                    Debug.WriteLine(string.Format("Array Pool rent array fail! The length is {0}. {1}", (long)capacity, ex.Message));
+                }
+                if (array is not null) {
+                    try {
+                        if (isClearAlloc) {
+                            array.AsExSpan().Clear();
+                        }
+                        if (alignmentUsed) {
+                            arrayHandle = GCHandle.Alloc(array, GCHandleType.Pinned);
+#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET40_OR_GREATER
+                            System.Threading.Thread.MemoryBarrier();
+#endif // NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET40_OR_GREATER
+                            void* pointer = Unsafe.AsPointer(ref array[0]);
+                            offset = PointerUtil.GetAlignOffset(pointer, alignment);
+                            pointerAligned = (byte*)pointer + offset;
+                        }
+                        capacity = array.Length - itemsOfAlignment;
+                    } catch (Exception ex) {
+                        Debug.WriteLine(string.Format("Array Pool config array fail! The length is {0}. {1}", (long)length, ex.Message));
+                        try {
+                            Pool.Return(array);
+                        } catch (Exception ex1) {
+                            Debug.WriteLine(string.Format("Array Pool return array fail! The length is {0}. {1}", (long)length, ex1.Message));
+                        }
+                        array = null;
+                        arrayHandle = default;
+                        pointerAligned = null;
+                        offset = 0;
+                    }
+                }
+            }
+            // Try native memory.
+            if (null!= array) {
+                // TODO: Try native memory.
+            }
+            // == Done ==
+            Length = length;
+            Alignment = alignment;
+            Capacity = capacity;
+            DataArray = array;
+            ArrayHandle = arrayHandle;
+            ByteCount = byteCount;
+            Offset = offset;
+            PointerAligned = pointerAligned;
         }
 
         /// <summary>
