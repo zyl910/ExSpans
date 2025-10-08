@@ -210,6 +210,7 @@ namespace Zyl.ExSpans.Buffers {
             bool isClearFree = Flags.HasFlag(MemoryAllocFlags.ClearFree);
             bool isKeepRealloc = Flags.HasFlag(MemoryAllocFlags.KeepRealloc);
             bool isNoPressure = Flags.HasFlag(MemoryAllocFlags.NoPressure);
+            bool needFreeOld = false;
             T[]? arrayOld = DataArray;
             bool arrayOldIsPin = arrayOld is not null && null != PointerAligned;
             if (0 == capacity) {
@@ -254,7 +255,8 @@ namespace Zyl.ExSpans.Buffers {
             GCHandle arrayHandle = default;
             TSize byteCount = 0;
             TSize offset = 0;
-            void*  pointerAligned = null;
+            void* pointerAligned = null;
+            if (0 == alignment) alignment = Alignment;
             bool alignmentUsed = PointerUtil.IsAlignmentUsed(alignment);
             // Try array.
             TSize itemsOfAlignment = 0;
@@ -283,6 +285,7 @@ namespace Zyl.ExSpans.Buffers {
                             pointerAligned = (byte*)pointer + offset;
                         }
                         capacity = array.Length - itemsOfAlignment;
+                        needFreeOld = true;
                     } catch (Exception ex) {
                         Debug.WriteLine(string.Format("Array Pool config array fail! The length is {0}. {1}", (long)length, ex.Message));
                         try {
@@ -298,8 +301,95 @@ namespace Zyl.ExSpans.Buffers {
                 }
             }
             // Try native memory.
-            if (null!= array) {
-                // TODO: Try native memory.
+            if (null == array) {
+                bool alignmentUsedOld = PointerUtil.IsAlignmentUsed(alignment);
+                void* pointer = null;
+                TSize byteCountBody = checked(capacity * Unsafe.SizeOf<T>());
+                if (alignmentUsed) {
+#if NATIVE_MEMORY_ALIGNED
+                    byteCount = byteCountBody;
+#else
+                    byteCount = checked(byteCountBody + alignment);
+#endif // NATIVE_MEMORY_ALIGNED
+                }
+                // Try realloc.
+                if (!isKeepRealloc && null != PointerAligned && ByteCount > 0) {
+                    try {
+                        bool allocRealloc = false;
+                        if (alignmentUsedOld) {
+                            if (alignmentUsed) {
+#if NATIVE_MEMORY_ALIGNED
+                                pointer = NativeMemory.AlignedRealloc(PointerAligned, (nuint)byteCount, (nuint)alignment);
+#else
+                                // Not support Realloc.
+#endif // NATIVE_MEMORY_ALIGNED
+                            } else {
+                                allocRealloc = true;
+                            }
+                        } else {
+                            allocRealloc = true;
+                        }
+                        if (allocRealloc) {
+                            pointer = ExNativeMemory.Realloc((byte*)PointerAligned - Offset, (nuint)byteCount);
+                        }
+                    } catch (Exception ex) {
+                        Debug.WriteLine(string.Format("Native memory realloc fail! The length is {0}. {1}", (long)capacity, ex.Message));
+                    }
+                }
+                if (null!= pointer) {
+                    if (alignmentUsed) {
+#if NATIVE_MEMORY_ALIGNED
+#else
+                        offset = PointerUtil.GetAlignOffset(pointer, alignment);
+#endif // NATIVE_MEMORY_ALIGNED
+                    }
+                    pointerAligned = (byte*)pointer + offset;
+                } else {
+                    // Try alloc.
+                    needFreeOld = true;
+                    if (alignmentUsed) {
+#if NATIVE_MEMORY_ALIGNED
+                        PointerAligned = NativeMemory.AlignedAlloc((nuint)byteCount, (nuint)alignment);
+#else
+                        // Use `f (null == pointer)`.
+#endif // NATIVE_MEMORY_ALIGNED
+                    }
+                    if (null == pointer) {
+                        ExNativeMemory.Alloc((nuint)byteCount);
+                    }
+                    if (alignmentUsed) {
+#if NATIVE_MEMORY_ALIGNED
+#else
+                        offset = PointerUtil.GetAlignOffset(pointer, alignment);
+#endif // NATIVE_MEMORY_ALIGNED
+                    }
+                    pointerAligned = (byte*)pointer + offset;
+                }
+            }
+            // Free old.
+            if (needFreeOld) {
+                if (arrayOld is not null) {
+                    if (arrayOldIsPin) {
+                        ArrayHandle.Free();
+                    }
+                    // Free DataArray.
+                    if (arrayOld is not null && Pool is not null) {
+                        Pool.Return(arrayOld, isClearFree);
+                    }
+                } else if (null != PointerAligned && ByteCount > 0) {
+                    if (isClearFree) {
+                        GetExSpan().Clear();
+                    }
+#if NATIVE_MEMORY_ALIGNED
+                    NativeMemory.Free(PointerAligned);
+#else
+                    void* pointer = (byte*)PointerAligned - Offset;
+                    ExNativeMemory.Free(pointer);
+#endif // NATIVE_MEMORY_ALIGNED
+                    if (!isNoPressure) {
+                        GC.RemoveMemoryPressure(ByteCount);
+                    }
+                }
             }
             // == Done ==
             Length = length;
