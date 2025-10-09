@@ -60,19 +60,6 @@ namespace Zyl.ExSpans.Buffers {
     /// </remarks>
     public sealed class PointerExMemoryManager<T, TOwner> : AbstractPointerExMemoryManager<T, TOwner>, IDisposable where TOwner : IDisposable where T : unmanaged {
 
-#pragma warning disable CA2015
-        /// <summary>
-        /// Finalizer of PointerExMemoryManager.
-        /// </summary>
-        /// <remarks>
-        /// <para>CA2015: Adding a finalizer to a type derived from MemoryManager may permit memory to be freed while it is still in use by a Span.https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca2015</para>
-        /// <para>To support weak references, it is necessary to break the CA2015 warning and use finalizer to free up memory. Please developers to handle the lifespan of Span (为了支持弱引用, 需要突破CA2015警告, 利用终结期来释放内存. 请开发者处理好 Span 的生存期).</para>
-        /// </remarks>
-        ~PointerExMemoryManager() {
-            Dispose(false);
-        }
-#pragma warning restore CA2015
-
         /// <summary>
         /// Create PointerExMemoryManager. It contains parameters <paramref name="owner"/>, <paramref name="pointer"/>, <paramref name="length"/>, <paramref name="needFree"/>.
         /// </summary>
