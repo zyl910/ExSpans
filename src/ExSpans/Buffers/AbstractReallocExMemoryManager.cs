@@ -213,7 +213,7 @@ namespace Zyl.ExSpans.Buffers {
             bool needFreeOld = false;
             T[]? arrayOld = DataArray;
             bool arrayOldIsPin = arrayOld is not null && null != PointerAligned;
-            if (0 == capacity) {
+            if (capacity <= 0) {
                 // TrimExcess all.
                 if (Capacity > 0) {
                     if (arrayOld is not null) {
@@ -221,8 +221,12 @@ namespace Zyl.ExSpans.Buffers {
                             ArrayHandle.Free();
                         }
                         // Free DataArray.
-                        if (arrayOld is not null && Pool is not null) {
+                        if (Pool is not null) {
                             Pool.Return(arrayOld, isClearFree);
+                        } else {
+                            if (isClearFree) {
+                                GetExSpan().Clear();
+                            }
                         }
                     } else if (null != PointerAligned && ByteCount > 0) {
                         if (isClearFree) {
@@ -234,7 +238,6 @@ namespace Zyl.ExSpans.Buffers {
                         void* pointer = (byte*)PointerAligned - Offset;
                         ExNativeMemory.Free(pointer);
 #endif // NATIVE_MEMORY_ALIGNED
-                        PointerAligned = null;
                         if (!isNoPressure) {
                             GC.RemoveMemoryPressure(ByteCount);
                         }
@@ -272,9 +275,6 @@ namespace Zyl.ExSpans.Buffers {
                 }
                 if (array is not null) {
                     try {
-                        if (isClearAlloc) {
-                            array.AsExSpan().Clear();
-                        }
                         if (alignmentUsed) {
                             arrayHandle = GCHandle.Alloc(array, GCHandleType.Pinned);
 #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP1_0_OR_GREATER || NET40_OR_GREATER
@@ -305,15 +305,15 @@ namespace Zyl.ExSpans.Buffers {
                 bool alignmentUsedOld = PointerUtil.IsAlignmentUsed(alignment);
                 void* pointer = null;
                 TSize byteCountBody = checked(capacity * Unsafe.SizeOf<T>());
+                byteCount = byteCountBody;
                 if (alignmentUsed) {
 #if NATIVE_MEMORY_ALIGNED
-                    byteCount = byteCountBody;
 #else
                     byteCount = checked(byteCountBody + alignment);
 #endif // NATIVE_MEMORY_ALIGNED
                 }
                 // Try realloc.
-                if (!isKeepRealloc && null != PointerAligned && ByteCount > 0) {
+                if (!isKeepRealloc && null == arrayOld && null != PointerAligned && ByteCount > 0) {
                     try {
                         bool allocRealloc = false;
                         if (alignmentUsedOld) {
@@ -324,7 +324,7 @@ namespace Zyl.ExSpans.Buffers {
                                 // Not support Realloc.
 #endif // NATIVE_MEMORY_ALIGNED
                             } else {
-                                allocRealloc = true;
+                                allocRealloc = false; // AligndAlloc may not necessarily support Realloc.
                             }
                         } else {
                             allocRealloc = true;
@@ -336,7 +336,11 @@ namespace Zyl.ExSpans.Buffers {
                         Debug.WriteLine(string.Format("Native memory realloc fail! The length is {0}. {1}", (long)capacity, ex.Message));
                     }
                 }
-                if (null!= pointer) {
+                if (null != pointer) {
+                    if (!isNoPressure) {
+                        GC.RemoveMemoryPressure(this.ByteCount);
+                        GC.AddMemoryPressure(byteCount);
+                    }
                     if (alignmentUsed) {
 #if NATIVE_MEMORY_ALIGNED
 #else
@@ -349,13 +353,16 @@ namespace Zyl.ExSpans.Buffers {
                     needFreeOld = true;
                     if (alignmentUsed) {
 #if NATIVE_MEMORY_ALIGNED
-                        PointerAligned = NativeMemory.AlignedAlloc((nuint)byteCount, (nuint)alignment);
+                        pointer = NativeMemory.AlignedAlloc((nuint)byteCount, (nuint)alignment);
 #else
-                        // Use `f (null == pointer)`.
+                        // Use `if (null == pointer)`.
 #endif // NATIVE_MEMORY_ALIGNED
                     }
                     if (null == pointer) {
-                        ExNativeMemory.Alloc((nuint)byteCount);
+                        pointer = ExNativeMemory.Alloc((nuint)byteCount);
+                    }
+                    if (!isNoPressure) {
+                        GC.AddMemoryPressure(byteCount);
                     }
                     if (alignmentUsed) {
 #if NATIVE_MEMORY_ALIGNED
@@ -364,6 +371,23 @@ namespace Zyl.ExSpans.Buffers {
 #endif // NATIVE_MEMORY_ALIGNED
                     }
                     pointerAligned = (byte*)pointer + offset;
+                }
+            }
+            // Clear and more.
+            ExSpan<T> spanNew = (null == pointerAligned) ? new ExSpan<T>(array, 0, capacity) : new ExSpan<T>(pointerAligned, capacity);
+            if (isKeepRealloc && this.Length > 0) {
+                ExSpan<T> spanOld = this.GetExSpan();
+                if (spanNew.Length <= spanOld.Length) {
+                    spanOld.Slice(0, spanNew.Length).CopyTo(spanNew);
+                } else {
+                    spanOld.CopyTo(spanNew);
+                    if (isClearAlloc) {
+                        spanNew.Slice(spanOld.Length).Clear();
+                    }
+                }
+            } else {
+                if (isClearAlloc) {
+                    spanNew.Clear();
                 }
             }
             // Free old.
