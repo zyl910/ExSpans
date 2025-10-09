@@ -29,8 +29,8 @@ namespace Zyl.ExSpans.Buffers {
     public delegate nint MeasureCapacityFunc(object sender, nint oldLength, nint oldCapacity, nint newLength, nint newAlignment, nint newCapacity, nint suggestCapacity);
 
     /// <summary>
-    /// A memory manager that supports automatic memory reallocation and alignment. When the length is less than <see cref="AbstractAllocExMemoryManager{T}.MaxArrayLength"/>, it uses array Pooling; otherwise, it uses native memory
-    /// (支持自动内存重新分配和对齐的内存管理器. 当长度小于 <see cref="AbstractAllocExMemoryManager{T}.MaxArrayLength"/> 时它使用数组池，否则它就使用原生内存).
+    /// A abstract memory manager that supports automatic memory reallocation and alignment. When the length is less than <see cref="AbstractAllocExMemoryManager{T}.MaxArrayLength">MaxArrayLength</see>, it uses array Pooling; otherwise, it uses native memory
+    /// (支持自动内存重新分配和对齐的抽象内存管理器. 当长度小于 <see cref="AbstractAllocExMemoryManager{T}.MaxArrayLength">MaxArrayLength</see> 时它使用数组池，否则它就使用原生内存).
     /// </summary>
     /// <typeparam name="T">The element type (元素的类型).</typeparam>
     public abstract class AbstractReallocExMemoryManager<T> : AbstractAllocExMemoryManager<T> where T : unmanaged {

@@ -6,8 +6,8 @@ using System.Text;
 namespace Zyl.ExSpans.Buffers {
 
     /// <summary>
-    /// A memory manager that supports automatic memory allocation and alignment. When the length is less than <see cref="MaxArrayLength"/>, it uses array pooling; otherwise, it uses native memory
-    /// (支持自动内存分配和对齐的内存管理器. 当长度小于 <see cref="MaxArrayLength"/> 时它使用数组池，否则它就使用原生内存).
+    /// A memory manager that supports automatic memory allocation and alignment. When the length is less than <see cref="AbstractAllocExMemoryManager{T}.MaxArrayLength">MaxArrayLength</see>, it uses array pooling; otherwise, it uses native memory
+    /// (支持自动内存分配和对齐的内存管理器. 当长度小于 <see cref="AbstractAllocExMemoryManager{T}.MaxArrayLength">MaxArrayLength</see> 时它使用数组池，否则它就使用原生内存).
     /// </summary>
     /// <typeparam name="T">The element type (元素的类型).</typeparam>
     public sealed class AllocExMemoryManager<T> : AbstractAllocExMemoryManager<T>, IDisposable where T : unmanaged {
@@ -47,7 +47,7 @@ namespace Zyl.ExSpans.Buffers {
         /// <param name="maxArrayLength">Maximum array length for array pool allocation. Defaults to <see cref="ExSpansGlobal.PoolMaxArrayLength"/> if it is 0 (数组池分配时的最大数组长度. 它为0时默认为 <see cref="ExSpansGlobal.PoolMaxArrayLength"/>). </param>
         /// <exception cref="ArgumentOutOfRangeException">The length parameter must be greater than or equal to 0. The length parameter out of array max length.</exception>
         public AllocExMemoryManager(TSize length, TSize alignment = 0, MemoryAllocFlags flags = default, TSize maxArrayLength = 0)
-            : base(ArrayPool<T>.Shared, length, alignment, flags, maxArrayLength) {
+            : this(ArrayPool<T>.Shared, length, alignment, flags, maxArrayLength) {
         }
 
         /// <summary>
